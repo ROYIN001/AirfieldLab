@@ -80,6 +80,13 @@ Suggested order, each with a Node test before tuning by feel in the browser:
 - `city.json`: base64 records, generated buildings (9 bytes each) and street lights (5 bytes each); the artifact
   host refuses `.bin`, so binary data travels inside JSON.
 
+## Working in the cloud (Claude Code on the web)
+- The owner works from the cloud so their computer can stay off. Test changes on the GitHub Pages site:
+  every push to `main` runs `.github/workflows/pages.yml` (geo + runway tests, build, deploy).
+  One-time setup in the repo: Settings → Pages → Source: GitHub Actions.
+- Work on a branch and open a pull request for anything that changes the flight model, so the owner can try it
+  before merging.
+
 ## Publishing
 - Live as a claude.ai artifact (multi-file: index.html + the four data files), title "Airfield Lab ดอนเมือง VTBD",
   slug f3207a70-5bd7-43d8-a606-a2b9b946413a, `downloads` capability declared for the PNG snapshot button.
