@@ -23,7 +23,9 @@ jobs:
         with:
           node-version: 22
       - name: Physics checks
-        run: node test/geo.test.mjs && node test/runways.test.mjs
+        run: |
+          node test/geo.test.mjs
+          for t in input engine controls config stall ground validation flight runways assist; do node test/$t.test.mjs > /tmp/$t.log || { cat /tmp/$t.log; exit 1; }; tail -n 1 /tmp/$t.log; done
       - name: Build
         run: node build.mjs
       - uses: actions/upload-pages-artifact@v3
