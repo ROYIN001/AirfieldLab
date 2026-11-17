@@ -50,15 +50,27 @@ const ail = (V, p, a) => accel(V, p, (ac) => (ac.da = 10 * DEG), 10, a);
 {
   const f = new Flight({ wind: SCENARIOS.calm, pilot: 'man', assist: false, autoTrim: false, dist: 12000, oatC: 15 });
   const ias0 = f.ac.air.ias / KT;
-  for (let i = 0; i < 240 * 10; i++) f.tick(DT);
+  for (let i = 0; i < 240 * 10; i++) { const a = f.ac.air; f.input.x = Math.max(-1, Math.min(1, -2 * a.phi - 0.5 * a.p)); f.tick(DT); }
   const iasHold = f.ac.air.ias / KT;
   check('hands off on the trimmed approach: speed holds', Math.abs(iasHold - ias0) < 1.5, `${f1(ias0)} → ${f1(iasHold)} kt after 10 s`);
-  f.input.trim = -1; for (let i = 0; i < 240 * 0.6; i++) f.tick(DT); f.input.trim = 0;
+  f.input.trim = -1; for (let i = 0; i < 240 * 0.6; i++) { const a = f.ac.air; f.input.x = Math.max(-1, Math.min(1, -2 * a.phi - 0.5 * a.p)); f.tick(DT); } f.input.trim = 0;
   const trimMoved = (f.laws.trimDe - f.trim.de) * RAD;
   let lo = 1e9, hi = 0; const hist = [];
-  for (let i = 0; i < 240 * 70; i++) { f.tick(DT); if (i % 240 === 0) hist.push(f.ac.air.ias / KT); }
-  for (const v of hist.slice(-12)) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
-  const iasNew = hist[hist.length - 1];
-  check('nose-down trim (stick free) → higher trimmed speed', iasNew > iasHold + 4, `trim +${f1(trimMoved, 2)}° → ${f1(iasNew)} kt (last 12 s ${f1(lo)}–${f1(hi)})`);
+  for (let i = 0; i < 240 * 90; i++) {   // the pilot only keeps the wings level with aileron; pitch is hands off
+    const a = f.ac.air; f.input.x = Math.max(-1, Math.min(1, -2 * a.phi - 0.5 * a.p));
+    f.tick(DT); if (i % 240 === 0) hist.push(a.ias / KT);
+  }
+  const last = hist.slice(-30); for (const v of last) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
+  const iasNew = last.reduce((s, v) => s + v, 0) / last.length;   // mean over about one phugoid period
+  check('nose-down trim (stick free) → higher trimmed speed', iasNew > iasHold + 4, `trim +${f1(trimMoved, 2)}° → mean ${f1(iasNew)} kt over the last 30 s (${f1(lo)}–${f1(hi)}), wings ${f1(Math.abs(f.ac.air.phi) * RAD)}°`);
+}
+// DIRECT hands off in a gusty crosswind: auto-trim (pitch on θ̇, aileron on roll rate) and the rudder trim aid
+// hold the approach; without auto-trim the aircraft slowly wanders, as a real one does
+for (const autoTrim of [true, false]) {
+  const f = new Flight({ wind: SCENARIOS.xr, pilot: 'man', assist: false, autoThr: false, autoTrim, dh: 12, dtl: 40, seed: 9 });
+  let maxPhi = 0, maxDv = 0; const v0 = f.ac.air.ias;
+  for (let i = 0; i < 240 * 25; i++) { f.tick(DT); maxPhi = Math.max(maxPhi, Math.abs(f.ac.air.phi)); maxDv = Math.max(maxDv, Math.abs(f.ac.air.ias - v0) / KT); }
+  if (autoTrim) check('DIRECT hands off with auto-trim: holds wings level and speed for 25 s', maxPhi < 5 * DEG && maxDv < 5, `max bank ${f1(maxPhi * RAD)}°, speed ±${f1(maxDv)} kt`);
+  else check('DIRECT hands off without auto-trim: drifts but no spiral dive in 25 s', maxPhi < 25 * DEG && maxDv < 10, `max bank ${f1(maxPhi * RAD)}°, speed ±${f1(maxDv)} kt`);
 }
 done();

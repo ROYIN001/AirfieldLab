@@ -122,7 +122,7 @@ const AC = {
   stickE: [0.80, 1385], stickA: [0.59, 2000], stickR: [0.70, 2500],
   trimMin: -14 * DEG, trimMax: 6 * DEG, trimRate: 2.0 * DEG,   // elevator trim range (elevator-equivalent) and rate
   // configuration: flap notches UP / TO / LDG (38° on the model), electric flaps ≈ 9 s full travel, gear 6 s
-  flapNotch: [0, 0.45, 1], flapName: ['UP', 'TO', 'LDG'], flapRate: 1 / 9, gearTime: 6,
+  flapNotch: [0, 0.45, 1], flapName: ['UP', 'TO', 'LDG'], flapDeg: [0, 17, 38], flapRate: 1 / 9, gearTime: 6,
   VFE: [999, 150, 125], VLE: 150, VLO: 150,          // KIAS, design limits of this fictional trainer
   flapLoad: 2790,                                     // Pa: actuator limit q·δf (full flaps at ≈ 131 KEAS, then blow-back)
   gear: [
@@ -657,6 +657,7 @@ class PilotLaws {
   constructor(ac, trim) {
     this.ac = ac; this.thHold = trim.th; this.deI = trim.de; this.trimDe = trim.de; this.spdI = trim.thr; this.tdAt = null;
     this.daI = trim.da || 0; this.drI = trim.dr || 0; this.relief = 0; this.grip = 0;
+    this.ailTrim = trim.da || 0; this.rudTrim = trim.dr || 0;   // DIRECT: aileron auto-trim and rudder trim aid
   }
   // inp: x roll (+right), y pitch (+pull), rud (+right), thr power lever 0..1, brake / brakeL / brakeR 0..1,
   // trim (+1 nose up … −1 nose down, held), flaps notch index, gear selector 1 down / 0 up
@@ -708,12 +709,19 @@ class PilotLaws {
       autoBrake = brakeLikeAPilot(this, a, dt, a.wow[0] && tdAge > 2.5 ? (a.gs > 3 ? 0.42 : a.gs > 0.3 ? 0.55 : 1) : 0);
       ac.trim = this.deI;
     } else {
-      // reversible controls: the input is a pilot force; the deflection it buys falls as dynamic pressure rises
+      // reversible controls: the input is a pilot force; the deflection it buys falls as dynamic pressure rises.
+      // Elevator trim by hand (trim keys) or automatic: with the stick released the trim follows the pitch
+      // attitude rate (θ̇, so a level turn does not trim the nose down) and, with auto-trim on, the aileron trim
+      // stops a slow roll. A rudder trim aid (like the trim-aid device of modern turboprop trainers) centres the
+      // ball against propeller yaw whenever the pedals are free.
+      const thDot = a.q * Math.cos(a.phi) - a.r * Math.sin(a.phi), auto = opts.autoTrim !== false && !onG;
       if (inp.trim) this.trimDe = clamp(this.trimDe - inp.trim * AC.trimRate * dt, AC.trimMin, AC.trimMax);
-      else if (opts.autoTrim !== false && Math.abs(inp.y) < 0.05 && !onG) this.trimDe = clamp(this.trimDe + 0.25 * a.q * dt, AC.trimMin, AC.trimMax);
+      else if (auto && Math.abs(inp.y) < 0.05) this.trimDe = clamp(this.trimDe + 0.25 * thDot * dt, AC.trimMin, AC.trimMax);
+      if (auto && Math.abs(inp.x) < 0.05) this.ailTrim = clamp(this.ailTrim - 0.3 * a.p * dt, -6 * DEG, 6 * DEG);
+      if (!onG && Math.abs(inp.rud) < 0.05) this.rudTrim = clamp(this.rudTrim - 0.8 * a.beta * dt, -10 * DEG, 10 * DEG);
       c.de = this.trimDe - inp.y * stickGain(AC.stickE, a.qH);
-      c.da = inp.x * stickGain(AC.stickA, a.qbar);
-      c.dr = -inp.rud * stickGain(AC.stickR, a.qV);
+      c.da = this.ailTrim + inp.x * stickGain(AC.stickA, a.qbar);
+      c.dr = this.rudTrim - inp.rud * stickGain(AC.stickR, a.qV);
       c.thr = inp.thr;
       ac.trim = this.trimDe;
     }
@@ -881,6 +889,7 @@ class Flight {
       if (this.ap.mode === 'STOP') this.ap.mode = 'ROLLOUT';
     } else {
       this.laws.thHold = ac.air.theta; this.laws.deI = ac.de; this.laws.trimDe = clamp(ac.de, AC.trimMin, AC.trimMax); this.laws.spdI = ac.pcl;
+      this.laws.daI = this.laws.ailTrim = clamp(ac.da, -6 * DEG, 6 * DEG); this.laws.drI = this.laws.rudTrim = clamp(ac.dr, -10 * DEG, 10 * DEG);
       Object.assign(this.input, { thr: ac.pcl, flaps: flapIndex(ac.cmd.flaps), gear: ac.cmd.gear ? 1 : 0, trim: 0 });
     }
     this.pilot = p;

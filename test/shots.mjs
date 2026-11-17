@@ -1,18 +1,26 @@
-// usage: node test/shots.mjs <set> ; renders dist/index.html in headless Chrome (SwiftShader WebGL2)
+// usage: node test/shots.mjs <set> ; renders dist/index.html in headless Chromium (SwiftShader WebGL2)
+// Paths come from the environment (defaults are the original workspace):
+//   THREE_DIR  unpacked three@0.186.0 package (npm pack three@0.186.0) — the CDN is mapped to it
+//   DIST_DIR   built site (node build.mjs → dist/)     SHOTS_DIR  where PNGs go
+//   PW_REQUIRE folder whose node_modules has playwright  CHROME  browser binary (empty = Playwright's own)
 import fs from 'fs';
 import path from 'path';
 import { createRequire } from 'module';
-const require = createRequire('/opt/npm-tools/node_modules/');
+const env = process.env;
+const require = createRequire(env.PW_REQUIRE || '/opt/npm-tools/node_modules/');
 const { chromium } = require('playwright');
 const set = process.argv[2] || 'explore';
-const V = '/home/claude/vendor/three-r186';
+const V = env.THREE_DIR || '/home/claude/vendor/three-r186';
+const DIST = env.DIST_DIR || '/home/claude/airfield/dist';
+const SHOTS = env.SHOTS_DIR || '/home/claude/airfield/shots';
+fs.mkdirSync(SHOTS, { recursive: true });
 const MAP = {
   'https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js': `${V}/build/three.module.js`,
   'https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.core.js': `${V}/build/three.core.js`,
   'https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/controls/OrbitControls.js': `${V}/examples/jsm/controls/OrbitControls.js`,
   'https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/utils/BufferGeometryUtils.js': `${V}/examples/jsm/utils/BufferGeometryUtils.js`,
 };
-const out = (n) => path.join('/home/claude/airfield/shots', n);
+const out = (n) => path.join(SHOTS, n);
 const logs = [];
 async function open(browser, vp, quality = 'balanced') {
   const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 1, hasTouch: vp.width < 700, isMobile: false });
@@ -21,7 +29,7 @@ async function open(browser, vp, quality = 'balanced') {
     const u = route.request().url();
     if (MAP[u]) return route.fulfill({ status: 200, contentType: 'text/javascript', body: fs.readFileSync(MAP[u]) });
     if (u.startsWith('http://vtbd.test/')) {
-      const f = '/home/claude/airfield/dist/' + decodeURIComponent(u.slice(17).split('?')[0] || 'index.html');
+      const f = path.join(DIST, decodeURIComponent(u.slice(17).split('?')[0] || 'index.html'));
       const ct = f.endsWith('.html') ? 'text/html' : f.endsWith('.json') ? 'application/json' : f.endsWith('.png') ? 'image/png' : 'application/octet-stream';
       return fs.existsSync(f) ? route.fulfill({ status: 200, contentType: ct, body: fs.readFileSync(f) }) : route.fulfill({ status: 404, body: '' });
     }
@@ -41,7 +49,7 @@ const frames = (page, n = 2) => page.evaluate((n) => new Promise((r) => { let k 
 async function shot(page, name, full = false) { await frames(page, 3); await page.screenshot({ path: out(name), fullPage: full, timeout: 180000 }); logs.push('shot ' + name); }
 const ev = (page, fn, arg) => page.evaluate(fn, arg);
 
-const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl'] });
+const browser = await chromium.launch({ ...(env.CHROME === '' ? {} : { executablePath: env.CHROME || '/usr/bin/google-chrome' }), args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl'] });
 try {
   if (set === 'vtbd') {
     const { page } = await open(browser, { width: 1100, height: 680 });

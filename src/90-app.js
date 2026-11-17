@@ -62,9 +62,12 @@ const app = {
   mode: 'explore', q: store.get('afl-quality', isTouch ? 'balanced' : 'high'),
   view: 'overview', trainCam: 'chase', spot: null,
   wind: { fromDeg: 40, kt: 9 }, visIdx: 2, cloudIdx: 1,
-  train: { state: 'setup', scn: 'xr', dist: 5556, pilot: 'ap', assist: true, autoThr: true, warp: 1, rwy: '03L' },
-  input: { x: 0, y: 0, rud: 0, thr: 0.25, brake: 0 }, keys: new Set(),
+  train: { state: 'setup', scn: 'xr', dist: 5556, pilot: 'ap', assist: true, autoThr: true, autoTrim: true, surface: 'dry', warp: 1, rwy: '03L' },
+  input: { x: 0, y: 0, rud: 0, thr: 0.25, brake: 0, brakeL: 0, brakeR: 0, trim: 0, flaps: 2, gear: 1 }, keys: new Set(),
 };
+// control settings (sensitivity, expo, dead zone, joystick axes) persist in this browser
+const INP = Object.assign({}, INPUT_DEFAULTS, (() => { try { const v = JSON.parse(store.get('afl-input', '{}')); return v && typeof v === 'object' ? v : {}; } catch (e) { return {}; } })());
+const saveInp = () => store.set('afl-input', JSON.stringify(INP));
 if (!QUALITY[app.q]) app.q = 'balanced';
 const VIS = [5000, 10000, 20000, 40000], VIS_T = ['5 กม.', '10 กม.', '20 กม.', '40 กม.'];
 const CLOUD = [0, 0.32, 0.5, 0.68], CLOUD_T = ['ไม่มี', 'บางส่วน', 'มาก', 'ครึ้ม'];
@@ -252,6 +255,39 @@ async function main() {
   for (const b of $('#segPilot').querySelectorAll('button')) b.onclick = () => { app.train.pilot = b.dataset.p; refreshSetup(); };
   $('#chkAssist').onchange = (e) => { app.train.assist = e.target.checked; if (!app.train.assist) { app.train.autoThr = false; $('#chkAt').checked = false; } refreshSetup(); };
   $('#chkAt').onchange = (e) => { app.train.autoThr = e.target.checked; refreshSetup(); };
+  $('#chkTrim').onchange = (e) => { app.train.autoTrim = e.target.checked; refreshSetup(); };
+  for (const b of $('#segSurf').querySelectorAll('button')) b.onclick = () => { app.train.surface = b.dataset.s; refreshSetup(); previewFlight(); };
+  // control device settings
+  const SENS = [['inSens', 'outSens', 'sens', 100], ['inExpo', 'outExpo', 'expo', 100], ['inDead', 'outDead', 'dead', 100]];
+  for (const [inp, out, key, k] of SENS) {
+    $('#' + inp).value = Math.round(INP[key] * k); $('#' + out).textContent = `${Math.round(INP[key] * k)}%`;
+    $('#' + inp).oninput = (e) => { INP[key] = +e.target.value / k; $('#' + out).textContent = `${e.target.value}%`; saveInp(); };
+  }
+  $('#chkThrInv').checked = !!INP.thrInv;
+  $('#chkThrInv').onchange = (e) => { INP.thrInv = e.target.checked; saveInp(); };
+  $('#selThrAx').onchange = (e) => { INP.thrAxis = +e.target.value; saveInp(); };
+  $('#selRudAx').onchange = (e) => { INP.rudAxis = +e.target.value; saveInp(); };
+  let padSig = '';
+  function refreshPadUI() {
+    const gp = firstPad();
+    const sig = gp ? `${gp.id}|${gp.mapping}|${gp.axes.length}` : '';
+    if (gp) {
+      const name = gp.id.replace(/\s*\(.*?\)\s*/g, ' ').trim().slice(0, 48) || 'จอย';
+      $('#padStatus').textContent = gp.mapping === 'standard' ? `เชื่อมต่อ ${name} · ผังปุ่มมาตรฐาน` : `เชื่อมต่อ ${name} · จอยสติ๊กทั่วไป เลือกแกนคันเร่งและหางเสือด้านล่าง`;
+    } else $('#padStatus').textContent = 'ยังไม่พบจอย · เสียบจอยแล้วกดปุ่มใดก็ได้เพื่อเชื่อมต่อ';
+    $('#padAxBlk').hidden = !gp || gp.mapping === 'standard';
+    if (gp && gp.mapping !== 'standard') {
+      if (sig !== padSig) {
+        const opts = ['<option value="-1">ไม่ใช้</option>', ...gp.axes.map((_, i) => `<option value="${i}">แกน ${i}</option>`)].join('');
+        $('#selThrAx').innerHTML = opts; $('#selRudAx').innerHTML = opts;
+        $('#selThrAx').value = String(INP.thrAxis < gp.axes.length ? INP.thrAxis : -1); $('#selRudAx').value = String(INP.rudAxis < gp.axes.length ? INP.rudAxis : -1);
+      }
+      $('#padAxes').textContent = gp.axes.map((v, i) => `${i}:${v >= 0 ? '+' : ''}${v.toFixed(2)}`).join('  ');
+    }
+    padSig = sig;
+  }
+  window.addEventListener('gamepadconnected', (e) => { toast(`เชื่อมต่อจอยแล้ว: ${(e.gamepad.id || '').replace(/\s*\(.*?\)\s*/g, ' ').trim().slice(0, 40)}`); refreshPadUI(); });
+  window.addEventListener('gamepaddisconnected', () => { toast('จอยหลุดการเชื่อมต่อ'); refreshPadUI(); });
   for (const b of $('#segWarp').querySelectorAll('button')) b.onclick = () => { app.train.warp = +b.dataset.w; refreshLive(); };
   const TR_TIMES = [['กลางวัน', 11 * 60], ['เย็น', 17 * 60 + 35], ['กลางคืน', 19 * 60 + 40]];
   for (const [lab, min] of TR_TIMES) {
@@ -268,11 +304,14 @@ async function main() {
     const curMin = localParts(app.date).min;
     for (const b of $('#segTrTime').children) b.setAttribute('aria-pressed', String(Math.abs(+b.dataset.min - curMin) < 1));
     const man = app.train.pilot === 'man';
-    $('#chkAssist').disabled = !man; $('#chkAt').disabled = !man || !app.train.assist;
+    $('#chkAssist').disabled = !man; $('#chkAt').disabled = !man || !app.train.assist; $('#chkTrim').disabled = !man || app.train.assist;
+    for (const b of $('#segSurf').children) b.setAttribute('aria-pressed', String(b.dataset.s === app.train.surface));
+    $('#surfTxt').textContent = { dry: 'ยางเกาะดี เบรกแรงได้ แต่ถ้ากดเบรกตอนปีกยังยกอยู่ล้อจะล็อก', wet: 'แรงเสียดทานลดลงตามความเร็ว (14 CFR 25.109) เบรกแรงล้อล็อกง่าย ระยะเบรกยาวขึ้น', flooded: 'ฝนหนักน้ำขัง ยางเหินน้ำเมื่อเร็วกว่าราว 9√p ≈ 85 kt แทบเบรกไม่ได้จนกว่าจะช้าลง' }[app.train.surface];
     const sc = SCENARIOS[app.train.scn], oat = 31;
     const da = densityAltitudeFt(FIELD.elev, oat);
-    $('#brief').innerHTML = [['Vref', `${AC.Vref} kt`], ['Vapp', `${AC.Vapp} kt`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${oat}°C`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
+    $('#brief').innerHTML = [['Vref', `${AC.Vref} kt`], ['Vapp', `${AC.Vapp} kt`], ['VFE LDG / TO', `${AC.VFE[2]} / ${AC.VFE[1]} kt`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${oat}°C`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
       .map(([k, v]) => `<div><small>${k}</small><b>${v}</b></div>`).join('');
+    refreshPadUI();
   }
   function refreshLive() { for (const b of $('#segWarp').children) b.setAttribute('aria-pressed', String(+b.dataset.w === app.train.warp)); $('#btnTake').textContent = app.flight && app.flight.pilot === 'ap' ? 'รับช่วงบังคับเอง' : 'ให้ออโต้ไพลอตบิน'; }
   function showTrainPane(which) { $('#trSetup').hidden = which !== 'setup'; $('#trLive').hidden = which !== 'fly'; $('#trResult').hidden = which !== 'result'; }
@@ -284,12 +323,13 @@ async function main() {
     const f = new Flight({ wind: { fromDeg: app.wind.fromDeg, kt: app.wind.kt, turb: app.wind.kt > 12 ? 1.1 : 0.5 }, pilot: 'ap', dist: demoFirst ? 1700 : 5600, seed: Math.floor(Math.random() * 1e6) });
     demoFirst = false; return f;
   }
-  function flightOpts() { const sc = SCENARIOS[app.train.scn]; return { wind: sc, dist: app.train.dist, pilot: app.train.pilot, assist: app.train.assist, autoThr: app.train.autoThr, seed: 7 + Math.floor(Math.random() * 1000), oatC: 31, dh: app.train.pilot === 'man' ? 12 : 0, dtl: app.train.pilot === 'man' ? 40 : 0 }; }
+  function flightOpts() { const sc = SCENARIOS[app.train.scn]; return { wind: sc, dist: app.train.dist, pilot: app.train.pilot, assist: app.train.assist, autoThr: app.train.autoThr, autoTrim: app.train.autoTrim, surface: app.train.surface, seed: 7 + Math.floor(Math.random() * 1000), oatC: 31, dh: app.train.pilot === 'man' ? 12 : 0, dtl: app.train.pilot === 'man' ? 40 : 0 }; }
   function previewFlight() { setActiveRunway(app.train.rwy); app.flight = new Flight(flightOpts()); app.train.state = 'setup'; chase.init = false; }
   function startFlight() {
     setActiveRunway(app.train.rwy);
     app.flight = new Flight(flightOpts());
-    Object.assign(app.input, { x: 0, y: 0, rud: 0, thr: app.flight.ac.thr, brake: 0 });
+    Object.assign(app.input, { x: 0, y: 0, rud: 0, thr: app.flight.ac.pcl, brake: 0, brakeL: 0, brakeR: 0, trim: 0, flaps: 2, gear: 1 });
+    for (const k of Object.values(kAx)) k.reset();
     app.train.state = 'fly'; app.train.warp = 1; app.resultShown = false;
     showTrainPane('fly'); refreshLive(); chase.init = false;
     $('#liveEyebrow').textContent = app.flight.pilot === 'ap' ? 'ออโต้ไพลอตกำลังบิน' : (app.flight.opts.assist ? 'บินเอง · มีระบบช่วย' : 'บินเอง · ควบคุมตรง');
@@ -298,7 +338,8 @@ async function main() {
   }
   function updateCtlVisibility() {
     const man = app.mode === 'train' && app.train.state === 'fly' && app.flight && app.flight.pilot === 'man';
-    $('#stick').classList.toggle('on', man); $('#brk').classList.toggle('on', man);
+    $('#stick').classList.toggle('on', man); $('#brk').classList.toggle('on', man); $('#cfg').classList.toggle('on', man);
+    $('#trimBtns').classList.toggle('on', man && !app.flight.opts.assist);
     $('#thr').classList.toggle('on', man && !(app.flight.opts.assist && app.flight.opts.autoThr));
     viewport.classList.toggle('manual', man);
   }
@@ -306,7 +347,14 @@ async function main() {
   $('#btnAgain').onclick = startFlight;
   $('#btnRestart').onclick = startFlight;
   $('#btnSetup').onclick = () => { showTrainPane('setup'); previewFlight(); updateCtlVisibility(); };
-  $('#btnTake').onclick = () => { if (!app.flight) return; const toMan = app.flight.pilot === 'ap'; if (toMan) { app.flight.opts.assist = app.train.assist; app.flight.opts.autoThr = app.train.assist && app.train.autoThr; } app.flight.setPilot(toMan ? 'man' : 'ap'); app.input.thr = app.flight.ac.thr; refreshLive(); updateCtlVisibility(); toast(toMan ? 'คุณบังคับเองแล้ว ตามวงกลมสีชมพูบน HUD เพื่อบินตามแนวร่อน' : 'ออโต้ไพลอตรับช่วงต่อ'); };
+  $('#btnTake').onclick = () => {
+    if (!app.flight) return;
+    const f = app.flight, toMan = f.pilot === 'ap';
+    if (toMan) { f.opts.assist = app.train.assist; f.opts.autoThr = app.train.assist && app.train.autoThr; f.opts.autoTrim = app.train.autoTrim; }
+    f.setPilot(toMan ? 'man' : 'ap');
+    Object.assign(app.input, { thr: f.input.thr, flaps: f.input.flaps, gear: f.input.gear, trim: 0 });
+    refreshLive(); updateCtlVisibility(); toast(toMan ? 'คุณบังคับเองแล้ว ตามวงกลมสีชมพูบน HUD เพื่อบินตามแนวร่อน' : 'ออโต้ไพลอตรับช่วงต่อ และจัดล้อกับแฟลปลงจอดให้');
+  };
   $('#btnReplay').onclick = () => {
     const f = app.flight; if (!f || !f.rec.f.length) return;
     app.train.state = 'replay'; app.replayT = Math.max(0, (f.ev.td ? f.ev.td.t : f.ac.t) - 28); app.replayEnd = f.rec.f[f.rec.f.length - 1].t;
@@ -329,16 +377,41 @@ async function main() {
   $('#btnFs').onclick = () => { viewport.classList.toggle('fs'); $('#btnFs').textContent = viewport.classList.contains('fs') ? 'ออกจากเต็มจอ' : 'เต็มจอ'; };
 
   // ── input: keyboard, touch stick, throttle, brake ──
-  const KEYMAP = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'dn', KeyS: 'dn', ArrowLeft: 'lt', KeyA: 'lt', ArrowRight: 'rt', KeyD: 'rt', KeyQ: 'rl', KeyE: 'rr', ShiftLeft: 'tu', ShiftRight: 'tu', ControlLeft: 'td', ControlRight: 'td', KeyB: 'br' };
+  // Held keys (physical positions, so a Thai keyboard layout works the same). Throttle no longer uses Ctrl:
+  // Ctrl+W, Ctrl+S and similar are browser shortcuts that a page cannot block.
+  const KEYMAP = {
+    ArrowUp: 'up', KeyW: 'up', ArrowDown: 'dn', KeyS: 'dn', ArrowLeft: 'lt', KeyA: 'lt', ArrowRight: 'rt', KeyD: 'rt', KeyQ: 'rl', KeyE: 'rr',
+    ShiftLeft: 'tu', ShiftRight: 'tu', PageUp: 'tu', Equal: 'tu', NumpadAdd: 'tu', KeyZ: 'td', PageDown: 'td', Minus: 'td', NumpadSubtract: 'td',
+    KeyB: 'br', Comma: 'bl', Period: 'bR', BracketLeft: 'tnd', Home: 'tnd', Numpad7: 'tnd', BracketRight: 'tnu', End: 'tnu', Numpad1: 'tnu',
+  };
+  const kAx = { x: new KeyAxis(2.0, 0.10), y: new KeyAxis(1.2, 0.12), r: new KeyAxis(2.0, 0.12) };
+  const manual = () => app.mode === 'train' && app.train.state === 'fly' && app.flight && app.flight.pilot === 'man';
+  function flapStep(d) {
+    if (!manual()) return;
+    const I = app.input, n = clamp((I.flaps ?? 2) + d, 0, AC.flapNotch.length - 1);
+    if (n === I.flaps) return;
+    I.flaps = n; toast(`แฟลป ${AC.flapName[n]} (${AC.flapDeg[n]}°)${AC.VFE[n] < 900 ? ` · VFE ${AC.VFE[n]} kt` : ''}`, 1600);
+  }
+  function gearToggle() {
+    if (!manual()) return;
+    const I = app.input, a = app.flight.ac.air;
+    I.gear = I.gear ? 0 : 1;
+    toast(I.gear ? 'ปล่อยล้อลง' : (a.wow && (a.wow[0] || a.wow[1] || a.wow[2]) ? 'ล้อรับน้ำหนักอยู่ ระบบ squat switch ไม่ให้พับล้อ' : 'พับล้อขึ้น'), 1600);
+  }
+  const cycleCam = () => { const order = ['chase', 'cockpit', 'tower', 'side', 'free']; setTrainCam(order[(order.indexOf(app.trainCam) + 1) % order.length]); };
   window.addEventListener('keydown', (e) => {
     if (e.target && /input|select|textarea/i.test(e.target.tagName)) return;
     const k = KEYMAP[e.code];
-    if (k) { app.keys.add(k); if (app.mode === 'train' && app.train.state === 'fly' && /^Arrow/.test(e.code)) e.preventDefault(); }
+    const flying = app.mode === 'train' && app.train.state === 'fly';
+    if (k) { app.keys.add(k); if (flying && (/^Arrow|^Page|^Home|^End/.test(e.code) || e.code === 'Space')) e.preventDefault(); }
     if (app.mode !== 'train') return;
-    if (e.code === 'KeyC') { const order = ['chase', 'cockpit', 'tower', 'side', 'free']; setTrainCam(order[(order.indexOf(app.trainCam) + 1) % order.length]); }
+    if (e.code === 'KeyC') cycleCam();
     if (e.code === 'KeyT' && app.train.state === 'fly') $('#btnTake').click();
     if (e.code === 'KeyP' && app.train.state === 'fly') { app.train.warp = app.train.warp ? 0 : 1; refreshLive(); }
     if (e.code === 'KeyR' && app.train.state !== 'setup') startFlight();
+    if (!e.repeat && e.code === 'KeyF') flapStep(1);
+    if (!e.repeat && e.code === 'KeyV') flapStep(-1);
+    if (!e.repeat && e.code === 'KeyG') gearToggle();
   });
   window.addEventListener('keyup', (e) => { const k = KEYMAP[e.code]; if (k) app.keys.delete(k); });
   window.addEventListener('blur', () => app.keys.clear());
@@ -356,13 +429,53 @@ async function main() {
   const bb = $('#btnBrake'); let brakeHeld = false;
   bb.addEventListener('pointerdown', (e) => { brakeHeld = true; bb.classList.add('on'); bb.setPointerCapture(e.pointerId); });
   const brUp = () => { brakeHeld = false; bb.classList.remove('on'); }; bb.addEventListener('pointerup', brUp); bb.addEventListener('pointercancel', brUp);
+  $('#btnGear').onclick = gearToggle; $('#btnFlapUp').onclick = () => flapStep(-1); $('#btnFlapDn').onclick = () => flapStep(1);
+  let touchTrim = 0;
+  for (const [id, v] of [['#btnTrimUp', 1], ['#btnTrimDn', -1]]) {
+    const b = $(id), up = () => { touchTrim = 0; b.classList.remove('on'); };
+    b.addEventListener('pointerdown', (e) => { touchTrim = v; b.classList.add('on'); b.setPointerCapture(e.pointerId); });
+    b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up);
+  }
+  // gamepads: the first connected pad; buttons act on their rising edge
+  const firstPad = () => { try { return Array.from(navigator.getGamepads ? navigator.getGamepads() : []).find((g) => g && g.connected) || null; } catch (e) { return null; } };
+  let padPrev = null, padThrLast = null, rumbleAt = 0;
+  function padEvent(ev) {
+    if (ev === 'take') $('#btnTake').click();
+    else if (ev === 'cam') cycleCam();
+    else if (ev === 'gear') gearToggle();
+    else if (ev === 'flapUp') flapStep(-1);
+    else if (ev === 'flapDn') flapStep(1);
+    else if (ev === 'pause') { app.train.warp = app.train.warp ? 0 : 1; refreshLive(); }
+    else if (ev === 'restart') startFlight();
+  }
+  function rumble(strong, weak, ms) {
+    const gp = firstPad(), act = gp && gp.vibrationActuator;
+    if (!act || typeof act.playEffect !== 'function') return;
+    try { act.playEffect('dual-rumble', { duration: ms, strongMagnitude: clamp(strong, 0, 1), weakMagnitude: clamp(weak, 0, 1) }).catch(() => {}); } catch (e) { /* not supported */ }
+  }
   function readInputs(dt) {
-    const K = app.keys, I = app.input, ramp = (v, tgt, r) => v + clamp(tgt - v, -r * dt, r * dt);
-    const kx = (K.has('rt') ? 1 : 0) - (K.has('lt') ? 1 : 0), ky = (K.has('dn') ? 1 : 0) - (K.has('up') ? 1 : 0), kr = (K.has('rr') ? 1 : 0) - (K.has('rl') ? 1 : 0);
-    app._kx = ramp(app._kx || 0, kx, kx ? 2.5 : 5); app._ky = ramp(app._ky || 0, ky, ky ? 2.0 : 5); app._kr = ramp(app._kr || 0, kr, kr ? 2.5 : 5);
-    I.x = touchStick.on ? touchStick.x : app._kx; I.y = touchStick.on ? touchStick.y : app._ky; I.rud = app._kr;
-    if (K.has('tu')) I.thr = clamp(I.thr + 0.35 * dt, 0, 1); if (K.has('td')) I.thr = clamp(I.thr - 0.35 * dt, 0, 1);
-    I.brake = brakeHeld || K.has('br') ? 1 : 0;
+    const K = app.keys, I = app.input;
+    const kx = kAx.x.update(dt, (K.has('rt') ? 1 : 0) - (K.has('lt') ? 1 : 0), INP.sens);
+    const ky = kAx.y.update(dt, (K.has('dn') ? 1 : 0) - (K.has('up') ? 1 : 0), INP.sens);
+    const kr = kAx.r.update(dt, (K.has('rr') ? 1 : 0) - (K.has('rl') ? 1 : 0), INP.sens);
+    const gp = firstPad(), p = gp ? readPad(gp, INP, padPrev) : null;
+    padPrev = p ? p.pressed : null;
+    const ts = { dead: 0.03, expo: INP.expo, sens: INP.sens };
+    I.x = pickInput(kx, touchStick.on ? shapeAxis(touchStick.x, ts) : 0, p ? p.x : 0);
+    I.y = pickInput(ky, touchStick.on ? shapeAxis(touchStick.y, ts) : 0, p ? p.y : 0);
+    I.rud = pickInput(kr, p ? p.rud : 0);
+    // power lever: keys and the pad's right stick move it; a joystick throttle axis sets it when moved
+    let thr = I.thr;
+    if (K.has('tu')) thr += 0.35 * dt;
+    if (K.has('td')) thr -= 0.35 * dt;
+    if (p && p.thrRate) thr += 0.5 * p.thrRate * dt;
+    if (p && p.thrAbs != null && (padThrLast == null || Math.abs(p.thrAbs - padThrLast) > 0.01)) { thr = p.thrAbs; padThrLast = p.thrAbs; }
+    I.thr = clamp(thr, 0, 1);
+    // toe brakes: B or the brake button press both, comma / period one side, analog triggers per side
+    const both = brakeHeld || K.has('br') ? 1 : 0;
+    I.brake = 0; I.brakeL = Math.max(both, K.has('bl') ? 1 : 0, p ? p.brakeL : 0); I.brakeR = Math.max(both, K.has('bR') ? 1 : 0, p ? p.brakeR : 0);
+    I.trim = clamp((K.has('tnu') ? 1 : 0) - (K.has('tnd') ? 1 : 0) + (p ? p.trim : 0) + touchTrim, -1, 1);
+    if (p) for (const ev of p.events) padEvent(ev);
     tknob.style.top = `${(1 - I.thr) * (rail.clientHeight - 26)}px`; $('#thrTxt').textContent = `THR ${Math.round(I.thr * 100)}%`;
   }
 
@@ -406,7 +519,7 @@ async function main() {
     } else {
       $('#scTotal').textContent = sc.total; $('#scTotal').style.color = sc.total >= 75 ? 'var(--good)' : sc.total >= 60 ? 'var(--warn)' : 'var(--bad)';
       $('#scGrade').textContent = f.crashed ? 'เครื่องบินเสียหาย' : sc.grade;
-      $('#scSub').textContent = `จาก 100 คะแนน · ${f.pilot === 'ap' && !f._everMan ? 'ออโต้ไพลอต' : 'บินเอง'} · ${SCENARIOS[app.train.scn].label}`;
+      $('#scSub').textContent = `จาก 100 คะแนน · ${f.pilot === 'ap' && !f._everMan ? 'ออโต้ไพลอต' : 'บินเอง'} · ${SCENARIOS[app.train.scn].label} · ทางวิ่ง${SURFACES[f.surface]}`;
       const P = Object.fromEntries(sc.parts.map((p) => [p.k, p]));
       const stop = f.ev.stopS != null ? f.ev.stopS - td.s : null;
       const rows = [
@@ -418,7 +531,7 @@ async function main() {
       ];
       $('#scRows').innerHTML = rows.map(([n, v, p]) => `<span>${n}</span><em>${v}</em><i>${Math.max(0, p.pts).toFixed(0)}/${p.max}</i><div class="bar"><div style="width:${Math.max(0, p.pts) / p.max * 100}%"></div></div>`).join('')
         + (stop != null ? `<span>ระยะวิ่งจนหยุด</span><em>${fmt(stop)} ม.</em><i></i>` : '')
-        + f.ev.events.map((e) => `<span style="color:var(--warn)">${{ stall: 'มีสัญญาณเตือนสตอล', excursion: 'ออกนอกทางวิ่ง', wingtip: 'ปลายปีกแตะพื้น', crash: 'กระแทกพื้นแรงเกินไป' }[e.k] || e.k}</span><em></em><i></i>`).join('');
+        + f.ev.events.map((e) => `<span style="color:var(--warn)">${EVENT_TEXT[e.k] || e.k}</span><em></em><i></i>`).join('');
     }
     gateRows($('#gatesR'), f, false);
     requestAnimationFrame(() => drawDebrief($('#chart'), f));
@@ -461,10 +574,17 @@ async function main() {
         if (fl.pilot === 'man') { fl._everMan = true; if (fl.opts.autoThr) app.input.thr = fl.input.thr; }
         if (!prevTd && fl.ev.td) { const td = fl.ev.td; toast(`แตะพื้น ${fmt(-td.vsFpm)} fpm · ห่างหัวทางวิ่ง ${fmt(td.s)} ม.`, 3800); }
         if (fl.ev.lastCallout && fl.ev.lastCallout !== prevCall && app.trainCam !== 'free') callout(CALL_TXT[fl.ev.lastCallout.v] || fl.ev.lastCallout.v, false, 900);
-        const a = fl.ac.air;
-        if (!a.onGround && a.ias > 40 * KT && a.alpha > (AC.aStall + AC.aStallFlap * fl.ac.flaps - 4) * DEG) callout('STALL', true, 400);
+        const a = fl.ac.air, ias = a.ias / KT;
+        if (!a.onGround && a.ias > 40 * KT && (a.buffet > 0.3 || a.alpha > (AC.aStall + AC.aStallFlap * fl.ac.flaps - 4) * DEG)) callout('STALL', true, 400);
+        else if (!a.onGround && (ias > vfeFor(fl.ac.flaps) + 2 || (fl.ac.gearPos > 0.02 && ias > AC.VLE + 2))) callout('OVERSPEED', true, 400);
+        else if (!a.onGround && fl.ac.gearPos < 0.98 && a.hWheel / FT < 500 && a.vs < -1.5) callout('TOO LOW · GEAR', true, 400);
         else if (!a.onGround && a.h < 300 && a.vs / FT * 60 < -1200) callout('SINK RATE', true, 400);
         else if (!a.onGround && a.h < 300 && a.h > 15 && a.gsDots < -1.6 && a.s < 0) callout('GLIDESLOPE', true, 400);
+        const locked = a.lock[1] || a.lock[2];
+        if (locked && !app._locked && fl.pilot === 'man') toast(app.flight.surface === 'dry' ? 'ล้อล็อก! ผ่อนเบรกให้ล้อหมุนกลับ' : 'ล้อล็อกบนทางวิ่งเปียก! ผ่อนเบรก', 1800);
+        app._locked = locked;
+        if (!prevTd && fl.ev.td) rumble(0.8, 0.5, 160);
+        if (a.buffet > 0.05 && now > rumbleAt) { rumbleAt = now + 110; rumble(0.25 + 0.6 * a.buffet, 0.6 * a.buffet, 120); }
         if ((fl.finishedAt != null && fl.ac.t - fl.finishedAt > 2.5) || (fl.crashed && !app.resultShown)) { if (!app.resultShown) { app.resultShown = true; showResult(); } }
       } else if (app.train.state === 'replay') {
         app.replayT += dt; recF = fl.rec.at(app.replayT);
@@ -473,7 +593,7 @@ async function main() {
       running = !fl.ev.done || fl.ac.thr > 0.06;
     }
     // aircraft pose
-    if (recF) poseFrom([recF.n, recF.e, recF.d], recF.q, { de: recF.de, da: recF.da, dr: recF.dr, flaps: recF.fl, gearPos: recF.gr, steer: 0 }, dt, true);
+    if (recF) poseFrom([recF.n, recF.e, recF.d], recF.q, { de: recF.de, da: recF.da, dr: recF.dr, flaps: recF.fl, gearPos: recF.gr, steer: recF.st || 0 }, dt, true);
     else if (fl) { const ac = fl.ac; poseFrom(ac.x, [ac.x[6], ac.x[7], ac.x[8], ac.x[9]], { de: ac.de, da: ac.da, dr: ac.dr, flaps: ac.flaps, gearPos: ac.gearPos, steer: ac.steer }, dt, running); }
     ac3.group.updateMatrixWorld(true);
     const acPos = ac3.group.position;
@@ -510,6 +630,12 @@ async function main() {
       } else if (cam === 'side') {
         const p = rw(560, -78, 2.2); camera.position.copy(p); const dist = p.distanceTo(acPos);
         camera.lookAt(acPos); camera.fov = clamp(2 * Math.atan(20 / Math.max(dist, 1)) * RAD, 3, 55);
+      }
+      // stall buffet shakes the view (cockpit strongest); nothing for reduced motion
+      const buf = !recF && fl ? fl.ac.air.buffet || 0 : 0;
+      if (buf > 0 && !reduceMotion && (cam === 'cockpit' || cam === 'chase')) {
+        const n = fl.ac.bufN, k = (cam === 'cockpit' ? 0.45 : 0.18) * DEG * buf;
+        camera.rotateX(n[1] * k); camera.rotateZ(n[2] * k * 0.6); camera.rotateY(n[0] * k * 0.4);
       }
       camera.updateProjectionMatrix();
     }
@@ -563,7 +689,12 @@ async function main() {
     if (app.mode === 'train' && fl) {
       const showAc = recF ? null : fl;
       if (showAc && app.trainCam === 'cockpit' && app.train.state !== 'setup') drawHUD(hctx, hud.width, hud.height, dpr, camera, fl, fl.pilot === 'man' ? fl.ap.guidance() : null);
-      else if (showAc) { const e = new THREE.Vector3(0.95, 0.97, 0).applyMatrix4(ac3.group.matrixWorld); const ex = -e.z, ee = e.x; drawILSWidget(hctx, hud.width - 182 * dpr, 50 * dpr, dpr, fl, papiSeen(ex, ee, e.y)); }
+      else if (showAc) {
+        // on short screens in manual flight the controls take the right edge: draw the widget left of them
+        const shift = H < 460 && viewport.classList.contains('manual') ? 332 : 182;
+        const e = new THREE.Vector3(0.95, 0.97, 0).applyMatrix4(ac3.group.matrixWorld); const ex = -e.z, ee = e.x;
+        drawILSWidget(hctx, hud.width - shift * dpr, 50 * dpr, dpr, fl, papiSeen(ex, ee, e.y));
+      }
     }
     if (performance.now() > calloutUntil) $('#callout').classList.remove('on');
     // DOM readouts at 10 Hz
@@ -575,12 +706,18 @@ async function main() {
       $('#iAlt').textContent = fmt(Math.max(0, a.hWheel / FT)); $('#iVs').textContent = `${a.vs >= 0 ? '+' : ''}${fmt(a.vs / FT * 60)}`;
       $('#iHdg').textContent = String(Math.round(wrap360(a.psi * RAD))).padStart(3, '0');
       $('#iDist').textContent = a.s < 0 ? `${(-a.s / NM).toFixed(1)} nm` : `+${fmt(a.s)} ม.`;
+      const ac = fl.ac, fi = flapIndex(ac.flaps), fMoving = Math.abs(ac.flaps - ac.cmd.flaps) > 0.01;
+      $('#iTrq').textContent = fmt(ac.thr * 100); $('#iTrq').className = ac.eng.ng < Turboprop.ngFor(ac.pcl) - 1.5 ? 'am' : '';
+      const fl8 = $('#iFlap'); fl8.textContent = fMoving ? `→${AC.flapName[flapIndex(ac.cmd.flaps)]}` : AC.flapName[fi]; fl8.className = 'sm ' + (fMoving ? 'am' : a.ias / KT > vfeFor(ac.flaps) ? 'bad' : '');
+      const gr = $('#iGear'); gr.textContent = ac.gearPos > 0.98 ? 'DN ●●●' : ac.gearPos < 0.02 ? 'UP' : 'TRANS'; gr.className = 'sm ' + (ac.gearPos > 0.98 ? 'ok' : ac.gearPos < 0.02 ? '' : 'bad');
+      const td8 = -ac.trim * RAD; $('#iTrim').textContent = `${td8 >= 0 ? '▲' : '▼'}${Math.abs(td8).toFixed(1)}°`;
       const wm = fl.ac.wind.mean(Math.max(a.h, 1)); const wdir = wrap360(Math.atan2(-wm[1], -wm[0]) * RAD), wkt = Math.hypot(wm[0], wm[1]) / KT;
       $('#iWind').textContent = wkt < 0.5 ? 'สงบ' : `${String(Math.round(wdir / 10) * 10 % 360).padStart(3, '0')}/${fmt(wkt)}`;
       const ph = fl.phase();
       const fma = fl.pilot === 'ap'
         ? [['A/P', ''], ph === 'APP' ? ['LOC', ''] : ['', ''], ph === 'APP' ? ['G/S', ''] : ph === 'FLARE' ? ['FLARE', ''] : ['ROLLOUT', ''], ['SPD ' + AC.Vapp, 'c']]
-        : [['MAN', 'w'], [fl.opts.assist ? 'ASSIST' : 'DIRECT', 'a'], [fl.opts.autoThr ? 'A/THR SPD ' + AC.Vapp : `THR ${Math.round(fl.ac.thr * 100)}%`, fl.opts.autoThr ? 'c' : 'w'], ['FD', 'c']];
+        : [['MAN', 'w'], [fl.opts.assist ? 'ASSIST' : fl.opts.autoTrim ? 'DIRECT · A/TRIM' : 'DIRECT', 'a'], [fl.opts.autoThr ? 'A/THR SPD ' + AC.Vapp : `TRQ ${Math.round(fl.ac.thr * 100)}%`, fl.opts.autoThr ? 'c' : 'w'], ['FD', 'c']];
+      if (fl.ac.brake > 0.05) fma.push([a.lock[1] || a.lock[2] ? 'SKID' : 'BRK', a.lock[1] || a.lock[2] ? 'a' : 'w']);
       $('#fma').innerHTML = fma.filter(([t]) => t).map(([t, c]) => `<span class="${c}">${t}</span>`).join('');
       if (app.train.state === 'fly') {
         gateRows($('#gates'), fl, true);
@@ -588,7 +725,7 @@ async function main() {
         const nW = pw.filter((v) => v > 0.5).length;
         $('#papiTxt').textContent = pw[0] < 0 ? 'ผ่านตำแหน่ง PAPI แล้ว' : `ขาว ${nW} แดง ${4 - nW} · ${['ต่ำมาก', 'ต่ำเล็กน้อย', 'อยู่บนแนวร่อน', 'สูงเล็กน้อย', 'สูงมาก'][nW]}`;
         $('#liveTitle').textContent = { APP: `ร่อนเข้าหาทางวิ่ง ${FIELD.rwy}`, FLARE: 'ถอนคันบังคับก่อนแตะพื้น', ROLLOUT: 'วิ่งบนทางวิ่งและเบรก', DONE: 'หยุดเรียบร้อย', STOP: 'หยุดเรียบร้อย', CRASH: 'เครื่องบินกระแทกพื้น' }[ph] || 'กำลังบิน';
-        $('#liveLede').textContent = fl.pilot === 'ap' ? 'ออโต้ไพลอตบินตามสัญญาณ ILS ถอนคันบังคับที่ราว 20 ฟุต จัดหัวให้ตรงทางวิ่งก่อนแตะพื้น แล้วเบรกจนหยุด' : (isTouch ? 'ลากคันบังคับซ้ายล่าง: ซ้าย/ขวาเพื่อเอียง ลงเพื่อเงยหัว ขึ้นเพื่อกดหัว' : 'ใช้ลูกศรบังคับ ↑ กดหัว ↓ เงยหัว ←/→ เอียง') + ' · พาวงกลมเส้นทางบินไปทับวงกลมสีชมพูในมุมห้องนักบิน';
+        $('#liveLede').textContent = fl.pilot === 'ap' ? 'ออโต้ไพลอตบินตามสัญญาณ ILS ถอนคันบังคับที่ราว 20 ฟุต ลดปีกด้านเหนือลมและจัดหัวให้ตรงทางวิ่งก่อนแตะพื้น แล้วเบรกโดยไม่ให้ล้อล็อกจนหยุด' : (isTouch ? 'ลากคันบังคับซ้ายล่าง: ซ้าย/ขวาเพื่อเอียง ลงเพื่อเงยหัว ขึ้นเพื่อกดหัว' : 'กดค้างนานยิ่งโยกมาก ↑ กดหัว ↓ เงยหัว ←/→ เอียง · [ ] ทริม · F/V แฟลป · G ล้อ') + ' · พาวงกลมเส้นทางบินไปทับวงกลมสีชมพูในมุมห้องนักบิน · เพิ่มกำลังแรงๆ จะเงยและหันซ้าย ใช้หางเสือขวาช่วย';
       }
     }
     if (firstFrame) { firstFrame = false; $('#loading').classList.add('done'); }
