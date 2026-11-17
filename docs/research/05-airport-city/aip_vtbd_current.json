@@ -1,0 +1,625 @@
+{
+ "aip_vtbd_current": {
+  "meta": {
+   "airac_effective": "2026-10-29",
+   "amdt": "AIRAC AIP AMDT 11/26",
+   "published": "2026-09-17",
+   "baseline_compared": "2026-05-14 (AMDT 05/26)",
+   "next_issues": [
+    {
+     "effective": "2026-11-26",
+     "amdt": "12/26",
+     "vtbd_changes": "none",
+     "src": "A7"
+    },
+    {
+     "effective": "2026-12-24",
+     "amdt": "13/26 (inferred), published 2026-11-12",
+     "vtbd_changes": "not verified",
+     "src": "A1"
+    }
+   ],
+   "frame": "local [e, n] metres from ARP 13 54 51.74N 100 36 20.49E (AIRAC 14 MAY 2026 precise value), repo projection src/15-geo.js"
+  },
+  "arp": {
+   "published_current": {
+    "dms": "135452N 1003620E",
+    "lat": 13.91444444,
+    "lon": 100.60555556,
+    "en": [
+     -14.7,
+     8.0
+    ],
+    "src": "A2",
+    "conf": "high",
+    "note": "rounded to whole seconds in AMDT 11/26"
+   },
+   "precise_20260514": {
+    "dms": "135451.74N 1003620.49E",
+    "lat": 13.91437222,
+    "lon": 100.60569167,
+    "en": [
+     0.0,
+     0.0
+    ],
+    "src": "A3",
+    "conf": "high"
+   },
+   "site": "centre line RWY 03L/21R, 1510 m from THR RWY 21R",
+   "src": "A2"
+  },
+  "elevation": {
+   "current_m": 3,
+   "current_ft": 9,
+   "precise_20260514_m": 2.65,
+   "src": [
+    "A2",
+    "A3"
+   ]
+  },
+  "ref_temp_c": 32.6,
+  "geoid_undulation_m": null,
+  "magvar": {
+   "pub_deg": -0.7167,
+   "pub_text": "0 43 W (2025)",
+   "annual_change_deg_per_yr": 0.0333,
+   "annual_text": "0 02 E",
+   "src": "A2",
+   "wmm2025_deg": {
+    "2025.0": -0.724,
+    "2026.88": -0.668
+   },
+   "wmm_src": "A14"
+  },
+  "runways": {
+   "03L/21R": {
+    "len_m": 3700,
+    "wid_m": 60,
+    "surface": "asphalt; concrete 217 m from THR 03L end and 122 m from THR 21R end",
+    "pcr": "PCR 1200/R/C/W/T (asphalt); PCR 670/R/B/W/T (concrete ends)",
+    "strip_m": [
+     3820,
+     260
+    ],
+    "cwy_m": [
+     150,
+     150
+    ],
+    "swy": "NIL",
+    "resa_m": {
+     "03L": [
+      240,
+      120
+     ],
+     "21R": [
+      240,
+      110
+     ]
+    },
+    "slope": {
+     "03L": "-0.05% 350 m, 0% 2850 m, -0.05% 500 m",
+     "21R": "+0.056% 500 m, 0% 2850 m, -0.05% 350 m"
+    },
+    "rcl": "3700 m, 30 m, white; red/white from 2800 m; red from 3400 m; LIH",
+    "redl": "3700 m, 60 m, white; yellow last 600 m; LIH"
+   },
+   "03R/21L": {
+    "len_m": 3500,
+    "wid_m": 45,
+    "surface": "asphalt",
+    "pcr": "PCR 1000/F/C/X/T",
+    "strip_m": [
+     3620,
+     160
+    ],
+    "cwy_m": [
+     150,
+     150
+    ],
+    "swy": "NIL",
+    "resa_m": {
+     "03R": [
+      90,
+      90
+     ],
+     "21L": [
+      240,
+      90
+     ]
+    },
+    "slope": {
+     "03R": "+0.03% 2000 m, -0.036% 1500 m",
+     "21L": "+0.036% 1500 m, -0.03% 2000 m"
+    },
+    "rcl": "NIL",
+    "redl_03R": "3500 m, 60 m, white; yellow last 600 m; LIH",
+    "redl_21L": "3500 m, 60 m; red first 350 m (displaced part), white 350-2900 m, yellow from 2900 m; LIH"
+   }
+  },
+  "ends": {
+   "03L": {
+    "thr": {
+     "dms": "135349.24N 1003545.38E",
+     "lat": 13.89701111,
+     "lon": 100.59593889,
+     "en": [
+      -1054.0,
+      -1920.8
+     ],
+     "src": "A2",
+     "conf": "high"
+    },
+    "true_brg_pub": 29.0,
+    "true_brg_from_coords": 28.713,
+    "thr_to_opp_thr_m": 3701.54,
+    "thr_elev_m": 2.0,
+    "thr_elev_m_20260514": 2.0,
+    "thr_elev_ft": 7,
+    "declared": {
+     "tora": 3700,
+     "toda": 3850,
+     "asda": 3700,
+     "lda": 3700,
+     "src": "A2"
+    },
+    "disp_m": 0,
+    "als": {
+     "type": "SALS",
+     "len_m": 420,
+     "intensity": "LIH",
+     "src": "A2"
+    },
+    "tdz_lgt_m": 0,
+    "papi": {
+     "side": "both",
+     "angle_deg": 3.0,
+     "meht_ft": 71.85,
+     "meht_m": 21.9,
+     "dist_from_thr_est_m": {
+      "at_2deg50": 442.5,
+      "at_3deg": 417.9
+     },
+     "est_note": "distance not published in AD 2.14; derived from MEHT",
+     "src": "A2",
+     "conf": "high (MEHT), low (distance, est)"
+    },
+    "approach": {
+     "kind": "ILS",
+     "cat": "I",
+     "ident": "IBKD",
+     "loc_mhz": 109.7,
+     "gp_mhz": 333.2,
+     "dme_ch": "34X",
+     "gp_deg": 3.0,
+     "rdh_ft": 55,
+     "loc_course_width_deg": 3.0,
+     "loc": {
+      "dms": "135543.8N 1003649.7E",
+      "lat": 13.92883333,
+      "lon": 100.61380556,
+      "en": [
+       876.9,
+       1600.0
+      ],
+      "src": "A4",
+      "conf": "high"
+     },
+     "gp": {
+      "dms": "135356.4N 1003554.0E",
+      "lat": 13.899,
+      "lon": 100.59833333,
+      "en": [
+       -795.2,
+       -1700.8
+      ],
+      "src": "A4",
+      "conf": "high"
+     },
+     "dme": {
+      "dms": "135544.8N 1003647.5E",
+      "lat": 13.92911111,
+      "lon": 100.61319444,
+      "en": [
+       810.9,
+       1630.7
+      ],
+      "src": "A4",
+      "conf": "high"
+     },
+     "dme_colocated": "LOC",
+     "remarks": "coverage 9 DME (IBKD) up to 6000 ft AMSL; GP unusable beyond 6 deg right of LOC course",
+     "rdh_m": 16.76,
+     "gp_origin_from_thr_m": 319.9,
+     "src": "A4"
+    }
+   },
+   "21R": {
+    "thr": {
+     "dms": "135534.87N 1003644.62E",
+     "lat": 13.92635278,
+     "lon": 100.61239444,
+     "en": [
+      724.4,
+      1325.5
+     ],
+     "src": "A2",
+     "conf": "high"
+    },
+    "true_brg_pub": 209.0,
+    "true_brg_from_coords": 208.717,
+    "thr_to_opp_thr_m": 3701.54,
+    "thr_elev_m": 2.0,
+    "thr_elev_m_20260514": 2.0,
+    "thr_elev_ft": 7,
+    "declared": {
+     "tora": 3700,
+     "toda": 3850,
+     "asda": 3700,
+     "lda": 3700,
+     "src": "A2"
+    },
+    "disp_m": 0,
+    "als": {
+     "type": "CAT II",
+     "len_m": 900,
+     "intensity": "LIH",
+     "flg": true,
+     "src": "A2"
+    },
+    "tdz_lgt_m": 900,
+    "papi": {
+     "side": "both",
+     "angle_deg": 3.0,
+     "meht_ft": 65.42,
+     "meht_m": 19.94,
+     "dist_from_thr_est_m": {
+      "at_2deg50": 402.9,
+      "at_3deg": 380.5
+     },
+     "est_note": "distance not published in AD 2.14; derived from MEHT",
+     "src": "A2",
+     "conf": "high (MEHT), low (distance, est)"
+    },
+    "approach": {
+     "kind": "ILS",
+     "cat": "II",
+     "ident": "IBKK",
+     "loc_mhz": 109.3,
+     "gp_mhz": 332.0,
+     "dme_ch": "30X",
+     "gp_deg": 3.0,
+     "rdh_ft": 54,
+     "rdh_m": 16.46,
+     "loc_course_width_deg": 3.0,
+     "loc": {
+      "dms": "135340.6N 1003540.6E",
+      "lat": 13.89461111,
+      "lon": 100.59461111,
+      "en": [
+       -1197.5,
+       -2186.3
+      ],
+      "src": "A4",
+      "conf": "high"
+     },
+     "gp": {
+      "dms": "135523.4N 1003642.8E",
+      "lat": 13.92316667,
+      "lon": 100.61188889,
+      "en": [
+       669.8,
+       973.0
+      ],
+      "src": "A4",
+      "conf": "high"
+     },
+     "dme": {
+      "dms": "135523.4N 1003642.8E",
+      "lat": 13.92316667,
+      "lon": 100.61188889,
+      "en": [
+       669.8,
+       973.0
+      ],
+      "src": "A4",
+      "conf": "high"
+     },
+     "dme_colocated": "GP",
+     "pub_loc_from_opp_thr_m": 300,
+     "pub_gp_from_thr_m": 333,
+     "pub_gp_offset_m": 120,
+     "gp_origin_from_thr_m": 314.1,
+     "src": "A4"
+    }
+   },
+   "03R": {
+    "thr": {
+     "dms": "135358.45N 1003605.50E",
+     "lat": 13.89956944,
+     "lon": 100.60152778,
+     "en": [
+      -450.0,
+      -1637.8
+     ],
+     "src": "A2",
+     "conf": "high"
+    },
+    "true_brg_pub": 28.0,
+    "true_brg_from_coords": 28.744,
+    "thr_to_opp_thr_m": 3150.53,
+    "thr_elev_m": 1.0,
+    "thr_elev_m_20260514": 1.49,
+    "thr_elev_ft": 5,
+    "declared": {
+     "tora": 3500,
+     "toda": 3650,
+     "asda": 3500,
+     "lda": 3500,
+     "src": "A2"
+    },
+    "disp_m": 0,
+    "als": {
+     "type": "SALS (5 BAR)",
+     "len_m": 300,
+     "intensity": "LIH",
+     "src": "A2"
+    },
+    "tdz_lgt_m": 0,
+    "papi": {
+     "side": "both",
+     "angle_deg": 3.0,
+     "meht_ft": 63.35,
+     "meht_m": 19.31,
+     "dist_from_thr_est_m": {
+      "at_2deg50": 390.2,
+      "at_3deg": 368.4
+     },
+     "est_note": "distance not published in AD 2.14; derived from MEHT",
+     "src": "A2",
+     "conf": "high (MEHT), low (distance, est)"
+    },
+    "approach": {
+     "kind": "RNP",
+     "note": "no ILS for 03R in AD 2.19; repo assumes TCH 50 ft (not published in AD 2.19)",
+     "tch_ft_assumed": 50,
+     "src": "repo"
+    }
+   },
+   "21L": {
+    "thr": {
+     "dms": "135528.33N 1003655.97E",
+     "lat": 13.92453611,
+     "lon": 100.61554722,
+     "en": [
+      1065.1,
+      1124.5
+     ],
+     "src": "A2",
+     "conf": "high"
+    },
+    "true_brg_pub": 208.0,
+    "true_brg_from_coords": 208.747,
+    "thr_to_opp_thr_m": 3150.53,
+    "thr_elev_m": 1.9,
+    "thr_elev_m_20260514": 1.92,
+    "thr_elev_ft": 6.3,
+    "declared": {
+     "tora": 3500,
+     "toda": 3650,
+     "asda": 3500,
+     "lda": 3150,
+     "src": "A2"
+    },
+    "disp_m": 350,
+    "als": {
+     "type": "CAT I",
+     "len_m": 900,
+     "intensity": "LIH",
+     "flg": true,
+     "src": "A2"
+    },
+    "tdz_lgt_m": 0,
+    "papi": {
+     "side": "both",
+     "angle_deg": 3.0,
+     "meht_ft": 63.81,
+     "meht_m": 19.45,
+     "dist_from_thr_est_m": {
+      "at_2deg50": 393.0,
+      "at_3deg": 371.1
+     },
+     "est_note": "distance not published in AD 2.14; derived from MEHT",
+     "src": "A2",
+     "conf": "high (MEHT), low (distance, est)"
+    },
+    "approach": {
+     "kind": "ILS",
+     "cat": "I",
+     "ident": "IDMG",
+     "loc_mhz": 110.3,
+     "gp_mhz": 335.0,
+     "dme_ch": "40X",
+     "gp_deg": 3.0,
+     "rdh_ft": 53,
+     "loc_course_width_deg": 3.6,
+     "loc": {
+      "dms": "135351.8N 1003601.8E",
+      "lat": 13.89772222,
+      "lon": 100.6005,
+      "en": [
+       -561.1,
+       -1842.1
+      ],
+      "src": "A4",
+      "conf": "high"
+     },
+     "gp": {
+      "dms": "135521.2N 1003647.4E",
+      "lat": 13.92255556,
+      "lon": 100.61316667,
+      "en": [
+       807.9,
+       905.4
+      ],
+      "src": "A4",
+      "conf": "high"
+     },
+     "dme": {
+      "dms": "135521.2N 1003647.4E",
+      "lat": 13.92255556,
+      "lon": 100.61316667,
+      "en": [
+       807.9,
+       905.4
+      ],
+      "src": "A4",
+      "conf": "high"
+     },
+     "dme_colocated": "GP",
+     "pub_loc_from_opp_thr_m": 225,
+     "pub_gp_from_thr_m": 320,
+     "pub_gp_offset_m": 120,
+     "rdh_m": 16.15,
+     "gp_origin_from_thr_m": 308.2,
+     "src": "A4"
+    },
+    "thr_elev_ft_20260514": 6.4
+   }
+  },
+  "navaids": {
+   "DVOR/DME BKK": {
+    "dms": "135336.7N 1003546.3E",
+    "lat": 13.89352778,
+    "lon": 100.59619444,
+    "en": [
+     -1026.4,
+     -2306.2
+    ],
+    "src": "A4",
+    "conf": "high",
+    "vor_mhz": 117.7,
+    "dme_ch": "124X",
+    "hours": "H24",
+    "dme_elev": "published 0 m (0 ft) in 2026 issues; 16.58 m in 2021 issue (A13)",
+    "coverage_note": "radial 321-030: not below 2500 ft; 031-060: 4000 ft; 061-120: 3000 ft; 121-320: 4000 ft (at 40 NM)"
+   }
+  },
+  "atz": {
+   "name": "Don Mueang ATZ",
+   "centre": "135452N 1003620E",
+   "radius_nm": 5,
+   "radius_m": 9260,
+   "upper_ft_agl": 2000,
+   "class": "C",
+   "transition_alt_ft": 11000,
+   "src": "A2"
+  },
+  "obstacles_ad2_10": [
+   {
+    "dms": "135307.9N 1003351.1E",
+    "lat": 13.88552778,
+    "lon": 100.56419444,
+    "en": [
+     -4484.8,
+     -3191.3
+    ],
+    "src": "A2",
+    "conf": "high",
+    "type": "radio mast",
+    "hgt_m": 70,
+    "lgt": true,
+    "marked": true
+   },
+   {
+    "dms": "135453.0N 1003709.8E",
+    "lat": 13.91472222,
+    "lon": 100.61938889,
+    "en": [
+     1480.3,
+     38.7
+    ],
+    "src": "A2",
+    "conf": "high",
+    "type": "radio mast",
+    "hgt_m": 61,
+    "lgt": true,
+    "marked": true
+   },
+   {
+    "dms": "135339.0N 1003341.6E",
+    "lat": 13.89416667,
+    "lon": 100.56155556,
+    "en": [
+     -4770.0,
+     -2235.5
+    ],
+    "src": "A2",
+    "conf": "high",
+    "type": "building",
+    "hgt_m": 78,
+    "lgt": true,
+    "marked": true
+   },
+   {
+    "dms": "135212.8N 1003403.1E",
+    "lat": 13.87022222,
+    "lon": 100.56752778,
+    "en": [
+     -4124.5,
+     -4884.7
+    ],
+    "src": "A2",
+    "conf": "high",
+    "type": "building",
+    "hgt_m": 87,
+    "hgt_m_20260514": 87.1,
+    "lgt": true,
+    "marked": false
+   },
+   {
+    "dms": "135711.1N 1003715.0E",
+    "lat": 13.95308333,
+    "lon": 100.62083333,
+    "en": [
+     1636.4,
+     4282.9
+    ],
+    "src": "A2",
+    "conf": "high",
+    "type": "building",
+    "hgt_m": 50,
+    "lgt": true,
+    "marked": false
+   }
+  ],
+  "comms_ad2_18": {
+   "TWR": [
+    118.1,
+    236.6
+   ],
+   "GND": [
+    121.9,
+    122.5,
+    257.8
+   ],
+   "DEL": [
+    127.7
+   ],
+   "APP_DMK": [
+    119.4
+   ],
+   "ARR_DMK": [
+    133.0
+   ],
+   "ATIS": [
+    126.4,
+    118.55
+   ],
+   "emergency": [
+    121.5,
+    243.0
+   ],
+   "src": "A4"
+  }
+ }
+}

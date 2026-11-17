@@ -1,0 +1,978 @@
+{
+ "traffic": {
+  "basis": "AOT FY2025 (Oct 2024-Sep 2025)",
+  "src": [
+   "G6",
+   "G7"
+  ],
+  "annual_movements": 213694,
+  "annual_movements_intl": 88737,
+  "annual_movements_dom": 124957,
+  "annual_passengers": 31337658,
+  "lcc_movements": 199511,
+  "cy2025_movements": 214723,
+  "cy2024_movements": 205681,
+  "daily_mean": 585.5,
+  "intl_share": 0.4153,
+  "lcc_share": 0.9336,
+  "pax_per_movement": 146.6,
+  "peak_day_factor": {
+   "value": 1.12,
+   "src": [
+    "G20",
+    "G21",
+    "G6"
+   ],
+   "conf": "med",
+   "est": true
+  },
+  "scenario_2026_factor": {
+   "value": 0.83,
+   "note": "Sep 2026 movements -16.9 % YoY",
+   "src": [
+    "G22"
+   ],
+   "conf": "low",
+   "est": true
+  },
+  "declared_capacity_per_hour_utc": [
+   {
+    "from": "00:00",
+    "to": "03:59",
+    "value": 45
+   },
+   {
+    "from": "04:00",
+    "to": "09:59",
+    "value": 50
+   },
+   {
+    "from": "10:00",
+    "to": "23:59",
+    "value": 53
+   }
+  ],
+  "declared_capacity_src": [
+   "G37"
+  ],
+  "declared_capacity_season": "W24 (27 Oct 2024 - 29 Mar 2025)",
+  "declared_capacity_conf": "med-high",
+  "declared_capacity_w22": [
+   {
+    "from": "00:00",
+    "to": "03:59",
+    "value": 40
+   },
+   {
+    "from": "04:00",
+    "to": "09:59",
+    "value": 45
+   }
+  ],
+  "declared_capacity_w22_src": [
+   "G14"
+  ],
+  "check_capacity_per_hour": 40,
+  "check_capacity_note": "conservative: W22 lower band; lowest W24 band is 45",
+  "physical_capacity_per_hour": {
+   "value": 55,
+   "src": [
+    "G18"
+   ],
+   "conf": "med"
+  },
+  "hours_local": "UTC+7",
+  "hourly_weights": [
+   0.0249,
+   0.0153,
+   0.0096,
+   0.0077,
+   0.0096,
+   0.0249,
+   0.0517,
+   0.0566,
+   0.0536,
+   0.0536,
+   0.0556,
+   0.0517,
+   0.0479,
+   0.0479,
+   0.0498,
+   0.0527,
+   0.0546,
+   0.0556,
+   0.0536,
+   0.0517,
+   0.0498,
+   0.0469,
+   0.0421,
+   0.0326
+  ],
+  "hourly_weights_conf": "low",
+  "hourly_weights_est": true,
+  "hourly_weights_src": [
+   "G20",
+   "G21",
+   "G14"
+  ],
+  "hourly_departure_share": [
+   0.45,
+   0.45,
+   0.5,
+   0.5,
+   0.6,
+   0.75,
+   0.7,
+   0.6,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.45,
+   0.4,
+   0.35,
+   0.35
+  ],
+  "fleet_mix": {
+   "A320": 0.4003,
+   "B738": 0.3038,
+   "A20N": 0.1004,
+   "B739": 0.0772,
+   "A21N": 0.0633,
+   "A333": 0.027,
+   "BIZJ": 0.014,
+   "AT76": 0.0105,
+   "B38M": 0.0035
+  },
+  "fleet_mix_conf": "low",
+  "fleet_mix_est": true,
+  "fleet_mix_src": [
+   "G26",
+   "G27",
+   "G28",
+   "G25",
+   "G6",
+   "G7"
+  ],
+  "seats": {
+   "A320": 180,
+   "A20N": 186,
+   "A21N": 236,
+   "B738": 189,
+   "B739": 215,
+   "B38M": 189,
+   "A333": 377,
+   "AT76": 70,
+   "BIZJ": 12
+  },
+  "seats_src": {
+   "A320": "G26",
+   "A20N": "G26",
+   "A21N": "G26",
+   "B738": "G27",
+   "B739": "G27",
+   "B38M": "est",
+   "A333": "est",
+   "AT76": "est",
+   "BIZJ": "est"
+  },
+  "state_share": {
+   "value": 0.02,
+   "runway": "03R/21L",
+   "conf": "low",
+   "est": true
+  },
+  "airlines": [
+   {
+    "iata": "FD",
+    "icao": "AIQ",
+    "name": "Thai AirAsia",
+    "status": "main base, HQ",
+    "share": 0.48,
+    "types": {
+     "A320": 0.71,
+     "A20N": 0.18,
+     "A21N": 0.11
+    },
+    "src": [
+     "G26",
+     "G25",
+     "G33",
+     "G34"
+    ]
+   },
+   {
+    "iata": "SL",
+    "icao": "TLM",
+    "name": "Thai Lion Air",
+    "status": "main base",
+    "share": 0.27,
+    "types": {
+     "B738": 0.714,
+     "B739": 0.286
+    },
+    "src": [
+     "G27",
+     "G25"
+    ]
+   },
+   {
+    "iata": "DD",
+    "icao": "NOK",
+    "name": "Nok Air",
+    "status": "main base",
+    "share": 0.09,
+    "types": {
+     "B738": 1.0
+    },
+    "src": [
+     "G28",
+     "G25"
+    ]
+   },
+   {
+    "iata": "XJ",
+    "icao": "TAX",
+    "name": "Thai AirAsia X",
+    "status": "base (long-haul)",
+    "share": 0.02,
+    "types": {
+     "A333": 1.0
+    },
+    "src": [
+     "G25"
+    ]
+   },
+   {
+    "iata": "*",
+    "name": "foreign LCC (AK, QZ, Z2, OD, ID, 5J, QG, FZ, 9C, 8M)",
+    "status": "foreign",
+    "share": 0.07,
+    "types": {
+     "A320": 0.55,
+     "A20N": 0.15,
+     "A21N": 0.1,
+     "B738": 0.15,
+     "B38M": 0.05
+    },
+    "src": [
+     "G25"
+    ]
+   },
+   {
+    "iata": "*",
+    "name": "other (full service, charter, business, state)",
+    "status": "other",
+    "share": 0.07,
+    "types": {
+     "A320": 0.3,
+     "A20N": 0.05,
+     "A21N": 0.05,
+     "B738": 0.15,
+     "AT76": 0.15,
+     "A333": 0.1,
+     "BIZJ": 0.2
+    },
+    "src": [
+     "G6",
+     "G7"
+    ]
+   }
+  ],
+  "airlines_conf": "low",
+  "airlines_est": true,
+  "turnaround_min": {
+   "A320": [
+    30,
+    40,
+    75
+   ],
+   "A20N": [
+    30,
+    40,
+    75
+   ],
+   "A21N": [
+    35,
+    45,
+    80
+   ],
+   "B738": [
+    35,
+    45,
+    80
+   ],
+   "B739": [
+    35,
+    45,
+    80
+   ],
+   "B38M": [
+    35,
+    45,
+    80
+   ],
+   "AT76": [
+    20,
+    25,
+    45
+   ],
+   "A333": [
+    75,
+    90,
+    150
+   ],
+   "BIZJ": [
+    30,
+    90,
+    480
+   ]
+  },
+  "turnaround_form": "triangular [min, mode, max] minutes on-block to off-block",
+  "turnaround_conf": "low",
+  "turnaround_est": true,
+  "turnaround_src": [
+   "G33",
+   "G34"
+  ],
+  "pushback_min": [
+   3,
+   4,
+   5
+  ],
+  "pushback_src": [
+   "G32"
+  ],
+  "night_stop_aircraft": {
+   "value": 50,
+   "range": [
+    40,
+    55
+   ],
+   "base_parked": 25,
+   "conf": "low",
+   "est": true
+  }
+ },
+ "runway_config": {
+  "select": {
+   "headwind_threshold_kt": 3,
+   "default_by_month": {
+    "03": [
+     10,
+     11,
+     12,
+     1,
+     2
+    ],
+    "21": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9
+    ]
+   },
+   "src": [
+    "owner",
+    "repo inUse()"
+   ],
+   "conf": "med",
+   "est": true
+  },
+  "night_closures_w24": {
+   "window_utc": "17:00-22:00",
+   "window_local": "00:00-05:00",
+   "rubber_removal": {
+    "03L/21R": "Mon-Thu",
+    "03R/21L": "Fri-Sat"
+   },
+   "friction_test": {
+    "03L/21R": "Thu",
+    "03R/21L": "Sat"
+   },
+   "days_basis": "weekday as printed in the W24 notice (UTC); check against the current season notice",
+   "src": [
+    "G37"
+   ],
+   "conf": "med"
+  },
+  "lvp": {
+   "rvr_below_m": 550,
+   "ceiling_below_ft": 200,
+   "rules": "21R CAT II only; 21L not permitted; no secondary arrivals",
+   "src": [
+    "G32"
+   ],
+   "conf": "med"
+  },
+  "twy_y_rule": "TWY Y closed while 03R/21L active (and vice versa)",
+  "twy_y_src": [
+   "G1",
+   "G3",
+   "G4"
+  ],
+  "taxilane_t_rule": "T between V and S: code A-D only",
+  "taxilane_t_src": [
+   "G1",
+   "G4"
+  ],
+  "overflow": {
+   "primary_only_up_to_arrivals_per_hour": 14,
+   "max_secondary_fraction": 0.5,
+   "conf": "low",
+   "est": true,
+   "src": [
+    "G29"
+   ]
+  },
+  "exit_model": {
+   "s_td_m": {
+    "A320": 450,
+    "A20N": 450,
+    "A21N": 450,
+    "B738": 450,
+    "B739": 450,
+    "B38M": 450,
+    "AT76": 350,
+    "A333": 500
+   },
+   "v_td_kt": {
+    "A320": 130,
+    "A20N": 130,
+    "A21N": 135,
+    "B738": 140,
+    "B739": 145,
+    "B38M": 140,
+    "AT76": 105,
+    "A333": 140
+   },
+   "decel_ms2": {
+    "A320": 1.7,
+    "A20N": 1.7,
+    "A21N": 1.7,
+    "B738": 1.7,
+    "B739": 1.7,
+    "B38M": 1.7,
+    "AT76": 1.5,
+    "A333": 1.5
+   },
+   "wet_factor": 0.7,
+   "v_exit_kt": {
+    "RET": 50,
+    "ANG": 30,
+    "R90": 15,
+    "END": 10
+   },
+   "src": [
+    "G36"
+   ],
+   "conf": "low",
+   "est": true
+  },
+  "dir21": {
+   "departure": {
+    "runway": "21R",
+    "entries": [
+     {
+      "id": "D",
+      "s_m": 63,
+      "type": "full length",
+      "src": [
+       "G3",
+       "G30"
+      ]
+     },
+     {
+      "id": "E",
+      "s_m": 484,
+      "type": "intersection",
+      "src": [
+       "G3",
+       "G30"
+      ]
+     }
+    ]
+   },
+   "arrival_primary": "21R",
+   "arrival_secondary": "21L",
+   "exits": {
+    "21R": [
+     {
+      "id": "F",
+      "s_m": 1101,
+      "kind": "ANG",
+      "lat": 13.917624,
+      "lon": 100.607499,
+      "en": [
+       195.3,
+       359.8
+      ],
+      "src": [
+       "G30"
+      ],
+      "conf": "med",
+      "est": true
+     },
+     {
+      "id": "J",
+      "s_m": 1510,
+      "kind": "R90",
+      "lat": 13.914381,
+      "lon": 100.60568,
+      "en": [
+       -1.3,
+       1.0
+      ],
+      "src": [
+       "G30",
+       "G4"
+      ],
+      "conf": "med",
+      "est": true,
+      "limit": "max B737 (G4)"
+     },
+     {
+      "id": "O",
+      "s_m": 1719,
+      "kind": "RET",
+      "lat": 13.912729,
+      "lon": 100.604754,
+      "en": [
+       -101.3,
+       -181.8
+      ],
+      "src": [
+       "G30",
+       "G3"
+      ],
+      "conf": "med",
+      "est": true
+     },
+     {
+      "id": "R",
+      "s_m": 2378,
+      "kind": "RET",
+      "lat": 13.9075,
+      "lon": 100.601821,
+      "en": [
+       -418.3,
+       -760.3
+      ],
+      "src": [
+       "G30",
+       "G3"
+      ],
+      "conf": "med",
+      "est": true
+     },
+     {
+      "id": "S",
+      "s_m": 2966,
+      "kind": "R90",
+      "lat": 13.902842,
+      "lon": 100.599209,
+      "en": [
+       -700.6,
+       -1275.7
+      ],
+      "src": [
+       "G30",
+       "G1"
+      ],
+      "conf": "med",
+      "est": true
+     },
+     {
+      "id": "C South",
+      "s_m": 3562,
+      "kind": "END",
+      "lat": 13.898118,
+      "lon": 100.59656,
+      "en": [
+       -986.9,
+       -1798.3
+      ],
+      "src": [
+       "G30"
+      ],
+      "conf": "med",
+      "est": true
+     }
+    ],
+    "21L": [
+     {
+      "id": "S",
+      "s_m": 2955,
+      "kind": "R90",
+      "lat": 13.901119,
+      "lon": 100.602398,
+      "en": [
+       -356.0,
+       -1466.3
+      ],
+      "src": [
+       "G30",
+       "G3",
+       "G32"
+      ],
+      "conf": "med",
+      "est": true,
+      "limit": "hold short 21R (130 m) then cross"
+     }
+    ]
+   },
+   "typical_exit": {
+    "21R": {
+     "A320": {
+      "dry": "O",
+      "wet": "R"
+     },
+     "A20N": {
+      "dry": "O",
+      "wet": "R"
+     },
+     "B738": {
+      "dry": "R",
+      "wet": "R"
+     },
+     "AT76": {
+      "dry": "J",
+      "wet": "O"
+     },
+     "A333": {
+      "dry": "R",
+      "wet": "S"
+     }
+    },
+    "21L": {
+     "all": "S"
+    }
+   },
+   "conf": "med"
+  },
+  "dir03": {
+   "departure": {
+    "runway": "03L",
+    "entries": [
+     {
+      "id": "C South",
+      "s_m": 140,
+      "type": "full length",
+      "src": [
+       "G30"
+      ]
+     },
+     {
+      "id": "S",
+      "s_m": 736,
+      "type": "intersection",
+      "src": [
+       "G1",
+       "G30"
+      ]
+     }
+    ]
+   },
+   "arrival_primary": "03L",
+   "arrival_secondary": "03R",
+   "exits": {
+    "03L": [
+     {
+      "id": "S",
+      "s_m": 736,
+      "kind": "R90",
+      "lat": 13.902842,
+      "lon": 100.599209,
+      "en": [
+       -700.6,
+       -1275.7
+      ],
+      "src": [
+       "G30",
+       "G1"
+      ],
+      "conf": "med",
+      "est": true
+     },
+     {
+      "id": "J",
+      "s_m": 2191,
+      "kind": "R90",
+      "lat": 13.914381,
+      "lon": 100.60568,
+      "en": [
+       -1.3,
+       1.0
+      ],
+      "src": [
+       "G30",
+       "G4"
+      ],
+      "conf": "med",
+      "est": true,
+      "limit": "max B737 (G4)"
+     },
+     {
+      "id": "F",
+      "s_m": 2310,
+      "kind": "RET",
+      "lat": 13.91532,
+      "lon": 100.606207,
+      "en": [
+       55.7,
+       104.9
+      ],
+      "src": [
+       "G30"
+      ],
+      "conf": "med",
+      "est": true
+     },
+     {
+      "id": "E",
+      "s_m": 3146,
+      "kind": "RET",
+      "lat": 13.921948,
+      "lon": 100.609924,
+      "en": [
+       457.4,
+       838.2
+      ],
+      "src": [
+       "G30"
+      ],
+      "conf": "med",
+      "est": true
+     },
+     {
+      "id": "E",
+      "s_m": 3217,
+      "kind": "R90",
+      "lat": 13.922515,
+      "lon": 100.610242,
+      "en": [
+       491.8,
+       900.9
+      ],
+      "src": [
+       "G30"
+      ],
+      "conf": "med",
+      "est": true
+     },
+     {
+      "id": "D",
+      "s_m": 3639,
+      "kind": "END",
+      "lat": 13.925857,
+      "lon": 100.612116,
+      "en": [
+       694.3,
+       1270.7
+      ],
+      "src": [
+       "G30"
+      ],
+      "conf": "med",
+      "est": true
+     }
+    ],
+    "03R": [
+     {
+      "id": "D",
+      "s_m": 3098,
+      "kind": "R90",
+      "lat": 13.924119,
+      "lon": 100.615313,
+      "en": [
+       1039.8,
+       1078.4
+      ],
+      "src": [
+       "G30",
+       "G1"
+      ],
+      "conf": "med",
+      "est": true,
+      "limit": "hold short 03L (210 m) then cross"
+     }
+    ]
+   },
+   "typical_exit": {
+    "03L": {
+     "A320": {
+      "dry": "J",
+      "wet": "F"
+     },
+     "A20N": {
+      "dry": "J",
+      "wet": "F"
+     },
+     "B738": {
+      "dry": "J",
+      "wet": "E"
+     },
+     "AT76": {
+      "dry": "J",
+      "wet": "J"
+     },
+     "A333": {
+      "dry": "F",
+      "wet": "E"
+     }
+    },
+    "03R": {
+     "all": "D"
+    }
+   },
+   "conf": "low-med"
+  }
+ },
+ "taxi_routes": {
+  "src": [
+   "G1",
+   "G3",
+   "G4",
+   "G5",
+   "G30",
+   "G32"
+  ],
+  "conf": "med",
+  "est": true,
+  "stand": "terminal apron via Taxilane B",
+  "DEP21R_D": [
+   "B",
+   "C",
+   "D"
+  ],
+  "DEP21R_D_N": [
+   "A",
+   "B",
+   "D"
+  ],
+  "DEP21R_E": [
+   "B",
+   "C",
+   "E"
+  ],
+  "ARR21R_O": [
+   "O",
+   "C",
+   "B"
+  ],
+  "ARR21R_R": [
+   "R",
+   "C",
+   "B"
+  ],
+  "ARR21R_J": [
+   "J",
+   "C",
+   "B"
+  ],
+  "ARR21L_S": [
+   "S",
+   "HOLD:21R",
+   "S",
+   "C",
+   "B"
+  ],
+  "DEP03L_CS": [
+   "B",
+   "C",
+   "C South"
+  ],
+  "DEP03L_S": [
+   "B",
+   "C",
+   "S"
+  ],
+  "ARR03L_J": [
+   "J",
+   "C",
+   "B"
+  ],
+  "ARR03L_F": [
+   "F",
+   "C",
+   "B"
+  ],
+  "ARR03L_E": [
+   "E",
+   "C",
+   "B"
+  ],
+  "ARR03R_D": [
+   "D",
+   "HOLD:03L",
+   "D",
+   "C",
+   "B"
+  ],
+  "length_m": {
+   "DEP21R_D": [
+    1130,
+    2040
+   ],
+   "DEP21R_D_N": [
+    1130,
+    1220
+   ],
+   "DEP21R_E": [
+    740,
+    1640
+   ],
+   "ARR21R_O": [
+    1040,
+    1800
+   ],
+   "ARR21R_R": [
+    1650,
+    2490
+   ],
+   "ARR21R_J": [
+    590,
+    1170
+   ],
+   "ARR21L_S": [
+    2200,
+    3040
+   ],
+   "DEP03L_CS": [
+    2670,
+    3510
+   ],
+   "DEP03L_S": [
+    1810,
+    2650
+   ],
+   "ARR03L_J": [
+    590,
+    1170
+   ],
+   "ARR03L_F": [
+    660,
+    1290
+   ],
+   "ARR03L_E": [
+    780,
+    1680
+   ],
+   "ARR03R_D": [
+    1530,
+    2430
+   ]
+  }
+ }
+}
