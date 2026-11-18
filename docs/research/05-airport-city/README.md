@@ -8,6 +8,9 @@
 | `5a-aip.md` | หัวข้อ 1–4: AIRAC, AD 2.8–2.10 และหอบังคับการบิน, หลุมจอดและทางขับ, IAP/SID/STAR | ข้อเท็จจริงจาก AIP Thailand (© CAAT) อ้าง AIRAC 29 OCT 2026 |
 | `5b-airport.md` | หัวข้อ 5–7: อาคารในสนาม, ภาคพื้น, การปฏิบัติการ | ตามแหล่งที่อ้างในแต่ละหัวข้อ |
 | `5c-city.md` | หัวข้อ 8–10: อาคาร 3 มิติ, ภูมิประเทศและสีพื้นผิว, ลักษณะเมือง | ตามแหล่งที่อ้างในแต่ละหัวข้อ |
+| `5d-aip-update.md` | อัปเดต 18 พ.ย. 2026: AD 2.19–2.25, OCA/H ทุกแผ่น, ตรวจ AIRAC 26 NOV และ 24 DEC 2026 | ข้อเท็จจริงจาก AIP Thailand (© CAAT) |
+| `aip_vtbd_iap_minima.json` | OCA/H, FAF และ missed approach ของ 13 แผ่น และข้อเท็จจริง AD 2.20 | ข้อเท็จจริงจาก AIP Thailand (© CAAT) |
+| `iap_minima.test.mjs` | ต้นแบบเทสต์ T-U01–T-U08: `node docs/research/05-airport-city/iap_minima.test.mjs` | โค้ดของโครงการ |
 | `aip_vtbd_current.json` | ค่าทางวิ่ง เครื่องช่วยเดินอากาศ และระยะประกาศของ AIRAC ปัจจุบัน | ข้อเท็จจริงจาก AIP Thailand AD 2 VTBD (© CAAT) |
 | `aip.test.mjs` | ต้นแบบเทสต์ T-A: `node docs/research/05-airport-city/aip.test.mjs` | โค้ดของโครงการ |
 | `derived_points.json` | ตำแหน่ง stop bar และ hot spot จากเส้น OSM ตัดกับระยะใน AIP | ODbL 1.0, © OpenStreetMap contributors |
