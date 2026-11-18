@@ -169,6 +169,9 @@ function analyse(rows, years) {
     const dkey = loc.toISOString().slice(0, 10);
     const routine = mi === 0 || mi === 30;
     const yr = loc.getUTCFullYear();
+    // The archive is requested in UTC years; keep only whole local (UTC+7) years so that
+    // the last 7 h of 31 Dec do not add a partial extra January.
+    if (yr < years[0] || yr > years[1]) { continue; }
     perYear[yr] = perYear[yr] || { routine: 0, speci: 0 };
     const m = M[mo];
     m.monthYears.add(`${yr}-${mo}`);
