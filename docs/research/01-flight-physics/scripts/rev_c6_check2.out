@@ -1,0 +1,83 @@
+{
+ "rateLimiterDF": [
+  {
+   "ratio": 1.5,
+   "numeric40cyc": {
+    "gain": 0.8384,
+    "phase_deg": -15.81
+   },
+   "analyticFullSat": null,
+   "delay_s_A22": 0.058
+  },
+  {
+   "ratio": 2,
+   "numeric40cyc": {
+    "gain": 0.6366,
+    "phase_deg": -38.24
+   },
+   "analyticFullSat": {
+    "gain": 0.6366,
+    "phase_deg": -38.24
+   },
+   "delay_s_A22": 0.105
+  },
+  {
+   "ratio": 3,
+   "numeric40cyc": {
+    "gain": 0.4244,
+    "phase_deg": -58.42
+   },
+   "analyticFullSat": {
+    "gain": 0.4244,
+    "phase_deg": -58.43
+   },
+   "delay_s_A22": 0.107
+  }
+ ],
+ "autoTrim": {
+  "dF_per_tabdeg_N_95": 3.54,
+  "dF_per_tabdeg_N_150": 8.84,
+  "forceRate_lbf_s_95_at1dps": 0.8,
+  "forceRate_lbf_s_150_at0p5dps": 0.99,
+  "FtrimRef_for_tau3s_95_N": 10.6,
+  "FtrimRef_for_tau3s_150_N": 13.3,
+  "tau_s_with_11p1N": {
+   "k95": 3.13,
+   "k150": 2.51
+  },
+  "tau_s_with_4p45N_ifProportional": {
+   "k95": 1.26
+  }
+ },
+ "lbPerIn": {
+  "k95": 3.29,
+  "k110": 4.41,
+  "k120": 5.25,
+  "k150": 8.21,
+  "speed_kt_for_5lbf_per_in": 117.5
+ },
+ "nz": {
+  "theta_deg": -1.24,
+  "nz_body": 0.99977,
+  "cosGamma": 0.99863
+ },
+ "units": {
+  "W_lbf": 4960,
+  "W_over_140": 35.4,
+  "astm_W14_N": 160.7,
+  "qFade_kt": 49.7,
+  "F05_N": 73.6,
+  "Kc_full_aft_lbf": 5.2
+ },
+ "json": {
+  "blocks": 1,
+  "parsed": 1,
+  "leaves": 70,
+  "refs": 31,
+  "issues": []
+ },
+ "testIds": {
+  "defined": 15,
+  "citedNotDefined": []
+ }
+}

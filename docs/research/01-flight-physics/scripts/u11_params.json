@@ -1,0 +1,44 @@
+{
+  "interference": {
+    "downwashLag": {
+      "lt_m": {"v": 5.10, "u": "m", "scope": "aircraft", "src": ["U15", "U16"], "conf": "กลาง", "est": true, "note": "ระยะจาก CG ถึง c/4 ของ MAC หางระดับ วัดจากโมเดล 3 มิติใน src/70-aircraft.js:158"},
+      "St_m2": {"v": 3.645, "u": "m^2", "scope": "aircraft", "src": ["U15", "U16"], "conf": "กลาง", "est": true, "note": "พื้นที่หางระดับ (ช่วงกาง 3.7 m) จากโมเดล 3 มิติ"},
+      "VH": {"v": 0.691, "u": "-", "scope": "aircraft", "src": ["U16"], "conf": "กลาง", "est": true, "note": "tail volume = St*lt/(S*c)"},
+      "aTail_per_rad": {"v": 3.67, "u": "1/rad", "scope": "aircraft", "src": ["U13", "U16"], "conf": "กลาง", "est": true, "note": "lift-curve slope ของหาง สูตร Helmbold/DATCOM แบบเดียวกับ Aeromatic++ ที่ A_t = 3.76, kappa = 0.95"},
+      "etaH_powerOff": {"v": 0.9, "u": "-", "scope": "aircraft", "src": ["U8"], "conf": "ต่ำ", "est": true, "note": "q_t/q ตอนไม่มี slipstream; U8 นิยามสัญลักษณ์แต่ไม่ได้ให้ค่า ค่า 0.9 เป็นค่าประมาณทั่วไป"},
+      "deda_tail": {"v": 0.43, "u": "-", "scope": "aircraft", "src": ["U13", "U16"], "conf": "กลาง", "est": true, "note": "VLM ได้ 0.467 (ไม่คิดการเลื่อนของ wake), Aeromatic 4/(A+2) ได้ 0.477, สูตร DATCOM ที่จำได้ได้ 0.404 (ยังไม่ยืนยัน); เลือก 0.43"},
+      "CLadot": {"v": 1.96, "u": "1/rad (alpha_dot*c/2V)", "scope": "aircraft", "src": ["U13", "U16"], "conf": "กลาง", "est": true, "note": "2*etaH*aTail*VH*deda; ค่าปัจจุบัน 1.6; JSBSim c172x ใช้ 1.7"},
+      "Cmadot": {"v": -6.07, "u": "1/rad (alpha_dot*c/2V)", "scope": "aircraft", "src": ["U13", "U16"], "conf": "กลาง", "est": true, "note": "-CLadot*lt/c; ค่าปัจจุบัน -4.5; JSBSim c172x ใช้ -5.2"},
+      "lagModel": {"v": {"options": ["derivative", "delay"], "default": "delay"}, "u": "enum", "scope": "sim", "src": ["U7", "U16"], "conf": "กลาง", "est": true, "note": "delay = epsilon(t) = deda*alpha(t - lt/V) ด้วย ring buffer; derivative = CLadot/Cmadot เดิม"},
+      "tauMinSpeed_ms": {"v": 15, "u": "m/s", "scope": "sim", "src": ["U16"], "conf": "กลาง", "est": true, "note": "ใช้ V = max(V, 15) ตอนคำนวณ tau = lt/V เพื่อจำกัดขนาด buffer (สูงสุด 0.34 s = 82 sample ที่ 240 Hz)"},
+      "alphaDotFilterTau_s": {"v": 0.05, "u": "s", "scope": "sim", "src": ["U15"], "conf": "สูง", "est": false, "note": "ค่าของโค้ดปัจจุบัน src/20-flight.js:275 ทำให้ alpha_dot ช้ากว่าจริงราว 48 ms; ถ้าใช้ alpha_dot แบบวิเคราะห์ (JSBSim) ให้ตั้ง 0"}
+    },
+    "groundEffect": {
+      "refPoint_body_m": {"v": [0.0, 0.0, 0.15], "u": "m (FRD จาก CG)", "scope": "aircraft", "src": ["U15", "U16"], "conf": "กลาง", "est": true, "note": "c/4 ของ MAC ปีก รวม dihedral 6 องศา; โค้ดปัจจุบันใช้ 0.35 m ใต้ CG (ระดับโคนปีก)"},
+      "aspectRatio": {"v": 6.383, "u": "-", "scope": "aircraft", "src": ["U15"], "conf": "สูง", "est": false, "note": "b^2/S จาก AC"},
+      "kDi_PH": {"v": {"c1": 4.74, "e1": 0.814, "c2": 3.88, "e2": 0.758}, "u": "-", "scope": "sim", "src": ["U2"], "conf": "กลาง", "est": false, "note": "kDi = 1 - exp(-c1*hb^e1) - hb^2*exp(-c2*hb^e2), Phillips & Hunsaker eq. (10) ปีกไม่บิดไม่กวาด; ตรวจซ้ำด้วย VLM และ NACA TR 738"},
+      "kL_PH": {"v": {"c": 288, "e1": 0.787, "c2": 9.14, "e2": 0.327, "eA": 0.882}, "u": "-", "scope": "sim", "src": ["U2"], "conf": "กลาง", "est": false, "note": "kL = 1 + c*hb^e1*exp(-c2*hb^e2)/A^eA ที่ alpha คงที่, eq. (11)"},
+      "kTable_trainer": {"v": {"axes": {"hb": [0.05, 0.07, 0.1, 0.15, 0.2, 0.3, 0.5, 0.75, 1.0]}, "data": [[0.337, 0.417, 0.512, 0.627, 0.709, 0.812, 0.907, 0.952, 0.971], [1.172, 1.15, 1.124, 1.093, 1.071, 1.046, 1.022, 1.011, 1.006]]}, "u": "-", "scope": "aircraft", "src": ["U2", "U16"], "conf": "กลาง", "est": true, "note": "แถว 1 = kDi, แถว 2 = kL สำหรับ A = 6.383 คำนวณจากสูตร U2"},
+      "hbMin": {"v": 0.05, "u": "-", "scope": "sim", "src": ["U2"], "conf": "กลาง", "est": true, "note": "สูตร U2 ใช้ได้ที่ h/b มากกว่าราว 0.07; ต่ำกว่านี้ให้ clamp"},
+      "tailDownwashRatio": {"v": {"formula": "kDi*kL", "vlm_hb": [0.05, 0.1, 0.2, 0.5, 1.0], "vlm_ratio_constCL": [0.34, 0.497, 0.703, 0.923, 0.981]}, "u": "-", "scope": "sim", "src": ["U1", "U16"], "conf": "ต่ำ", "est": true, "note": "downwash ที่หาง IGE/OGE: ที่ CL เท่ากันประมาณเท่ากับ kDi (VLM มีภาพสะท้อน), ที่ alpha เท่ากันคูณ kL เพิ่ม"},
+      "kTailGE": {"v": 1.0, "u": "-", "scope": "aircraft", "src": ["U16"], "conf": "ต่ำ", "est": true, "note": "ตัวคูณปรับจูนโมเมนต์ก้มหัวจาก downwash ที่ลดลง ช่วงที่สมเหตุสมผล 0.6-1.0"},
+      "dCm_GE_at_hb0_1": {"v": -0.093, "u": "-", "scope": "aircraft", "src": ["U16"], "conf": "ต่ำ", "est": true, "note": "ตัวอย่างที่ CL 1.21 แฟลปลง: -etaH*VH*aTail*(deda/CLa)*CL_OGE*(1-kDi*kL)"},
+      "alphaStallShift_hb0_1_deg": {"v": -2.2, "u": "deg", "scope": "aircraft", "src": ["U16"], "conf": "ต่ำ", "est": true, "note": "สมมติ CLmax ไม่เปลี่ยน: d_alpha = -(1-1/kL)*CLmax/CLa"}
+    },
+    "propSlipstream": {
+      "diameter_m": {"v": 2.44, "u": "m", "scope": "propeller", "src": ["U16"], "conf": "ต่ำ", "est": true, "note": "สมมติฐานร่วมของรอบ 1 (ใบพัด 4 ใบ 2.44 m 2000 rpm); โมเดล 3 มิติวาดจานรัศมี 1.15 m"},
+      "sense": {"v": 1, "u": "+1 = ตามเข็มนาฬิกามองจากด้านหลัง", "scope": "propeller", "src": ["U3", "U9"], "conf": "สูง", "est": false, "note": "ทิศหมุนแบบเครื่องยนต์อเมริกันส่วนใหญ่ (PHAK หน้า 5-31); JSBSim ใช้ Sense = 1 เป็นค่าเริ่มต้น"},
+      "hubPos_body_m": {"v": [3.94, 0.0, -0.06], "u": "m (FRD จาก CG)", "scope": "aircraft", "src": ["U15"], "conf": "กลาง", "est": true, "note": "ตำแหน่งดุมใบพัดจาก src/70-aircraft.js:183"},
+      "inducedVelocity": {"v": {"formula": "vi = 0.5*(-Va + sqrt(Va*|Va| + 2T/(rho*A)))", "farWakeFactor": 2.0}, "u": "m/s", "scope": "sim", "src": ["U9"], "conf": "สูง", "est": false, "note": "momentum theory แบบเดียวกับ JSBSim FGPropeller (อ้าง McCormick eq. 6.15)"},
+      "kq_tail": {"v": 0.8, "u": "-", "scope": "aircraft", "src": ["U4", "U16"], "conf": "ต่ำ", "est": true, "note": "สัดส่วนของ q ส่วนเกินในสลิปสตรีมที่ไปถึงหางหลังการผสม (หางอยู่ห่าง 3.7D) ยังไม่มีข้อมูลวัด"},
+      "htailImmersion": {"v": {"zAboveThrustLine_m": 0.24, "span_m": 3.7, "fuselageWidth_m": 0.40, "propToTail_m": 9.04}, "u": "m", "scope": "aircraft", "src": ["U15"], "conf": "กลาง", "est": true, "note": "ใช้คำนวณสัดส่วนช่วงกางที่อยู่ในท่อสลิปสตรีม"},
+      "finImmersion": {"v": {"rootAboveThrustLine_m": 0.28, "height_m": 1.75, "area_m2": 2.056, "x_m": -5.24, "zac_m": -1.12}, "u": "m, m^2", "scope": "aircraft", "src": ["U15"], "conf": "กลาง", "est": true, "note": "ครีบดิ่งจาก src/70-aircraft.js:172 (z เป็น FRD)"},
+      "aFin_per_rad": {"v": 2.6, "u": "1/rad", "scope": "aircraft", "src": ["U16"], "conf": "ต่ำ", "est": true, "note": "lift slope ของครีบ AR เรขาคณิต 1.49 คิด end-plate ของลำตัว"},
+      "kSwirlFin": {"v": 0.5, "u": "-", "scope": "aircraft", "src": ["U16"], "conf": "ต่ำ", "est": true, "note": "สัดส่วน swirl ที่ยังเหลือถึงครีบหลังลำตัวและปีกช่วยทำให้ไหลตรง ใช้ปรับจูนให้ rudder ที่ 80 kt full power อยู่ราว 30-50%"},
+      "swirlRecoveryWing": {"v": 0.4, "u": "-", "scope": "aircraft", "src": ["U3", "U16"], "conf": "ต่ำ", "est": true, "note": "สัดส่วนของ torque ที่ปีกได้คืนจาก swirl (โมเมนต์ม้วนขวา); โมเมนต์ม้วนสุทธิของใบพัด = -sense*Q*(1-r)"},
+      "CNalpha0_prop": {"v": 0.17, "u": "1/rad (อ้างอิง q*A)", "scope": "propeller", "src": ["U5", "U6", "U16"], "conf": "ต่ำ", "est": true, "note": "normal-force slope ที่แรงขับต่ำ จาก BEM (0.165) และ fin analogy ของ Ribner; คูณ f = (1+a)^2"},
+      "upwashAtProp_deda": {"v": 0.07, "u": "-", "scope": "aircraft", "src": ["U16"], "conf": "ต่ำ", "est": true, "note": "upwash gradient ที่จานใบพัดจาก VLM เฉพาะปีก ไม่รวมลำตัว"},
+      "blownWing": {"v": {"kbw": 0.6, "fuselageWidth_m": 1.0, "chordInSlipstream_m": 2.2, "propToWing_m": 3.39}, "u": "-, m", "scope": "aircraft", "src": ["U4", "U16"], "conf": "ต่ำ", "est": true, "note": "dCL = kbw*(S_imm/S)*((V_w/V)^2-1)*CL_w ใช้เฉพาะช่วง attached flow; P3"}
+    }
+  }
+}

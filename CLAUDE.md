@@ -57,10 +57,24 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 
 ## Controls (current)
 - Keyboard: W/S or ↑/↓ pitch, A/D or ←/→ roll, Q/E rudder, Shift/Ctrl throttle, B brake, C camera, T take control,
-  P pause, R restart. Keys are binary (no proportional ramp yet).
+  P pause, R restart. Keys already ramp linearly (`readInputs` in 90-app.js: pitch 2.0/s, roll and rudder 2.5/s,
+  release 5/s). Research round 1 §11 finds the ramps too fast, and Ctrl (throttle down) held with W makes Ctrl+W,
+  which closes the Chrome tab before the page can block it.
 - Touch: virtual stick, throttle rail, brake button.
 
+## Research reports (docs/research/)
+- The owner's 5-round research program lives in `docs/research/`: `01-flight-physics.md`, `02-light-aircraft.md`,
+  `03-airliners.md`, `04-weather.md`, `05-airport-city.md`. Each report cites its sources with licences, marks
+  estimates (ค่าประมาณ), gives test cases with expected values, and ends with "สิ่งที่ Claude Code ควรทำ".
+- Round 1 is split: the summary and prioritised task list are in `01-flight-physics.md`; the 12 topic files,
+  the parameter schema (`schema.md`), the merged JSON (`params-trainer.json`) and the computation scripts are in
+  `01-flight-physics/`. Parameters use the leaf format `{v, u, scope, src, conf, est, note}`; scopes `aircraft`,
+  `engine`, `propeller`, `gear` are per aircraft type (rounds 2–3 fill them), `environment` and `sim` are shared.
+- Read the relevant report before changing physics, input or data. Physics code changes wait until the owner
+  approves the development plan that follows all five rounds.
+
 ## Next phase (owner's request): control feel and flight-physics realism
+The prioritised task list at the end of `docs/research/01-flight-physics.md` refines this list.
 Suggested order, each with a Node test before tuning by feel in the browser:
 1. Input: proportional keyboard ramps with self-centring, elevator trim keys, flap and gear controls,
    differential brakes; Gamepad API (stick, rudder, throttle axes) with dead zone and expo; sensitivity settings.

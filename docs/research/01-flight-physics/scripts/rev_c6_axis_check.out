@@ -1,0 +1,21 @@
+{
+ "handsOff": {
+  "lo": 94.8,
+  "hi": 95,
+  "tab_deg": 5.94
+ },
+ "hold_2lbf_with_1lbf_breakout": 88,
+ "hold_-2lbf_with_1lbf_breakout": 101.5,
+ "autoTrim": {
+  "tabChange_deg": 0.4,
+  "Fv_at60s_lbf": 1,
+  "ias60": 84.8
+ },
+ "gamepad": {
+  "f0_08": 0,
+  "f0_5": 0.2758,
+  "f1": 1,
+  "fm1": -1,
+  "F0_5_N": 73.6
+ }
+}

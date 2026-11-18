@@ -1,0 +1,182 @@
+{
+ "P": {
+  "eta": 0.9,
+  "at": 3.9,
+  "tau": 0.55,
+  "deda": 0.36,
+  "lt": 5.421428571428571,
+  "Se": 1.1,
+  "ce": 0.3,
+  "G": 2.4,
+  "Cha": -0.11459155902616465,
+  "Chd": -0.34377467707849396,
+  "Cht": -0.20053522829578813,
+  "Ch0": 0,
+  "Sh": 2.9551929551929548,
+  "VH": 0.5957005957005955,
+  "Cha_per_deg": -0.002,
+  "Chd_per_deg": -0.006,
+  "Cht_per_deg": -0.0035
+ },
+ "geometry": {
+  "Sh": 2.96,
+  "lt": 5.42,
+  "VH": 0.596,
+  "deda": 0.36,
+  "Cmq_tail_check": -13.7,
+  "Cmadot_tail_check": -4.95,
+  "Cma_tail": -1.338
+ },
+ "neutral": {
+  "freeElevatorFactor": 0.817,
+  "SMfix_c": 0.15,
+  "SMfree_c": 0.099
+ },
+ "approach": {
+  "V0": 95,
+  "flaps": 1,
+  "de_trim_deg": -4.07,
+  "alpha_deg": 2.12,
+  "tab_deg": 6.2,
+  "grad_N_per_kt": 0.629,
+  "grad_lbf_per_kt": 0.141,
+  "Fs_per_g_N": 39.7,
+  "Fs_per_g_lbf": 8.93,
+  "stick_per_g_in": 2.71,
+  "lb_per_in": 3.29,
+  "dde_per_g_deg": -9.47,
+  "F_vs_V_lbf": [
+   [
+    80,
+    1.95
+   ],
+   [
+    85,
+    1.34
+   ],
+   [
+    90,
+    0.69
+   ],
+   [
+    95,
+    0
+   ],
+   [
+    100,
+    -0.73
+   ],
+   [
+    105,
+    -1.49
+   ],
+   [
+    110,
+    -2.29
+   ]
+  ]
+ },
+ "cruise": {
+  "V0": 150,
+  "flaps": 0,
+  "de_trim_deg": 1.31,
+  "alpha_deg": 1.48,
+  "tab_deg": -2.8,
+  "grad_N_per_kt": 0.399,
+  "grad_lbf_per_kt": 0.09,
+  "Fs_per_g_N": 39.7,
+  "Fs_per_g_lbf": 8.93,
+  "stick_per_g_in": 1.09,
+  "lb_per_in": 8.21,
+  "dde_per_g_deg": -3.8,
+  "F_vs_V_lbf": [
+   [
+    120,
+    2.42
+   ],
+   [
+    130,
+    1.67
+   ],
+   [
+    140,
+    0.87
+   ],
+   [
+    150,
+    0
+   ],
+   [
+    160,
+    -0.93
+   ],
+   [
+    170,
+    -1.91
+   ],
+   [
+    180,
+    -2.96
+   ]
+  ]
+ },
+ "climb": {
+  "V0": 110,
+  "flaps": 0,
+  "de_trim_deg": -1.26,
+  "alpha_deg": 5.59,
+  "tab_deg": 0.11,
+  "grad_N_per_kt": 0.543,
+  "grad_lbf_per_kt": 0.122,
+  "Fs_per_g_N": 39.7,
+  "Fs_per_g_lbf": 8.93,
+  "stick_per_g_in": 2.02,
+  "lb_per_in": 4.42,
+  "dde_per_g_deg": -7.06,
+  "F_vs_V_lbf": [
+   [
+    95,
+    1.71
+   ],
+   [
+    100,
+    1.17
+   ],
+   [
+    105,
+    0.6
+   ],
+   [
+    110,
+    0
+   ],
+   [
+    115,
+    -0.62
+   ],
+   [
+    120,
+    -1.28
+   ],
+   [
+    125,
+    -1.96
+   ]
+  ]
+ },
+ "limitPull": [
+  {
+   "nL": 4.4,
+   "F_lbf": 30.4
+  },
+  {
+   "nL": 6,
+   "F_lbf": 44.6
+  }
+ ],
+ "float_deg_per_deg_alpha": -0.213,
+ "stick": {
+  "aft_in": 6.3,
+  "fwd_in": 4.29
+ }
+}

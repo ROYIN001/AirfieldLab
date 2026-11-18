@@ -1,0 +1,4 @@
+// s12_table_expected.mjs - expected values for T-S-07 (FGTable-like lookup: linear, clamped at the ends)
+function table1(X, Y, x) { const n = X.length; if (x <= X[0]) return Y[0]; if (x >= X[n - 1]) return Y[n - 1]; let i = 1; while (X[i] < x) i++; const f = (x - X[i - 1]) / (X[i] - X[i - 1]); return Y[i - 1] + f * (Y[i] - Y[i - 1]); }
+function table2(R, C, D, r, c) { const row = (i) => table1(C, D[i], c); const n = R.length; if (r <= R[0]) return row(0); if (r >= R[n - 1]) return row(n - 1); let i = 1; while (R[i] < r) i++; const f = (r - R[i - 1]) / (R[i] - R[i - 1]); return row(i - 1) + f * (row(i) - row(i - 1)); }
+console.log(JSON.stringify({ t1: [-5, 5, 15, 25].map((x) => table1([0, 10, 20], [0, 1, 4], x)), t2: [table2([0, 1], [0, 10], [[0, 1], [2, 3]], 0.5, 5), table2([0, 1], [0, 10], [[0, 1], [2, 3]], 2, 20), table2([0, 1], [0, 10], [[0, 1], [2, 3]], -1, -3)] }));

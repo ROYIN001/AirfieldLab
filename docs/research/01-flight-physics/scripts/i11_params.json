@@ -1,0 +1,66 @@
+{
+ "input": {
+  "gamepad": {
+    "standard_layout": {"v":{"buttons":17,"axes":4,"axis_range":[-1,1],"button_range":[0,1],"axes1_back_sign":1},"u":"-","scope":"sim","src":["I1"],"conf":"สูง","est":false,"note":"axes[1] บวก = ดึงกลับ = y บวก ไม่ต้องกลับเครื่องหมาย"},
+    "poll_per_frame": {"v":1,"u":"ครั้ง/เฟรม","scope":"sim","src":["I1","I6"],"conf":"สูง","est":false,"note":"getGamepads() ก่อน fl.advance"},
+    "permissions_policy_default": {"v":{"allowlist":"*","chrome_since":103},"u":"-","scope":"sim","src":["I1","I4","I5"],"conf":"สูง","est":false,"note":"iframe ข้ามโดเมนใช้ได้เว้นแต่หน้าแม่ปิด"},
+    "max_effect_duration": {"v":5000,"u":"ms","scope":"sim","src":["I1"],"conf":"สูง","est":false,"note":"ค่าที่สเปกแนะนำ"}
+  },
+  "shaping": {
+    "deadzone_gamepad_stick": {"v":0.08,"u":"สัดส่วนช่วงแกน","scope":"sim","src":["I7","I12"],"conf":"ต่ำ","est":true,"note":"scaled radial เท่าหัวข้อ 6"},
+    "deadzone_flightstick": {"v":0.03,"u":"สัดส่วนช่วงแกน","scope":"sim","src":["I12"],"conf":"ต่ำ","est":true,"note":"axial"},
+    "deadzone_pedals": {"v":0.03,"u":"สัดส่วนช่วงแกน","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"axial"},
+    "deadzone_trigger_rudder": {"v":0.05,"u":"สัดส่วนช่วงแกน","scope":"sim","src":["I7"],"conf":"ต่ำ","est":true,"note":"กับผลต่าง RT−LT"},
+    "outer_deadzone": {"v":0.02,"u":"สัดส่วนช่วงแกน","scope":"sim","src":["I11"],"conf":"ต่ำ","est":true,"note":"extremity"},
+    "lever_end_deadzone": {"v":{"idle":0.02,"full":0.02},"u":"สัดส่วนช่วงคันโยก","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":""},
+    "deadzone_auto": {"v":{"k_noise":1.5,"margin":0.02,"min":0.03,"max":0.25},"u":"-","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"จากช่วงพัก 2 s"},
+    "xinput_reference": {"v":{"left_stick":0.2395,"right_stick":0.2652,"trigger":0.1176},"u":"สัดส่วนช่วงแกน","scope":"sim","src":["I7","I8"],"conf":"สูง","est":false,"note":"7849/32767, 8689/32767, 30/255"},
+    "flightgear_default_deadband": {"v":0.1,"u":"สัดส่วนช่วงแกน","scope":"sim","src":["I12"],"conf":"สูง","est":false,"note":""},
+    "expo_default": {"v":{"gamepad":0.5,"flightstick":0.3,"pedals":0.3,"trigger_rudder":0.3,"touch":0.5},"u":"-","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"out = (1−e)x + e x³"},
+    "expo_range": {"v":[0,0.9],"u":"-","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":""},
+    "xplane_max_curve": {"v":{"half_input":0.5,"output":0.1,"equivalent_power":3.32},"u":"-","scope":"sim","src":["I9"],"conf":"กลาง","est":false,"note":"เลขชี้กำลังคำนวณเอง"},
+    "one_euro": {"v":{"min_cutoff_Hz":2,"beta":2,"d_cutoff_Hz":1,"enable_if_noise_gt":0.01},"u":"Hz, s, Hz, -","scope":"sim","src":["I18"],"conf":"ต่ำ","est":true,"note":"d_cutoff ตามบทความ ค่าอื่นเลือกให้ lag ≤ 0.05 s"},
+    "lag_budget": {"v":0.1,"u":"s","scope":"sim","src":[],"conf":"กลาง","est":false,"note":"จากหัวข้อ 6.5.1"}
+  },
+  "keyboard": {
+    "ramp_pitch": {"v":{"up":0.5,"back":2.5,"cap":1},"u":"1/s, 1/s, -","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"≈ 1.1 g/s ที่ 95 kt DIRECT"},
+    "ramp_roll": {"v":{"up":1,"back":3,"cap":1},"u":"1/s, 1/s, -","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":""},
+    "ramp_rudder": {"v":{"up":1,"back":2,"cap":1},"u":"1/s, 1/s, -","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":""},
+    "fine_factor": {"v":0.5,"u":"-","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"Shift ค้าง: คูณอัตราและเพดาน"},
+    "current_ramp_reference": {"v":{"pitch_up":2,"roll_up":2.5,"rudder_up":2.5,"back":5,"throttle":0.35},"u":"1/s","scope":"sim","src":[],"conf":"สูง","est":false,"note":"90-app.js:361-364"},
+    "throttle_rate": {"v":0.35,"u":"1/s","scope":"sim","src":["I14"],"conf":"กลาง","est":false,"note":"คงเดิม"},
+    "flightgear_reference": {"v":{"stick_step_per_press":0.05,"trim_step_per_repeat":0.001,"TRIM_RATE_per_s":0.045,"throttle_step_per_repeat":0.01,"flap_steps":3,"full_brake_time_s":0.5},"u":"หน่วยควบคุม","scope":"sim","src":["I14","I15"],"conf":"สูง","est":false,"note":""},
+    "os_key_repeat": {"v":[2.5,30],"u":"Hz","scope":"sim","src":["I23"],"conf":"สูง","est":false,"note":"ห้ามผูก ramp กับ repeat"},
+    "brake_key_rise": {"v":0.5,"u":"s","scope":"sim","src":["I15"],"conf":"กลาง","est":false,"note":""},
+    "interim_trim_rate_elevator": {"v":0.5,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ของ trimDe ก่อนมี tab (หัวข้อ 6)"},
+    "flap_notches": {"v":[0,0.5,1],"u":"สัดส่วน AC.flaps","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"UP/T-O/LDG"},
+    "keymap_default": {"v":{"pitch":[["KeyW","ArrowUp","Numpad8"],["KeyS","ArrowDown","Numpad2"]],"roll":[["KeyA","ArrowLeft","Numpad4"],["KeyD","ArrowRight","Numpad6"]],"rudder":[["KeyQ","Numpad0"],["KeyE","NumpadEnter"]],"centre":["Numpad5"],"throttle":[["Minus","PageDown","Numpad3"],["Equal","PageUp","Numpad9"]],"trim_pitch":[["BracketLeft","Home","Numpad7"],["BracketRight","End","Numpad1"]],"trim_rudder":[["Comma"],["Period"]],"flaps":[["KeyV"],["KeyF"]],"gear":["KeyG"],"brake_both":["KeyB"],"brake_left":["KeyZ"],"brake_right":["KeyX"],"parking_brake":["Shift+KeyB"],"fine":["ShiftLeft","ShiftRight"],"camera":["KeyC"],"take_control":["KeyT"],"pause":["KeyP"],"restart":["KeyR"]},"u":"KeyboardEvent.code","scope":"sim","src":["I14","I19"],"conf":"ต่ำ","est":true,"note":"คู่ [ลบ, บวก]: ดัน/ดึง, ซ้าย/ขวา, ลด/เพิ่ม, หัวลง/หัวขึ้น, เก็บ/กาง"}
+  },
+  "devices": {
+    "storage": {"v":{"key":"afl-input-v1","schema_version":1},"u":"-","scope":"sim","src":[],"conf":"สูง","est":true,"note":"ผ่าน store (90-app.js:5)"},
+    "wizard": {"v":{"rest_capture_s":2,"move_threshold":0.5,"sweep_capture_s":4},"u":"s, -, s","scope":"sim","src":["I9"],"conf":"ต่ำ","est":true,"note":""},
+    "arbitration_hold": {"v":0.5,"u":"s","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"แหล่งที่ขยับล่าสุดคุมช่อง"},
+    "device_hints": {"v":{"044f:b108":{"name":"T.Flight Hotas X","axes":{"roll":0,"pitch":1,"throttle":2,"rudder":3}},"044f:b679":{"name":"T-Rudder","axes":{"brakeR":0,"brakeL":1,"rudder":2},"toe_rest":1,"rudder_power":2},"06a3:0763":{"name":"Saitek Pro Flight Rudder Pedals","axes":{"brakeL":0,"brakeR":1,"rudder":2},"toe_rest":-1,"rudder_power":2}},"u":"vendor:product","scope":"sim","src":["I16","I26"],"conf":"ต่ำ","est":false,"note":"ลำดับแกนจาก FlightGear ใช้เป็นคำใบ้ให้ wizard เท่านั้น"}
+  },
+  "haptics": {
+    "update_period": {"v":0.1,"u":"s","scope":"sim","src":["I1"],"conf":"ต่ำ","est":true,"note":"เท่าหัวข้อ 1.6"},
+    "effect_duration": {"v":120,"u":"ms","scope":"sim","src":["I1"],"conf":"ต่ำ","est":true,"note":""},
+    "mix": {"v":{"buffet_strong":1,"buffet_weak":0.5,"runway_weak_at_30mps":0.15,"td_sink_zero_fpm":100,"td_sink_full_fpm":700,"td_min":0.15,"td_duration_ms":150},"u":"-","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":""},
+    "user_gain": {"v":{"default":0.7,"range":[0,1]},"u":"-","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":""},
+    "android_vibrate_touchdown": {"v":40,"u":"ms","scope":"sim","src":["I2"],"conf":"ต่ำ","est":true,"note":"Chrome Android เท่านั้น"}
+  },
+  "touch": {
+    "stick_radius_current": {"v":50,"u":"px","scope":"sim","src":[],"conf":"สูง","est":false,"note":"90-app.js:346"},
+    "deadzone": {"v":0.04,"u":"สัดส่วนรัศมี","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"เท่าหัวข้อ 6"},
+    "origin_mode": {"v":{"default":"floating"},"u":"-","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":""},
+    "square_gate": {"v":{"enabled":1},"u":"-","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":""}
+  },
+  "mouse": {
+    "yoke_gain_K": {"v":4,"u":"คันเต็มต่อความกว้างหน้าต่าง","scope":"sim","src":["I17"],"conf":"ต่ำ","est":true,"note":"ตีความจาก factor 4.0 (ยังไม่ยืนยัน)"},
+    "wheel_trim_step": {"v":0.001,"u":"หน่วย trim ต่อคลิก","scope":"sim","src":["I17"],"conf":"กลาง","est":false,"note":""}
+  },
+  "browser": {
+    "reserved_shortcuts_chrome": {"v":{"outside_fullscreen":["Ctrl/Cmd+T","Ctrl/Cmd+W","Ctrl/Cmd+N","Ctrl/Cmd+Shift+T","Ctrl/Cmd+Shift+W","Ctrl/Cmd+Shift+N"]},"u":"-","scope":"sim","src":["I22"],"conf":"สูง","est":false,"note":""}
+  }
+ }
+}

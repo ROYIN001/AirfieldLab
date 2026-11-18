@@ -1,0 +1,2 @@
+B: displacement 10→60 s (m): 6.73e-5  max gs after 10 s (m/s): 2.10e-4  total from origin: 0.0153
+exit 0

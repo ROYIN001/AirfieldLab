@@ -1,0 +1,18 @@
+{
+ "hold1lbf": {
+  "vHold60s": 88.1,
+  "afterRelease_min": 87.7,
+  "afterRelease_max": 100,
+  "mean_last40s": 94.8
+ },
+ "hold-1lbf": {
+  "vHold60s": 101.5,
+  "afterRelease_min": 89.9,
+  "afterRelease_max": 101.8,
+  "mean_last40s": 94.9
+ },
+ "stallWarn_ramp0p5lbfps": {
+  "F_lbf": 4.5,
+  "ias": 77.7
+ }
+}

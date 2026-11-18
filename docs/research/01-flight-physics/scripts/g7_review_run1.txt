@@ -1,0 +1,102 @@
+######## g7_current
+PARKED h_cg 1.3037 pitch -0.128 loads N 3193/9436/9436 nose share % 14.47 sum/W 1.0000 gs 1.19e-2
+ strut 0 static defl 61.4 mm of stroke 220 mm
+ strut 1 static defl 75.5 mm of stroke 250 mm
+ strut 2 static defl 75.5 mm of stroke 250 mm
+MODE nose: m_trib 297 kg, k 52000, c 5000, wn 13.23 rad/s = 2.11 Hz, zeta 0.636
+MODE main: m_trib 976 kg, k 125000, c 12500, wn 11.31 rad/s = 1.80 Hz, zeta 0.566
+HEAVE wn 1.84 Hz zeta 0.575
+PITCH wn 1.03 Hz zeta 0.312
+ROLL wn 2.42 Hz zeta 0.760
+DROP vs 3 m/s lift 1.00W: mainN 37435 N (=3.39x static-ish), nose 0, ground reaction factor (sum/W) 3.39, nz_cg 4.39 at 0.000 s, max comp main 150 mm (stroke 250), nose 0 mm, bounce true
+DROP vs 3 m/s lift 0.67W: mainN 37605 N (=3.41x static-ish), nose 4325, ground reaction factor (sum/W) 3.60, nz_cg 4.08 at 0.000 s, max comp main 164 mm (stroke 250), nose 76 mm, bounce true
+DROP vs 3.05 m/s lift 1.00W: mainN 38061 N (=3.45x static-ish), nose 0, ground reaction factor (sum/W) 3.45, nz_cg 4.45 at 0.000 s, max comp main 153 mm (stroke 250), nose 0 mm, bounce true
+DROP vs 3.05 m/s lift 0.67W: mainN 38231 N (=3.47x static-ish), nose 4241, ground reaction factor (sum/W) 3.66, nz_cg 4.13 at 0.000 s, max comp main 166 mm (stroke 250), nose 75 mm, bounce true
+DROP vs 3.66 m/s lift 1.00W: mainN 45697 N (=4.14x static-ish), nose 0, ground reaction factor (sum/W) 4.14, nz_cg 5.14 at 0.000 s, max comp main 183 mm (stroke 250), nose 0 mm, bounce true
+DROP vs 3.66 m/s lift 0.67W: mainN 45866 N (=4.16x static-ish), nose 3704, ground reaction factor (sum/W) 4.33, nz_cg 4.82 at 0.000 s, max comp main 197 mm (stroke 250), nose 68 mm, bounce true
+######## g7_stop
+rho 1.1602 CL_ground 0.80 CD_ground 0.102 Fbmax 11490 N (=0.521 W)
+  80 kt -> stop: RWYCC6 dry (mu_peak 0.8, brake-torque limited)       242 m  10.6 s  mean decel 0.395 g
+  80 kt -> stop: RWYCC5 wet 25.109(c) x0.8                            400 m  16.4 s  mean decel 0.257 g
+  80 kt -> stop: RWYCC5 wet 25.109(c) x0.375 (on-off / poor modulation) 688 m  29.3 s  mean decel 0.143 g
+  80 kt -> stop: RWYCC3 0.16                                          788 m  38.1 s  mean decel 0.110 g
+  80 kt -> stop: RWYCC2 standing water                                1058 m  45.8 s  mean decel 0.092 g
+  80 kt -> stop: RWYCC1 ice 0.08                                      1346 m  72.4 s  mean decel 0.058 g
+CURRENT 6-DOF full brake: TD gs 84.8 kt, ground roll 332 m, 13.9 s, mean decel 0.321 g (same on any surface: no surface model)
+  reference model from same TD speed, dry: 288 m; wet RWYCC5 x0.8: 477 m; RWYCC2: 1197 m
+######## g7_steer
+CURRENT full pedal @ 2.49 m/s: steer 32.6 deg, yaw rate 33.3 deg/s, radius 4.3 m (kinematic wb/tan(steer) = 4.1 m)
+CURRENT full pedal @ 4.84 m/s: steer 30.3 deg, yaw rate 57.7 deg/s, radius 4.8 m (kinematic wb/tan(steer) = 4.5 m)
+CURRENT full pedal @ 9.49 m/s: steer 25.8 deg, yaw rate 37.1 deg/s, radius 14.6 m (kinematic wb/tan(steer) = 5.5 m)
+KE at 80 kt: 1.91 MJ
+######## g7_ground
+25.109(c) mu_max (x0.8 = achieved, fully modulating):
+  50 psi: 0kt 0.883/0.706  20kt 0.725/0.580  40kt 0.589/0.471  60kt 0.475/0.380  80kt 0.380/0.304  100kt 0.303/0.242  120kt 0.242/0.194  140kt 0.195/0.156
+  60 psi: 0kt 0.867/0.694  20kt 0.711/0.569  40kt 0.578/0.462  60kt 0.465/0.372  80kt 0.373/0.298  100kt 0.297/0.238  120kt 0.238/0.191  140kt 0.193/0.154
+  100 psi: 0kt 0.804/0.643  20kt 0.655/0.524  40kt 0.530/0.424  60kt 0.427/0.341  80kt 0.342/0.274  100kt 0.275/0.220  120kt 0.223/0.179  140kt 0.184/0.147
+  200 psi: 0kt 0.692/0.554  20kt 0.570/0.456  40kt 0.467/0.374  60kt 0.381/0.305  80kt 0.310/0.248  100kt 0.253/0.202  120kt 0.208/0.166  140kt 0.174/0.139
+  hydroplaning p=45 psi: VP=60.4 kt, 0.85VP=51.3 kt, non-rotating 51.7 kt
+  hydroplaning p=60 psi: VP=69.7 kt, 0.85VP=59.3 kt, non-rotating 59.6 kt
+  hydroplaning p=75 psi: VP=77.9 kt, 0.85VP=66.3 kt, non-rotating 66.7 kt
+  hydroplaning p=140 psi: VP=106.5 kt, 0.85VP=90.5 kt, non-rotating 91.1 kt
+  hydroplaning p=200 psi: VP=127.3 kt, 0.85VP=108.2 kt, non-rotating 108.9 kt
+JSBSim MF default: slope 0.1344 /deg = 7.70 /rad, peak 0.800 at 12.2 deg, at 20deg 0.728, 40deg 0.551
+MF with slope 3.2/rad (B=0.0249/deg, C 2.8, D 0.8, E 1.03): peak 0.800 at 29.3 deg; at 5deg 0.271, 10deg 0.497
+tanh model k=3.2: 2deg 0.111 5deg 0.268 10deg 0.483 20deg 0.708
+  current side coeff @2 m/s: 1deg 0.065 3deg 0.189 slope 3.7 /rad
+  current side coeff @5 m/s: 1deg 0.159 3deg 0.412 slope 9.3 /rad
+  current side coeff @15 m/s: 1deg 0.412 3deg 0.636 slope 27.9 /rad
+  current side coeff @30 m/s: 1deg 0.588 3deg 0.650 slope 55.7 /rad
+  current side coeff @45 m/s: 1deg 0.636 3deg 0.650 slope 83.6 /rad
+TN4110 cornering power main tyre: d/d 0.061 Cc 0.0404 -> 119 lb/deg = 528 N/deg = 30.3 kN/rad; /Fz(9.5kN) = 0.0556 /deg = 3.19 /rad
+  relaxation L_s (c=0.55): 0.350 m
+  relaxation L_s (c=5.5): 0.241 m
+######## g7_series
+main: W_st 9575 N, A 46.3 cm2 (bore 77 mm), L0 0.286 m, p_ext 120 psi, static stroke 171 mm of 250 (69%), tyre defl 30 mm, k_gas 84 kN/m, k_eff 66 kN/m, f 1.31 Hz
+   limit 10fps L=2/3      n_g 2.32  n_i 2.98  stroke 220 mm (88%)  tPk 70 ms  bounce false bottom false
+   3.0 m/s L=1            n_g 2.12  n_i 3.12  stroke 200 mm (80%)  tPk 63 ms  bounce true bottom false
+   reserve 12fps L=1      n_g 2.71  n_i 3.71  stroke 224 mm (90%)  tPk 63 ms  bounce true bottom false
+   1.5 m/s L=1            n_g 0.96  n_i 1.96  stroke 106 mm (42%)  tPk 60 ms  bounce true bottom false
+   0.9 m/s (180fpm) L=1   n_g 0.67  n_i 1.67  stroke 52 mm (21%)  tPk 37 ms  bounce true bottom false
+nose: W_st 2914 N, A 14.1 cm2 (bore 42 mm), L0 0.229 m, p_ext 120 psi, static stroke 137 mm of 200 (69%), tyre defl 18 mm, k_gas 32 kN/m, k_eff 27 kN/m, f 1.51 Hz
+   limit 10fps L=2/3      n_g 2.98  n_i 3.65  stroke 178 mm (89%)  tPk 52 ms  bounce false bottom false
+   3.0 m/s L=1            n_g 2.77  n_i 3.77  stroke 165 mm (82%)  tPk 48 ms  bounce true bottom false
+   reserve 12fps L=1      n_g 3.55  n_i 4.55  stroke 184 mm (92%)  tPk 49 ms  bounce true bottom false
+   1.5 m/s L=1            n_g 1.23  n_i 2.23  stroke 92 mm (46%)  tPk 47 ms  bounce true bottom false
+   0.9 m/s (180fpm) L=1   n_g 0.76  n_i 1.76  stroke 48 mm (24%)  tPk 44 ms  bounce true bottom false
+######## g7_tests
+T-G-08 { m80_60: 0.373, m0_50: 0.883, m100_100: 0.275, m60_150: 0.404 }
+T-G-09 {
+  VP60: 69.71,
+  onset: 59.26,
+  peakRWYCC2_at50: 0.2,
+  peakRWYCC2_at58: 0.2,
+  peakRWYCC2_at65: 0.05,
+  wetRWYCC5_at65: 0.44
+}
+T-G-12 { t63_ms: 10, dist63_m: 0.3 }
+T-G-13 {
+  mu_peak_60kt: 0.465,
+  lockForce_N: 4456,
+  Fbmax_N: 5745,
+  locks: true,
+  mu_skid: 0.233,
+  latCoef_locked_3deg: 0.012,
+  dryLock: false
+}
+T-G-13 lock above (static load) 36.4 kt
+######## g7_misc
+spin-up: omega 186 rad/s, t_spin 66 ms, drag impulse both mains 523 N s, dV 0.232 m/s, pitch-rate kick -6.15 deg/s (arm 1.50 m below CG at touchdown)
+KE 80 kt 1.91 MJ; if ~85% goes to brakes -> 810 kJ per brake; steel heat sink 3 kg, c=490 J/kgK -> dT 551 K (adiabatic)
+turnover: distance CG to nose-main line 1.161 m -> static rollover a_y/g = 0.89; turnover angle 48.2 deg (<= 63 deg guideline, unverified)
+  steer 10 deg -> kinematic radius about main-axle midpoint 15.0 m
+  steer 12 deg -> kinematic radius about main-axle midpoint 12.5 m
+  steer 15 deg -> kinematic radius about main-axle midpoint 9.9 m
+  steer 35 deg -> kinematic radius about main-axle midpoint 3.8 m
+wet mu at 60 psi 25.109(c): 0 kt 0.867, 30 kt 0.641, 59 kt 0.470, 85 kt 0.352
+######## g7_ratio
+rS 4 rC 12: static 82% stroke | Kh 6168 | limit n_g 2.53 stroke 88% bounce false | reserve(3.66,L=2/3) n_g 3.15 stroke 93% bottom false | gas@full 3.81 W_st
+rS 3 rC 10: static 74% stroke | Kh 4727 | limit n_g 2.39 stroke 88% bounce false | reserve(3.66,L=2/3) n_g 2.97 stroke 94% bottom false | gas@full 4.18 W_st
+rS 3 rC 8: static 76% stroke | Kh 5320 | limit n_g 2.47 stroke 88% bounce false | reserve(3.66,L=2/3) n_g 3.07 stroke 94% bottom false | gas@full 3.29 W_st
+rS 2.5 rC 8: static 69% stroke | Kh 4078 | limit n_g 2.33 stroke 88% bounce false | reserve(3.66,L=2/3) n_g 2.89 stroke 94% bottom false | gas@full 3.95 W_st
+rS 2.5 rC 6: static 72% stroke | Kh 4727 | limit n_g 2.42 stroke 88% bounce false | reserve(3.66,L=2/3) n_g 3.00 stroke 95% bottom false | gas@full 2.89 W_st

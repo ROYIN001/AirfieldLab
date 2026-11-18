@@ -1,0 +1,20 @@
+== CURRENT
+ parked {"h":1.3037237851375234,"pitch":-0.1279153118406275,"loads":[3193,9436,9436],"noseShare":0.1447110438446314,"sumW":1.000049076978548,"creep10s":0.12183394677719628,"strokes":null}
+ drop vs 3 L 1.00 {"mainN":37435,"n_ground":3.39,"tPeak_ms":0,"bounce":true,"maxStroke_mm":[0,0,0]}
+ drop vs 3.048 L 0.67 {"mainN":38206,"n_ground":3.46,"tPeak_ms":0,"bounce":true,"maxStroke_mm":[0,0,0]}
+ drop vs 3.66 L 0.67 {"mainN":45866,"n_ground":4.16,"tPeak_ms":0,"bounce":true,"maxStroke_mm":[0,0,0]}
+ drop vs 1 L 1.00 {"mainN":12399,"n_ground":1.12,"tPeak_ms":0,"bounce":true,"maxStroke_mm":[0,0,0]}
+ autoland calm {"tdSinkFpm":-129,"n_ground_max":1,"bounces":0,"airborneAfterTD_s":0,"bounceHeight_mm":0,"stopS":953,"score":100,"crashed":false}
+ autoland xl {"tdSinkFpm":-46,"n_ground_max":1,"bounces":1,"airborneAfterTD_s":0.11,"bounceHeight_mm":1,"stopS":969,"score":88,"crashed":false}
+== PROPOSED (series oleo)
+ parked {"h":1.3117867487691255,"pitch":-0.4128241808764962,"loads":[3251,9409,9409],"noseShare":0.14731112595301785,"sumW":1.000159467037603,"creep10s":0.12644679400079073,"strokes":[137,158,158]}
+ drop vs 3 L 1.00 {"mainN":21209,"n_ground":1.92,"tPeak_ms":62,"bounce":true,"maxStroke_mm":[29,212,212]}
+ drop vs 3.048 L 0.67 {"mainN":24241,"n_ground":2.34,"tPeak_ms":163,"bounce":true,"maxStroke_mm":[139,230,230]}
+ drop vs 3.66 L 0.67 {"mainN":31806,"n_ground":3.09,"tPeak_ms":142,"bounce":true,"maxStroke_mm":[186,242,242]}
+ drop vs 1 L 1.00 {"mainN":6969,"n_ground":0.63,"tPeak_ms":29,"bounce":true,"maxStroke_mm":[0,68,68]}
+ autoland calm {"tdSinkFpm":-133,"n_ground_max":1.05,"bounces":2,"airborneAfterTD_s":0.5,"bounceHeight_mm":22,"stopS":933,"score":100,"crashed":false}
+ autoland xl {"tdSinkFpm":-53,"n_ground_max":1.05,"bounces":1,"airborneAfterTD_s":0.35,"bounceHeight_mm":32,"stopS":948,"score":88,"crashed":false}
+
+real	0m1.187s
+user	0m1.603s
+sys	0m0.107s
