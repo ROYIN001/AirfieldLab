@@ -10,3 +10,14 @@ OpenStreetMap renders at zoom 15–17), which are not included; `shots_meta.json
 5. `lines.py` – tollway, rail and Phahonyothin centre lines.
 6. `assemble.py` – writes `vtbd_af.json`.
 7. `autogen.py` – generated city buildings and street lights (packed into `city.json`).
+
+## Weather climatology (`climo/`)
+
+`climo/metar-climo.mjs` builds a VTBD surface climatology (wind rose by runway, visibility, present weather,
+ceilings, density altitude) from the IEM METAR archive. Node ≥ 18, no dependencies; downloads are cached in
+`.cache/climo/` (git-ignored). Used by `docs/research/04-weather.md`.
+
+    node tools/climo/metar-climo.mjs --test                  # parser self-test, no network
+    node tools/climo/metar-climo.mjs --from 2016 --to 2025 --out docs/research/data/vtbd-metar-climo.json
+
+Commit only the derived summary, not the raw METAR downloads.
