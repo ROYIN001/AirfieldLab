@@ -1,0 +1,18 @@
+{
+ "trim_0": {
+  "fullPull_deg": -22,
+  "fullPush_deg": 15
+ },
+ "trim_-5": {
+  "fullPull_deg": -22,
+  "fullPush_deg": 10
+ },
+ "trim_5": {
+  "fullPull_deg": -17,
+  "fullPush_deg": 15
+ },
+ "throttle_after_1s": 0.7425,
+ "throttle_expected": 0.7425,
+ "us_per_step": 3.67,
+ "node": "v22.23.5"
+}

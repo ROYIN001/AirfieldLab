@@ -1,0 +1,114 @@
+{
+ "analytic": {
+  "vert_fn_Hz": 12.08,
+  "vert_peak_Hz": 12.04,
+  "lat1_fn_Hz": 5.8,
+  "lat1_peak_Hz": 5.71,
+  "lat2_fn_Hz": 10.3,
+  "sigma_unit_vert": 17.73,
+  "rms_vert_H0_0p05_g": 0.09,
+  "G_vert_SI": 0.0277
+ },
+ "sim60s": {
+  "rms_az_g": 0.0503,
+  "rms_ay_g": 0.0163,
+  "peak_az_Hz_seg1024": 12.19,
+  "peak_ay_Hz_seg1024": 10.55,
+  "peak_ay_mode1only_Hz": 5.63
+ },
+ "spin_trainer_D_eq_W": [
+  {
+   "aD": 40,
+   "CD": 0.722,
+   "Vd_D": 55.3,
+   "fpm_D": 10889
+  },
+  {
+   "aD": 43,
+   "CD": 0.782,
+   "Vd_D": 53.2,
+   "fpm_D": 10464
+  },
+  {
+   "aD": 45,
+   "CD": 0.822,
+   "Vd_D": 51.8,
+   "fpm_D": 10204
+  },
+  {
+   "aD": 50,
+   "CD": 0.923,
+   "Vd_D": 48.9,
+   "fpm_D": 9634
+  },
+  {
+   "aD": 53,
+   "CD": 0.982,
+   "Vd_D": 47.4,
+   "fpm_D": 9340
+  },
+  {
+   "aD": 55,
+   "CD": 1.02,
+   "Vd_D": 46.5,
+   "fpm_D": 9163
+  },
+  {
+   "aD": 60,
+   "CD": 1.111,
+   "Vd_D": 44.6,
+   "fpm_D": 8779
+  }
+ ],
+ "tp2644": {
+  "CD_043": 0.782,
+  "CD_053": 0.982,
+  "Vd_CD_fts": [
+   116,
+   130
+  ],
+  "Vd_CR_1p0_1p2_fts": [
+   105,
+   115
+  ],
+  "ohat_range_CD": [
+   0.239,
+   0.383
+  ],
+  "ohat_range_CR": [
+   0.27,
+   0.424
+  ]
+ },
+ "trainer_from_ohat": {
+  "ohat": [
+   0.239,
+   0.424
+  ],
+  "Vd_ms": [
+   47.4,
+   53.2
+  ],
+  "fpm": [
+   9340,
+   10464
+  ],
+  "rate_degs": [
+   127,
+   253
+  ],
+  "ft_per_turn": [
+   248,
+   440
+  ],
+  "s_per_turn_at_ohat_0p30_0p42_VdLo": [
+   1.61,
+   2.25
+  ]
+ },
+ "CR_method_Vd": [
+  41.4,
+  44.5
+ ],
+ "spin_radius_m": 1.15
+}

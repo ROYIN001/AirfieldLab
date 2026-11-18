@@ -1,0 +1,55 @@
+{
+ "wind": {
+  "meanProfile": {
+   "model": {"v":{"default":"log","options":["log","power"]},"u":"-","scope":"environment","src":["W5","W17"],"conf":"กลาง","est":false,"note":"โปรไฟล์ลมเฉลี่ย log law เป็นค่าเริ่มต้น; power law เก็บไว้เพื่อเทียบกับโค้ดเดิม"},
+   "zRef_m": {"v":10,"u":"m","scope":"environment","src":["W18"],"conf":"กลาง","est":false,"note":"ความสูงอ้างอิงของลมผิวพื้นที่รายงาน (METAR/ATIS) ตามมาตรฐาน WMO; ข้อความยังไม่ได้เปิดยืนยันในเนื้อหา"},
+   "z0_m": {"v":{"milspec_catC":0.046,"open_grass":0.03,"roughly_open":0.1,"rough":0.25,"parkland":0.5,"suburb":1,"city_centre":2},"u":"m","scope":"environment","src":["W5","W17"],"conf":"กลาง","est":false,"note":"milspec_catC = 0.15 ft ตาม MIL-F-8785C (ผ่าน MathWorks); ที่เหลือจากตารางความขรุขระ (ทุติยภูมิ)"},
+   "z0_default_VTBD_m": {"v":0.05,"u":"m","scope":"environment","src":["W5","W17"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ลานบิน (หญ้า/ผิวลาดยาง) ใกล้ 0.03-0.046 m; ใช้ 0.5-1.0 m เป็น preset \"ลมผ่านเมือง\" สำหรับแนวร่อนที่ผ่านย่านชุมชน"},
+   "powerExponent_legacy": {"v":0.142857,"u":"-","scope":"environment","src":["W5"],"conf":"กลาง","est":true,"note":"ค่าในโค้ดเดิม (1/7) เทียบเท่า log law ที่ z0 = 10·e^-7 = 0.0091 m (ค่าประมาณจากการจับความชันที่ 10 m)"},
+   "profileTop_m": {"v":300,"u":"m","scope":"environment","src":["W5"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: เหนือระดับนี้ใช้ลมคงที่ (โค้ดเดิม clamp 300 m); MathWorks ระบุช่วงใช้ได้ 3-1000 ft"}
+  },
+  "turbulence": {
+   "spec": {"v":{"default":"MIL-F-8785C-Dryden","options":["MIL-F-8785C-Dryden","MIL-HDBK-1797-Dryden","vonKarman-rational"]},"u":"-","scope":"sim","src":["W1","W2"],"conf":"สูง","est":false,"note":"สองสเปกให้ transfer function เดียวกันเมื่อแทนค่า L ของแต่ละสเปก (1797: Lw = h/2)"},
+   "W20_by_severity": {"v":{"light":15,"moderate":30,"severe":45},"u":"kt","scope":"environment","src":["W1","W7"],"conf":"สูง","est":false,"note":"ความเร็วลมที่ 20 ft ที่ใช้กำหนดความรุนแรงความปั่นป่วนระดับต่ำ"},
+   "sigmaW_over_W20": {"v":0.1,"u":"-","scope":"environment","src":["W1","W7"],"conf":"สูง","est":false,"note":"σw = 0.1·W20 ต่ำกว่า 1000 ft"},
+   "lowAlt_coeffs": {"v":{"a":0.177,"b_per_ft":0.000823,"L_exp":1.2,"sigma_exp":0.4,"hMin_ft":10,"hMax_ft":1000},"u":"ft","scope":"environment","src":["W1","W7"],"conf":"สูง","est":false,"note":"Lu = Lv = h/(a+b·h)^1.2, Lw = h (8785C); σu/σw = σv/σw = 1/(a+b·h)^0.4; h ตัดที่ 10 ft"},
+   "highAlt_L_ft": {"v":{"dryden":1750,"vonKarman":2500,"blendFrom_ft":1000,"blendTo_ft":2000},"u":"ft","scope":"environment","src":["W1","W2","W7"],"conf":"สูง","est":false,"note":"เหนือ 2000 ft ใช้ L คงที่และ σu = σv = σw จากตาราง POE; 1000-2000 ft ผสมเชิงเส้น"},
+   "highAlt_sigma_POE": {"v":{"axes":{"prob":[0.2,0.1,0.01,0.001,0.0001,0.00001,0.000001],"alt_ft":[500,1750,3750,7500,15000,25000,35000,45000,55000,65000,75000,80000]},"data":[[3.2,2.2,1.5,0,0,0,0,0,0,0,0,0],[4.2,3.6,3.3,1.6,0,0,0,0,0,0,0,0],[6.6,6.9,7.4,6.7,4.6,2.7,0.4,0,0,0,0,0],[8.6,9.6,10.6,10.1,8,6.6,5,4.2,2.7,0,0,0],[11.8,13,16,15.1,11.6,9.7,8.1,8.2,7.9,4.9,3.2,2.1],[15.6,17.6,23,23.6,22.1,20,16,15.1,12.1,7.9,6.2,5.1],[18.7,21.5,28.4,30.2,30.7,31,25.2,23.1,17.5,10.7,8.4,7.2]]},"u":"ft/s","scope":"environment","src":["W7","W1"],"conf":"กลาง","est":false,"note":"ตาราง Fig. 7 ของ MIL-F-8785C ตามที่ JSBSim ถอดไว้; การจับคู่แถว↔ความน่าจะเป็นอนุมานจากลำดับและ light=1e-2, moderate=1e-3, severe=1e-5"},
+   "rotary": {"v":{"sigmaP_coeff":0.954,"tauP_k":4,"tauQ_k":4,"tauR_k":3},"u":"σp = k·σw/(Lw·b²)^(1/3); τ = k·b/(π·V)","scope":"environment","src":["W1","W3"],"conf":"กลาง","est":true,"note":"สัมประสิทธิ์ 0.954 อินทิเกรตจากสเปกตรัม p_g ของ 8785C (ค่าประมาณที่คำนวณเอง ตรวจด้วยการอินทิเกรตเชิงตัวเลข)"},
+   "sigmaP_1797_simplified": {"v":{"coeff":1.9,"Lp_div":2.6},"u":"σp = 1.9σw/√(h·b); Lp = √(h·b)/2.6","scope":"environment","src":["W3","W8"],"conf":"กลาง","est":false,"note":"รูปย่อของ 1797/Yeager ที่ JSBSim ใช้; ให้ σp สูงกว่าสเปกตรัม 8785C 1.66 เท่าที่ h = 100 ft, b = 10.2 m"},
+   "verticalTaper_m": {"v":3,"u":"m","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ลด σw เชิงเส้นเฉพาะต่ำกว่า 3 m (โค้ดเดิมใช้ 15 m ซึ่งไม่มีในสเปก)"},
+   "dt_s": {"v":0.0041667,"u":"s","scope":"sim","src":[],"conf":"สูง","est":false,"note":"1/240 s ตาม RK4 ของโมเดล; ใช้การ discretize แบบ exact จึงไม่ขึ้นกับ dt"}
+  },
+  "discreteGust": {
+   "cfr25_341": {"v":{"Uref_SL_ftps_EAS":56,"Uref_15000ft":44,"Uref_60000ft":20.86,"H_min_ft":30,"H_max_ft":350,"H_ref_ft":350,"exponent":0.16667,"VD_factor":0.5},"u":"ft/s EAS, ft","scope":"environment","src":["W9"],"conf":"สูง","est":false,"note":"U = (Uds/2)(1-cos(πs/H)), 0≤s≤2H; Uds = Uref·Fg·(H/350)^(1/6)"},
+   "cfr25_341_Fg": {"v":{"Fgz":"1 - Zmo/250000","Fgm":"sqrt(R2*tan(pi*R1/4))","Fg":"0.5*(Fgz+Fgm)"},"u":"-","scope":"aircraft","src":["W9"],"conf":"สูง","est":false,"note":"ต้องใช้ MLW/MTOW, MZFW/MTOW และ Zmo ของแต่ละแบบ (รอบถัดไปสำหรับ A320/737)"},
+   "milspec_8785C": {"v":{"shape":"Vm/2*(1-cos(pi*x/dm)) for 0<=x<=dm, Vm beyond","default_dm_m":[120,120,80],"default_Vm_mps":[3.5,3.5,3]},"u":"m, m/s","scope":"environment","src":["W4"],"conf":"กลาง","est":false,"note":"ค่า default ของ MathWorks ไม่ใช่ค่าบังคับของสเปก"},
+   "etso_c117b_nuisance": {"v":{"A_kt":7.5,"omega_radps":[2.1,1.26,0.78,0.63,0.52,0.42,0.31]},"u":"kt, rad/s","scope":"environment","src":["W11"],"conf":"กลาง","est":false,"note":"gust แนวราบ A(1-cos ωt) ~15 kt; ระบบเตือน wind shear ต้องไม่เตือน (หน่วยของ A อนุมานว่า kt)"}
+  },
+  "microburst": {
+   "OB_relations": {"v":{"zm_over_zstar":0.22,"zstar_over_eps":12.5,"rpeak_over_R":1.1212,"umax_over_lambdaR":0.2357},"u":"-","scope":"environment","src":["W13","W11"],"conf":"สูง","est":false,"note":"ตรวจด้วย Node: ln(12.5)/11.5 = 0.2196, argmax (1-e^-x²)/x = 1.121, 0.5·0.6382·0.7385 = 0.2357"},
+   "Vicroy": {"v":{"alpha":2,"c1c2_TM104053":[-0.22,-2.75],"c1c2_1992":[-0.15,-3.2175]},"u":"-","scope":"environment","src":["W14","W15"],"conf":"กลาง","est":false,"note":"ทั้งสองชุดทำให้ ∂u/∂z = 0 ที่ z = zm (c1·e^c1 ≈ c2·e^c2)"},
+   "etso_sets": {"v":{"axes":{"col":["R_ft","umax_ftps","zm_ft","xc_rel_touchdown_ft"]},"data":[[920,37,98,-9000],[1180,47.6,98,-14000],[2070,58.4,131,-4000],[4430,68.9,164,1000],[9010,72.2,262,1000],[3450,88.2,197,-4000],[3180,53.1,262,1000],[1640,46,164,-4000],[5250,81.3,197,1000],[1250,67.6,100,-4000]]},"u":"ft, ft/s","scope":"environment","src":["W11"],"conf":"สูง","est":false,"note":"ชุดทดสอบ ETSO-C117b App. 2 (โมเดล TM-100632); เริ่ม 1500 ft บน 3°"},
+   "training_sets_trainer": {"v":{"axes":{"col":["R_m","umax_mps","zm_m","xc_before_TD_m","Fbar_1km_95kt"]},"data":[[600,6,50,2000,0.094],[600,8,50,2000,0.126],[600,12,50,2000,0.19]]},"u":"m, m/s","scope":"sim","src":["W13","W16"],"conf":"กลาง","est":true,"note":"ค่าประมาณที่ออกแบบเอง: light/moderate/severe สำหรับเครื่องฝึกที่ 95 kt; (Tmax-D)/W ของเครื่องฝึก ≈ 0.218"},
+   "translation_mps": {"v":0,"u":"m/s","scope":"environment","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: เริ่มแบบนิ่ง (โมเดลทั้งสองเป็น steady); เพิ่มการเคลื่อนที่ไปกับลมเฉลี่ยภายหลัง"}
+  },
+  "fFactor": {
+   "avgLength_m": {"v":1000,"u":"m","scope":"sim","src":["W16","W15"],"conf":"สูง","est":false,"note":"เฉลี่ย F ตามระยะทาง 1 km"},
+   "hazardThreshold": {"v":0.1,"u":"-","scope":"sim","src":["W16"],"conf":"กลาง","est":false,"note":"FAA ถือว่าอันตรายเมื่อ F เฉลี่ย 1 km > 0.1"},
+   "predictiveMustAlert": {"v":0.13,"u":"-","scope":"sim","src":["W16"],"conf":"กลาง","est":false,"note":"must-alert ของระบบพยากรณ์ล่วงหน้า"},
+   "reactiveFloor": {"v":{"default":0.105,"approachMode":0.09,"takeoffMode":0.12,"fav_dV_kt":20},"u":"-","scope":"sim","src":["W11"],"conf":"สูง","est":false,"note":"f_av,x = ΔV/(g·t_x) กับ ΔV = 20 kt; 0.105 ที่ t_x = 10 s"},
+   "trainerExcessTW": {"v":0.218,"u":"-","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"ค่าประมาณจากโมเดลปัจจุบัน: (Tmax-D)/W ที่ 95 kt แฟลปเต็ม ล้อลง ISA+16"}
+  },
+  "wake": {
+   "b0_over_b": {"v":0.7854,"u":"-","scope":"aircraft","src":["W19"],"conf":"สูง","est":false,"note":"π/4 สำหรับการกระจายแรงยกแบบวงรี"},
+   "rc_over_b": {"v":{"default":0.035,"min":0.02,"max":0.06},"u":"-","scope":"aircraft","src":["W19","W24"],"conf":"กลาง","est":false,"note":"รัศมีแกนวน; 0.035 b ตามตัวอย่าง NASA"},
+   "decay_SwitzerProctor": {"v":{"Tss_a":1.27,"Tss_b":0.57,"Tss_N":1.15,"beta1":0.75,"alpha":2.7,"C1":0.08},"u":"-","scope":"environment","src":["W20"],"conf":"ต่ำ","est":false,"note":"อ่านจาก OCR ของ AIAA 2002-0945: Tss = -(1.27 ln ε* + 0.57)exp(-1.15N*); ใช้รูป tanh step; ต้องตรวจกับต้นฉบับ"},
+   "epsilon_presets": {"v":{"calm":0.0001,"light":0.001,"moderate":0.01},"u":"m2/s3","scope":"environment","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: eddy dissipation rate สำหรับ scenario"},
+   "groundEffect": {"v":{"imageFrom_b0":1.5,"minHeight_b0":0.5,"reboundMax_b0":2},"u":"b0","scope":"environment","src":["W21"],"conf":"กลาง","est":false,"note":"เริ่ม image vortex ที่ 1.5 b0; rebound สูงสุดราว 2 b0 (2.6 b0 เมื่อมี shear)"},
+   "leaders": {"v":{"A320ceo":{"mass_kg":64500,"span_m":35.8,"Vapp_kt":137,"Gamma0_m2ps":283.4,"w0_mps":1.604},"B737_800W":{"mass_kg":66361,"span_m":35.79,"Vapp_kt":142,"Gamma0_m2ps":281.4,"w0_mps":1.593}},"u":"kg, m, kt, m2/s, m/s","scope":"aircraft","src":["W31","W32"],"conf":"กลาง","est":true,"note":"มวล = MLW, ρ = 1.1262 kg/m³ (1000 ft, 31°C); Vapp ของ A320 เป็นค่าประมาณ"},
+   "trainerRollControl": {"v":{"Clda":0.16,"daMax_deg":20,"ClMax":0.0559,"ratio1_Gamma_m2ps":56.5},"u":"-","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"ค่าประมาณ: strip theory, ปีกเรียว 0.6, CLα 4.8/rad, 95 kt, อยู่กลางแกนวน"},
+   "hazardBankLimit_deg": {"v":10,"u":"deg","scope":"sim","src":["W24"],"conf":"กลาง","est":false,"note":"เกณฑ์ bank angle ที่ใช้กำหนดขอบเขตอันตรายใกล้พื้นใน NASA TM-110223"},
+   "separation_NM": {"v":{"ICAO_Doc4444":{"HEAVY_LIGHT":6,"MEDIUM_LIGHT":5,"HEAVY_MEDIUM":5,"HEAVY_HEAVY":4,"A380_LIGHT":8},"RECAT_EU":{"D_F":5,"E_F":4,"F_F":3,"B_F":7,"A_F":8},"FAA_CWT":{"F_I":4}},"u":"NM","scope":"environment","src":["W25","W27"],"conf":"กลาง","est":false,"note":"ค่าระยะห่างขณะ approach; ตำแหน่งเซลล์บางช่องอนุมานจากข้อความที่ถอด"}
+  }
+ }
+}

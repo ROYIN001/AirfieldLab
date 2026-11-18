@@ -1,0 +1,74 @@
+=== 1. Mean wind profiles, W10 = 15 kt ===
+power1/7(code)                     kt at 10,30,50,100,200,300,500,1000 ft: 12.7 14.8 15.9 17.6 19.4 20.6 22.1 24.4
+log z0=0.03                        kt at 10,30,50,100,200,300,500,1000 ft: 11.9 14.8 16.1 17.9 19.7 20.7 22.0 23.8
+log z0=0.046(8785C CatC 0.15ft)    kt at 10,30,50,100,200,300,500,1000 ft: 11.7 14.8 16.2 18.1 20.0 21.2 22.6 24.5
+log z0=0.25                        kt at 10,30,50,100,200,300,500,1000 ft: 10.2 14.6 16.7 19.5 22.4 24.0 26.1 28.9
+log z0=0.5                         kt at 10,30,50,100,200,300,500,1000 ft: 9.1 14.6 17.1 20.6 24.1 26.1 28.6 32.1
+log z0=1.0                         kt at 10,30,50,100,200,300,500,1000 ft: 7.3 14.4 17.7 22.3 26.8 29.4 32.7 37.3
+equivalent z0 for 1/7 power matched at 10 m: z0 = 10*exp(-7) = 0.0091 m
+power1/7(code)                     300ft 0.070kt/s F=0.0036 | 100ft 0.179kt/s F=0.0094 | 50ft 0.327kt/s F=0.0171
+log z0=0.03                        300ft 0.061kt/s F=0.0032 | 100ft 0.184kt/s F=0.0097 | 50ft 0.372kt/s F=0.0195
+log z0=0.046(8785C CatC 0.15ft)    300ft 0.066kt/s F=0.0035 | 100ft 0.199kt/s F=0.0104 | 50ft 0.401kt/s F=0.0210
+log z0=0.25                        300ft 0.096kt/s F=0.0050 | 100ft 0.290kt/s F=0.0152 | 50ft 0.585kt/s F=0.0307
+log z0=0.5                         300ft 0.118kt/s F=0.0062 | 100ft 0.357kt/s F=0.0187 | 50ft 0.721kt/s F=0.0378
+log z0=1.0                         300ft 0.154kt/s F=0.0081 | 100ft 0.465kt/s F=0.0244 | 50ft 0.937kt/s F=0.0492
+
+=== 2. Trainer excess thrust/weight on approach (current AC params) ===
+trim: thr=0.248 alpha=1.76deg V=50.97 m/s D=3127 N T=1973 N Tmax=7944 N; (Tmax-D)/W=0.218; sin(gamma) on 3deg ~ 0.0523
+clean at 95 kt: D=1458 N -> (Tmax-D)/W=0.294
+
+=== 3. Microburst F-factor along 3 deg approach, ETSO-C117b App.2 sets (OB model) ===
+set1 R=920ft um=37fps(21.9kt) zm=98ft xc=-9000ft | 95kt: Fbar1km=0.179 at 474ft, dV=20.8kt, wmin=-2617fpm | 140kt: Fbar1km=0.158
+set2 R=1180ft um=47.6fps(28.2kt) zm=98ft xc=-14000ft | 95kt: Fbar1km=0.247 at 733ft, dV=15.0kt, wmin=-3328fpm | 140kt: Fbar1km=0.197
+set3 R=2070ft um=58.4fps(34.6kt) zm=131ft xc=-4000ft | 95kt: Fbar1km=0.233 at 207ft, dV=60.7kt, wmin=-999fpm | 140kt: Fbar1km=0.278
+set4 R=4430ft um=68.9fps(40.8kt) zm=164ft xc=1000ft | 95kt: Fbar1km=0.052 at 136ft, dV=38.7kt, wmin=-152fpm | 140kt: Fbar1km=0.075
+set5 R=9010ft um=72.2fps(42.8kt) zm=262ft xc=1000ft | 95kt: Fbar1km=0.062 at 136ft, dV=32.8kt, wmin=-208fpm | 140kt: Fbar1km=0.090
+set6 R=3450ft um=88.2fps(52.3kt) zm=197ft xc=-4000ft | 95kt: Fbar1km=0.243 at 211ft, dV=81.8kt, wmin=-952fpm | 140kt: Fbar1km=0.299
+set7 R=3180ft um=53.1fps(31.5kt) zm=262ft xc=1000ft | 95kt: Fbar1km=0.036 at 136ft, dV=27.1kt, wmin=-67fpm | 140kt: Fbar1km=0.052
+set8 R=1640ft um=46fps(27.3kt) zm=164ft xc=-4000ft | 95kt: Fbar1km=0.201 at 213ft, dV=50.7kt, wmin=-942fpm | 140kt: Fbar1km=0.240
+set9 R=5250ft um=81.3fps(48.2kt) zm=197ft xc=1000ft | 95kt: Fbar1km=0.069 at 136ft, dV=44.1kt, wmin=-190fpm | 140kt: Fbar1km=0.102
+set10 R=1250ft um=67.6fps(40.1kt) zm=100ft xc=-4000ft | 95kt: Fbar1km=0.299 at 212ft, dV=68.3kt, wmin=-1855fpm | 140kt: Fbar1km=0.341
+ETSO f_av,x = 20kt/(g t): 10s:0.1049 9s:0.1166 8s:0.1311 7s:0.1499 6s:0.1749 5s:0.2098
+
+=== 4. Microburst model property checks ===
+TM-104053: c1*e^c1=-0.1766 c2*e^c2=-0.1758; u(rp,zm)=15.000 w(0,300m)=-8.35 m/s; lambda=3.163e-2
+Wanke&Hansman1992: c1*e^c1=-0.1291 c2*e^c2=-0.1289; u(rp,zm)=15.000 w(0,300m)=-9.03 m/s; lambda=2.847e-2
+OB: ln(12.5)/11.5 = 0.2196 ; max_x (1-e^-x^2)/x at x= 1.1209 value 0.6382 ; 0.5*0.6382*(e^-0.2196-e^-2.745)= 0.2357
+
+=== 5. Wake vortex: leader A320 / 737-800W on approach, follower = trainer ===
+rho at 1000 ft, OAT 31C at field: 1.1262
+trainer roll control C_l,max = Clda*damax = 0.0559
+A320ceo sharklets: m=64500 b=35.8 V=137kt -> b0=28.12 m, Gamma0=283.4 m2/s, w0=1.604 m/s (316 fpm), t0=17.5 s
+   3 NM age 79 s (T=4.50) descent(no decay)=126 m (415 ft) | eps=0.0001 eps*=0.088 Tss=2.52 Gamma/G0=0.723 | rc=1.25m Cl=-0.2024 ratio=3.62 ; rc=1.79m Cl=-0.1685 ratio=3.02
+   3 NM age 79 s (T=4.50) descent(no decay)=126 m (415 ft) | eps=0.001 eps*=0.190 Tss=1.54 Gamma/G0=0.379 | rc=1.25m Cl=-0.1060 ratio=1.90 ; rc=1.79m Cl=-0.0882 ratio=1.58
+   3 NM age 79 s (T=4.50) descent(no decay)=126 m (415 ft) | eps=0.01 eps*=0.408 Tss=0.57 Gamma/G0=0.118 | rc=1.25m Cl=-0.0330 ratio=0.59 ; rc=1.79m Cl=-0.0274 ratio=0.49
+   4 NM age 105 s (T=6.00) descent(no decay)=169 m (553 ft) | eps=0.0001 eps*=0.088 Tss=2.52 Gamma/G0=0.227 | rc=1.25m Cl=-0.0636 ratio=1.14 ; rc=1.79m Cl=-0.0529 ratio=0.95
+   4 NM age 105 s (T=6.00) descent(no decay)=169 m (553 ft) | eps=0.001 eps*=0.190 Tss=1.54 Gamma/G0=0.061 | rc=1.25m Cl=-0.0171 ratio=0.31 ; rc=1.79m Cl=-0.0143 ratio=0.26
+   4 NM age 105 s (T=6.00) descent(no decay)=169 m (553 ft) | eps=0.01 eps*=0.408 Tss=0.57 Gamma/G0=0.013 | rc=1.25m Cl=-0.0038 ratio=0.07 ; rc=1.79m Cl=-0.0031 ratio=0.06
+   5 NM age 131 s (T=7.50) descent(no decay)=211 m (692 ft) | eps=0.0001 eps*=0.088 Tss=2.52 Gamma/G0=0.030 | rc=1.25m Cl=-0.0084 ratio=0.15 ; rc=1.79m Cl=-0.0070 ratio=0.13
+   5 NM age 131 s (T=7.50) descent(no decay)=211 m (692 ft) | eps=0.001 eps*=0.190 Tss=1.54 Gamma/G0=0.007 | rc=1.25m Cl=-0.0019 ratio=0.03 ; rc=1.79m Cl=-0.0016 ratio=0.03
+   5 NM age 131 s (T=7.50) descent(no decay)=211 m (692 ft) | eps=0.01 eps*=0.408 Tss=0.57 Gamma/G0=0.001 | rc=1.25m Cl=-0.0004 ratio=0.01 ; rc=1.79m Cl=-0.0003 ratio=0.01
+   undecayed Gamma0: ratio vs lateral offset of trainer centre from left vortex (-15..15 m): 0.24 0.61 1.48 -3.02 -5.01 -3.05 1.42 0.47 -0.09
+A320ceo fences: m=64500 b=34.1 V=137kt -> b0=26.78 m, Gamma0=297.5 m2/s, w0=1.768 m/s (348 fpm), t0=15.1 s
+   3 NM age 79 s (T=5.20) descent(no decay)=139 m (457 ft) | eps=0.0001 eps*=0.079 Tss=2.66 Gamma/G0=0.540 | rc=1.19m Cl=-0.1624 ratio=2.91 ; rc=1.71m Cl=-0.1363 ratio=2.44
+   3 NM age 79 s (T=5.20) descent(no decay)=139 m (457 ft) | eps=0.001 eps*=0.169 Tss=1.69 Gamma/G0=0.211 | rc=1.19m Cl=-0.0635 ratio=1.14 ; rc=1.71m Cl=-0.0533 ratio=0.95
+   3 NM age 79 s (T=5.20) descent(no decay)=139 m (457 ft) | eps=0.01 eps*=0.365 Tss=0.71 Gamma/G0=0.055 | rc=1.19m Cl=-0.0164 ratio=0.29 ; rc=1.71m Cl=-0.0138 ratio=0.25
+   4 NM age 105 s (T=6.94) descent(no decay)=186 m (610 ft) | eps=0.0001 eps*=0.079 Tss=2.66 Gamma/G0=0.082 | rc=1.19m Cl=-0.0246 ratio=0.44 ; rc=1.71m Cl=-0.0207 ratio=0.37
+   4 NM age 105 s (T=6.94) descent(no decay)=186 m (610 ft) | eps=0.001 eps*=0.169 Tss=1.69 Gamma/G0=0.019 | rc=1.19m Cl=-0.0058 ratio=0.10 ; rc=1.71m Cl=-0.0049 ratio=0.09
+   4 NM age 105 s (T=6.94) descent(no decay)=186 m (610 ft) | eps=0.01 eps*=0.365 Tss=0.71 Gamma/G0=0.004 | rc=1.19m Cl=-0.0012 ratio=0.02 ; rc=1.71m Cl=-0.0010 ratio=0.02
+   5 NM age 131 s (T=8.67) descent(no decay)=232 m (762 ft) | eps=0.0001 eps*=0.079 Tss=2.66 Gamma/G0=0.007 | rc=1.19m Cl=-0.0020 ratio=0.04 ; rc=1.71m Cl=-0.0016 ratio=0.03
+   5 NM age 131 s (T=8.67) descent(no decay)=232 m (762 ft) | eps=0.001 eps*=0.169 Tss=1.69 Gamma/G0=0.001 | rc=1.19m Cl=-0.0004 ratio=0.01 ; rc=1.71m Cl=-0.0004 ratio=0.01
+   5 NM age 131 s (T=8.67) descent(no decay)=232 m (762 ft) | eps=0.01 eps*=0.365 Tss=0.71 Gamma/G0=0.000 | rc=1.19m Cl=-0.0001 ratio=0.00 ; rc=1.71m Cl=-0.0001 ratio=0.00
+   undecayed Gamma0: ratio vs lateral offset of trainer centre from left vortex (-15..15 m): 0.25 0.64 1.66 -3.24 -5.38 -3.27 1.59 0.46 -0.19
+737-800W: m=66361 b=35.79 V=142kt -> b0=28.11 m, Gamma0=281.4 m2/s, w0=1.593 m/s (314 fpm), t0=17.6 s
+   3 NM age 76 s (T=4.31) descent(no decay)=121 m (398 ft) | eps=0.0001 eps*=0.089 Tss=2.51 Gamma/G0=0.770 | rc=1.25m Cl=-0.2139 ratio=3.83 ; rc=1.79m Cl=-0.1781 ratio=3.19
+   3 NM age 76 s (T=4.31) descent(no decay)=121 m (398 ft) | eps=0.001 eps*=0.191 Tss=1.53 Gamma/G0=0.441 | rc=1.25m Cl=-0.1226 ratio=2.19 ; rc=1.79m Cl=-0.1021 ratio=1.83
+   3 NM age 76 s (T=4.31) descent(no decay)=121 m (398 ft) | eps=0.01 eps*=0.411 Tss=0.56 Gamma/G0=0.148 | rc=1.25m Cl=-0.0413 ratio=0.74 ; rc=1.79m Cl=-0.0344 ratio=0.62
+   4 NM age 101 s (T=5.75) descent(no decay)=162 m (530 ft) | eps=0.0001 eps*=0.089 Tss=2.51 Gamma/G0=0.296 | rc=1.25m Cl=-0.0822 ratio=1.47 ; rc=1.79m Cl=-0.0684 ratio=1.23
+   4 NM age 101 s (T=5.75) descent(no decay)=162 m (530 ft) | eps=0.001 eps*=0.191 Tss=1.53 Gamma/G0=0.086 | rc=1.25m Cl=-0.0238 ratio=0.43 ; rc=1.79m Cl=-0.0198 ratio=0.35
+   4 NM age 101 s (T=5.75) descent(no decay)=162 m (530 ft) | eps=0.01 eps*=0.411 Tss=0.56 Gamma/G0=0.019 | rc=1.25m Cl=-0.0054 ratio=0.10 ; rc=1.79m Cl=-0.0045 ratio=0.08
+   5 NM age 127 s (T=7.19) descent(no decay)=202 m (663 ft) | eps=0.0001 eps*=0.089 Tss=2.51 Gamma/G0=0.047 | rc=1.25m Cl=-0.0130 ratio=0.23 ; rc=1.79m Cl=-0.0108 ratio=0.19
+   5 NM age 127 s (T=7.19) descent(no decay)=202 m (663 ft) | eps=0.001 eps*=0.191 Tss=1.53 Gamma/G0=0.011 | rc=1.25m Cl=-0.0029 ratio=0.05 ; rc=1.79m Cl=-0.0024 ratio=0.04
+   5 NM age 127 s (T=7.19) descent(no decay)=202 m (663 ft) | eps=0.01 eps*=0.411 Tss=0.56 Gamma/G0=0.002 | rc=1.25m Cl=-0.0006 ratio=0.01 ; rc=1.79m Cl=-0.0005 ratio=0.01
+   undecayed Gamma0: ratio vs lateral offset of trainer centre from left vortex (-15..15 m): 0.24 0.61 1.47 -3.00 -4.98 -3.02 1.41 0.46 -0.09
+2000 ft^2/s = 185.8 m^2/s

@@ -1,0 +1,71 @@
+{
+ "trim_95kt_f1": {
+  "de_deg": -3.84,
+  "alpha_deg": 1.76,
+  "thr": 0.249
+ },
+ "trim_88kt_f1": {
+  "de_deg": -5.04,
+  "alpha_deg": 3.67,
+  "thr": 0.226
+ },
+ "trim_110kt_f0": {
+  "de_deg": -1.09,
+  "alpha_deg": 5.32,
+  "thr": 0.114
+ },
+ "trim_130kt_f0": {
+  "de_deg": 0.44,
+  "alpha_deg": 2.87,
+  "thr": 0.173
+ },
+ "trim_160kt_f0": {
+  "de_deg": 1.76,
+  "alpha_deg": 0.78,
+  "thr": 0.346
+ },
+ "dePerG": [
+  {
+   "ias": 80,
+   "dAlpha_deg_per_g": 16.58,
+   "dDe_deg_per_g": -13.36,
+   "stickY_per_g_DIRECT": 0.607,
+   "n_per_alpha_g_per_rad": 3.57
+  },
+  {
+   "ias": 95,
+   "dAlpha_deg_per_g": 11.76,
+   "dDe_deg_per_g": -9.47,
+   "stickY_per_g_DIRECT": 0.431,
+   "n_per_alpha_g_per_rad": 5.04
+  },
+  {
+   "ias": 120,
+   "dAlpha_deg_per_g": 7.37,
+   "dDe_deg_per_g": -5.94,
+   "stickY_per_g_DIRECT": 0.27,
+   "n_per_alpha_g_per_rad": 8.04
+  },
+  {
+   "ias": 160,
+   "dAlpha_deg_per_g": 4.15,
+   "dDe_deg_per_g": -3.34,
+   "stickY_per_g_DIRECT": 0.152,
+   "n_per_alpha_g_per_rad": 14.29
+  }
+ ],
+ "assist_full_stick_dn": [
+  {
+   "ias": 80,
+   "dn": 0.51
+  },
+  {
+   "ias": 95,
+   "dn": 0.61
+  },
+  {
+   "ias": 120,
+   "dn": 0.77
+  }
+ ]
+}

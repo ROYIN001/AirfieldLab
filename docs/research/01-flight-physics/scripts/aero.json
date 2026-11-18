@@ -1,0 +1,77 @@
+{
+  "aero": {
+    "conventions": {
+      "frames": {"v": {"body": "FRD", "world": "NED", "alpha": "atan2(w,u), บวกเมื่อหัวเชิดเทียบกระแสลม, wrap ไว้ใน (-180,180] deg", "beta": "asin(v/V), บวกเมื่อลมมาจากขวา", "rates_nd": "p_hat=p*b/(2V), q_hat=q*c/(2V), r_hat=r*b/(2V)", "force_axes": "CL,CD ในแกน stability/wind; CY แกน body y", "moment_axes": "Cl,Cm,Cn แกน body รอบ CG"}, "u": "-", "scope": "sim", "src": ["A1", "A2"], "conf": "สูง", "est": false, "note": "ตรงกับ 20-flight.js และระบบแกนของ JSBSim (DRAG/SIDE/LIFT หรือ X/Y/Z frame=BODY)"},
+      "table_rules": {"v": {"interp": "linear ทุกแกน (monotone cubic เป็นทางเลือกเฉพาะแกน alpha)", "out_of_range": "clamp ที่ขอบ ไม่ extrapolate", "alpha_wrap": "ตารางต้องมีทั้ง -180 และ +180 ที่ค่าเท่ากัน"}, "u": "-", "scope": "sim", "src": ["A2"], "conf": "สูง", "est": false, "note": "พฤติกรรมเดียวกับ FGTable::GetValue ของ JSBSim"}
+    },
+    "ref": {
+      "S": {"v": 16.3, "u": "m2", "scope": "aircraft", "src": ["A1"], "conf": "สูง", "est": true, "note": "ค่าฐานของเครื่องฝึกสมมุติ"},
+      "b": {"v": 10.2, "u": "m", "scope": "aircraft", "src": ["A1"], "conf": "สูง", "est": true, "note": "AR = 6.38"},
+      "c": {"v": 1.65, "u": "m", "scope": "aircraft", "src": ["A1"], "conf": "สูง", "est": true, "note": "MAC; taper 0.6 ให้ MAC 1.63 m สอดคล้องกัน"}
+    },
+    "static_long": {
+      "CL0": {"v": {"clean": 0.25, "landing": 0.80}, "u": "-", "scope": "aircraft", "src": ["A1"], "conf": "กลาง", "est": true, "note": "เท่าค่าปัจจุบัน CL0 + CLflap*f เพื่อไม่ให้ autopilot เสียจูน"},
+      "CLalpha": {"v": 4.8, "u": "1/rad", "scope": "aircraft", "src": ["A1"], "conf": "กลาง", "est": true, "note": "นอก ground effect; ต้องคงไว้ (T-A-05)"},
+      "alpha_star": {"v": {"clean": 16.29, "landing": 13.73}, "u": "deg", "scope": "aircraft", "src": ["A11"], "conf": "ต่ำ", "est": true, "note": "จุด X0=0.5 ปรับด้วย bisection ให้ CLmax ตรง Vs1 78.5 kt และ Vs0 71.0 kt (tune_astar.mjs)"},
+      "alpha_star_neg": {"v": {"clean": 13.0, "landing": 9.0}, "u": "deg", "scope": "aircraft", "src": ["A1"], "conf": "ต่ำ", "est": true, "note": "stall ด้าน alpha ลบ ใช้เฉพาะ pushover/บินหงาย"},
+      "a1": {"v": 22, "u": "1/rad", "scope": "aircraft", "src": ["A11"], "conf": "ต่ำ", "est": true, "note": "ความชันของการแยกตัว; Citation II ระบุจากการบินได้ 20.6-23.9 ที่ h 1500-4000 m"},
+      "CL_sep_at_alpha_star": {"v": {"clean": 0.95, "landing": 1.10}, "u": "-", "scope": "aircraft", "src": ["A9", "A10"], "conf": "ต่ำ", "est": true, "note": "ค่าเริ่มของกิ่ง Viterna (กำหนดค่า A); คุมความลึกของการตกของ CL หลัง stall"},
+      "CDmax_90": {"v": 1.40, "u": "-", "scope": "aircraft", "src": ["A9", "A10"], "conf": "ต่ำ", "est": true, "note": "ปีกเดี่ยว 1.11+0.018*AR = 1.225; บวกหางและลำตัวโดยประมาณ"},
+      "dCD_sep": {"v": 0.20, "u": "-", "scope": "aircraft", "src": ["A11"], "conf": "กลาง", "est": true, "note": "แรงต้านเพิ่มเมื่อแยกตัวเต็ม (Citation C_DX 0.27, วรรณกรรม ~0.2)"},
+      "CmX": {"v": -0.12, "u": "-", "scope": "aircraft", "src": ["A11"], "conf": "กลาง", "est": true, "note": "pitch break; Citation C_mX -0.14, วรรณกรรม ~-0.12"},
+      "Cm0": {"v": {"clean": 0.045, "landing": -0.055}, "u": "-", "scope": "aircraft", "src": ["A1"], "conf": "กลาง", "est": true, "note": "Cm0 + Cmflap*f จาก AC"},
+      "Cmalpha": {"v": -0.72, "u": "1/rad", "scope": "aircraft", "src": ["A1"], "conf": "กลาง", "est": true, "note": "ช่วงแยกตัวใช้ Cmalpha*sin(alpha) ให้เป็นคาบ"},
+      "tailfirst_CL_scale": {"v": 0.7, "u": "-", "scope": "sim", "src": ["A10"], "conf": "ต่ำ", "est": false, "note": "cl_adj ของ AirfoilPrep สำหรับ |alpha|>90 deg"},
+      "CLmax_target": {"v": {"clean": 1.355, "landing": 1.657}, "u": "-", "scope": "aircraft", "src": ["A1"], "conf": "กลาง", "est": true, "note": "1-g, ISA SL, 2250 kg; landing มาจาก Vs0 71 kt ของค่าฐาน"},
+      "alpha_CLmax": {"v": {"clean": 14.56, "landing": 11.58}, "u": "deg", "scope": "aircraft", "src": ["A1"], "conf": "ต่ำ", "est": true, "note": "ผลจากพารามิเตอร์ข้างบน (expected.mjs)"},
+      "table_clean": {"v": {"axes": {"coef": ["CL", "CD", "Cm"], "alpha_deg": [-180, -150, -120, -90, -60, -40, -30, -20, -16, -12, -8, -4, 0, 4, 8, 10, 12, 13, 14, 15, 16, 17, 18, 20, 22, 25, 30, 40, 50, 60, 75, 90, 105, 120, 135, 150, 165, 180]}, "data": [[0, 0.424, 0.424, 0, -0.657, -0.849, -0.868, -0.903, -0.959, -0.795, -0.428, -0.086, 0.25, 0.585, 0.92, 1.086, 1.242, 1.306, 1.348, 1.351, 1.304, 1.208, 1.099, 0.957, 0.902, 0.877, 0.868, 0.849, 0.783, 0.657, 0.362, 0, -0.245, -0.424, -0.49, -0.424, -0.245, 0], [0.244, 0.533, 1.111, 1.4, 1.111, 0.722, 0.533, 0.378, 0.314, 0.158, 0.068, 0.048, 0.045, 0.056, 0.081, 0.1, 0.126, 0.144, 0.169, 0.202, 0.243, 0.286, 0.323, 0.372, 0.405, 0.45, 0.533, 0.722, 0.922, 1.111, 1.323, 1.4, 1.323, 1.111, 0.822, 0.533, 0.321, 0.244], [-0.075, 0.285, 0.549, 0.645, 0.549, 0.388, 0.285, 0.172, 0.135, 0.157, 0.143, 0.095, 0.045, -0.005, -0.056, -0.082, -0.11, -0.127, -0.148, -0.175, -0.208, -0.243, -0.273, -0.315, -0.343, -0.379, -0.435, -0.538, -0.627, -0.699, -0.77, -0.795, -0.77, -0.699, -0.584, -0.435, -0.261, -0.075]]}, "u": "-", "scope": "aircraft", "src": ["A9", "A10", "A11"], "conf": "ต่ำ", "est": true, "note": "ตัวอย่างรูปแบบตาราง (static X=X0, gear down) คำนวณจากสูตร; ช่วง -30..30 ควรถี่ 1 deg"}
+    },
+    "elevator_fade": {
+      "alpha_t_star": {"v": 22, "u": "deg", "scope": "aircraft", "src": ["A15"], "conf": "ต่ำ", "est": true, "note": "ประสิทธิผล elevator ลดลงเมื่อ alpha สูง ให้ full-aft trim alpha อยู่ราว alpha_CLmax+6 deg"},
+      "a_t": {"v": 10, "u": "1/rad", "scope": "aircraft", "src": ["A1"], "conf": "ต่ำ", "est": true, "note": "ความชันของ tanh"},
+      "floor": {"v": 0.35, "u": "-", "scope": "aircraft", "src": ["A1"], "conf": "ต่ำ", "est": true, "note": "ประสิทธิผลขั้นต่ำที่ alpha สูงมาก"}
+    },
+    "separation_dynamics": {
+      "tau1": {"v": 0.4, "u": "s", "scope": "aircraft", "src": ["A11", "A12"], "conf": "ต่ำ", "est": true, "note": "ระหว่างค่า airfoil 4.24c/V = 0.17 s กับ Citation II 0.625 s"},
+      "tau2": {"v": 0.2, "u": "s", "scope": "aircraft", "src": ["A11", "A12"], "conf": "ต่ำ", "est": true, "note": "Citation II 0.37-0.54 s ที่ h 1500-4000 m; airfoil ~0.17 s"},
+      "dynamic_CLmax_cap": {"v": 0.25, "u": "-", "scope": "sim", "src": ["A1"], "conf": "ต่ำ", "est": true, "note": "เพดาน overshoot สัมพัทธ์ของ CLmax เมื่อดึงเร็ว เพื่อกันการโกงด้วย dynamic lift"}
+    },
+    "large_beta": {
+      "lift_beta_exponent": {"v": 2, "u": "-", "scope": "sim", "src": ["A4"], "conf": "กลาง", "est": true, "note": "ใช้ q จาก u^2+w^2 (cos^2 beta) กับ CL, CD_att, Cm"},
+      "CY_crossflow": {"v": 0.45, "u": "-", "scope": "aircraft", "src": ["A1"], "conf": "ต่ำ", "est": true, "note": "CY = CYb*sin(b)cos(b) - CY_crossflow*sin(b)|sin(b)|; พื้นที่ข้าง ~7 m2 x CD 1.0 / S"}
+    },
+    "strip_wing": {
+      "panels_per_side": {"v": 8, "u": "-", "scope": "sim", "src": ["A4"], "conf": "กลาง", "est": true, "note": "ต้นทุน < 1% CPU ที่ 240 Hz RK4"},
+      "taper": {"v": 0.6, "u": "-", "scope": "aircraft", "src": ["A1"], "conf": "ต่ำ", "est": true, "note": "cr 2.00 m, ct 1.20 m"},
+      "dihedral_eff": {"v": 4, "u": "deg", "scope": "aircraft", "src": ["A1"], "conf": "ต่ำ", "est": true, "note": "ให้ Clb ของปีก -0.079/rad; ส่วนที่เหลือของ -0.085 มาจาก fin"},
+      "washout": {"v": 3, "u": "deg", "scope": "aircraft", "src": ["A16", "A17"], "conf": "ต่ำ", "est": true, "note": "ปลายปีก stall ช้ากว่าโคน; ลด wing drop และคง aileron"},
+      "kp_roll": {"v": 0.661, "u": "-", "scope": "aircraft", "src": ["A1"], "conf": "กลาง", "est": true, "note": "ตัวคูณ p*y ใน alpha ท้องถิ่น ให้ Clp(2 deg) = -0.47 (strip ล้วนให้ -0.71)"},
+      "tau_aileron": {"v": 0.26, "u": "-", "scope": "aircraft", "src": ["A1"], "conf": "กลาง", "est": true, "note": "Delta alpha = tau*da บนแผง 60-100% ครึ่งช่วงปีก ให้ Clda = 0.16"},
+      "aileron_span_frac": {"v": [0.6, 1.0], "u": "-", "scope": "aircraft", "src": ["A1"], "conf": "ต่ำ", "est": true, "note": "สัดส่วนครึ่งช่วงปีก"},
+      "asym_seed_dalpha_star": {"v": 0.5, "u": "deg", "scope": "sim", "src": ["A15", "A16"], "conf": "ต่ำ", "est": true, "note": "ความต่างของ alpha* ซ้าย-ขวา สุ่มด้วย seed ต่อเที่ยวบิน (0 = สมมาตร)"}
+    },
+    "stall_warning": {
+      "min_margin": {"v": 5, "u": "kt", "scope": "aircraft", "src": ["A22"], "conf": "สูง", "est": false, "note": "14 CFR 23.207(c) (ก่อน Amdt 23-64)"},
+      "alpha_warn_5kt": {"v": {"clean": 11.41, "landing": 7.77}, "u": "deg", "scope": "aircraft", "src": ["A1", "A22"], "conf": "กลาง", "est": true, "note": "1-g ISA SL; คำนวณจาก CL_static"},
+      "alpha_warn_design": {"v": {"clean": 10.71, "landing": 6.87}, "u": "deg", "scope": "aircraft", "src": ["A1"], "conf": "ต่ำ", "est": true, "note": "ตั้งที่ margin 7 kt เผื่อ gust"}
+    },
+    "buffet": {
+      "X_onset": {"v": 0.89, "u": "-", "scope": "sim", "src": ["A11"], "conf": "กลาง", "est": false, "note": "Citation II: buffet รู้สึกได้เมื่อ X < 0.89"},
+      "vertical_filter": {"v": {"w0": 75.92, "Q": 8.28}, "u": "rad/s,-", "scope": "aircraft", "src": ["A11"], "conf": "ต่ำ", "est": true, "note": "12.1 Hz ของ Citation II; เครื่องฝึกเบาอาจสูงกว่า"},
+      "lateral_filter": {"v": {"w0": [36.43, 64.71], "Q": [4.19, 11.99], "gain_ratio": [2, 1]}, "u": "rad/s,-,-", "scope": "aircraft", "src": ["A11"], "conf": "ต่ำ", "est": true, "note": "5.8 Hz และ 10.3 Hz"},
+      "rms_full": {"v": {"az": 0.05, "ay": 0.016}, "u": "g", "scope": "aircraft", "src": ["A11"], "conf": "ต่ำ", "est": true, "note": "ที่ X=0; Citation อนุมานจาก H0 ได้ ~0.09 g แนวดิ่ง (สมมติ white noise ความเข้ม 1)"}
+    },
+    "spin_reference": {
+      "alpha_spin": {"v": [43, 60], "u": "deg", "scope": "aircraft", "src": ["A15", "A16"], "conf": "กลาง", "est": false, "note": "เครื่อง GA low-wing ของ NASA; flat spin ~60 deg"},
+      "turn_rate": {"v": [145, 208], "u": "deg/s", "scope": "aircraft", "src": ["A15"], "conf": "กลาง", "est": false, "note": "NASA TP-2644"},
+      "omega_hat": {"v": [0.27, 0.42], "u": "-", "scope": "aircraft", "src": ["A15"], "conf": "ต่ำ", "est": true, "note": "Omega*b/(2V) อนุมานจาก TP-2644 ด้วย V_descent จากสมดุลแรง"},
+      "descent_trainer": {"v": 8400, "u": "fpm", "scope": "aircraft", "src": ["A1"], "conf": "ต่ำ", "est": true, "note": "V=sqrt(2W/(rho S C_R)), C_R(50 deg)=1.21 -> 42.7 m/s"},
+      "IYMP": {"v": -0.0201, "u": "-", "scope": "aircraft", "src": ["A1", "A19"], "conf": "สูง", "est": true, "note": "(Ixx-Iyy)/(m b^2) = -201e-4: fuselage-heavy"},
+      "recovery_turns_max": {"v": 1.5, "u": "turn", "scope": "aircraft", "src": ["A22", "A23"], "conf": "สูง", "est": false, "note": "acrobatic: 1.5 รอบเพิ่มหลังเริ่มกู้; normal: 1 รอบจาก 1-turn spin"}
+    },
+    "sim": {
+      "alpha_table_step": {"v": {"inner_deg": 1, "inner_range_deg": [-30, 30], "outer_deg": 5}, "u": "deg", "scope": "sim", "src": ["A1"], "conf": "กลาง", "est": true, "note": "38 จุดให้ error CL สูงสุด 0.07-0.11; 1 deg ช่วงใน ลดเหลือ < 0.01"},
+      "X_update": {"v": {"method": "exact first-order step ต่อ dt", "dt_s": 0.004167}, "u": "-", "scope": "sim", "src": ["A12"], "conf": "กลาง", "est": false, "note": "X_{k+1} = X0 + (X_k - X0) exp(-dt/tau1)"}
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+ "tab_deg": {
+  "71kt_f1": 12.86,
+  "75kt_f1": 11.29,
+  "95kt_f1": 6.2,
+  "90kt_f0": 3.22,
+  "200kt_f0": -4.27,
+  "230kt_f0": -4.74
+ },
+ "dTab_deg_per_kt_95": -0.178,
+ "kt_per_tabdeg_95": -5.63,
+ "dTab_deg_per_kt_150": -0.045,
+ "kt_per_tabdeg_150": -22.17,
+ "trimRate_dps": 3.33,
+ "trimSpeedRate_kt_per_s_95": 18.7,
+ "trimSpeedRate_kt_per_s_150": 73.8,
+ "rudderPedal_lbf_2p8deg_80kt": [
+  {
+   "qRatio": 1,
+   "F_lbf": 5.2
+  },
+  {
+   "qRatio": 1.5,
+   "F_lbf": 7.8
+  },
+  {
+   "qRatio": 2,
+   "F_lbf": 10.3
+  }
+ ],
+ "rudderPedal_lbf_per_deg_95kt": 2.6,
+ "rudderFull25_95kt_lbf": 65,
+ "aileron_lbf": {
+  "torque7p3deg_80kt": 6.4,
+  "full20deg_95kt": 24.9,
+  "full20deg_150kt": 62
+ },
+ "pb2V_per_deg": 0.0059
+}

@@ -1,0 +1,33 @@
+h=100 ft W20=15 kt: target su=1.324 sw=0.772 m/s Lu=154.0 Lw=30.5 m; sigmaP=0.0501 rad/s
+   measured su=1.356 sv=1.294 sw=0.768 sp=0.0500 sq=0.0377 sr=0.0404 rad/s
+   R_w(xi=0.5Lw) meas 0.447 theory (1-xi/2)e^-xi 0.455
+   R_w(xi=1Lw) meas 0.179 theory (1-xi/2)e^-xi 0.184
+   R_w(xi=2Lw) meas 0.010 theory (1-xi/2)e^-xi 0.000
+   Yeager eq.(8) sigma_p=1.9 sw/sqrt(Lw b)=0.0832; eq.(14) sigma_q~sqrt(pi/(2 Lw b)) sw=0.0549; eq.(17) sigma_r~sqrt(2pi/(3 Lw b)) sv=0.1087
+   roll: |Clp|*sigmaP*b/(2V)=0.0025 -> equivalent aileron sigma 0.88 deg
+h=300 ft W20=15 kt: target su=1.088 sw=0.772 m/s Lu=256.1 Lw=91.4 m; sigmaP=0.0348 rad/s
+   measured su=1.112 sv=1.051 sw=0.767 sp=0.0347 sq=0.0251 sr=0.0261 rad/s
+   R_w(xi=0.5Lw) meas 0.457 theory (1-xi/2)e^-xi 0.455
+   R_w(xi=1Lw) meas 0.185 theory (1-xi/2)e^-xi 0.184
+   R_w(xi=2Lw) meas 0.007 theory (1-xi/2)e^-xi 0.000
+   Yeager eq.(8) sigma_p=1.9 sw/sqrt(Lw b)=0.0480; eq.(14) sigma_q~sqrt(pi/(2 Lw b)) sw=0.0317; eq.(17) sigma_r~sqrt(2pi/(3 Lw b)) sv=0.0515
+   roll: |Clp|*sigmaP*b/(2V)=0.0017 -> equivalent aileron sigma 0.61 deg
+h=100 ft W20=30 kt: target su=2.648 sw=1.543 m/s Lu=154.0 Lw=30.5 m; sigmaP=0.1002 rad/s
+   measured su=2.712 sv=2.588 sw=1.536 sp=0.1000 sq=0.0755 sr=0.0808 rad/s
+   R_w(xi=0.5Lw) meas 0.447 theory (1-xi/2)e^-xi 0.455
+   R_w(xi=1Lw) meas 0.179 theory (1-xi/2)e^-xi 0.184
+   R_w(xi=2Lw) meas 0.010 theory (1-xi/2)e^-xi 0.000
+   Yeager eq.(8) sigma_p=1.9 sw/sqrt(Lw b)=0.1663; eq.(14) sigma_q~sqrt(pi/(2 Lw b)) sw=0.1097; eq.(17) sigma_r~sqrt(2pi/(3 Lw b)) sv=0.2174
+   roll: |Clp|*sigmaP*b/(2V)=0.0049 -> equivalent aileron sigma 1.76 deg
+h=50 ft W20=15 kt: target su=1.419 sw=0.772 m/s Lu=94.7 Lw=15.2 m; sigmaP=0.0631 rad/s
+   measured su=1.451 sv=1.397 sw=0.770 sp=0.0630 sq=0.0455 sr=0.0539 rad/s
+   R_w(xi=0.5Lw) meas 0.456 theory (1-xi/2)e^-xi 0.455
+   R_w(xi=1Lw) meas 0.176 theory (1-xi/2)e^-xi 0.184
+   R_w(xi=2Lw) meas -0.005 theory (1-xi/2)e^-xi 0.000
+   Yeager eq.(8) sigma_p=1.9 sw/sqrt(Lw b)=0.1176; eq.(14) sigma_q~sqrt(pi/(2 Lw b)) sw=0.0776; eq.(17) sigma_r~sqrt(2pi/(3 Lw b)) sv=0.1647
+   roll: |Clp|*sigmaP*b/(2V)=0.0031 -> equivalent aileron sigma 1.11 deg
+dt=0.0333 h=20ft (Lw=6.10 m, tau=0.125 s) sw target 1.543 measured 1.553
+dt=0.0167 h=20ft (Lw=6.10 m, tau=0.125 s) sw target 1.543 measured 1.549
+dt=0.0042 h=20ft (Lw=6.10 m, tau=0.125 s) sw target 1.543 measured 1.548
+dt=0.0010 h=20ft (Lw=6.10 m, tau=0.125 s) sw target 1.543 measured 1.551
+Phi_w(0) ratio current-first-order(L) / Dryden 8785C = 2.00 ; high-freq ratio = 0.667

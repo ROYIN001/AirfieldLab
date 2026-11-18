@@ -1,0 +1,263 @@
+{
+ "xinput": {
+  "left": 0.2395,
+  "right": 0.2652,
+  "trigger": 0.1176
+ },
+ "chain": [
+  [
+   0,
+   0
+  ],
+  [
+   0.05,
+   0
+  ],
+  [
+   0.08,
+   0
+  ],
+  [
+   0.1,
+   0.0109
+  ],
+  [
+   0.25,
+   0.0955
+  ],
+  [
+   0.5,
+   0.2758
+  ],
+  [
+   0.75,
+   0.5573
+  ],
+  [
+   1,
+   1
+  ],
+  [
+   -0.5,
+   -0.2758
+  ]
+ ],
+ "slopeAtEdgeOfDz": 0.5435,
+ "half": {
+  "e05": 0.3125,
+  "e1": 0.125,
+  "pow2": 0.25,
+  "pow3": 0.125,
+  "p_for_10pct": 3.3219
+ },
+ "diag": {
+  "axial": [
+   0.0217,
+   0.0217
+  ],
+  "radial": [
+   0.0472,
+   0.0472
+  ],
+  "radialUnscaled": [
+   0.1,
+   0.1
+  ]
+ },
+ "pureRoll": {
+  "axialX": 0.2391,
+  "radialX": [
+   0.2403,
+   0.0401
+  ]
+ },
+ "outer": [
+  [
+   0.97,
+   0.9889
+  ],
+  [
+   0.98,
+   1
+  ],
+  [
+   1,
+   1
+  ]
+ ],
+ "c2s": [
+  1,
+  1
+ ],
+ "calBi": [
+  [
+   -0.9,
+   -1
+  ],
+  [
+   0.04,
+   0
+  ],
+  [
+   0.5,
+   0.5055
+  ]
+ ],
+ "thr": [
+  [
+   1,
+   0
+  ],
+  [
+   0,
+   0.5
+  ],
+  [
+   -1,
+   1
+  ]
+ ],
+ "toeSaitek": [
+  [
+   -1,
+   0
+  ],
+  [
+   0,
+   0.5
+  ],
+  [
+   1,
+   1
+  ]
+ ],
+ "toeTRudder": [
+  [
+   1,
+   0
+  ],
+  [
+   0,
+   0.5
+  ],
+  [
+   -1,
+   1
+  ]
+ ],
+ "fg": {
+  "saitek": [
+   0,
+   1
+  ],
+  "trudder": [
+   0,
+   1
+  ],
+  "thr": [
+   1,
+   0
+  ]
+ },
+ "rest": {
+  "center": 0.0302,
+  "noise": 0.0102,
+  "dz": 0.0353
+ },
+ "detect": 1,
+ "key": {
+  "cur_pitch_after_1frame": 0.0333,
+  "cur_pitch_after_0p25": 0.5,
+  "cur_full_s": 0.5,
+  "cur_center_s": 0.2,
+  "prop_pitch_after_1frame": 0.0083,
+  "prop_pitch_after_0p3": 0.15,
+  "prop_full_s": 2,
+  "prop_center_s": 0.4,
+  "prop_roll_after_0p3": 0.3,
+  "fine_pitch_after_2s": 0.5,
+  "reverse_from_0p5": 0.25
+ },
+ "fgKeyRamp": {
+  "min_per_s": 0.125,
+  "max_per_s": 1.5,
+  "trimStepPerS_at30Hz": 0.03,
+  "TRIM_RATE": 0.045,
+  "fullTrimTravel_s": 44.44444444444444
+ },
+ "flaps": {
+  "up_from0": 0.5,
+  "up_from05": 1,
+  "dn_from1": 0.5,
+  "dn_from0": 0,
+  "mid": 0.5
+ },
+ "brakes": [
+  0.6,
+  0.6
+ ],
+ "keymapProblems_current": [
+  "ControlLeft",
+  "ControlRight"
+ ],
+ "resolve": [
+  null,
+  "up"
+ ],
+ "ids": [
+  {
+   "vendor": "045e",
+   "product": "028e"
+  },
+  {
+   "vendor": "0810",
+   "product": "0003"
+  },
+  null
+ ],
+ "oneEuro": {
+  "lp1Hz_lag_s": 0.1592,
+  "lp5Hz_lag_s": 0.0318,
+  "fc5_b0": {
+   "slowLag": 0.0318,
+   "fastLag": 0.0318,
+   "jitterRatio": 0.4493
+  },
+  "fc1_b1": {
+   "slowLag": 0.0756,
+   "fastLag": 0.026,
+   "jitterRatio": 0.2331
+  },
+  "fc2_b2": {
+   "slowLag": 0.0456,
+   "fastLag": 0.0161,
+   "jitterRatio": 0.3154
+  }
+ },
+ "hap": [
+  {
+   "strongMagnitude": 0.6,
+   "weakMagnitude": 0.3
+  },
+  {
+   "strongMagnitude": 0,
+   "weakMagnitude": 0.15
+  },
+  {
+   "strongMagnitude": 0,
+   "weakMagnitude": 0.075
+  },
+  {
+   "strongMagnitude": 0.5,
+   "weakMagnitude": 0
+  },
+  {
+   "strongMagnitude": 1,
+   "weakMagnitude": 0.15
+  },
+  {
+   "strongMagnitude": 0.3,
+   "weakMagnitude": 0.15
+  }
+ ]
+}

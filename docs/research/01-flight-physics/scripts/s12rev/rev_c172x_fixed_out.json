@@ -1,0 +1,28 @@
+{
+ "cruise_100kcas_3000ft": {
+  "vc_kts": 100.0,
+  "alpha_deg": 0.796,
+  "theta_deg": 0.796,
+  "elev_pos_deg": 5.1404,
+  "pitch_trim": 0.2186,
+  "thr": 0.769,
+  "rpm": 2358.5146,
+  "w_lb": 2480.0,
+  "flap_deg": 0.0,
+  "dh_ft_10s": 0.0684,
+  "hdot_fpm_end": 0.6523
+ },
+ "approach_65kcas_1000ft_flap30_gs3": {
+  "vc_kts": 65.0,
+  "alpha_deg": 2.2131,
+  "theta_deg": -0.7869,
+  "elev_pos_deg": 2.0355,
+  "pitch_trim": 0.0835,
+  "thr": 0.5066,
+  "rpm": 1574.4691,
+  "w_lb": 2480.0,
+  "flap_deg": 30.0,
+  "dh_ft_10s": -57.8722,
+  "hdot_fpm_end": -344.8332
+ }
+}
