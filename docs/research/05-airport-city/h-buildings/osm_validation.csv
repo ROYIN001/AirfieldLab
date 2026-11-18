@@ -1,0 +1,11 @@
+reference,estimate,n,median_err,MAE,RMSE
+osm height tag,t25_med,230,-2.17,5.01,6.99
+osm height tag,t25_p90,230,-0.25,4.62,6.1
+osm height tag,t25_max,230,0.47,4.75,6.21
+osm height tag,gba_med,230,-3.48,4.95,6.73
+osm height tag,h_rs,230,-0.25,4.6,6.09
+osm num_floors*3.0+1.0,t25_med,694,-2.7,5.8,11.3
+osm num_floors*3.0+1.0,t25_p90,694,-0.02,4.0,8.04
+osm num_floors*3.0+1.0,gba_med,686,-2.96,5.84,11.25
+osm num_floors*3.0+1.0,h_rs,694,-0.09,4.22,9.49
+osm height/num_floors,storey height,25,3.2,,

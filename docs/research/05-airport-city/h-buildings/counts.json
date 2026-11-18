@@ -1,0 +1,58 @@
+{
+ "overture_2026-10-21.0": {
+  "bbox_total": 745188,
+  "r_le_10km": 429211,
+  "0-2km": 11235,
+  "2-5km": 105657,
+  "5-10km": 312319,
+  "repo_land_in_extent": 117187
+ },
+ "gba_lod1": {
+  "bbox_total": 951811,
+  "r_le_10km": 551072,
+  "0-2km": 15774,
+  "2-5km": 144847,
+  "5-10km": 390451,
+  "repo_land_in_extent": 159652
+ },
+ "google_open_buildings_v3": {
+  "bbox_total": 1054073,
+  "r_le_10km": 607205,
+  "0-2km": 16646,
+  "2-5km": 152242,
+  "5-10km": 438317,
+  "repo_land_in_extent": 169118
+ },
+ "overture_sources_r10": {
+  "Google Open Buildings": 310927,
+  "Microsoft ML Buildings": 89857,
+  "OpenStreetMap": 28427
+ },
+ "overture_tags_r10": {
+  "with_height": 226,
+  "with_num_floors": 622,
+  "with_name": 1426,
+  "pct_height": 0.053,
+  "pct_num_floors": 0.145,
+  "osm_count": 28427,
+  "osm_pct_height": 0.8,
+  "osm_pct_num_floors": 2.19
+ },
+ "gba_sources_r10": {
+  "google": 524323,
+  "osm": 16088,
+  "ms": 7311,
+  "ours2": 3350
+ },
+ "gob_conf_r10": {
+  "min": 0.65,
+  "p50": 0.819,
+  "pct_ge_0.75": 71.3
+ },
+ "overture_area_r10": {
+  "10": 21.2,
+  "50": 103.9,
+  "90": 304.1,
+  "99": 1078.0
+ }
+}

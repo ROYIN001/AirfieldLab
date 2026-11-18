@@ -1,0 +1,192 @@
+[
+ {
+  "id": "OBS1",
+  "type": "radio mast",
+  "aip_hgt_m": 70.0,
+  "aip_hgt_ft": 230,
+  "marking": "Marked, Lighted",
+  "lat_aip_2026_05_14": 13.8855167,
+  "lon_aip_2026_05_14": 100.5641917,
+  "en_2026_05_14": [
+   -4485.1,
+   -3192.5
+  ],
+  "lat_aip_2026_10_29": 13.8855278,
+  "lon_aip_2026_10_29": 100.5641944,
+  "en_2026_10_29": [
+   -4484.8,
+   -3191.3
+  ],
+  "dist_from_arp_m": 5505,
+  "overture_nearest": {
+   "dist_m": 0.4,
+   "src": "OpenStreetMap",
+   "area_m2": 137.3,
+   "t25_med": 6.1,
+   "t25_p90": 16.9,
+   "t25_max": 18.9,
+   "gba_med": 8.4,
+   "h_best": 16.9
+  },
+  "gba_nearest": {
+   "dist_m": 0.0,
+   "src": "google",
+   "height": 8.4
+  },
+  "t25_raster_max_r25": 46.2,
+  "t25_raster_max_r50": 50.5,
+  "t25_raster_max_r150": 53.9
+ },
+ {
+  "id": "OBS2",
+  "type": "radio mast",
+  "aip_hgt_m": 61.0,
+  "aip_hgt_ft": 200,
+  "marking": "Marked, Lighted",
+  "lat_aip_2026_05_14": 13.9147139,
+  "lon_aip_2026_05_14": 100.6194,
+  "en_2026_05_14": [
+   1481.5,
+   37.8
+  ],
+  "lat_aip_2026_10_29": 13.9147222,
+  "lon_aip_2026_10_29": 100.6193889,
+  "en_2026_10_29": [
+   1480.3,
+   38.7
+  ],
+  "dist_from_arp_m": 1482,
+  "overture_nearest": {
+   "dist_m": 12.0,
+   "src": "Google Open Buildings",
+   "area_m2": 452.3,
+   "t25_med": 7.6,
+   "t25_p90": 8.5,
+   "t25_max": 9.0,
+   "gba_med": 6.7,
+   "h_best": 8.5
+  },
+  "gba_nearest": {
+   "dist_m": 12.0,
+   "src": "google",
+   "height": 6.7
+  },
+  "t25_raster_max_r25": 8.0,
+  "t25_raster_max_r50": 10.0,
+  "t25_raster_max_r150": 11.0
+ },
+ {
+  "id": "OBS3",
+  "type": "building",
+  "aip_hgt_m": 78.0,
+  "aip_hgt_ft": 256,
+  "marking": "Marked, Lighted",
+  "lat_aip_2026_05_14": 13.8941675,
+  "lon_aip_2026_05_14": 100.5615647,
+  "en_2026_05_14": [
+   -4769.0,
+   -2235.4
+  ],
+  "lat_aip_2026_10_29": 13.8941667,
+  "lon_aip_2026_10_29": 100.5615556,
+  "en_2026_10_29": [
+   -4770.0,
+   -2235.5
+  ],
+  "dist_from_arp_m": 5267,
+  "overture_nearest": {
+   "dist_m": 0.0,
+   "src": "OpenStreetMap",
+   "area_m2": 1419.2,
+   "t25_med": 46.5,
+   "t25_p90": 73.0,
+   "t25_max": 77.3,
+   "gba_med": 31.5,
+   "h_best": 73.0
+  },
+  "gba_nearest": {
+   "dist_m": 0.0,
+   "src": "osm",
+   "height": 31.5
+  },
+  "t25_raster_max_r25": 77.3,
+  "t25_raster_max_r50": 77.3,
+  "t25_raster_max_r150": 77.3
+ },
+ {
+  "id": "OBS4",
+  "type": "building",
+  "aip_hgt_m": 87.1,
+  "aip_hgt_ft": 286,
+  "marking": "Lighted",
+  "lat_aip_2026_05_14": 13.8702139,
+  "lon_aip_2026_05_14": 100.5675167,
+  "en_2026_05_14": [
+   -4125.7,
+   -4885.6
+  ],
+  "lat_aip_2026_10_29": 13.8702222,
+  "lon_aip_2026_10_29": 100.5675278,
+  "en_2026_10_29": [
+   -4124.5,
+   -4884.7
+  ],
+  "dist_from_arp_m": 6395,
+  "overture_nearest": {
+   "dist_m": 0.0,
+   "src": "OpenStreetMap",
+   "area_m2": 2336.7,
+   "t25_med": 61.0,
+   "t25_p90": 94.2,
+   "t25_max": 96.2,
+   "gba_med": 41.5,
+   "h_best": 94.2
+  },
+  "gba_nearest": {
+   "dist_m": 0.0,
+   "src": "osm",
+   "height": 41.5
+  },
+  "t25_raster_max_r25": 96.2,
+  "t25_raster_max_r50": 96.2,
+  "t25_raster_max_r150": 96.2
+ },
+ {
+  "id": "OBS5",
+  "type": "building",
+  "aip_hgt_m": 50.0,
+  "aip_hgt_ft": 164,
+  "marking": "Lighted",
+  "lat_aip_2026_05_14": 13.9530806,
+  "lon_aip_2026_05_14": 100.6208444,
+  "en_2026_05_14": [
+   1637.6,
+   4282.6
+  ],
+  "lat_aip_2026_10_29": 13.9530833,
+  "lon_aip_2026_10_29": 100.6208333,
+  "en_2026_10_29": [
+   1636.4,
+   4282.9
+  ],
+  "dist_from_arp_m": 4585,
+  "overture_nearest": {
+   "dist_m": 0.0,
+   "src": "Google Open Buildings",
+   "area_m2": 2637.3,
+   "t25_med": 6.4,
+   "t25_p90": 7.8,
+   "t25_max": 12.4,
+   "gba_med": 9.7,
+   "h_best": 7.8
+  },
+  "gba_nearest": {
+   "dist_m": 0.0,
+   "src": "google",
+   "height": 9.7
+  },
+  "t25_raster_max_r25": 8.2,
+  "t25_raster_max_r50": 13.3,
+  "t25_raster_max_r150": 26.8
+ }
+]
