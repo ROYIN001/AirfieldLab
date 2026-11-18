@@ -74,7 +74,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   lowered while on or within 5 cm of the ground jams instead of pushing the airframe up.
 - `Aircraft.trimFlight` solves the full 6-DOF trim (α, δe, lever or γ, β, δa, δr) by Newton iteration.
 - Wind: 1/7-power shear + MIL-F-8785C Dryden turbulence (first-order).
-- Autopilot: LOC/GS tracking with aileron/rudder integrators, flare, wing-low decrab, rollout, braking that backs
+- Autopilot: LOC/GS tracking with aileron/rudder integrators, flare, wing-low decrab (bank fed forward from the
+  mean crosswind, 0.6° per m/s, plus drift and offset corrections), rollout, braking that backs
   off before the tyres lock (`brakeLikeAPilot`); target speed Vapp, Vref over the threshold, plus 0.2 × wind kt ×
   turbulence level (≤ 8 kt); gear only below VLO − 5 kt and each flap notch below its VFE − 5 kt. Hand-back in the
   air (`Flight.setPilot('ap')`): more than 300 m before the threshold it flies the approach (APP); closer, past it
@@ -91,8 +92,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   3,772 fpm at 130 KIAS, take-off 216 m roll / 403 m over 50 ft (PC-9: 391 m), landing 704 m over 50 ft
   (PC-9: 700 m), MIL-F-8785C Class I Level 1 modes in Cat B and C.
 - Autoland (`autoland.test.mjs`, 4 runways × 10 turbulence seeds; the app seeds every flight differently):
-  calm 93–100 (mean 98), 10 kt headwind 88–100 (97), 10 kt crosswind from the right 87–97 (95), 15 kt gusty
-  crosswind from the left 67–97 (89; the low scores touch down 5–10 m downwind of the centre line).
+  calm 93–100 (mean 98), 10 kt headwind 88–100 (97), 10 kt crosswind from the right 90–100 (98), 15 kt gusty
+  crosswind from the left 74–100 (93; the scores below 85 are one turbulence seed whose gust in the flare leaves
+  the touchdown 13–16 kt below Vref).
 
 ## Controls (current)
 - Keyboard (physical keys, so a Thai layout works): W/S or ↑/↓ pitch, A/D or ←/→ roll, Q/E rudder — proportional:

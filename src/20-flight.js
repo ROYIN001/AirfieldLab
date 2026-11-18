@@ -141,6 +141,7 @@ const AC = {
   anchorK: 2.0e5, anchorC: 2.0e4,   // tyre patch stiffness / damping while a brake holds the wheel at rest
   Vref: 88, Vapp: 95, Vs0: 71,   // knots IAS, landing flaps
   gustAdd: 0.2,                  // approach speed additive: kt per (wind kt × turbulence level), about half the gust factor
+  wingLow: 0.6 * DEG,            // decrab bank per m/s of mean crosswind: holds the sideslip with the nose on the runway heading
 };
 (() => { // inverse inertia tensor (FRD, Ixz product)
   const { Ixx, Iyy, Izz, Ixz } = AC, G = Ixx * Izz - Ixz * Ixz;
@@ -670,8 +671,11 @@ class Autopilot {
     } else {
       const blend = smoothstep(11, 4.5, a.hWheel);
       if (blend > 0) {   // decrab: lower the upwind wing to stop the sideways drift while the rudder aligns the nose
+        // wing-low feedforward from the mean crosswind (as an autoland computes it from inertial and air data), then
+        // corrections on the remaining drift and offset
         const vLat = this.ac.x[3] * RWY_R[0] + this.ac.x[4] * RWY_R[1];
-        phiCmd = lerp(phiCmd, clamp(-2.5 * DEG * vLat - 0.4 * DEG * a.t, -8 * DEG, 8 * DEG), blend);
+        const wm = ac.wind.mean(Math.max(a.hWheel, 1)), xw = wm[0] * RWY_R[0] + wm[1] * RWY_R[1];   // m/s toward the right
+        phiCmd = lerp(phiCmd, clamp(-AC.wingLow * xw - 2.5 * DEG * vLat - 0.4 * DEG * a.t, -8 * DEG, 8 * DEG), blend);
       }
       this.daI = clamp(this.daI + 0.4 * (phiCmd - a.phi) * dt, -6 * DEG, 6 * DEG);
       c.da = clamp(this.daI + 1.25 * (phiCmd - a.phi) - 0.28 * a.p, -AC.daMax, AC.daMax);
