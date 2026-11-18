@@ -138,7 +138,9 @@ const AC = {
   ],
   // tyres: Pacejka-style side force vs slip angle; brake torque limit per main wheel (N at the tyre); pressure (est.)
   tyreB: 9, tyreC: 1.6, brakeF: 7000, tyrePsi: 90, wheelR: 0.29, wheelI: 0.6,
+  anchorK: 2.0e5, anchorC: 2.0e4,   // tyre patch stiffness / damping while a brake holds the wheel at rest
   Vref: 88, Vapp: 95, Vs0: 71,   // knots IAS, landing flaps
+  gustAdd: 0.2,                  // approach speed additive: kt per (wind kt × turbulence level), about half the gust factor
 };
 (() => { // inverse inertia tensor (FRD, Ixz product)
   const { Ixx, Iyy, Izz, Ixz } = AC, G = Ixx * Izz - Ixz * Ixz;
@@ -219,7 +221,7 @@ class Aircraft {
     this.eng = new Turboprop().set(0.3); this.thr = this.eng.frac;
     this.cmd = { de: 0, da: 0, dr: 0, flaps: 1, gear: 1, thr: 0.3, brake: 0, brakeL: 0, brakeR: 0 };
     this.adot = 0; this.aPrev = null; this.t = 0;
-    this.lock = [false, false, false]; this.slipV = [0, 0, 0]; this.skids = 0; this.surface = 'dry';
+    this.lock = [false, false, false]; this.slipV = [0, 0, 0]; this.anchor = [null, null, null]; this.skids = 0; this.surface = 'dry';
     this.bufI = 0; this.bufN = [0, 0, 0];
     this.isaDev = 0; this.wind = new Wind();
     this.seed(1);
@@ -244,8 +246,9 @@ class Aircraft {
     const f = this.flaps;
     const hw = Math.max(0.2, h - 0.35);                       // wing height above ground
     const ge = (16 * hw / AC.b) ** 2; const phiGE = ge / (1 + ge);
-    const ph = w[0] * AC.b / (2 * V), qh = w[1] * AC.c / (2 * V), rh = w[2] * AC.b / (2 * V);
-    const adh = this.adot * AC.c / (2 * V);
+    const Vr = Math.max(V, 5);   // rate terms need a real airspeed; below walking pace they are meaningless
+    const ph = w[0] * AC.b / (2 * Vr), qh = w[1] * AC.c / (2 * Vr), rh = w[2] * AC.b / (2 * Vr);
+    const adh = this.adot * AC.c / (2 * Vr);
 
     // propeller: thrust, slipstream dynamic pressure on the tail and wing root, swirl angle at the fin
     const pr = AC.prop;
@@ -273,7 +276,8 @@ class Aircraft {
       const dL = sg * (2 * Math.sign(ah) * sa * sa * ca - (CLlin + CLa * (ah - alpha)));
       const dD = sg * (AC.CD0 + 1.6 * sa * sa - CDlin);
       dCL += 0.5 * dL; dCD += 0.5 * dD;
-      dCl -= side * ky * AC.kAsym * dL; dCn += side * ky * AC.kAsym * dD;
+      // the stalled half drops (lift loss) and drags (pressure drag of separated flow), so it yaws toward itself
+      dCl -= side * ky * AC.kAsym * dL; dCn += side * ky * AC.kAsym * sg * 1.6 * sa * sa;
       sig += 0.5 * sg; aMax = Math.max(aMax, ah);
     }
     const CL = CLlin + dCL, CD = CDlin + dCD;
@@ -287,12 +291,19 @@ class Aircraft {
     const wh = [vab[0] / V, vab[1] / V, vab[2] / V];
     let lv = cross([0, 1, 0], wh); const ll = Math.hypot(lv[0], lv[1], lv[2]) || 1; lv = [lv[0] / ll, lv[1] / ll, lv[2] / ll];
     const qS = qbar * AC.S;
-    const L = (qbar * (1 - AC.fW) + qs * AC.fW) * AC.S * CL, D = qS * CD;
+    const L = qbar * (1 - AC.fW) * AC.S * CL, D = qS * CD;
+    // wing root in the propeller wash: its own angle of attack in the wash, static lift (no rate terms), at right
+    // angles to the wash flow — well defined at standstill, where the free-stream angle of attack is not
+    const vsx = Math.max(vab[0] + 2 * prop.vi, 0.1), as = Math.atan2(vab[2], vsx), sgs = stallBlend(as, a0), ssa = Math.sin(as);
+    const CLs = (1 - sgs) * (AC.CL0 + AC.CLflap * f + CLa * as + AC.CLde * this.de) + sgs * 2 * Math.sign(as) * ssa * ssa * Math.cos(as);
+    const Vw = Math.hypot(vsx, vab[1], vab[2]);
+    let lw = cross([0, 1, 0], [vsx / Vw, vab[1] / Vw, vab[2] / Vw]); const lwl = Math.hypot(lw[0], lw[1], lw[2]) || 1; lw = [lw[0] / lwl, lw[1] / lwl, lw[2] / lwl];
+    const Ls = qs * AC.fW * AC.S * CLs;
     // fin: rudder works at the fin dynamic pressure; swirl acts like sideslip from the left on the immersed part
     const finB = -qs * AC.fV * swirl + qV * AC.finOffset;
     const Y = qS * CY + qV * AC.S * AC.CYdr * this.dr + AC.S * AC.finCYb * finB;
     const T = prop.T;
-    const Fb = [L * lv[0] - D * wh[0] + T, L * lv[1] - D * wh[1] + Y, L * lv[2] - D * wh[2]];
+    const Fb = [L * lv[0] + Ls * lw[0] - D * wh[0] + T, L * lv[1] + Ls * lw[1] - D * wh[1] + Y, L * lv[2] + Ls * lw[2] - D * wh[2]];
     const Mb = [
       qS * AC.b * Cl + qV * AC.S * AC.b * AC.Cldr * this.dr + AC.S * AC.b * AC.finClb * finB,
       qS * AC.c * Cm + qH * AC.S * AC.c * AC.Cmde * this.de * (1 - 0.5 * sig),   // stalled wing wake blankets the tail
@@ -334,18 +345,27 @@ class Aircraft {
         Fl = -k * vl; Fs = -k * vs;
       } else {
         const brk = g.brake ? (g.brake === 'L' ? this.brakeL : this.brakeR) * AC.brakeF : 0;
-        Fl = -Math.min(mu.roll * N + brk, muN) * Math.tanh(vl / 0.25);
-        const slip = Math.atan2(vs, Math.max(Math.abs(vl), 1.0));
-        const side = muN * Math.sin(AC.tyreC * Math.atan(AC.tyreB * slip));
-        const smax = Math.sqrt(Math.max(0, muN * muN - Fl * Fl));
-        Fs = -clamp(side, -smax, smax);
+        const flMax = Math.min(mu.roll * N + brk, muN), an = this.anchor[i];
+        if (an) {
+          // held by the brake at rest: the tyre patch is pinned to the runway (static friction) up to the grip
+          const dn = s[0] + cn[0] - an[0], de = s[1] + cn[1] - an[1];
+          Fl = clamp(-AC.anchorK * (dn * fh[0] + de * fh[1]) - AC.anchorC * vl, -flMax, flMax);
+          const smax = Math.sqrt(Math.max(0, muN * muN - Fl * Fl));
+          Fs = clamp(-AC.anchorK * (dn * lh[0] + de * lh[1]) - AC.anchorC * vs, -smax, smax);
+        } else {
+          Fl = -flMax * Math.tanh(vl / 0.25);
+          const slip = Math.atan2(vs, Math.max(Math.abs(vl), 1.0));
+          const side = muN * Math.sin(AC.tyreC * Math.atan(AC.tyreB * slip));
+          const smax = Math.sqrt(Math.max(0, muN * muN - Fl * Fl));
+          Fs = -clamp(side, -smax, smax);
+        }
       }
       const Fg = [Fl * fh[0] + Fs * lh[0], Fl * fh[1] + Fs * lh[1], -N];
       Fn = [Fn[0] + Fg[0], Fn[1] + Fg[1], Fn[2] + Fg[2]];
       const arm = [g.b[0], g.b[1], g.b[2] - Math.min(pen, g.stroke)];
       const Mg = cross(arm, mulRT(R, Fg));
       Mb[0] += Mg[0]; Mb[1] += Mg[1]; Mb[2] += Mg[2];
-      if (diag) { diag.wow[i] = true; diag.load[i] = N; diag.vl[i] = vl; diag.mu[i] = mu.pk; }
+      if (diag) { diag.wow[i] = true; diag.load[i] = N; diag.vl[i] = vl; diag.vw[i] = vs; diag.mu[i] = mu.pk; }
     }
     // structure on the ground (tail, propeller, wing tips, belly): stiff contact with scraping friction
     for (const hp of AC.hard) {
@@ -373,7 +393,7 @@ class Aircraft {
     out[7] = 0.5 * (q[0] * w[0] + q[2] * w[2] - q[3] * w[1]);
     out[8] = 0.5 * (q[0] * w[1] + q[3] * w[0] - q[1] * w[2]);
     out[9] = 0.5 * (q[0] * w[2] + q[1] * w[1] - q[2] * w[0]);
-    if (diag) Object.assign(diag, { V, alpha, beta, qbar, rho, T, L, D, CL, sig, phiGE, wind, prop, qs, qH, qV, swirl, aMax, a0 });
+    if (diag) Object.assign(diag, { V, alpha, beta, qbar, rho, T, L: L + Ls, D, CL, sig, phiGE, wind, prop, qs, qH, qV, swirl, aMax, a0 });
   }
 
   actuators(dt) {
@@ -384,9 +404,11 @@ class Aircraft {
     // flaps: electric actuator; above the limit speed the air load blows them back (hinge load ∝ q·δf)
     const qe = 0.5 * RHO0 * (a.ias || 0) ** 2;
     this.flaps = rate(this.flaps, Math.min(clamp(c.flaps, 0, 1), qe > 1 ? AC.flapLoad / qe : 1), AC.flapRate);
-    // gear: the squat switch keeps it down while a wheel carries weight
-    const wow = !!(a.wow && (a.wow[0] || a.wow[1] || a.wow[2]));
-    this.gearPos = rate(this.gearPos, c.gear || wow ? 1 : 0, 1 / AC.gearTime);
+    // gear: the squat switch keeps it down while a wheel carries weight; a leg cannot extend into the runway, so
+    // with the airframe on the ground (or the extended wheels below it) an extending gear stalls part-way
+    const wow = !!(a.wow && (a.wow[0] || a.wow[1] || a.wow[2])), gearTgt = c.gear || wow ? 1 : 0;
+    const jammed = gearTgt > this.gearPos && this.gearPos < 0.98 && (a.contact || (a.hWheel != null && a.hWheel < 0.05));
+    if (!jammed) this.gearPos = rate(this.gearPos, gearTgt, 1 / AC.gearTime);
     this.eng.update(dt, c.thr); this.thr = this.eng.frac;
     this.brakeL = rate(this.brakeL, clamp(Math.max(c.brake || 0, c.brakeL || 0), 0, 1), 2.5);
     this.brakeR = rate(this.brakeR, clamp(Math.max(c.brake || 0, c.brakeR || 0), 0, 1), 2.5);
@@ -423,23 +445,38 @@ class Aircraft {
   // Brake torque beyond what the tyre can grip spins the wheel down (wheel, brake and tyre inertia); when its
   // surface speed reaches zero the wheel is locked and slides. It frees once the brake drops below the sliding
   // friction. No anti-skid on this trainer.
+  // A braked wheel at rest is pinned to the runway (static friction) until the brake is released; if the force
+  // needed exceeds the grip, the pin slides with the tyre.
   updateLocks(dt) {
-    const a = this.air, k = AC.wheelR * AC.wheelR / AC.wheelI;
+    const a = this.air, k = AC.wheelR * AC.wheelR / AC.wheelI, x = this.x;
+    const R = qToR([x[6], x[7], x[8], x[9]], new Array(9));
+    const fl = Math.hypot(R[0], R[3]) || 1, fh = [R[0] / fl, R[3] / fl], lh = [-fh[1], fh[0]];   // main wheels: body x on the ground
     for (let i = 1; i < 3; i++) {
       const N = a.load[i], vl = Math.abs(a.vl[i]);
-      if (!(N > 0)) { this.lock[i] = false; this.slipV[i] = 0; continue; }
-      const mu = surfaceMu(this.surface, vl / KT), Fb = (i === 1 ? this.brakeL : this.brakeR) * AC.brakeF;
+      if (!(N > 0)) { this.lock[i] = false; this.slipV[i] = 0; this.anchor[i] = null; continue; }
+      const mu = surfaceMu(this.surface, vl / KT), Fb = (i === 1 ? this.brakeL : this.brakeR) * AC.brakeF, muN = mu.pk * N;
+      const cn = mulR(R, AC.gear[i].b), cp = [x[0] + cn[0], x[1] + cn[1]];
+      if (this.anchor[i]) {
+        if (Fb < 300 || this.lock[i]) this.anchor[i] = null;
+        else {
+          const an = this.anchor[i], dl = (cp[0] - an[0]) * fh[0] + (cp[1] - an[1]) * fh[1], ds = (cp[0] - an[0]) * lh[0] + (cp[1] - an[1]) * lh[1];
+          const lmL = Math.min(mu.roll * N + Fb, muN) / AC.anchorK, lmS = Math.sqrt(Math.max(0, muN * muN - (AC.anchorK * Math.min(Math.abs(dl), lmL)) ** 2)) / AC.anchorK;
+          const dl2 = clamp(dl, -lmL, lmL), ds2 = clamp(ds, -lmS, lmS);
+          if (dl2 !== dl || ds2 !== ds) this.anchor[i] = [cp[0] - dl2 * fh[0] - ds2 * lh[0], cp[1] - dl2 * fh[1] - ds2 * lh[1]];
+        }
+      } else if (!this.lock[i] && Fb > 500 && vl < 0.05 && Math.abs(a.vw[i]) < 0.05) this.anchor[i] = cp;
       if (!this.lock[i]) {
-        this.slipV[i] = Math.max(0, this.slipV[i] + k * (Fb - mu.pk * N) * dt);
-        if (vl > 1.0 && this.slipV[i] >= vl) { this.lock[i] = true; this.skids++; }
+        this.slipV[i] = clamp(this.slipV[i] + k * (Fb - muN) * dt, 0, vl);   // the tyre surface cannot run backwards
+        if (vl > 1.0 && this.slipV[i] >= vl) { this.lock[i] = true; this.skids++; this.anchor[i] = null; }
       } else if (vl < 0.3 || Fb < mu.sl * N) { this.lock[i] = false; this.slipV[i] = 0; }
     }
   }
 
   updateAir(dt = 0) {
-    const d = { wow: [false, false, false], load: [0, 0, 0], vl: [0, 0, 0], mu: [0, 0, 0], hard: {} };
+    const d = { wow: [false, false, false], load: [0, 0, 0], vl: [0, 0, 0], vw: [0, 0, 0], mu: [0, 0, 0], hard: {} };
     this.deriv(this.x, this.tmp, d);
-    if (this.aPrev !== null && dt > 0) this.adot += (clamp((d.alpha - this.aPrev) / dt, -2, 2) - this.adot) * Math.min(1, dt / 0.05);
+    // α̇ only means something with real airflow; at a standstill α is the angle of a creep velocity (noise)
+    if (this.aPrev !== null && dt > 0) this.adot += ((d.V > 5 ? clamp((d.alpha - this.aPrev) / dt, -2, 2) : 0) - this.adot) * Math.min(1, dt / 0.05);
     this.aPrev = d.alpha;
     const x = this.x, [phi, th, psi] = qToEuler([x[6], x[7], x[8], x[9]]);
     const vg = Math.hypot(x[3], x[4]);
@@ -457,7 +494,7 @@ class Aircraft {
     a.buffet = this.bufI;
     a.T = d.T; a.CL = d.CL; a.wind = d.wind; a.phiGE = d.phiGE; a.rho = d.rho;
     a.prop = d.prop; a.qs = d.qs; a.qH = d.qH; a.qV = d.qV; a.swirl = d.swirl; a.ng = this.eng.ng; a.trq = this.eng.frac;
-    a.wow = d.wow; a.load = d.load; a.vl = d.vl; a.mu = d.mu; a.hard = d.hard; a.lock = this.lock;
+    a.wow = d.wow; a.load = d.load; a.vl = d.vl; a.vw = d.vw; a.mu = d.mu; a.hard = d.hard; a.lock = this.lock;
     a.contact = Object.keys(d.hard).length > 0;
     a.onGround = wow || a.contact;
     a.s = ils.s; a.t = ils.t; a.gsDots = ils.gsDots; a.locDots = ils.locDots;
@@ -492,13 +529,14 @@ class Aircraft {
     let u = [3 * DEG, -3 * DEG, fixP ? gamma : 0.3, 0, 0, 0];
     const lo = [-10 * DEG, -AC.deUp, fixP ? -0.6 : 0, -20 * DEG, -AC.daMax, -AC.drMax], hi = [25 * DEG, AC.deDn, fixP ? 0.6 : 1, 20 * DEG, AC.daMax, AC.drMax];
     const maxStep = [3 * DEG, 3 * DEG, fixP ? 2 * DEG : 0.15, 3 * DEG, 4 * DEG, 4 * DEG];
-    let r = resid(u), err = Math.hypot(...r);
+    let r = resid(u), err = Math.hypot(...r), best = u.slice(), bestErr = err;
     for (let it = 0; it < 60 && err > 1e-7; it++) {
       const J = r.map(() => new Array(6).fill(0));
       for (let j = 0; j < 6; j++) {
-        const up = u.slice(); up[j] += 1e-6;
+        const h = u[j] + 1e-6 > hi[j] ? -1e-6 : 1e-6;   // step inward at an upper bound, or the column is zero
+        const up = u.slice(); up[j] += h;
         const rj = resid(up);
-        for (let i = 0; i < 6; i++) J[i][j] = (rj[i] - r[i]) / 1e-6;
+        for (let i = 0; i < 6; i++) J[i][j] = (rj[i] - r[i]) / h;
       }
       const du = solveLin(J, r.map((v) => -v));
       let lam = 1; for (let j = 0; j < 6; j++) lam = Math.min(lam, maxStep[j] / Math.max(Math.abs(du[j]), 1e-12));
@@ -509,7 +547,9 @@ class Aircraft {
         lam *= 0.5;
       }
       u = nu; r = nr; err = ne;
+      if (err < bestErr) { best = u.slice(); bestErr = err; }
     }
+    u = best; err = bestErr;
     const res = apply(u);
     this.updateAir(0);
     return { alpha: u[0], de: u[1], thr: this.eng.pcl, gamma: res.gam, beta: u[3], da: u[4], dr: u[5], th: res.th, psi: res.psi, err };
@@ -546,7 +586,7 @@ class Aircraft {
     const x = this.x; const q = eulerToQ(0, 0.5 * DEG, psi);
     x.set([n, e, -1.30, 0, 0, 0, q[0], q[1], q[2], q[3], 0, 0, 0]);
     this.eng.set(0); this.thr = this.eng.frac; this.cmd.thr = 0;
-    this.gearPos = 1; this.cmd.gear = 1; this.lock = [false, false, false];
+    this.gearPos = 1; this.cmd.gear = 1; this.lock = [false, false, false]; this.slipV = [0, 0, 0]; this.anchor = [null, null, null];
     this.brake = this.brakeL = this.brakeR = this.cmd.brake = 1; this.cmd.brakeL = this.cmd.brakeR = 0;
     this.de = this.da = this.dr = this.cmd.de = this.cmd.da = this.cmd.dr = 0; this.steer = 0;
     this.adot = 0; this.aPrev = null; this.updateAir(0);
@@ -562,6 +602,16 @@ function brakeLikeAPilot(st, a, dt, want) {
   st.relief = Math.max(0, st.relief - dt);
   return want > 0 ? Math.min(want, 0.8 * st.grip) * (st.relief > 0 ? 0.3 : 1) : 0;
 }
+
+// Target airspeed on final: Vapp down to Vref over the threshold, plus half the gust factor in turbulence (the usual
+// technique; here estimated from the reported wind and its turbulence level), at most 8 kt.
+function approachSpeed(ac, a) {
+  return lerp(AC.Vref, AC.Vapp, smoothstep(15, 61, a.hWheel)) + clamp(AC.gustAdd * ac.wind.kt * ac.wind.turb, 0, 8);
+}
+
+// Go-around (climb-out) when the autopilot is given control over or past the runway: climb on the centre line to
+// GA_ALT and hold it at GA_SPEED (design values of this sim).
+const GA_ALT = 300, GA_SPEED = 105;
 
 // ── Autopilot: coupled ILS approach, flare, decrab and rollout (it also sets landing gear and flaps) ──
 class Autopilot {
@@ -589,7 +639,19 @@ class Autopilot {
     const g = this.guidance();
     let gammaCmd = g.gammaCmd, phiCmd = g.phiCmd;
     const mainsDown = a.wow[1] || a.wow[2];
-    c.gear = 1; c.flaps = AC.flapNotch[2];
+    const ias = a.ias / KT;
+    if (this.mode === 'GA') {
+      // go-around / climb-out: take-off flaps once flying fast enough, gear up with a positive climb
+      if (ias > 85) c.flaps = Math.min(c.flaps, AC.flapNotch[1]);
+      if (a.vs > 2 && a.hWheel > 30) c.gear = 0;
+    } else {
+      // configure for landing as the speed allows (gear below VLO, each flap notch below its VFE)
+      if (ias < AC.VLO - 5) c.gear = 1;
+      c.flaps = Math.max(c.flaps, ias < AC.VFE[2] - 5 ? AC.flapNotch[2] : ias < AC.VFE[1] - 5 ? AC.flapNotch[1] : 0);
+    }
+    if (this.mode === 'GA') {   // climb straight ahead on the centre line to 300 m (≈ 1,000 ft), then hold it
+      gammaCmd = a.h < 280 ? 6 * DEG : clamp(0.004 * (GA_ALT - a.h), -0.06, 0.06);
+    }
     if (this.mode === 'APP') {
       this.hFlare = clamp(2.4 * Math.max(a.vs < 0 ? -a.vs : 1.5, 1.5), 4.5, 9);
       if (a.hWheel < this.hFlare && a.s > -600) { this.mode = 'FLARE'; this.tFlare = ac.t; }
@@ -617,7 +679,7 @@ class Autopilot {
       c.dr = clamp(this.drI + lerp(-1.6 * a.beta, 1.5 * wrapPi(a.psi - crs) + 0.6 * a.r, blend), -AC.drMax, AC.drMax);
     }
     // longitudinal
-    if (this.mode === 'APP' || this.mode === 'FLARE') {
+    if (this.mode === 'APP' || this.mode === 'FLARE' || this.mode === 'GA') {
       const kg = this.mode === 'FLARE' ? 2.6 : 1.4;
       this.thBias += (gammaCmd - a.gamma) * (this.mode === 'FLARE' ? 1.4 : 0.55) * dt;
       this.thBias = clamp(this.thBias, -8 * DEG, 14 * DEG);
@@ -626,8 +688,10 @@ class Autopilot {
       const e = this.thCmd - a.theta;
       this.deI = clamp(this.deI - 0.6 * e * dt, -AC.deUp, AC.deDn);
       c.de = this.deI - 2.0 * e + 0.85 * a.q;
-      if (this.mode === 'APP') {
-        const vTgt = lerp(AC.Vref, AC.Vapp, smoothstep(15, 61, a.hWheel));   // cross the threshold at Vref
+      c.brake = c.brakeL = c.brakeR = 0;
+      if (this.mode === 'GA' && a.h < 280) { c.thr = 1; this.thrI = 0.6; }   // full power for the climb
+      else if (this.mode === 'APP' || this.mode === 'GA') {
+        const vTgt = this.mode === 'GA' ? GA_SPEED : approachSpeed(ac, a);   // cross the threshold at Vref plus half the gust factor
         const err = vTgt - a.ias / KT;
         this.thrI = clamp(this.thrI + 0.0045 * err * dt, 0, 1);
         c.thr = clamp(this.thrI + 0.035 * err, 0, 1);
@@ -698,7 +762,7 @@ class PilotLaws {
         c.dr = clamp(this.drI - 1.6 * a.beta - rudUser, -AC.drMax, AC.drMax);
       }
       if (opts.autoThr && !onG && a.hWheel > 6) {
-        const err = lerp(AC.Vref, AC.Vapp, smoothstep(15, 61, a.hWheel)) - a.ias / KT;
+        const err = approachSpeed(ac, a) - a.ias / KT;
         this.spdI = clamp(this.spdI + 0.0045 * err * dt, 0, 1);
         c.thr = clamp(this.spdI + 0.035 * err, 0, 1);
       } else if (opts.autoThr && !onG) c.thr = Math.max(0, c.thr - dt / 2.5);
@@ -817,6 +881,7 @@ class Evaluator {
     if (this.has('tailstrike')) total = Math.min(total, 45);
     if (this.has('propstrike')) total = Math.min(total, 25);
     if (this.has('belly')) total = Math.min(total, 10);
+    if (this.has('crash')) total = 0;
     total = Math.max(0, Math.round(total));
     const grade = total >= 90 ? 'ดีเยี่ยม' : total >= 75 ? 'ดี' : total >= 60 ? 'ผ่าน' : 'ต้องฝึกเพิ่ม';
     return { total, grade, parts };
@@ -883,13 +948,21 @@ class Flight {
   setPilot(p) {
     if (p === this.pilot) return;
     const ac = this.ac;
-    if (p === 'ap') {           // hand back: re-seed the autopilot from the current state
-      const a = ac.air;
-      this.ap.thBias = a.theta; this.ap.thCmd = a.theta; this.ap.deI = ac.de; this.ap.thrI = ac.pcl;
-      if (this.ap.mode === 'STOP') this.ap.mode = 'ROLLOUT';
+    const a = ac.air, ap = this.ap, laws = this.laws;
+    if (p === 'ap') {           // hand back: re-seed the autopilot from the current state and pick its mode afresh
+      ap.thBias = a.theta; ap.thCmd = a.theta; ap.deI = ac.de; ap.thrI = ac.pcl;
+      ap.daI = clamp(this.opts.assist ? laws.daI : laws.ailTrim, -6 * DEG, 6 * DEG);
+      ap.drI = clamp(this.opts.assist ? laws.drI : laws.rudTrim, -10 * DEG, 10 * DEG);
+      if (!a.onGround) {
+        // airborne: keep a genuine flare (low and sinking); otherwise a new approach while the runway is still ahead,
+        // or a go-around (climb straight ahead) once over or past the threshold
+        if (!(ap.mode === 'FLARE' && a.hWheel < 10 && a.vs < 0)) { ap.mode = a.s < -300 ? 'APP' : 'GA'; ap.tFlare = null; ap.tTd = null; }
+      } else if (ap.mode !== 'ROLLOUT') { ap.mode = 'ROLLOUT'; ap.tTd = ac.t; ap.thTd = a.theta; ap.thCmd = a.theta; }
     } else {
-      this.laws.thHold = ac.air.theta; this.laws.deI = ac.de; this.laws.trimDe = clamp(ac.de, AC.trimMin, AC.trimMax); this.laws.spdI = ac.pcl;
-      this.laws.daI = this.laws.ailTrim = clamp(ac.da, -6 * DEG, 6 * DEG); this.laws.drI = this.laws.rudTrim = clamp(ac.dr, -10 * DEG, 10 * DEG);
+      // take over: the trims start from the autopilot's steady (integrator) parts, not its momentary corrections
+      laws.thHold = a.theta; laws.deI = ac.de; laws.spdI = ac.pcl;
+      laws.trimDe = clamp(ap.deI, AC.trimMin, AC.trimMax);
+      laws.daI = laws.ailTrim = clamp(ap.daI, -6 * DEG, 6 * DEG); laws.drI = laws.rudTrim = clamp(ap.drI, -10 * DEG, 10 * DEG);
       Object.assign(this.input, { thr: ac.pcl, flaps: flapIndex(ac.cmd.flaps), gear: ac.cmd.gear ? 1 : 0, trim: 0 });
     }
     this.pilot = p;
@@ -920,8 +993,9 @@ class Flight {
     const a = this.ac.air;
     if (this.crashed) return 'CRASH';
     if (this.ev.done) return 'DONE';
-    if (this.ev.td) return 'ROLLOUT';
+    if (this.pilot === 'ap' && this.ap.mode === 'GA') return 'GA';
+    if (this.ev.td && a.hWheel < 10) return 'ROLLOUT';   // on the runway, or a bounce
     if (this.pilot === 'ap') return this.ap.mode;
-    return a.hWheel < 10 ? 'FLARE' : 'APP';
+    return a.hWheel < 10 ? 'FLARE' : this.ev.td ? 'GA' : 'APP';   // climbing away after a touch-and-go
   }
 }

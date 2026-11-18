@@ -38,7 +38,7 @@ class Turboprop {
   // steady state for a lever position: shaft power is linear in the lever (idle … 100 %)
   set(pcl) { this.pcl = clamp(pcl, 0, 1); this.ng = Turboprop.ngFor(this.pcl); this.P = Turboprop.powerAt(this.ng); return this; }
   update(dt, pcl) {
-    this.pcl = clamp(pcl, 0, 1);
+    if (Number.isFinite(pcl)) this.pcl = clamp(pcl, 0, 1);   // a bad input must not poison the spool state
     const tgt = Turboprop.ngFor(this.pcl), x = clamp((this.ng - ENG.ngIdle) / (ENG.ngMax - ENG.ngIdle), 0, 1);
     const rate = clamp((tgt - this.ng) / ENG.tau, -ENG.dec, ENG.acc0 + ENG.acc1 * x);
     const ng = this.ng + rate * dt;
@@ -56,12 +56,12 @@ function propeller(P, Va, rho) {
   const k = 2 * rho * PROP.A, E = eta * Math.max(P, 0);
   // k(V+vi)²vi = E is increasing and convex in vi; Newton from the static value (above the root) converges monotonically
   let vi = Math.cbrt(E / k);
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 12 && E > 0; i++) {
     const s = V + vi, d = (k * s * s * vi - E) / (k * (s * s + 2 * s * vi));
     vi -= d;
     if (Math.abs(d) < 1e-5) break;
   }
-  vi = Math.max(vi, 0);
+  vi = E > 0 ? Math.max(vi, 0) : 0;
   const wm = clamp((PROP.wmFrac - P / ENG.Pmax) / (PROP.wmFrac - ENG.idle), 0, 1);
   const T = k * (V + vi) * vi - 0.5 * rho * V * V * PROP.A * PROP.wmCd * wm;
   return { T, vi, Va: V, Vs: V + 2 * vi, Q: Math.max(P, 0) / PROP.Om, eta, J };

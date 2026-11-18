@@ -12,7 +12,7 @@ for (const f of [0, 1]) {
   for (let a = 0; a <= 22; a += 0.5) {
     const th = a * DEG, V = 45, qq = [Math.cos(th / 2), 0, Math.sin(th / 2), 0];
     ac0.x.set([0, 0, -500, V, 0, 0, qq[0], qq[1], qq[2], qq[3], 0, 0, 0]);
-    const d = { wow: [0, 0, 0], load: [0, 0, 0], vl: [0, 0, 0], mu: [0, 0, 0], hard: {} }; ac0.deriv(ac0.x, new Float64Array(13), d);
+    const d = { wow: [0, 0, 0], load: [0, 0, 0], vl: [0, 0, 0], vw: [0, 0, 0], mu: [0, 0, 0], hard: {} }; ac0.deriv(ac0.x, new Float64Array(13), d);
     if (d.CL > best.CL) best = { CL: d.CL, a };
     if (a % 2 === 0) row.push(`${a}°:${d.CL.toFixed(2)}`);
   }
@@ -22,7 +22,7 @@ for (const f of [0, 1]) {
   // buffet onset at 1 g: 5–10 kt above the stall, the band 14 CFR 23.207 sets for a stall warning
   const ab = M.buffetAlpha(f), th = ab, qq = [Math.cos(th / 2), 0, Math.sin(th / 2), 0];
   ac0.x.set([0, 0, -500, 45, 0, 0, qq[0], qq[1], qq[2], qq[3], 0, 0, 0]);
-  const d = { wow: [0, 0, 0], load: [0, 0, 0], vl: [0, 0, 0], mu: [0, 0, 0], hard: {} }; ac0.deriv(ac0.x, new Float64Array(13), d);
+  const d = { wow: [0, 0, 0], load: [0, 0, 0], vl: [0, 0, 0], vw: [0, 0, 0], mu: [0, 0, 0], hard: {} }; ac0.deriv(ac0.x, new Float64Array(13), d);
   const vw = Math.sqrt(2 * AC.m * G0 / (1.225 * AC.S * d.CL)) / KT;
   check(`buffet (stall warning) margin at 1 g, ${f ? 'landing flaps' : 'clean'}`, within(vw - vs, 5, 10), `from α ${f1(ab * RAD)}°, ${f1(vw)} kt (+${f1(vw - vs)} kt)`);
 }
@@ -87,6 +87,23 @@ for (const seed of [1, 2]) {
   const toward = Math.sign(r.phiAtMax) === -Math.sign(r.asym);   // asym > 0: the left half stalls first
   check(`stick held back: a wing drops (seed ${seed})`, within(r.maxPhi * RAD, 8, 70) && toward, `${f1(r.phiAtMax * RAD)}° (${r.asym > 0 ? 'left' : 'right'} half stalls first)`);
   check(`stick held back: elevator can only hold a mushing stall (seed ${seed})`, within(r.aHold * RAD, 16, 30), `mean α ${f1(r.aHold * RAD)}°`);
+}
+// landing flaps, stick held back, feet off: the nose yaws toward the dropping (stalled) wing
+{
+  const { ac, tr } = trimmed({ ias: 95, flaps: 1, gear: 1, h: 1500, seed: 1, pcl: 0.2 });
+  ac.cmd.thr = 0; let aCmd = ac.air.alpha, aI = tr.de, tB = null, rSum = 0, n = 0;
+  const aS = (AC.aStall + AC.aStallFlap) * DEG;
+  for (let i = 0; i < 240 * 60; i++) {
+    const a = ac.air;
+    if (tB == null) {
+      aCmd += 0.3 * DEG * DT; const e = aCmd - a.alpha; aI = clamp(aI - 1.5 * e * DT, -AC.deUp, AC.deDn);
+      ac.cmd.de = clamp(aI - 1.2 * e + 0.6 * a.q, -AC.deUp, AC.deDn); ac.cmd.da = clamp(-a.phi - 0.3 * a.p, -AC.daMax, AC.daMax); ac.cmd.dr = 0;
+      if (a.stall > 0.3 || (a.q < -2 * DEG && a.alpha > aS - 4 * DEG)) tB = i * DT;
+    } else { ac.cmd.de = -AC.deUp; ac.cmd.da = 0; ac.cmd.dr = 0; rSum += a.r; n++; if (i * DT - tB > 0.75) break; }
+    ac.step(DT);
+  }
+  const drop = Math.sign(ac.air.phi), yaw = Math.sign(rSum);
+  check('wing drop with landing flaps: the nose yaws toward the low wing', n > 0 && drop !== 0 && yaw === drop, `bank ${f1(ac.air.phi * RAD)}°, mean yaw rate ${f1(rSum / Math.max(n, 1) * RAD, 2)}°/s`);
 }
 for (const rud of [1, -1]) {
   const r = stallRun({ seed: 1, mode: 'spin', rud });

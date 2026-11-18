@@ -353,7 +353,10 @@ async function main() {
     if (toMan) { f.opts.assist = app.train.assist; f.opts.autoThr = app.train.assist && app.train.autoThr; f.opts.autoTrim = app.train.autoTrim; }
     f.setPilot(toMan ? 'man' : 'ap');
     Object.assign(app.input, { thr: f.input.thr, flaps: f.input.flaps, gear: f.input.gear, trim: 0 });
-    refreshLive(); updateCtlVisibility(); toast(toMan ? 'คุณบังคับเองแล้ว ตามวงกลมสีชมพูบน HUD เพื่อบินตามแนวร่อน' : 'ออโต้ไพลอตรับช่วงต่อ และจัดล้อกับแฟลปลงจอดให้');
+    refreshLive(); updateCtlVisibility();
+    toast(toMan ? 'คุณบังคับเองแล้ว ตามวงกลมสีชมพูบน HUD เพื่อบินตามแนวร่อน'
+      : f.ap.mode === 'GA' ? 'ออโต้ไพลอตรับช่วงต่อ: ยกเลิกการลงจอดและไต่ขึ้นไป 1,000 ฟุต'
+      : 'ออโต้ไพลอตรับช่วงต่อ: ลดความเร็วแล้วกางล้อและแฟลปลงจอดให้');
   };
   $('#btnReplay').onclick = () => {
     const f = app.flight; if (!f || !f.rec.f.length) return;
@@ -715,7 +718,8 @@ async function main() {
       $('#iWind').textContent = wkt < 0.5 ? 'สงบ' : `${String(Math.round(wdir / 10) * 10 % 360).padStart(3, '0')}/${fmt(wkt)}`;
       const ph = fl.phase();
       const fma = fl.pilot === 'ap'
-        ? [['A/P', ''], ph === 'APP' ? ['LOC', ''] : ['', ''], ph === 'APP' ? ['G/S', ''] : ph === 'FLARE' ? ['FLARE', ''] : ['ROLLOUT', ''], ['SPD ' + AC.Vapp, 'c']]
+        ? (ph === 'GA' ? [['A/P', ''], ['GA', ''], [a.h < 280 ? 'CLB' : 'ALT 1000', ''], ['SPD 105', 'c']]
+          : [['A/P', ''], ph === 'APP' ? ['LOC', ''] : ['', ''], ph === 'APP' ? ['G/S', ''] : ph === 'FLARE' ? ['FLARE', ''] : ['ROLLOUT', ''], ['SPD ' + AC.Vapp, 'c']])
         : [['MAN', 'w'], [fl.opts.assist ? 'ASSIST' : fl.opts.autoTrim ? 'DIRECT · A/TRIM' : 'DIRECT', 'a'], [fl.opts.autoThr ? 'A/THR SPD ' + AC.Vapp : `TRQ ${Math.round(fl.ac.thr * 100)}%`, fl.opts.autoThr ? 'c' : 'w'], ['FD', 'c']];
       if (fl.ac.brake > 0.05) fma.push([a.lock[1] || a.lock[2] ? 'SKID' : 'BRK', a.lock[1] || a.lock[2] ? 'a' : 'w']);
       $('#fma').innerHTML = fma.filter(([t]) => t).map(([t, c]) => `<span class="${c}">${t}</span>`).join('');
@@ -724,8 +728,9 @@ async function main() {
         const pw = papiSeen(fl.ac.x[0], fl.ac.x[1], -fl.ac.x[2] + 1.0);
         const nW = pw.filter((v) => v > 0.5).length;
         $('#papiTxt').textContent = pw[0] < 0 ? 'ผ่านตำแหน่ง PAPI แล้ว' : `ขาว ${nW} แดง ${4 - nW} · ${['ต่ำมาก', 'ต่ำเล็กน้อย', 'อยู่บนแนวร่อน', 'สูงเล็กน้อย', 'สูงมาก'][nW]}`;
-        $('#liveTitle').textContent = { APP: `ร่อนเข้าหาทางวิ่ง ${FIELD.rwy}`, FLARE: 'ถอนคันบังคับก่อนแตะพื้น', ROLLOUT: 'วิ่งบนทางวิ่งและเบรก', DONE: 'หยุดเรียบร้อย', STOP: 'หยุดเรียบร้อย', CRASH: 'เครื่องบินกระแทกพื้น' }[ph] || 'กำลังบิน';
-        $('#liveLede').textContent = fl.pilot === 'ap' ? 'ออโต้ไพลอตบินตามสัญญาณ ILS ถอนคันบังคับที่ราว 20 ฟุต ลดปีกด้านเหนือลมและจัดหัวให้ตรงทางวิ่งก่อนแตะพื้น แล้วเบรกโดยไม่ให้ล้อล็อกจนหยุด' : (isTouch ? 'ลากคันบังคับซ้ายล่าง: ซ้าย/ขวาเพื่อเอียง ลงเพื่อเงยหัว ขึ้นเพื่อกดหัว' : 'กดค้างนานยิ่งโยกมาก ↑ กดหัว ↓ เงยหัว ←/→ เอียง · [ ] ทริม · F/V แฟลป · G ล้อ') + ' · พาวงกลมเส้นทางบินไปทับวงกลมสีชมพูในมุมห้องนักบิน · เพิ่มกำลังแรงๆ จะเงยและหันซ้าย ใช้หางเสือขวาช่วย';
+        $('#liveTitle').textContent = { APP: `ร่อนเข้าหาทางวิ่ง ${FIELD.rwy}`, FLARE: 'ถอนคันบังคับก่อนแตะพื้น', ROLLOUT: 'วิ่งบนทางวิ่งและเบรก', GA: 'ยกเลิกการลงจอด ไต่ขึ้นไป 1,000 ฟุต', DONE: 'หยุดเรียบร้อย', STOP: 'หยุดเรียบร้อย', CRASH: 'เครื่องบินกระแทกพื้น' }[ph] || 'กำลังบิน';
+        $('#liveLede').textContent = fl.pilot === 'ap' && ph === 'GA' ? 'ออโต้ไพลอตใช้กำลังเต็ม ไต่ขึ้นตามแนวกึ่งกลางทางวิ่ง เก็บล้อเมื่อไต่ขึ้นได้แล้ว และรักษาความสูง 1,000 ฟุตที่ 105 kt · กด "รับช่วงบังคับเอง" เพื่อบินต่อ หรือ "เริ่มใหม่" เพื่อลองลงจอดอีกครั้ง'
+          : fl.pilot === 'ap' ? 'ออโต้ไพลอตบินตามสัญญาณ ILS ถอนคันบังคับที่ราว 20 ฟุต ลดปีกด้านเหนือลมและจัดหัวให้ตรงทางวิ่งก่อนแตะพื้น แล้วเบรกโดยไม่ให้ล้อล็อกจนหยุด' : (isTouch ? 'ลากคันบังคับซ้ายล่าง: ซ้าย/ขวาเพื่อเอียง ลงเพื่อเงยหัว ขึ้นเพื่อกดหัว' : 'กดค้างนานยิ่งโยกมาก ↑ กดหัว ↓ เงยหัว ←/→ เอียง · [ ] ทริม · F/V แฟลป · G ล้อ') + ' · พาวงกลมเส้นทางบินไปทับวงกลมสีชมพูในมุมห้องนักบิน · เพิ่มกำลังแรงๆ จะเงยและหันซ้าย ใช้หางเสือขวาช่วย';
       }
     }
     if (firstFrame) { firstFrame = false; $('#loading').classList.add('done'); }

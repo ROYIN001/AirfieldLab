@@ -66,4 +66,20 @@ const { Flight, SCENARIOS, AC, KT, DEG, RAD, FT, vfeFor } = M;
   const sc = f.ev.score();
   check('gear-up landing: belly contact recorded, score capped', f.ev.has('belly') && sc && sc.total <= 10 && !f.crashed, `events ${f.ev.events.map((e) => e.k).join(',')} score ${sc && sc.total} stop ${f1(f.ev.stopS - (f.ev.td ? f.ev.td.s : 0), 0)} m`);
 }
+// gear selected down while sliding on the belly: the legs jam against the runway instead of launching the airframe
+{
+  const f = new Flight({ wind: SCENARIOS.calm, pilot: 'man', assist: true, autoThr: true, seed: 3, dist: 4000 });
+  f.input.gear = 0; let tBelly = null, hMax = 0;
+  while (f.ac.t < 200 && !f.crashed) {
+    const a = f.ac.air, g = f.ap.guidance();
+    f.input.x = Math.max(-1, Math.min(1, g.phiCmd / (33 * DEG)));
+    let gc = g.gammaCmd; if (a.hWheel < 6) gc = Math.asin(-(0.25 + Math.max(a.h - 0.6, 0) / 2.4) / a.V);
+    f.input.y = Math.max(-1, Math.min(1, (gc - a.gamma) * 6 - a.q * 0.5));
+    if (tBelly == null && a.hard && a.hard.belly) tBelly = f.ac.t;
+    if (tBelly != null && f.ac.t > tBelly + 1) { f.input.gear = 1; hMax = Math.max(hMax, a.h); }
+    if (tBelly != null && f.ac.t > tBelly + 12) break;
+    f.tick(DT);
+  }
+  check('gear lowered on the belly: no launch, no crash', tBelly != null && hMax < 1.5 && !f.crashed && f.ac.gearPos < 0.98, `max CG height ${f1(hMax, 2)} m, gear ${f1(f.ac.gearPos, 2)}`);
+}
 done();

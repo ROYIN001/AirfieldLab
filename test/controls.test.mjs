@@ -33,6 +33,13 @@ const ail = (V, p, a) => accel(V, p, (ac) => (ac.da = 10 * DEG), 10, a);
   check('full pull ≈ full up-elevator at approach speed', within(e95, 18, 26), `${f1(e95, 1)}°`);
   check('full pull at 200 kt buys much less elevator', within(e200, 6, 12), `${f1(e200, 1)}°`);
 }
+// the trim solver reaches a trim close to maximum power (the lever must be able to leave its upper bound)
+{
+  const r = trimmed({ ias: 250, h: 50 }).tr;
+  check('trim near maximum speed converges (lever bound handled)', r.err < 1e-5 && r.thr < 1, `err ${r.err.toExponential(1)}, PCL ${f1(r.thr, 3)}`);
+  const x = trimmed({ ias: 200, gamma: -10, flaps: 1 }).tr;
+  check('steep descent with landing flaps at 200 kt trims too', x.err < 1e-5, `err ${x.err.toExponential(1)}, PCL ${f1(x.thr, 3)}`);
+}
 // stick force per g at 160 kt (DIRECT law, auto-trim off): a steady pull of 30 % force
 {
   const f = new Flight({ wind: SCENARIOS.calm, pilot: 'man', assist: false, autoTrim: false, dist: 9000, oatC: 15 });

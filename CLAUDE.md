@@ -16,7 +16,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Run: `python3 -m http.server 8080 -d dist`, open http://localhost:8080 (needs HTTP: the page fetches its data).
 - Physics tests (Node ≥ 18, no dependencies; each prints its numbers and exits non-zero if a check fails):
   `node test/geo.test.mjs`, `input`, `engine`, `controls`, `config`, `stall`, `ground`, `validation`, `flight`,
-  `runways`, `assist` (all as `node test/<name>.test.mjs`; CI runs them all before deploying).
+  `runways`, `assist`, `handover`, `autoland` (all as `node test/<name>.test.mjs`; CI runs them all before
+  deploying). `autoland` flies 160 approaches and takes about a minute; the others take a few seconds each.
   `test/harness.mjs` evaluates the pure files listed in its `PURE` array (`10-atmo`, `15-geo`, `16-engine`,
   `18-input`, `20-flight`) with `new Function`, so those files must stay DOM-free. Shared helpers: `test/lib/`
   (`check.mjs` assertions, `sim.mjs` trimmed states and runway starts, `linear.mjs` Jacobian and modes).
@@ -56,7 +57,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   2,000 rpm, static thrust 12.4 kN (ISA SL). Limits are design values of this fictional type: VFE TO 150 / LDG 125,
   VLE 150 KIAS.
 - Engine: Ng follows the lever through a fuel-schedule acceleration limit (idle → 90 % power ≈ 4 s, down ≈ 1 s);
-  thrust from momentum theory with ηp(J); flight-idle blades windmill (idle glide ≈ 12.5 : 1).
+  thrust from momentum theory with ηp(J); flight-idle blades windmill (idle glide ≈ 12.3 : 1).
 - Power effects: slipstream dynamic pressure on tail (elevator/rudder) and wing root, swirl sidewash on the fin
   (fin offset 0.8°), P-factor, torque roll (half returned by the wing), gyroscopic precession. Full power at low
   speed pitches up, yaws and rolls left.
@@ -67,21 +68,31 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   flaps UP/TO/LDG (9 s), gear 6 s with squat switch, flap blow-back above VFE (hinge load q·δf).
 - Ground: progressive oleo struts; slip-angle tyre force in a friction circle; torque-limited brakes with wheel
   spin-down and lock; runway dry / wet (14 CFR 25.109(c)) / standing water (hydroplaning ≈ 9√p); nose-wheel
-  steering 20° → 7° with speed, centred when the strut is extended; structure contact points (tail, prop, wing
-  tips, belly) for strikes and gear-up landings.
+  steering 20° → 7° with speed, centred when the strut is extended; static friction (a spring–damper anchor per
+  braked wheel) holds the aircraft still, up to about half power (at full power the prop wash unloads the mains
+  and it slides); structure contact points (tail, prop, wing tips, belly) for strikes and gear-up landings; gear
+  lowered while on or within 5 cm of the ground jams instead of pushing the airframe up.
 - `Aircraft.trimFlight` solves the full 6-DOF trim (α, δe, lever or γ, β, δa, δr) by Newton iteration.
 - Wind: 1/7-power shear + MIL-F-8785C Dryden turbulence (first-order).
 - Autopilot: LOC/GS tracking with aileron/rudder integrators, flare, wing-low decrab, rollout, braking that backs
-  off before the tyres lock (`brakeLikeAPilot`); it sets gear down and landing flaps. `PilotLaws`: ASSIST (attitude
-  command, turn coordinator, auto-throttle, auto-brake) and DIRECT (pilot force through `stickGain`, manual trim,
-  optional auto-trim on θ̇ and roll rate, rudder trim aid that centres the ball).
+  off before the tyres lock (`brakeLikeAPilot`); target speed Vapp, Vref over the threshold, plus 0.2 × wind kt ×
+  turbulence level (≤ 8 kt); gear only below VLO − 5 kt and each flap notch below its VFE − 5 kt. Hand-back in the
+  air (`Flight.setPilot('ap')`): more than 300 m before the threshold it flies the approach (APP); closer, past it
+  or after a touch-and-go it goes around (GA: full power and a 6° climb on the centre line, TO flaps above 85 kt,
+  gear up once climbing above 30 m, levels at 300 m ≈ 1,000 ft at 105 KIAS); FLARE is kept only below 10 m and
+  descending. Take-over carries the autopilot's trims into DIRECT. `PilotLaws`: ASSIST (attitude command, turn
+  coordinator, auto-throttle, auto-brake) and DIRECT (pilot force through `stickGain`, manual trim, optional
+  auto-trim on θ̇ and roll rate, rudder trim aid that centres the ball).
 - Evaluator: stabilised gates at 500 and 200 ft, callouts, touchdown score (sink 40, position 25, centre line 15,
   speed 10, attitude 10). Touchdown window 300–600 m is "perfect". Deductions: flap or gear overspeed −8, skid −4;
-  caps for strikes (tail 45, prop 25, wing tip 30) and belly landing (10). Event labels in `EVENT_TEXT`.
-- Verified (`validation.test.mjs`, ISA SL): Vs1 75.3 / Vs0 69.4 KIAS (PC-9 M TCDS scaled: 75.3 / 67.5), climb
-  3,790 fpm at 130 KIAS, take-off 214 m roll / 393 m over 50 ft (PC-9: 391 m), landing 704 m over 50 ft
-  (PC-9: 700 m), MIL-F-8785C Class I Level 1 modes in Cat B and C. Autoland on all four runways in calm and
-  15 kt gusty crosswind scores 93–100.
+  caps for strikes (tail 45, prop 25, wing tip 30) and belly landing (10); a crash scores 0. Event labels in
+  `EVENT_TEXT`.
+- Verified (`validation.test.mjs`, ISA SL): Vs1 75.4 / Vs0 69.5 KIAS (PC-9 M TCDS scaled: 75.3 / 67.5), climb
+  3,772 fpm at 130 KIAS, take-off 216 m roll / 403 m over 50 ft (PC-9: 391 m), landing 704 m over 50 ft
+  (PC-9: 700 m), MIL-F-8785C Class I Level 1 modes in Cat B and C.
+- Autoland (`autoland.test.mjs`, 4 runways × 10 turbulence seeds; the app seeds every flight differently):
+  calm 93–100 (mean 98), 10 kt headwind 88–100 (97), 10 kt crosswind from the right 87–97 (95), 15 kt gusty
+  crosswind from the left 67–97 (89; the low scores touch down 5–10 m downwind of the centre line).
 
 ## Controls (current)
 - Keyboard (physical keys, so a Thai layout works): W/S or ↑/↓ pitch, A/D or ←/→ roll, Q/E rudder — proportional:

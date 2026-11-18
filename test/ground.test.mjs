@@ -71,4 +71,29 @@ check('standing water from 85 kt: hydroplaning lengthens the stop', f85.d > w85.
   run(a, 5); run(b, 5);
   check('standing water adds drag on the roll', b.air.gs < a.air.gs, `${f1(a.air.gs / KT)} vs ${f1(b.air.gs / KT)} kt after 5 s`);
 }
+// full brakes hold the aircraft still at flight idle (static friction), and a full-power run-up against them
+{
+  const ac = onRunway(300); const p0 = [ac.x[0], ac.x[1]], h0 = ac.air.psi;
+  run(ac, 60, (a) => { a.cmd.thr = 0; a.cmd.brake = 1; });
+  const moved = Math.hypot(ac.x[0] - p0[0], ac.x[1] - p0[1]), yaw = Math.abs(M.wrapPi(ac.air.psi - h0)) * RAD;
+  check('parked, full brakes, flight idle, 60 s: stays put', moved < 0.02 && yaw < 0.1, `${f1(moved * 100, 2)} cm, ${f1(yaw, 3)}°`);
+  // the brakes hold a 50 % run-up; at full power the prop wash unloads the main wheels and they slide (as on many
+  // turboprops, whose run-ups are done at partial power)
+  const b = onRunway(300); const q0 = [b.x[0], b.x[1]];
+  run(b, 6, (a) => { a.cmd.thr = 0.5; a.cmd.brake = 1; });
+  check('50 % power run-up against the brakes: no creep', Math.hypot(b.x[0] - q0[0], b.x[1] - q0[1]) < 0.1, `${f1(Math.hypot(b.x[0] - q0[0], b.x[1] - q0[1]) * 100, 1)} cm`);
+}
+// brakes held against power for a long time, then released: no phantom lock when the aircraft rolls
+{
+  const ac = onRunway(300);
+  run(ac, 20, (a) => { a.cmd.thr = 0.3; a.cmd.brake = 1; });
+  run(ac, 10, (a) => { a.cmd.thr = 0.6; a.cmd.brake = 0; a.cmd.dr = clamp(1.4 * M.wrapPi(a.air.psi - FIELD.rwyHdg * DEG) + 0.6 * a.air.r, -AC.drMax, AC.drMax); });
+  check('brakes held then released: rolls away without a skid', ac.skids === 0 && ac.air.gs > 5, `skids ${ac.skids}, ${f1(ac.air.gs / KT)} kt`);
+}
+// standing still with the engine running: lift and load factor are steady (no step-to-step flutter)
+{
+  const ac = onRunway(300); let lo = 9, hi = -9, flips = 0, prev = null;
+  run(ac, 2, (a) => { a.cmd.thr = 0.4; a.cmd.brake = 1; const n = a.air.nz; if (n != null) { lo = Math.min(lo, n); hi = Math.max(hi, n); if (prev != null && Math.abs(n - prev) > 0.01) flips++; prev = n; } });
+  check('engine running at a standstill: steady load factor', hi - lo < 0.01 && flips === 0, `nz ${f1(lo, 4)}…${f1(hi, 4)}, jumps ${flips}`);
+}
 done();

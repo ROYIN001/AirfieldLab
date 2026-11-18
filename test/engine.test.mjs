@@ -43,7 +43,7 @@ check('governed above 9 % power: no windmill drag at approach power', t15 > 1200
   ac.cmd.thr = 1;
   run(ac, 2.5);
   const a = ac.air;
-  check('power on: nose yaws left', a.r < 0 && a.psi < ac.air.psi + 1, `r ${f1(a.r * RAD, 2)}°/s`);
+  check('power on: nose yaws left', a.r < 0 && M.wrapPi(a.psi - tr.psi) < 0, `r ${f1(a.r * RAD, 2)}°/s, heading ${f1(M.wrapPi(a.psi - tr.psi) * RAD, 2)}°`);
   check('power on: rolls left', a.p < 0 || a.phi < 0, `φ ${f1(a.phi * RAD, 2)}° p ${f1(a.p * RAD, 2)}°/s`);
   check('power on: pitches up (slipstream on the tail)', a.q > 0 || a.theta > tr.th, `θ ${f1(a.theta * RAD, 2)}° (trim ${f1(tr.th * RAD, 2)}°)`);
 }
@@ -52,6 +52,16 @@ check('governed above 9 % power: no windmill drag at approach power', t15 > 1200
   const { tr } = trimmed({ ias: 85, flaps: 0.45, gear: 1, pcl: 1, h: 300 });
   check('full-power climb at 85 kt: right rudder 15–60 %', tr.dr < 0 && within(-tr.dr / AC.drMax, 0.15, 0.6), `${f1(tr.dr * RAD, 1)}° (${f1(-tr.dr / AC.drMax * 100, 0)} %), γ ${f1(tr.gamma * RAD, 1)}°`);
   check('full-power climb at 85 kt: aileron under 35 %', Math.abs(tr.da / AC.daMax) < 0.35, `${f1(tr.da * RAD, 1)}°`);
+  check('full-power climb: right aileron holds the torque reaction', tr.da > 0, `${f1(tr.da * RAD, 1)}°`);
+}
+// torque reaction alone (fin swirl and P-factor switched off): a power step rolls the airframe left by (1 − kWing)·ΔQ
+{
+  const keep = { fV: AC.fV, kPf: AC.kPf }; AC.fV = 0; AC.kPf = 0;
+  const pdot = (pcl) => { const ac = new Aircraft(); ac.eng.set(pcl); const q = M.eulerToQ(0, 3 * DEG, 0); ac.x.set([0, 0, -500, 50, 0, 0, q[0], q[1], q[2], q[3], 0, 0, 0]); const d = new Float64Array(13); ac.deriv(ac.x, d); return { pd: d[10], Q: ac.eng.torque }; };
+  const lo = pdot(0), hi = pdot(1);
+  const want = -(1 - AC.kWing) * (hi.Q - lo.Q) * AC.Iinv[0];
+  Object.assign(AC, keep);
+  check('torque reaction rolls left by (1 − kWing)·ΔQ/Ixx', (hi.pd - lo.pd) < 0 && Math.abs((hi.pd - lo.pd) / want - 1) < 0.15, `Δṗ ${f1((hi.pd - lo.pd) * RAD, 2)} vs ${f1(want * RAD, 2)} °/s²`);
 }
 // cruise: the fin offset leaves little rudder
 {
@@ -69,11 +79,18 @@ check('governed above 9 % power: no windmill drag at approach power', t15 > 1200
   const r0 = yawAt(0), r12 = yawAt(12);
   check('P-factor: more left yaw at α 12° than at 0°', r12 < r0, `ṙ ${f1(r0 * RAD, 2)} → ${f1(r12 * RAD, 2)} °/s²`);
 }
-// gyroscopic precession: pitching up yaws right, pitching down yaws left
+// gyroscopic precession: pitching up yaws right, pitching down yaws left (P-factor off to isolate the rotor term)
 {
+  const keep = AC.kPf; AC.kPf = 0;
   const ac = new Aircraft(); ac.eng.set(0.8);
   const rdot = (qq) => { const q = M.eulerToQ(0, 0, 0); ac.x.set([0, 0, -500, 60, 0, 0, q[0], q[1], q[2], q[3], 0, qq, 0]); const d = new Float64Array(13); ac.deriv(ac.x, d); return d[12]; };
-  const up = rdot(0.5), dn = rdot(-0.5);
-  check('gyroscopic: pitch up → yaw right', up - dn > 0, `Δṙ ${f1((up - dn) * RAD, 2)} °/s² (H ${f1(PROP.H, 0)} kg·m²/s)`);
+  const up = rdot(0.5), dn = rdot(-0.5), want = PROP.H * AC.Iinv[8];   // Δq = 1 rad/s
+  AC.kPf = keep;
+  check('gyroscopic: pitch up → yaw right, size H·Δq/Izz', up - dn > 0 && Math.abs((up - dn) / want - 1) < 0.1, `Δṙ ${f1((up - dn) * RAD, 2)} vs ${f1(want * RAD, 2)} °/s² (H ${f1(PROP.H, 0)} kg·m²/s)`);
+}
+// zero power and bad inputs stay finite
+{
+  const z = propeller(0, 0, 1.2), e = new Turboprop().set(0.3); e.update(1 / 240, NaN); e.update(1 / 240, 0.5);
+  check('zero shaft power at rest gives finite zero thrust; a NaN lever is ignored', Number.isFinite(z.T) && Number.isFinite(z.Vs) && Number.isFinite(e.ng) && Number.isFinite(e.P), `T ${z.T}, Ng ${f1(e.ng, 1)}`);
 }
 done();
