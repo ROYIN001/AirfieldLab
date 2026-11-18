@@ -362,35 +362,35 @@ class Propeller {
   "propeller": {
     "identity": {
       "nBlades": {"v": 4, "u": "-", "scope": "propeller", "src": ["P3"], "conf": "สูง", "est": false, "note": "ใบพัด 4 ใบแบบ Hartzell HC-D4N (TCDS EASA IM.P.133)"},
-      "diameter": {"v": 2.44, "u": "m", "scope": "propeller", "src": ["P3"], "conf": "กลาง", "est": true, "note": "เลือกให้อยู่ในช่วง 218.4-243.8 cm ของใบ D9512 ใน TCDS; ค่าเดิมของรอบนี้"},
+      "diameter": {"v": 2.44, "u": "m", "scope": "propeller", "src": ["P3"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: เลือกให้อยู่ในช่วง 218.4-243.8 cm ของใบ D9512 ใน TCDS; ค่าเดิมของรอบนี้"},
       "sense": {"v": 1, "u": "-", "scope": "propeller", "src": ["P3", "P14", "P1"], "conf": "สูง", "est": false, "note": "+1 = หมุนตามเข็มนาฬิกาเมื่อมองจากด้านหลัง (right-hand, เวกเตอร์ความเร็วเชิงมุมของใบพัด = +x ใน FRD); -1 = กลับทิศ"},
       "massComplete": {"v": 68.9, "u": "kg", "scope": "propeller", "src": ["P3"], "conf": "สูง", "est": false, "note": "น้ำหนักประมาณสูงสุดของใบพัดทั้งชุด HC-D4N-2/D9512 ตาม TCDS"},
-      "hubPosition": {"v": [3.94, 0, -0.06], "u": "m (FRD จาก CG)", "scope": "aircraft", "src": ["P16"], "conf": "ต่ำ", "est": true, "note": "จากตำแหน่งใบพัดในโมเดลสามมิติ src/70-aircraft.js:183 (render y = +0.06 → FRD z = -0.06) โดยสมมติว่าจุดกำเนิดโมเดลคือ CG; r_z ทำให้แรงขับเต็มสร้าง pitch -T·0.06 ≈ -609 N m"},
-      "thrustAxis": {"v": [1, 0, 0], "u": "-", "scope": "aircraft", "src": ["P16"], "conf": "ต่ำ", "est": true, "note": "ไม่มี right/down thrust ติดตั้ง (ไม่พบแหล่งสำหรับเครื่องสมมติ)"}
+      "hubPosition": {"v": [3.94, 0, -0.06], "u": "m (FRD จาก CG)", "scope": "aircraft", "src": ["P16"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: จากตำแหน่งใบพัดในโมเดลสามมิติ src/70-aircraft.js:183 (render y = +0.06 → FRD z = -0.06) โดยสมมติว่าจุดกำเนิดโมเดลคือ CG; r_z ทำให้แรงขับเต็มสร้าง pitch -T·0.06 ≈ -609 N m"},
+      "thrustAxis": {"v": [1, 0, 0], "u": "-", "scope": "aircraft", "src": ["P16"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: ไม่มี right/down thrust ติดตั้ง (ไม่พบแหล่งสำหรับเครื่องสมมติ)"}
     },
     "engineInterface": {
       "maxShaftPower": {"v": 708, "u": "kW", "scope": "engine", "src": ["P4"], "conf": "สูง", "est": false, "note": "PT6A-62 take-off = max continuous 708 kW, flat rated ถึง 37 °C (TCDS EASA IM.E.078 Issue 02, Note 3); ≈949 shp เป็นการแปลงหน่วยเอง"},
       "rpmGoverned": {"v": 2000, "u": "rpm", "scope": "engine", "src": ["P4"], "conf": "สูง", "est": false, "note": "N2 steady limit 2000 rpm (90.7%)"},
       "rpmTransientLimit": {"v": 2205, "u": "rpm", "scope": "engine", "src": ["P4"], "conf": "สูง", "est": false, "note": "N2 transient 2205 rpm (100%)"},
       "gearRatio": {"v": 15.07, "u": "-", "scope": "engine", "src": ["P4"], "conf": "สูง", "est": false, "note": "คำนวณจาก TCDS: power turbine 30145 rpm ที่ใบพัด 2000 rpm"},
-      "flightIdleShaftPower": {"v": 20, "u": "kW", "scope": "engine", "src": [], "conf": "ต่ำ", "est": true, "note": "สมมติฐานสำหรับคำนวณแรงขับที่ flight idle; ให้หัวข้อเครื่องยนต์ยืนยัน"}
+      "flightIdleShaftPower": {"v": 20, "u": "kW", "scope": "engine", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: สมมติฐานสำหรับคำนวณแรงขับที่ flight idle; ให้หัวข้อเครื่องยนต์ยืนยัน"}
     },
     "bladeGeometry": {
-      "hubRadiusRatio": {"v": 0.18, "u": "r/R", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "รัศมี spinner/โคนใบ"},
-      "chordOverD": {"v": {"axes": {"x": [0.18, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.92, 0.97, 1]}, "data": [0.058, 0.064, 0.07, 0.073, 0.074, 0.073, 0.071, 0.066, 0.06, 0.052, 0.04]}, "u": "c/D", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "รูปทรงใบสมมติ ให้ activity factor ≈ 100 ต่อใบ, solidity ที่ 0.75R = 0.181"},
-      "twistDesignJ": {"v": 1.1, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "บิดตาม atan(Jd/(πx)) อ้างอิงที่ 0.75R; บิดรวม 41° จาก 0.2R ถึงปลายใบ"},
-      "activityFactor": {"v": 100, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "AF = (1e5/16)∫(c/D)x³dx ต่อใบ"}
+      "hubRadiusRatio": {"v": 0.18, "u": "r/R", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: รัศมี spinner/โคนใบ"},
+      "chordOverD": {"v": {"axes": {"x": [0.18, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.92, 0.97, 1]}, "data": [0.058, 0.064, 0.07, 0.073, 0.074, 0.073, 0.071, 0.066, 0.06, 0.052, 0.04]}, "u": "c/D", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: รูปทรงใบสมมติ ให้ activity factor ≈ 100 ต่อใบ, solidity ที่ 0.75R = 0.181"},
+      "twistDesignJ": {"v": 1.1, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: บิดตาม atan(Jd/(πx)) อ้างอิงที่ 0.75R; บิดรวม 41° จาก 0.2R ถึงปลายใบ"},
+      "activityFactor": {"v": 100, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: AF = (1e5/16)∫(c/D)x³dx ต่อใบ"}
     },
     "section": {
-      "liftSlope": {"v": 5.78, "u": "1/rad", "scope": "propeller", "src": [], "conf": "กลาง", "est": true, "note": "0.92·2π ก่อนแก้ Prandtl-Glauert (จำกัด M ≤ 0.8)"},
-      "alpha0": {"v": -3, "u": "deg", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "มุมยกศูนย์ของหน้าตัดโค้ง (cambered)"},
-      "alphaStallPos": {"v": 14, "u": "deg", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ปรับเทียบให้แรงขับสถิตที่ 31 °C ≈ AC.T0; ไวมาก (±1° → ±1.5 kN)"},
-      "alphaStallNeg": {"v": -11, "u": "deg", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": ""},
-      "stallBlendM": {"v": 10, "u": "1/rad", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ความชันของ sigmoid ผสม flat plate"},
-      "cd0": {"v": 0.0085, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": ""},
-      "kcd": {"v": 0.01, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "cd = cd0 + kcd (cl - 0.35)^2"},
-      "Mdd": {"v": 0.8, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "drag rise 20(M-Mcrit)^4, Mcrit = Mdd - (0.1/80)^(1/3)"},
-      "stallDelayFactor": {"v": 3, "u": "-", "scope": "propeller", "src": ["P10"], "conf": "ต่ำ", "est": true, "note": "Δcl = 3(c/r)²(cl_lin - cl) แบบ Snel; CCBlade ใช้ Du-Selig ที่โครงสร้างเดียวกัน; สัมประสิทธิ์ 3 ยังไม่ยืนยันจากต้นฉบับ"}
+      "liftSlope": {"v": 5.78, "u": "1/rad", "scope": "propeller", "src": [], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: 0.92·2π ก่อนแก้ Prandtl-Glauert (จำกัด M ≤ 0.8)"},
+      "alpha0": {"v": -3, "u": "deg", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: มุมยกศูนย์ของหน้าตัดโค้ง (cambered)"},
+      "alphaStallPos": {"v": 14, "u": "deg", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: ปรับเทียบให้แรงขับสถิตที่ 31 °C ≈ AC.T0; ไวมาก (±1° → ±1.5 kN)"},
+      "alphaStallNeg": {"v": -11, "u": "deg", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ"},
+      "stallBlendM": {"v": 10, "u": "1/rad", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: ความชันของ sigmoid ผสม flat plate"},
+      "cd0": {"v": 0.0085, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ"},
+      "kcd": {"v": 0.01, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: cd = cd0 + kcd (cl - 0.35)^2"},
+      "Mdd": {"v": 0.8, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: drag rise 20(M-Mcrit)^4, Mcrit = Mdd - (0.1/80)^(1/3)"},
+      "stallDelayFactor": {"v": 3, "u": "-", "scope": "propeller", "src": ["P10"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: Δcl = 3(c/r)²(cl_lin - cl) แบบ Snel; CCBlade ใช้ Du-Selig ที่โครงสร้างเดียวกัน; สัมประสิทธิ์ 3 ยังไม่ยืนยันจากต้นฉบับ"}
     },
     "tables": {
       "CT": {"v": {"axes": {"J": [0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4], "beta75_deg": [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]},
@@ -408,7 +408,7 @@ class Propeller {
             [-0.4897, -0.4338, -0.3719, -0.2909, -0.1862, -0.0642, 0.0649, 0.1908, 0.2933, 0.3657, 0.392],
             [-0.5725, -0.5075, -0.4431, -0.3666, -0.2657, -0.1415, -0.0044, 0.1347, 0.2584, 0.3527, 0.4064],
             [-0.5784, -0.5898, -0.5177, -0.4418, -0.3455, -0.2216, -0.0784, 0.0714, 0.2149, 0.329, 0.4068]]},
-        "u": "-", "scope": "propeller", "src": ["P10"], "conf": "ต่ำ", "est": true, "note": "BEM + Prandtl tip loss (สคริปต์ p3_bem.mjs), ρ=1.225, 2000 rpm; ช่อง J=0/β≥55° อยู่นอกช่วงที่ BEM หาคำตอบได้; runtime ควรใช้ตารางละเอียด ΔJ=0.1, Δβ=5°"},
+        "u": "-", "scope": "propeller", "src": ["P10"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: BEM + Prandtl tip loss (สคริปต์ p3_bem.mjs), ρ=1.225, 2000 rpm; ช่อง J=0/β≥55° อยู่นอกช่วงที่ BEM หาคำตอบได้; runtime ควรใช้ตารางละเอียด ΔJ=0.1, Δβ=5°"},
       "CP": {"v": {"axes": {"J": [0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4], "beta75_deg": [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]},
           "data": [
             [0.0478, 0.0823, 0.1228, 0.1642, 0.202, 0.2358, 0.2678, 0.3008, 0.3393, 0.3732, 0.3989],
@@ -424,7 +424,7 @@ class Propeller {
             [-0.4347, -0.4751, -0.4841, -0.4312, -0.3018, -0.1024, 0.1522, 0.4426, 0.7188, 0.9567, 1.1104],
             [-0.5194, -0.5638, -0.5895, -0.5632, -0.4529, -0.2544, 0.0172, 0.3434, 0.6815, 0.9879, 1.2226],
             [-0.4256, -0.662, -0.6958, -0.6931, -0.609, -0.4205, -0.1378, 0.2169, 0.616, 0.9907, 1.3089]]},
-        "u": "-", "scope": "propeller", "src": ["P10"], "conf": "ต่ำ", "est": true, "note": "C_P = P/(ρn³D⁵) = 2πC_Q"},
+        "u": "-", "scope": "propeller", "src": ["P10"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: C_P = P/(ρn³D⁵) = 2πC_Q"},
       "CNmu": {"v": {"axes": {"J": [0.2, 0.4, 0.6, 0.8, 1, 1.2], "beta75_deg": [10, 15, 20, 25, 30, 35, 40]},
           "data": [
             [0.0246, 0.0331, 0.0417, 0.0364, 0.0537, 0.0625, 0.0738],
@@ -433,7 +433,7 @@ class Propeller {
             [0.0399, 0.0593, 0.0797, 0.0901, 0.0969, 0.0975, 0.0956],
             [0.0366, 0.0617, 0.0884, 0.1148, 0.122, 0.1253, 0.119],
             [0.027, 0.0568, 0.0913, 0.1256, 0.1573, 0.1574, 0.1544]]},
-        "u": "-", "scope": "propeller", "src": ["P6"], "conf": "ต่ำ", "est": true, "note": "dC_N/dμ, C_N = F_inplane/(ρn²D⁴), μ = V_inplane/(nD); BEM แยกมุมแอซิมัท induction คงที่; ไม่รวม sidewash ของ Ribner"},
+        "u": "-", "scope": "propeller", "src": ["P6"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: dC_N/dμ, C_N = F_inplane/(ρn²D⁴), μ = V_inplane/(nD); BEM แยกมุมแอซิมัท induction คงที่; ไม่รวม sidewash ของ Ribner"},
       "CMmu": {"v": {"axes": {"J": [0.2, 0.4, 0.6, 0.8, 1, 1.2], "beta75_deg": [10, 15, 20, 25, 30, 35, 40]},
           "data": [
             [0.0336, 0.0445, 0.0512, 0.0497, 0.0482, 0.0412, 0.0347],
@@ -442,42 +442,42 @@ class Propeller {
             [0.0174, 0.0353, 0.0531, 0.063, 0.067, 0.0638, 0.053],
             [0.007, 0.0264, 0.0463, 0.0651, 0.0714, 0.0727, 0.0648],
             [-0.0046, 0.0153, 0.0373, 0.0586, 0.078, 0.0791, 0.0766]]},
-        "u": "-", "scope": "propeller", "src": ["P6"], "conf": "ต่ำ", "est": true, "note": "dC_Mpf/dμ, C_Mpf = M_pfactor/(ρn²D⁵); เครื่องหมายตาม sense"}
+        "u": "-", "scope": "propeller", "src": ["P6"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: dC_Mpf/dμ, C_Mpf = M_pfactor/(ρn²D⁵); เครื่องหมายตาม sense"}
     },
     "inertia": {
-      "Ip": {"v": 14, "u": "kg m2", "scope": "propeller", "src": ["P2", "P3"], "conf": "ต่ำ", "est": true, "note": "ช่วงที่เป็นไปได้ 10.8 (JSBSim prop_PT6.xml) ถึง 20 (ประมาณจากมวล 68.9 kg ใน TCDS)"},
-      "IreflectedEngine": {"v": 0, "u": "kg m2", "scope": "engine", "src": [], "conf": "ต่ำ", "est": true, "note": "ความเฉื่อยของ power turbine สะท้อนผ่านเกียร์ (×15.07²) ไม่มีข้อมูล; ทดสอบความไวด้วย +5"}
+      "Ip": {"v": 14, "u": "kg m2", "scope": "propeller", "src": ["P2", "P3"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: ช่วงที่เป็นไปได้ 10.8 (JSBSim prop_PT6.xml) ถึง 20 (ประมาณจากมวล 68.9 kg ใน TCDS)"},
+      "IreflectedEngine": {"v": 0, "u": "kg m2", "scope": "engine", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: ความเฉื่อยของ power turbine สะท้อนผ่านเกียร์ (×15.07²) ไม่มีข้อมูล; ทดสอบความไวด้วย +5"}
     },
     "governor": {
       "kGov": {"v": 1, "u": "deg/s per rpm", "scope": "propeller", "src": ["P1"], "conf": "กลาง", "est": false, "note": "กฎเดียวกับ JSBSim FGPropeller.cpp:345 (Pitch -= dRPM*dt)"},
-      "pitchRateMax": {"v": 20, "u": "deg/s", "scope": "propeller", "src": ["P8"], "conf": "ต่ำ", "est": true, "note": "อนุมานจากเวลา feather 3-10 s ของ FAA (ช่วง ~70° → 7-23 °/s)"},
-      "rpmOverspeed": {"v": 2100, "u": "rpm", "scope": "propeller", "src": ["P8", "P4"], "conf": "ต่ำ", "est": true, "note": "FAA: overspeed/pitch lock ที่รอบสูงกว่า 100% เล็กน้อย; ต้องต่ำกว่า transient limit 2205 rpm"},
+      "pitchRateMax": {"v": 20, "u": "deg/s", "scope": "propeller", "src": ["P8"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: อนุมานจากเวลา feather 3-10 s ของ FAA (ช่วง ~70° → 7-23 °/s)"},
+      "rpmOverspeed": {"v": 2100, "u": "rpm", "scope": "propeller", "src": ["P8", "P4"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: FAA: overspeed/pitch lock ที่รอบสูงกว่า 100% เล็กน้อย; ต้องต่ำกว่า transient limit 2205 rpm"},
       "oilMinRpm": {"v": 200, "u": "rpm", "scope": "propeller", "src": ["P1"], "conf": "กลาง", "est": false, "note": "ต่ำกว่านี้ปั๊มน้ำมัน governor ไม่ทำงาน (JSBSim)"},
-      "betaFlightIdle": {"v": 10, "u": "deg @0.75R", "scope": "propeller", "src": ["P8", "P9"], "conf": "ต่ำ", "est": true, "note": "low-pitch stop; FAA fig 7-3 10-12°; C208 TCDS แปลงเป็น 0.75R ได้ 8.9-11.4°"},
-      "betaFeather": {"v": 81, "u": "deg @0.75R", "scope": "propeller", "src": ["P8", "P9"], "conf": "กลาง", "est": true, "note": "C208 TCDS แปลงเป็น 0.75R ได้ 80.8-81.3°; FAA 85-90° (ไม่ระบุสถานี)"},
-      "featherRate": {"v": 15, "u": "deg/s", "scope": "propeller", "src": ["P8", "P1"], "conf": "ต่ำ", "est": true, "note": "feather ใน ~5 s (FAA 3-10 s; JSBSim ~5 s)"}
+      "betaFlightIdle": {"v": 10, "u": "deg @0.75R", "scope": "propeller", "src": ["P8", "P9"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: low-pitch stop; FAA fig 7-3 10-12°; C208 TCDS แปลงเป็น 0.75R ได้ 8.9-11.4°"},
+      "betaFeather": {"v": 81, "u": "deg @0.75R", "scope": "propeller", "src": ["P8", "P9"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: C208 TCDS แปลงเป็น 0.75R ได้ 80.8-81.3°; FAA 85-90° (ไม่ระบุสถานี)"},
+      "featherRate": {"v": 15, "u": "deg/s", "scope": "propeller", "src": ["P8", "P1"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: feather ใน ~5 s (FAA 3-10 s; JSBSim ~5 s)"}
     },
     "betaReverse": {
-      "reverseAvailable": {"v": false, "u": "-", "scope": "propeller", "src": ["P3"], "conf": "กลาง", "est": true, "note": "รุ่น -2 ไม่มี beta feedback และไม่อนุมัติ reverse; ATR ฯลฯ ในรอบหลังต้องตั้ง true"},
-      "betaGroundIdle": {"v": 0, "u": "deg @0.75R", "scope": "propeller", "src": ["P8"], "conf": "ต่ำ", "est": true, "note": "ใช้เมื่อ reverseAvailable เท่านั้น"},
-      "betaReverseMax": {"v": -15, "u": "deg @0.75R", "scope": "propeller", "src": ["P7", "P9"], "conf": "ต่ำ", "est": true, "note": "AFH: PT6 ประมาณ -11° (ไม่ระบุสถานี); C208 TCDS แปลงได้ -15.6/-20.7°"},
-      "reverseRpmMax": {"v": 1825, "u": "rpm", "scope": "engine", "src": ["P9"], "conf": "ต่ำ", "est": true, "note": "อ้างอิงเชิงเปรียบเทียบจาก TCDS A37CE Rev. 12 ของ C208 (ตาราง PT6A-114/-114A) max reverse 1825 rpm 1 นาที"},
-      "reverseCTstatic": {"v": -0.088, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "BEM สถิตแบบ mirrored annuli ที่ β=-15°: T ≈ -3.35 kN ที่ 1825 rpm, 136 kW; ที่ V>0 ทฤษฎีโมเมนตัมใช้ไม่ได้"}
+      "reverseAvailable": {"v": false, "u": "-", "scope": "propeller", "src": ["P3"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: รุ่น -2 ไม่มี beta feedback และไม่อนุมัติ reverse; ATR ฯลฯ ในรอบหลังต้องตั้ง true"},
+      "betaGroundIdle": {"v": 0, "u": "deg @0.75R", "scope": "propeller", "src": ["P8"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: ใช้เมื่อ reverseAvailable เท่านั้น"},
+      "betaReverseMax": {"v": -15, "u": "deg @0.75R", "scope": "propeller", "src": ["P7", "P9"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: AFH: PT6 ประมาณ -11° (ไม่ระบุสถานี); C208 TCDS แปลงได้ -15.6/-20.7°"},
+      "reverseRpmMax": {"v": 1825, "u": "rpm", "scope": "engine", "src": ["P9"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: อ้างอิงเชิงเปรียบเทียบจาก TCDS A37CE Rev. 12 ของ C208 (ตาราง PT6A-114/-114A) max reverse 1825 rpm 1 นาที"},
+      "reverseCTstatic": {"v": -0.088, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: BEM สถิตแบบ mirrored annuli ที่ β=-15°: T ≈ -3.35 kN ที่ 1825 rpm, 136 kW; ที่ V>0 ทฤษฎีโมเมนตัมใช้ไม่ได้"}
     },
     "feathered": {
-      "bladePlanformArea": {"v": 0.66, "u": "m2", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "B∫c dr ของรูปทรงใบสมมติ"},
-      "CDfeathered": {"v": 0.06, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "แรงต้านใบที่ feather (หยุดหมุน) อิงพื้นที่ใบ: D = q·S_b·C_D"}
+      "bladePlanformArea": {"v": 0.66, "u": "m2", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: B∫c dr ของรูปทรงใบสมมติ"},
+      "CDfeathered": {"v": 0.06, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: แรงต้านใบที่ feather (หยุดหมุน) อิงพื้นที่ใบ: D = q·S_b·C_D"}
     },
     "sim": {
-      "tableStepJ": {"v": 0.1, "u": "-", "scope": "sim", "src": [], "conf": "กลาง", "est": true, "note": "ความคลาดเคลื่อน bilinear < 2% เทียบ BEM ตรง"},
-      "tableStepBeta": {"v": 5, "u": "deg", "scope": "sim", "src": [], "conf": "กลาง", "est": true, "note": ""},
-      "useRealtimeBEM": {"v": false, "u": "-", "scope": "sim", "src": [], "conf": "สูง", "est": true, "note": "BEM ตรงใช้ 0.17-0.62 ms/ครั้ง × 960 ครั้ง/วินาทีจำลอง → ช้าเกิน; ใช้ตาราง (23.5 ns/ครั้ง)"}
+      "tableStepJ": {"v": 0.1, "u": "-", "scope": "sim", "src": [], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: ความคลาดเคลื่อน bilinear < 2% เทียบ BEM ตรง"},
+      "tableStepBeta": {"v": 5, "u": "deg", "scope": "sim", "src": [], "conf": "กลาง", "est": true, "note": "ค่าประมาณ"},
+      "useRealtimeBEM": {"v": false, "u": "-", "scope": "sim", "src": [], "conf": "สูง", "est": true, "note": "ค่าประมาณ: BEM ตรงใช้ 0.17-0.62 ms/ครั้ง × 960 ครั้ง/วินาทีจำลอง → ช้าเกิน; ใช้ตาราง (23.5 ns/ครั้ง)"}
     },
     "checks": {
       "staticThrustISA": {"v": 12.36, "u": "kN", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณจาก BEM ที่ 700 kW, 2000 rpm, ρ=1.225, β75≈26.8°, FM≈0.58"},
-      "staticThrustVTBD31C": {"v": 11.55, "u": "kN", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ρ=1.160, β75≈28.5°, FM≈0.54; ใกล้ AC.T0 = 11.5 kN"},
-      "momentumIdealStaticISA": {"v": 17.77, "u": "kN", "scope": "propeller", "src": [], "conf": "สูง", "est": true, "note": "(2ρA)^(1/3)P^(2/3), D=2.44 m, 700 kW"},
-      "peakEfficiency": {"v": 0.88, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "สูงสุดของตารางที่ β75 30-40°, J 1.3-1.9"}
+      "staticThrustVTBD31C": {"v": 11.55, "u": "kN", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: ρ=1.160, β75≈28.5°, FM≈0.54; ใกล้ AC.T0 = 11.5 kN"},
+      "momentumIdealStaticISA": {"v": 17.77, "u": "kN", "scope": "propeller", "src": [], "conf": "สูง", "est": true, "note": "ค่าประมาณ: (2ρA)^(1/3)P^(2/3), D=2.44 m, 700 kW"},
+      "peakEfficiency": {"v": 0.88, "u": "-", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: สูงสุดของตารางที่ β75 30-40°, J 1.3-1.9"}
     }
   }
 }

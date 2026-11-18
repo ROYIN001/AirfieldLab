@@ -5,7 +5,7 @@
 > ความเชื่อมั่นโดยรวม: กลาง (กฎและสมการทางวิ่งเปียก: สูง · ค่าโช้คและยางของเครื่องฝึกสมมุติ: ต่ำ เพราะเป็นค่าที่ออกแบบเอง) · แหล่งหลัก: NACA Rep. 1154 [G8], 14 CFR 23.473/25.473/25.109 [G3, G1, G6], FAA AC 25-32 [G13], NASA TN D-2056 / TN 4110 [G10, G9]
 
 ## 7.0 สรุปสั้น
-- **โช้คปัจจุบันเป็นสปริงเชิงเส้นกับ damper เชิงเส้น ทำให้แรงสูงสุดเกิดทันทีที่ล้อแตะพื้น (t = 0) และสูงเกินจริง** ลองปล่อยตกที่ 3 m/s แรงต่อล้อหลักข้างหนึ่งขึ้นเป็น 37.4 kN ในเฟรมแรก (ground reaction factor 3.39) เพราะเทอม c·v = 12,500 × 3 ไม่ต้องรอระยะยุบเลย ในโช้ค oleo แรงไฮดรอลิกแปรตามกำลังสองของความเร็วยุบและยางต้องยุบก่อน [G8] แรงจึงค่อย ๆ ขึ้น แบบจำลองที่เสนอ (สปริงก๊าซ polytropic + orifice damping กำลังสอง + ยางต่ออนุกรม) ให้ค่า 1.98 ที่ 58 ms ในโมเดล 6-DOF ตัวเดียวกัน และแรงล้อหลักหลัง step แรกเหลือ 0.73 W_st จาก 3.91 W_st (ตัวเลขหลังแก้ code ให้ damping ของยางไม่เกินแรงสปริงยาง ดู 7.2)
+- **โช้คปัจจุบันเป็นสปริงเชิงเส้นกับ damper เชิงเส้น ทำให้แรงสูงสุดเกิดทันทีที่ล้อแตะพื้น (t = 0) และสูงเกินจริง** ลองปล่อยตกที่ 3 m/s (590 fpm) แรงต่อล้อหลักข้างหนึ่งขึ้นเป็น 37.4 kN ในเฟรมแรก (ground reaction factor 3.39) เพราะเทอม c·v = 12,500 × 3 ไม่ต้องรอระยะยุบเลย ในโช้ค oleo แรงไฮดรอลิกแปรตามกำลังสองของความเร็วยุบและยางต้องยุบก่อน [G8] แรงจึงค่อย ๆ ขึ้น แบบจำลองที่เสนอ (สปริงก๊าซ polytropic + orifice damping กำลังสอง + ยางต่ออนุกรม) ให้ค่า 1.98 ที่ 58 ms ในโมเดล 6-DOF ตัวเดียวกัน (ค่าประมาณ เพราะพารามิเตอร์ของโช้คเป็นค่าประมาณ) และแรงล้อหลักหลัง step แรกเหลือ 0.73 W_st จาก 3.91 W_st (ตัวเลขหลังแก้ code ให้ damping ของยางไม่เกินแรงสปริงยาง ดู 7.2)
 - **ยางด้านข้างผูกกับ "ความเร็ว" ไม่ใช่ "มุม slip"** สูตร `0.65·tanh(v_side/0.35)` ทำให้ cornering stiffness เท่ากับ 9.3 /rad ที่ 5 m/s และกลายเป็น 55.7 /rad ที่ 30 m/s ส่วนยางเครื่องบินจริงอยู่ราว 3.2 /rad และไม่ขึ้นกับความเร็ว [G9] ผลคือเครื่องบิน "เกาะราง" ตอนแตะพื้นแบบ crab และไม่มี relaxation length
 - **ไม่มีสภาพผิวทางวิ่งเลย** ทั้งเบรกและแรงด้านข้างใช้ค่าเดียวกันทุกสภาพ ขณะที่ AIP/CAAT ใช้ GRF (RWYCC 0–6) มาตั้งแต่ 4 พ.ย. 2021 [G17] ส่วนดอนเมืองมีฝนเขตร้อนเป็นภัยหลัก จึงควรทำ μ(V, RWYCC) จากสมการ 14 CFR 25.109(c) [G6] และตาราง AC 25-32 [G13] และใส่ hydroplaning ที่ V_P = 9√p kt [G10] ยางหลัก 60 psi ของเครื่องฝึกจะ hydroplane ที่ 70 kt ซึ่ง**ต่ำกว่าความเร็วแตะพื้น 85 kt** เป็นบทเรียนที่เครื่องจำลองควรสอนได้
 - **จอดแล้วไหล** เครื่องที่จอดเหยียบเบรกเต็มยังไหลไปช้า ๆ 0.012 m/s (12 cm ใน 10 s) เพราะแรง idle 518 N ไปเจอแรงเสียดทานแบบ `tanh(v/0.25)` ซึ่งต้องมีความเร็วก่อนถึงจะเกิดแรง แก้ได้ด้วย state "ขนยาง" (bristle/relaxation) ที่ทำหน้าที่เป็นแรงเสียดทานสถิตไปพร้อมกัน
@@ -283,80 +283,80 @@ function surfaceMu(Vkt, surface, psi) {
 {
   "gear": {
     "geometry": {
-      "nose_contact_body_extended": {"v":[2.3,0,1.454],"u":"m FRD","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ล้อหน้าเมื่อยืดสุด; z +0.094 m จาก AC.gear เพื่อให้ CG จอดสูง 1.30 m เท่าเดิม"},
-      "main_contact_body_extended": {"v":[[-0.35,-1.55,1.506],[-0.35,1.55,1.506]],"u":"m FRD","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"z +0.126 m จาก AC.gear"},
-      "cg_height_parked": {"v":1.3,"u":"m","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ใช้ตรวจ turnover"}
+      "nose_contact_body_extended": {"v":[2.3,0,1.454],"u":"m FRD","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ล้อหน้าเมื่อยืดสุด; z +0.094 m จาก AC.gear เพื่อให้ CG จอดสูง 1.30 m เท่าเดิม"},
+      "main_contact_body_extended": {"v":[[-0.35,-1.55,1.506],[-0.35,1.55,1.506]],"u":"m FRD","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: z +0.126 m จาก AC.gear"},
+      "cg_height_parked": {"v":1.3,"u":"m","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ใช้ตรวจ turnover"}
     },
     "strut_main": {
-      "stroke": {"v":0.25,"u":"m","scope":"gear","src":["G3","G4"],"conf":"ต่ำ","est":true,"note":"drop 10 fps, L = 2/3: ใช้ 88%, n_g 2.38 (strutStep ฉบับแก้; ฉบับแรก 2.32)"},
-      "p_static": {"v":300,"u":"psi","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"2.07 MPa; A = W_st/p_static"},
-      "piston_area": {"v":0.00463,"u":"m2","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"bore 77 mm"},
-      "ratio_static_to_extended": {"v":2.5,"u":"-","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"พรีโหลด 0.4 W_st"},
-      "ratio_compressed_to_extended": {"v":8,"u":"-","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"V_ext/V_comp; จุดจอด ~69% ของ stroke"},
+      "stroke": {"v":0.25,"u":"m","scope":"gear","src":["G3","G4"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: drop 10 fps, L = 2/3: ใช้ 88%, n_g 2.38 (strutStep ฉบับแก้; ฉบับแรก 2.32)"},
+      "p_static": {"v":300,"u":"psi","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: 2.07 MPa; A = W_st/p_static"},
+      "piston_area": {"v":0.00463,"u":"m2","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: bore 77 mm"},
+      "ratio_static_to_extended": {"v":2.5,"u":"-","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: พรีโหลด 0.4 W_st"},
+      "ratio_compressed_to_extended": {"v":8,"u":"-","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: V_ext/V_comp; จุดจอด ~69% ของ stroke"},
       "polytropic_n_dynamic": {"v":1.12,"u":"-","scope":"gear","src":["G8"],"conf":"กลาง","est":false,"note":"NACA 1154"},
       "polytropic_n_static": {"v":1,"u":"-","scope":"gear","src":[],"conf":"กลาง","est":true,"note":"ค่าประมาณ: การยุบช้าใกล้ isothermal (ฟิสิกส์ทั่วไป ไม่ได้มาจาก G8)"},
-      "Kh_compression": {"v":4000,"u":"N/(m/s)^2","scope":"gear","src":["G8"],"conf":"ต่ำ","est":true,"note":"ρA_h^3/(2(C_d A_n)^2) ปรับให้ n_g ต่ำสุดที่ ≤ 88% stroke"},
-      "Kr_rebound": {"v":48000,"u":"N/(m/s)^2","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"12 เท่าของ K_h"},
-      "c_linear": {"v":2000,"u":"N s/m","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ทำให้ ṡ เรียบรอบจุดสมดุล"},
-      "seal_friction_ratio": {"v":0,"u":"-","scope":"gear","src":["G8"],"conf":"ต่ำ","est":true,"note":"NACA 1154 ตั้งเป็นศูนย์; เปิดได้ 0.02-0.05"}
+      "Kh_compression": {"v":4000,"u":"N/(m/s)^2","scope":"gear","src":["G8"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ρA_h^3/(2(C_d A_n)^2) ปรับให้ n_g ต่ำสุดที่ ≤ 88% stroke"},
+      "Kr_rebound": {"v":48000,"u":"N/(m/s)^2","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: 12 เท่าของ K_h"},
+      "c_linear": {"v":2000,"u":"N s/m","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ทำให้ ṡ เรียบรอบจุดสมดุล"},
+      "seal_friction_ratio": {"v":0,"u":"-","scope":"gear","src":["G8"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: NACA 1154 ตั้งเป็นศูนย์; เปิดได้ 0.02-0.05"}
     },
     "strut_nose": {
-      "stroke": {"v":0.2,"u":"m","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"drop 10 fps: n_g 3.05 ที่ 89% (strutStep ฉบับแก้)"},
-      "p_static": {"v":300,"u":"psi","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"bore 42 mm"},
-      "piston_area": {"v":0.00141,"u":"m2","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":""},
-      "ratio_static_to_extended": {"v":2.5,"u":"-","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":""},
-      "ratio_compressed_to_extended": {"v":8,"u":"-","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":""},
-      "Kh_compression": {"v":1600,"u":"N/(m/s)^2","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":""},
-      "Kr_rebound": {"v":19000,"u":"N/(m/s)^2","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":""},
-      "c_linear": {"v":1000,"u":"N s/m","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":""}
+      "stroke": {"v":0.2,"u":"m","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: drop 10 fps: n_g 3.05 ที่ 89% (strutStep ฉบับแก้)"},
+      "p_static": {"v":300,"u":"psi","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: bore 42 mm"},
+      "piston_area": {"v":0.00141,"u":"m2","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+      "ratio_static_to_extended": {"v":2.5,"u":"-","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+      "ratio_compressed_to_extended": {"v":8,"u":"-","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+      "Kh_compression": {"v":1600,"u":"N/(m/s)^2","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+      "Kr_rebound": {"v":19000,"u":"N/(m/s)^2","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+      "c_linear": {"v":1000,"u":"N s/m","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"}
     },
     "tyre_main": {
-      "size": {"v":{"size":"6.50-8","type":"III","ply":8},"u":"-","scope":"gear","src":["G18"],"conf":"กลาง","est":true,"note":"โหลดสถิต 2,150 lb = 68% ของพิกัด"},
+      "size": {"v":{"size":"6.50-8","type":"III","ply":8},"u":"-","scope":"gear","src":["G18"],"conf":"กลาง","est":true,"note":"ค่าประมาณ: โหลดสถิต 2,150 lb = 68% ของพิกัด"},
       "rated_load": {"v":14012,"u":"N","scope":"gear","src":["G18"],"conf":"สูง","est":false,"note":"3,150 lb"},
       "rated_pressure": {"v":75,"u":"psi","scope":"gear","src":["G18"],"conf":"สูง","est":false,"note":""},
-      "operating_pressure": {"v":60,"u":"psi","scope":"gear","src":["G18"],"conf":"ต่ำ","est":true,"note":"ลดตามสัดส่วนโหลดแล้วปัดขึ้น; V_P = 70 kt"},
+      "operating_pressure": {"v":60,"u":"psi","scope":"gear","src":["G18"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ลดตามสัดส่วนโหลดแล้วปัดขึ้น; V_P = 70 kt"},
       "outside_diameter": {"v":0.495,"u":"m","scope":"gear","src":["G18"],"conf":"สูง","est":false,"note":"19.5 in"},
       "section_width": {"v":0.168,"u":"m","scope":"gear","src":["G18"],"conf":"สูง","est":false,"note":"6.6 in"},
-      "k_vertical": {"v":320000,"u":"N/m","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"TN 4110 eq.24 ได้ ~315 kN/m (OCR ไม่ชัด)"},
-      "c_vertical": {"v":3500,"u":"N s/m","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ζ ≈ 0.1"},
-      "cornering_stiffness_coef": {"v":3.2,"u":"1/rad","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"TN 4110 eq.82: 119 lb/deg ที่ 9.5 kN; JSBSim 7.7/rad"},
+      "k_vertical": {"v":320000,"u":"N/m","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: TN 4110 eq.24 ได้ ~315 kN/m (OCR ไม่ชัด)"},
+      "c_vertical": {"v":3500,"u":"N s/m","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ζ ≈ 0.1"},
+      "cornering_stiffness_coef": {"v":3.2,"u":"1/rad","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: TN 4110 eq.82: 119 lb/deg ที่ 9.5 kN; JSBSim 7.7/rad"},
       "relaxation_length": {"v":0.3,"u":"m","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ; TN 4110 eq.43 ให้ 0.35 m (c = 0.55, การอ่านที่น่าจะถูก) หรือ 0.24 m (c = 5.5)"},
-      "k_longitudinal": {"v":246000,"u":"N/m","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"TN 4110 eq.52: 1.2 p d"},
+      "k_longitudinal": {"v":246000,"u":"N/m","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: TN 4110 eq.52: 1.2 p d"},
       "mu_peak_dry": {"v":0.8,"u":"-","scope":"gear","src":["G12","G19"],"conf":"กลาง","est":false,"note":"TN D-8455: 0.78 (ค่าทำนายสำหรับยางเย็น 40x14 ที่ 140 psi ไม่ใช่ค่าวัดตรง); JSBSim c172p static_friction 0.8"},
-      "mu_skid_ratio_dry": {"v":0.75,"u":"-","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":""},
-      "mu_skid_ratio_wet": {"v":0.5,"u":"-","scope":"gear","src":["G11"],"conf":"ต่ำ","est":true,"note":"reverted rubber (เชิงคุณภาพ)"},
-      "rolling_radius": {"v":0.235,"u":"m","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"r - δ/3"},
-      "wheel_inertia": {"v":0.33,"u":"kg m2","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ยาง+ล้อ+จาน ~13 kg"}
+      "mu_skid_ratio_dry": {"v":0.75,"u":"-","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+      "mu_skid_ratio_wet": {"v":0.5,"u":"-","scope":"gear","src":["G11"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: reverted rubber (เชิงคุณภาพ)"},
+      "rolling_radius": {"v":0.235,"u":"m","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: r - δ/3"},
+      "wheel_inertia": {"v":0.33,"u":"kg m2","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ยาง+ล้อ+จาน ~13 kg"}
     },
     "tyre_nose": {
-      "size": {"v":{"size":"5.00-5","type":"III","ply":6},"u":"-","scope":"gear","src":["G18"],"conf":"กลาง","est":true,"note":"โหลดสถิต 655 lb"},
+      "size": {"v":{"size":"5.00-5","type":"III","ply":6},"u":"-","scope":"gear","src":["G18"],"conf":"กลาง","est":true,"note":"ค่าประมาณ: โหลดสถิต 655 lb"},
       "rated_load": {"v":5716,"u":"N","scope":"gear","src":["G18"],"conf":"สูง","est":false,"note":"1,285 lb"},
       "rated_pressure": {"v":50,"u":"psi","scope":"gear","src":["G18"],"conf":"สูง","est":false,"note":""},
-      "operating_pressure": {"v":45,"u":"psi","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"V_P 60 kt"},
+      "operating_pressure": {"v":45,"u":"psi","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: V_P 60 kt"},
       "outside_diameter": {"v":0.354,"u":"m","scope":"gear","src":["G18"],"conf":"สูง","est":false,"note":"13.9 in (เฉลี่ย 14.2/13.65)"},
-      "k_vertical": {"v":160000,"u":"N/m","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"สเกลตามขนาด"},
-      "c_vertical": {"v":1200,"u":"N s/m","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":""},
-      "cornering_stiffness_coef": {"v":3.2,"u":"1/rad","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":""},
-      "relaxation_length": {"v":0.22,"u":"m","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":""}
+      "k_vertical": {"v":160000,"u":"N/m","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: สเกลตามขนาด"},
+      "c_vertical": {"v":1200,"u":"N s/m","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+      "cornering_stiffness_coef": {"v":3.2,"u":"1/rad","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+      "relaxation_length": {"v":0.22,"u":"m","scope":"gear","src":["G9"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"}
     },
     "brakes": {
-      "force_limit_ratio": {"v":0.6,"u":"-","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"F_b,max/W_st ต่อข้าง (T_max ≈ 1,350 N m); ล็อกบนแห้งไม่ได้ ล็อกได้บนเปียก > 36 kt"},
-      "pressure_rise_rate": {"v":2.5,"u":"1/s","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"เท่าโค้ดเดิม"},
-      "antiskid": {"v":0,"u":"bool","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"เครื่องฝึก 0, airliner 1"},
+      "force_limit_ratio": {"v":0.6,"u":"-","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: F_b,max/W_st ต่อข้าง (T_max ≈ 1,350 N m); ล็อกบนแห้งไม่ได้ ล็อกได้บนเปียก > 36 kt"},
+      "pressure_rise_rate": {"v":2.5,"u":"1/s","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: เท่าโค้ดเดิม"},
+      "antiskid": {"v":0,"u":"bool","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"ค่าประมาณ: เครื่องฝึก 0, airliner 1"},
       "antiskid_efficiency": {"v":{"on_off":0.3,"quasi_modulating":0.5,"fully_modulating":0.8},"u":"-","scope":"aircraft","src":["G6","G13"],"conf":"สูง","est":false,"note":"25.109(c)(2); ตรงกับตัวคูณ 0.375/0.625 ของ AC 25-32"},
       "antiskid_efficiency_measured": {"v":{"dry":0.94,"wet":0.8},"u":"-","scope":"aircraft","src":["G12"],"conf":"กลาง","est":false,"note":"ระบบ slip-ratio control ของ NASA; wet = ผิวชื้นและน้ำท่วม (ช่วง 0.47-0.94), dry ช่วง 0.79-1.00"},
       "antiskid_slip_setpoint": {"v":0.15,"u":"-","scope":"aircraft","src":["G12"],"conf":"กลาง","est":false,"note":"0.13-0.18, 10-12 Hz"},
-      "heat_sink_mass": {"v":6,"u":"kg","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"เหล็กต่อเบรก; หยุดเต็มแรงจาก 80 kt ร้อนขึ้น ~275 K"},
-      "heat_sink_cool_tau": {"v":900,"u":"s","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":""},
-      "fade_start_temp": {"v":400,"u":"degC","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":""},
-      "fade_full_temp": {"v":700,"u":"degC","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":""}
+      "heat_sink_mass": {"v":6,"u":"kg","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: เหล็กต่อเบรก; หยุดเต็มแรงจาก 80 kt ร้อนขึ้น ~275 K"},
+      "heat_sink_cool_tau": {"v":900,"u":"s","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+      "fade_start_temp": {"v":400,"u":"degC","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+      "fade_full_temp": {"v":700,"u":"degC","scope":"gear","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"}
     },
     "steering": {
-      "mode": {"v":{"type":"pedal_linked","caster_with_diff_brake":true},"u":"-","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"แป้น + caster เมื่อเบรกแยกข้าง"},
-      "pedal_max": {"v":12,"u":"deg","scope":"aircraft","src":["G19"],"conf":"ต่ำ","est":true,"note":"c172p 10°; R = 12.5 m"},
-      "caster_max": {"v":45,"u":"deg","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":""},
-      "steer_rate": {"v":60,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ปัจจุบัน 50"},
-      "shimmy_lag": {"v":0.05,"u":"s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"แทน shimmy damper"}
+      "mode": {"v":{"type":"pedal_linked","caster_with_diff_brake":true},"u":"-","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: แป้น + caster เมื่อเบรกแยกข้าง"},
+      "pedal_max": {"v":12,"u":"deg","scope":"aircraft","src":["G19"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: c172p 10°; R = 12.5 m"},
+      "caster_max": {"v":45,"u":"deg","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+      "steer_rate": {"v":60,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ปัจจุบัน 50"},
+      "shimmy_lag": {"v":0.05,"u":"s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: แทน shimmy damper"}
     },
     "surface": {
       "rolling_mu": {"v":{"paved":0.02,"gravel":0.04,"ws30land":0.1},"u":"-","scope":"environment","src":["G21","G19"],"conf":"ต่ำ","est":false,"note":"FlightGear materials-base.xml (Asphalt, Gravel, ws30land = พื้นดินทั่วไปของ WS3.0 ไม่ใช่หญ้าโดยตรง), JSBSim c172p rolling_friction 0.02"},
@@ -379,10 +379,10 @@ function surfaceMu(Vkt, surface, psi) {
       "part25_friction_cap": {"v":0.8,"u":"-","scope":"aircraft","src":["G1"],"conf":"สูง","est":false,"note":"25.473(e)"}
     },
     "sim": {
-      "strut_state_in_rk4": {"v":1,"u":"bool","scope":"sim","src":[],"conf":"กลาง","est":true,"note":"x[13..15]"},
-      "tyre_lateral_state_in_rk4": {"v":1,"u":"bool","scope":"sim","src":[],"conf":"กลาง","est":true,"note":"y ใน x[16..18], x_b ใน x[19..21], clamp หลังทุก step"},
-      "lateral_damping": {"v":9900,"u":"N s/m","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"ζ ≈ 0.5 กับ k_y ≈ 101 kN/m"},
-      "hard_landing_fpm": {"v":{"inspect":600,"damage":720,"crash":900},"u":"fpm","scope":"sim","src":["G3","G5"],"conf":"ต่ำ","est":true,"note":"10 fps, 12 fps, เกณฑ์ crash เดิม"}
+      "strut_state_in_rk4": {"v":1,"u":"bool","scope":"sim","src":[],"conf":"กลาง","est":true,"note":"ค่าประมาณ: x[13..15]"},
+      "tyre_lateral_state_in_rk4": {"v":1,"u":"bool","scope":"sim","src":[],"conf":"กลาง","est":true,"note":"ค่าประมาณ: y ใน x[16..18], x_b ใน x[19..21], clamp หลังทุก step"},
+      "lateral_damping": {"v":9900,"u":"N s/m","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ζ ≈ 0.5 กับ k_y ≈ 101 kN/m"},
+      "hard_landing_fpm": {"v":{"inspect":600,"damage":720,"crash":900},"u":"fpm","scope":"sim","src":["G3","G5"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: 10 fps, 12 fps, เกณฑ์ crash เดิม"}
     }
   }
 }

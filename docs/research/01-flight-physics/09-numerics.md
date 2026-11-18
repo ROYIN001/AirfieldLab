@@ -280,51 +280,51 @@ renderPose(out) {               // out: { p: [n,e,d], q: [w,x,y,z] }
     "integrator": {
       "method": {"v": {"name": "RK4", "order": 4, "derivEvalsPerStep": 5}, "u": "-", "scope": "sim", "src": ["N1", "N23"], "conf": "สูง", "est": false, "note": "คง RK4 คลาสสิกไว้ (4 stage + 1 ครั้งใน updateAir); ความคลาดตัดปลายที่ 240 Hz อยู่ที่ระดับ round-off"},
       "physicsHz": {"v": 240, "u": "Hz", "scope": "sim", "src": ["N23"], "conf": "สูง", "est": true, "note": "ค่าประมาณจากค่าลักษณะเฉพาะ: max|λ|Δt = 0.74 ที่โหลดสูงสุดของการแตะพื้น 5 m/s เทียบกับขอบ 2.785"},
-      "physicsHzAllowed": {"v": [240, 480], "u": "Hz", "scope": "sim", "src": ["N23"], "conf": "กลาง", "est": true, "note": "480 Hz สำรองไว้ให้โมเดลล้อที่แข็งขึ้นในอนาคต ต้นทุนราว 2.5 ms ต่อวินาทีจริง"},
+      "physicsHzAllowed": {"v": [240, 480], "u": "Hz", "scope": "sim", "src": ["N23"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: 480 Hz สำรองไว้ให้โมเดลล้อที่แข็งขึ้นในอนาคต ต้นทุนราว 2.5 ms ต่อวินาทีจริง"},
       "rk4RealAxisLimit": {"v": 2.7853, "u": "-", "scope": "sim", "src": ["N23"], "conf": "สูง", "est": false, "note": "ขอบเสถียร |λΔt| ของ RK4 บนแกนจริงลบ คำนวณจาก |R(z)| = 1"},
       "rk4ImagAxisLimit": {"v": 2.8284, "u": "-", "scope": "sim", "src": ["N23"], "conf": "สูง", "est": false, "note": "ขอบบนแกนจินตภาพ (2√2)"},
       "lambdaDtMaxTransient": {"v": 0.75, "u": "-", "scope": "sim", "src": ["N23"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ (เกณฑ์ออกแบบ) สำหรับช่วงสัมผัสพื้นสั้น ๆ: ความคลาดสัมพัทธ์ต่อก้าวของ RK4 ≈ 3.7e-3 ที่ 0.75 (3.4e-3 ที่ 0.74)"},
-      "lambdaDtMaxSteady": {"v": 0.25, "u": "-", "scope": "sim", "src": ["N23"], "conf": "กลาง", "est": true, "note": "เกณฑ์สำหรับโหมดที่คงอยู่นาน: ความคลาดต่อก้าว ≈ 1.0e-5"},
+      "lambdaDtMaxSteady": {"v": 0.25, "u": "-", "scope": "sim", "src": ["N23"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: เกณฑ์สำหรับโหมดที่คงอยู่นาน: ความคลาดต่อก้าว ≈ 1.0e-5"},
       "quatRenormalizeEveryStep": {"v": 1, "u": "flag", "scope": "sim", "src": ["N1", "N2", "N23"], "conf": "สูง", "est": false, "note": "คงไว้; หากไม่ normalize |q|−1 = −2.1e-13 หลัง 60 s ที่ 240 Hz"},
-      "alphaDotFilterTau": {"v": 0.05, "u": "s", "scope": "sim", "src": ["N1"], "conf": "กลาง", "est": true, "note": "ค่าเดิมในโค้ด ให้เปลี่ยนการ discretize เป็น 1 − exp(−dt/τ)"}
+      "alphaDotFilterTau": {"v": 0.05, "u": "s", "scope": "sim", "src": ["N1"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: ค่าเดิมในโค้ด ให้เปลี่ยนการ discretize เป็น 1 − exp(−dt/τ)"}
     },
     "loop": {
       "maxFrameDt": {"v": 0.1, "u": "s", "scope": "sim", "src": ["N1", "N8"], "conf": "สูง", "est": false, "note": "ค่าปัจจุบัน; Fiedler ใช้ 0.25 s"},
-      "maxStepsPerFrame": {"v": 24, "u": "-", "scope": "sim", "src": ["N23"], "conf": "สูง", "est": true, "note": "ceil(maxFrameDt × physicsHz) แทนเลข 60 ที่ไม่มีผล"},
-      "accumulatorEpsilon": {"v": 1e-9, "u": "s", "scope": "sim", "src": ["N23"], "conf": "สูง", "est": true, "note": "ทำให้ 120 Hz ได้ 2 ก้าวทุกเฟรม (เดิม 1/2/3)"},
-      "renderInterpolation": {"v": {"position": "lerp", "attitude": "nlerp-shortest", "surfaces": "lerp", "addedLag_s": 0.0041667}, "u": "-", "scope": "sim", "src": ["N8", "N22", "N23"], "conf": "สูง", "est": true, "note": "ลดการกระตุกจาก 96–145 mm RMS เหลือเท่าการสั่นของ timestamp"},
-      "autoPauseOnHidden": {"v": 1, "u": "flag", "scope": "sim", "src": ["N9", "N10", "N11"], "conf": "สูง", "est": true, "note": "ฟัง visibilitychange แล้วตั้ง warp = 0 และล้างอินพุต"},
-      "physicsThread": {"v": {"where": "main", "workerOnlyIfPhysicsMsPerFrameAbove": 2}, "u": "-", "scope": "sim", "src": ["N12", "N13", "N14", "N23"], "conf": "สูง", "est": true, "note": "ไม่ใช้ Worker/SAB; GitHub Pages ตั้ง COOP/COEP ไม่ได้"}
+      "maxStepsPerFrame": {"v": 24, "u": "-", "scope": "sim", "src": ["N23"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: ceil(maxFrameDt × physicsHz) แทนเลข 60 ที่ไม่มีผล"},
+      "accumulatorEpsilon": {"v": 1e-9, "u": "s", "scope": "sim", "src": ["N23"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: ทำให้ 120 Hz ได้ 2 ก้าวทุกเฟรม (เดิม 1/2/3)"},
+      "renderInterpolation": {"v": {"position": "lerp", "attitude": "nlerp-shortest", "surfaces": "lerp", "addedLag_s": 0.0041667}, "u": "-", "scope": "sim", "src": ["N8", "N22", "N23"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: ลดการกระตุกจาก 96–145 mm RMS เหลือเท่าการสั่นของ timestamp"},
+      "autoPauseOnHidden": {"v": 1, "u": "flag", "scope": "sim", "src": ["N9", "N10", "N11"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: ฟัง visibilitychange แล้วตั้ง warp = 0 และล้างอินพุต"},
+      "physicsThread": {"v": {"where": "main", "workerOnlyIfPhysicsMsPerFrameAbove": 2}, "u": "-", "scope": "sim", "src": ["N12", "N13", "N14", "N23"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: ไม่ใช้ Worker/SAB; GitHub Pages ตั้ง COOP/COEP ไม่ได้"}
     },
     "contact": {
-      "frictionModel": {"v": {"name": "bristle-exponential", "longitudinal": "brake only + tanh rolling", "lateral": "bristle"}, "u": "-", "scope": "gear", "src": ["N5", "N18", "N23"], "conf": "กลาง", "est": true, "note": "ต้นแบบ B: หยุดการไหลตอนจอดได้ เสถียรถึง Δt = 1/30 s"},
-      "bristleZ0": {"v": 0.005, "u": "m", "scope": "gear", "src": ["N5"], "conf": "กลาง", "est": true, "note": "ใช้ค่าเริ่มต้น _fric_spring ของ YASim มาเป็นค่าของเครื่องฝึกเรา"},
+      "frictionModel": {"v": {"name": "bristle-exponential", "longitudinal": "brake only + tanh rolling", "lateral": "bristle"}, "u": "-", "scope": "gear", "src": ["N5", "N18", "N23"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: ต้นแบบ B: หยุดการไหลตอนจอดได้ เสถียรถึง Δt = 1/30 s"},
+      "bristleZ0": {"v": 0.005, "u": "m", "scope": "gear", "src": ["N5"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: ใช้ค่าเริ่มต้น _fric_spring ของ YASim มาเป็นค่าของเครื่องฝึกเรา"},
       "bristleTau": {"v": 0.02, "u": "s", "scope": "gear", "src": ["N23"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: ให้ μNτ/z0 = 4μN s/m เท่าความชัน tanh ตามแนวล้อเดิม (μN/0.25); ด้านข้างชันกว่า tanh เดิม (μN/0.35) ราว 1.4 เท่า"},
-      "tanhV0Longitudinal": {"v": 0.25, "u": "m/s", "scope": "gear", "src": ["N1"], "conf": "กลาง", "est": true, "note": "ค่าเดิม ใช้ต่อเฉพาะแรงต้านการหมุน"},
-      "tanhV0Lateral": {"v": 0.35, "u": "m/s", "scope": "gear", "src": ["N1"], "conf": "กลาง", "est": true, "note": "ค่าเดิม แทนด้วย bristle ด้านข้าง"},
+      "tanhV0Longitudinal": {"v": 0.25, "u": "m/s", "scope": "gear", "src": ["N1"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: ค่าเดิม ใช้ต่อเฉพาะแรงต้านการหมุน"},
+      "tanhV0Lateral": {"v": 0.35, "u": "m/s", "scope": "gear", "src": ["N1"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: ค่าเดิม แทนด้วย bristle ด้านข้าง"},
       "yasimStopSpeedReference": {"v": 0.1, "u": "m/s", "scope": "gear", "src": ["N5"], "conf": "สูง", "est": false, "note": "ค่าอ้างอิง: ramp แรงเสียดทานของ YASim แบบไม่มี stiction"},
-      "currentFrictionTimeConstants": {"v": {"longBraked_ms": 51.8, "lateral_ms": 54.9, "longFree_s": 1.16, "fastestCoupled_ms": 16.6}, "u": "-", "scope": "gear", "src": ["N23"], "conf": "สูง", "est": true, "note": "วัดหรือคำนวณจากโมเดลปัจจุบัน ที่โหลดสถิตย์ 3193/9436/9436 N"},
-      "currentGearModes": {"v": {"heave_Hz": 1.84, "heave_zeta": 0.575, "rollOnMains_Hz": 2.42, "rollOnMains_zeta": 0.76, "noseStrut_Hz": 2.01, "mainStrut_Hz": 1.81, "mainBottomed_Hz": 6.54}, "u": "-", "scope": "gear", "src": ["N23"], "conf": "สูง", "est": true, "note": "จาก k, c และมวลบนล้อ ตรวจกับ Jacobian แล้ว"},
-      "gearSubsteps": {"v": 1, "u": "-", "scope": "sim", "src": ["N19", "N23"], "conf": "กลาง", "est": true, "note": "ยังไม่ต้องแบ่งก้าวย่อย ถ้า max|λ|Δt > 0.75 ให้ใช้ physicsHz = 480 ก่อน"},
-      "jsbsimContactSpeedClamp": {"v": 0, "u": "flag", "scope": "sim", "src": ["N3", "N23"], "conf": "กลาง", "est": true, "note": "ไม่ใช้: ทดลองแล้วผลต่างน้อย และทำให้แรงขึ้นกับ Δt"}
+      "currentFrictionTimeConstants": {"v": {"longBraked_ms": 51.8, "lateral_ms": 54.9, "longFree_s": 1.16, "fastestCoupled_ms": 16.6}, "u": "-", "scope": "gear", "src": ["N23"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: วัดหรือคำนวณจากโมเดลปัจจุบัน ที่โหลดสถิตย์ 3193/9436/9436 N"},
+      "currentGearModes": {"v": {"heave_Hz": 1.84, "heave_zeta": 0.575, "rollOnMains_Hz": 2.42, "rollOnMains_zeta": 0.76, "noseStrut_Hz": 2.01, "mainStrut_Hz": 1.81, "mainBottomed_Hz": 6.54}, "u": "-", "scope": "gear", "src": ["N23"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: จาก k, c และมวลบนล้อ ตรวจกับ Jacobian แล้ว"},
+      "gearSubsteps": {"v": 1, "u": "-", "scope": "sim", "src": ["N19", "N23"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: ยังไม่ต้องแบ่งก้าวย่อย ถ้า max|λ|Δt > 0.75 ให้ใช้ physicsHz = 480 ก่อน"},
+      "jsbsimContactSpeedClamp": {"v": 0, "u": "flag", "scope": "sim", "src": ["N3", "N23"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: ไม่ใช้: ทดลองแล้วผลต่างน้อย และทำให้แรงขึ้นกับ Δt"}
     },
     "environment": {
-      "gustClockHz": {"v": 120, "u": "Hz", "scope": "environment", "src": ["N23"], "conf": "สูง", "est": true, "note": "เดินตัวกรอง Dryden ด้วยนาฬิกาของตัวเองแล้ว lerp; ผล xl ลู่เข้า 240.3–240.8 m ทุก Δt"}
+      "gustClockHz": {"v": 120, "u": "Hz", "scope": "environment", "src": ["N23"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: เดินตัวกรอง Dryden ด้วยนาฬิกาของตัวเองแล้ว lerp; ผล xl ลู่เข้า 240.3–240.8 m ทุก Δt"}
     },
     "determinism": {
-      "rng": {"v": {"name": "mulberry32", "streams": ["turb", "scenario"]}, "u": "-", "scope": "sim", "src": ["N1", "N16"], "conf": "สูง", "est": true, "note": "ใช้เฉพาะ Math.imul และบิตชิฟต์ จึงตรงกันทุกเอนจิน ส่วน gauss() ใช้ log และ cos ซึ่งไม่รับประกัน"},
+      "rng": {"v": {"name": "mulberry32", "streams": ["turb", "scenario"]}, "u": "-", "scope": "sim", "src": ["N1", "N16"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: ใช้เฉพาะ Math.imul และบิตชิฟต์ จึงตรงกันทุกเอนจิน ส่วน gauss() ใช้ log และ cos ซึ่งไม่รับประกัน"},
       "stateRecorderHz": {"v": 10, "u": "Hz", "scope": "sim", "src": ["N1"], "conf": "สูง", "est": false, "note": "ค่าปัจจุบันของ Recorder"},
-      "inputRecordPerTick": {"v": 1, "u": "flag", "scope": "sim", "src": ["N23"], "conf": "สูง", "est": true, "note": "บันทึกอินพุตต่อ tick และบีบด้วย RLE"},
-      "stateChecksumPeriod": {"v": 1.0, "u": "s", "scope": "sim", "src": ["N23"], "conf": "กลาง", "est": true, "note": "ใช้ตรวจการเบี่ยงของ replay ข้ามเอนจิน"}
+      "inputRecordPerTick": {"v": 1, "u": "flag", "scope": "sim", "src": ["N23"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: บันทึกอินพุตต่อ tick และบีบด้วย RLE"},
+      "stateChecksumPeriod": {"v": 1.0, "u": "s", "scope": "sim", "src": ["N23"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: ใช้ตรวจการเบี่ยงของ replay ข้ามเอนจิน"}
     },
     "attitude": {
-      "gimbalCosEps": {"v": 1e-9, "u": "-", "scope": "sim", "src": ["N4", "N23"], "conf": "สูง", "est": true, "note": "เมื่อ cos θ < ε ให้ φ = 0 และ ψ = atan2(−R12, R22)"}
+      "gimbalCosEps": {"v": 1e-9, "u": "-", "scope": "sim", "src": ["N4", "N23"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: เมื่อ cos θ < ε ให้ φ = 0 และ ψ = atan2(−R12, R22)"}
     },
     "performance": {
       "tickMicrosNode": {"v": {"apXl": 5.11, "manAssistXl": 3.87}, "u": "µs", "scope": "sim", "src": ["N23"], "conf": "สูง", "est": false, "note": "Node 22.23.5 มัธยฐาน 5 รอบ; รันซ้ำตอนตรวจทานได้ 4.55 / 4.50 µs (แกว่ง ±15% ตามโหลดเครื่อง)"},
       "stepMicrosNode": {"v": {"airborne": 3.39, "parked": 5.98}, "u": "µs", "scope": "sim", "src": ["N23"], "conf": "สูง", "est": false, "note": "วัดจากโมเดลปัจจุบัน"},
       "derivMicrosNode": {"v": {"airborne": 0.50, "threeWheels": 1.09}, "u": "µs", "scope": "sim", "src": ["N23"], "conf": "สูง", "est": false, "note": "วัดจากโมเดลปัจจุบัน"},
-      "physicsBudgetPerFrame": {"v": 2, "u": "ms", "scope": "sim", "src": ["N23"], "conf": "กลาง", "est": true, "note": "งบที่เสนอ ≈ 12% ของเฟรม 60 Hz"},
+      "physicsBudgetPerFrame": {"v": 2, "u": "ms", "scope": "sim", "src": ["N23"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: งบที่เสนอ ≈ 12% ของเฟรม 60 Hz"},
       "workerRoundTripNode": {"v": {"median_us": 36.3, "p99_us": 79.3, "max_us": 25404}, "u": "µs", "scope": "sim", "src": ["N23"], "conf": "กลาง", "est": false, "note": "worker_threads ใน Node ไม่ใช่เบราว์เซอร์"}
     },
     "reference": {

@@ -265,10 +265,10 @@ class Turboprop {
 {
   "turboprop": {
     "ratings": {
-      "P_rated": {"v":700000,"u":"W","scope":"engine","src":["E1"],"conf":"กลาง","est":true,"note":"กำลังเพลาที่ flat rate ของเครื่องยนต์สมมุติ ปัดจาก PT6A-62 = 708 kW (take-off = MCP) ตาม TCDS; 700 kW ≈ 939 shp"},
-      "T_flat_C": {"v":37,"u":"degC","scope":"engine","src":["E1"],"conf":"กลาง","est":true,"note":"อุณหภูมิอากาศเข้าสูงสุดที่ยังได้กำลังเต็มที่ระดับน้ำทะเล (ISA+22) ยืมจาก PT6A-62 ที่ flat rate ถึง 37 °C"},
+      "P_rated": {"v":700000,"u":"W","scope":"engine","src":["E1"],"conf":"กลาง","est":true,"note":"ค่าประมาณ: กำลังเพลาที่ flat rate ของเครื่องยนต์สมมุติ ปัดจาก PT6A-62 = 708 kW (take-off = MCP) ตาม TCDS; 700 kW ≈ 939 shp"},
+      "T_flat_C": {"v":37,"u":"degC","scope":"engine","src":["E1"],"conf":"กลาง","est":true,"note":"ค่าประมาณ: อุณหภูมิอากาศเข้าสูงสุดที่ยังได้กำลังเต็มที่ระดับน้ำทะเล (ISA+22) ยืมจาก PT6A-62 ที่ flat rate ถึง 37 °C"},
       "rating_basis": {"v":{"pressure_Pa":101325,"static":true,"bleed":0,"accessory_load":0},"u":"-","scope":"engine","src":["E1"],"conf":"สูง","est":false,"note":"TCDS: พิกัดอิง dry sea level static ICAO standard ไม่มี bleed ไม่มีภาระอุปกรณ์เสริม"},
-      "install_loss_frac": {"v":0,"u":"-","scope":"aircraft","src":["E1"],"conf":"ต่ำ","est":true,"note":"ยังไม่มีแหล่งตัวเลข ตั้ง 0 ไว้ก่อน; ค่าจริงต้องมาจากข้อมูลเครื่องบินแต่ละแบบในรอบถัดไป"},
+      "install_loss_frac": {"v":0,"u":"-","scope":"aircraft","src":["E1"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ยังไม่มีแหล่งตัวเลข ตั้ง 0 ไว้ก่อน; ค่าจริงต้องมาจากข้อมูลเครื่องบินแต่ละแบบในรอบถัดไป"},
       "Np_max_rpm": {"v":2000,"u":"rpm","scope":"engine","src":["E1"],"conf":"สูง","est":false,"note":"PT6A-62 N2 2000 rpm (90.7%) ต่อเนื่อง"},
       "Np_transient_rpm": {"v":2205,"u":"rpm","scope":"engine","src":["E1"],"conf":"สูง","est":false,"note":"PT6A-62 N2 transient 2205 rpm (100%)"},
       "Q_lim": {"v":3342,"u":"N m","scope":"engine","src":["E1"],"conf":"กลาง","est":true,"note":"ค่าประมาณ Q = P_rated/omega ที่ 2000 rpm = 2465 lb-ft; TCDS ไม่ระบุแรงบิด (PT6A-62 708 kW จะได้ 3380 N m = 2493 lb-ft)"},
@@ -279,41 +279,41 @@ class Turboprop {
       "takeoff_time_limit_s": {"v":300,"u":"s","scope":"engine","src":["E1"],"conf":"สูง","est":false,"note":"take-off rating จำกัด 5 นาที"}
     },
     "steady_map": {
-      "Ng_GI_pct": {"v":52,"u":"%","scope":"engine","src":["E9"],"conf":"ต่ำ","est":true,"note":"ground (low) idle; NAL รายงาน 50-54% Ng สำหรับ PT6A คลาส 1200 shp"},
-      "Ng_FI_pct": {"v":68,"u":"%","scope":"engine","src":["E9"],"conf":"ต่ำ","est":true,"note":"flight (high) idle; NAL รายงาน 67-71% Ng"},
-      "Ng0_pct": {"v":52,"u":"%","scope":"engine","src":["E8","E9"],"conf":"ต่ำ","est":true,"note":"จุดที่ corrected power เป็นศูนย์ในแผนที่ Pc = P_rated*x^k"},
+      "Ng_GI_pct": {"v":52,"u":"%","scope":"engine","src":["E9"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ground (low) idle; NAL รายงาน 50-54% Ng สำหรับ PT6A คลาส 1200 shp"},
+      "Ng_FI_pct": {"v":68,"u":"%","scope":"engine","src":["E9"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: flight (high) idle; NAL รายงาน 67-71% Ng"},
+      "Ng0_pct": {"v":52,"u":"%","scope":"engine","src":["E8","E9"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: จุดที่ corrected power เป็นศูนย์ในแผนที่ Pc = P_rated*x^k"},
       "kMap": {"v":2.7,"u":"-","scope":"engine","src":["E8"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: fit ตาราง EnginePowerRPM_N1 ของ JSBSim engtm601 ที่ 2000 rpm ได้ k = 2.6-2.9"},
-      "Pc_frac_vs_Ngc": {"v":{"axes":{"Ngc_pct":[52,60,68,76,84,90,95,100,104]},"data":[0,0.008,0.051,0.154,0.335,0.532,0.743,1,1.241]},"u":"-","scope":"engine","src":["E8"],"conf":"ต่ำ","est":true,"note":"Pc/P_rated ตามแผนที่ x^2.7 (Ngc = Ng/sqrt(theta2))"},
-      "nITT": {"v":3,"u":"-","scope":"engine","src":["E1","E3"],"conf":"ต่ำ","est":true,"note":"d ln Pc / d ln ITTc ที่มุม flat rating; ประมาณจากคู่รุ่นใน TCDS ได้ 2.08 (-60A/-62) ถึง 3.63 (-68B/-68)"},
-      "ITTc_vs_Pc": {"v":{"axes":{"Pc_frac":[0,0.05,0.25,0.5,0.75,0.964,1]},"data":[665,682,751,837,923,997,1009]},"u":"K (corrected, ITT_K/theta2)","scope":"engine","src":["E1"],"conf":"ต่ำ","est":true,"note":"เส้นตรงผ่านจุดมุม (0.964, 997 K) ด้วยความชัน ITTc*/(n Pc*)"}
+      "Pc_frac_vs_Ngc": {"v":{"axes":{"Ngc_pct":[52,60,68,76,84,90,95,100,104]},"data":[0,0.008,0.051,0.154,0.335,0.532,0.743,1,1.241]},"u":"-","scope":"engine","src":["E8"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: Pc/P_rated ตามแผนที่ x^2.7 (Ngc = Ng/sqrt(theta2))"},
+      "nITT": {"v":3,"u":"-","scope":"engine","src":["E1","E3"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: d ln Pc / d ln ITTc ที่มุม flat rating; ประมาณจากคู่รุ่นใน TCDS ได้ 2.08 (-60A/-62) ถึง 3.63 (-68B/-68)"},
+      "ITTc_vs_Pc": {"v":{"axes":{"Pc_frac":[0,0.05,0.25,0.5,0.75,0.964,1]},"data":[665,682,751,837,923,997,1009]},"u":"K (corrected, ITT_K/theta2)","scope":"engine","src":["E1"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: เส้นตรงผ่านจุดมุม (0.964, 997 K) ด้วยความชัน ITTc*/(n Pc*)"}
     },
     "dynamics": {
-      "tauAcc_s": {"v":0.6,"u":"s","scope":"engine","src":["E4","E6","E14"],"conf":"ต่ำ","est":true,"note":"ค่าคงที่เวลาเข้าใกล้เป้า Ng ตอนเร่ง; ปรับให้ FI->95% = 3.7-4.0 s"},
-      "rAcc_pct_s": {"v":10,"u":"%Ng/s","scope":"engine","src":["E14"],"conf":"ต่ำ","est":true,"note":"อัตราเร่งสูงสุดแบบ FCU schedule; สอดคล้องกับ 64->93.5% Ng ใน 2.5-4.0 s"},
-      "tauDec_s": {"v":0.8,"u":"s","scope":"engine","src":["E7"],"conf":"ต่ำ","est":true,"note":"ไม่มีข้อมูลวัด; JSBSim ใช้ decel tau = 2.4 เท่าของ accel"},
+      "tauAcc_s": {"v":0.6,"u":"s","scope":"engine","src":["E4","E6","E14"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ค่าคงที่เวลาเข้าใกล้เป้า Ng ตอนเร่ง; ปรับให้ FI->95% = 3.7-4.0 s"},
+      "rAcc_pct_s": {"v":10,"u":"%Ng/s","scope":"engine","src":["E14"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: อัตราเร่งสูงสุดแบบ FCU schedule; สอดคล้องกับ 64->93.5% Ng ใน 2.5-4.0 s"},
+      "tauDec_s": {"v":0.8,"u":"s","scope":"engine","src":["E7"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ไม่มีข้อมูลวัด; JSBSim ใช้ decel tau = 2.4 เท่าของ accel"},
       "rDec_pct_s": {"v":12,"u":"%Ng/s","scope":"engine","src":[],"conf":"ต่ำ","est":true,"note":"ไม่มีแหล่ง; ค่าประมาณเพื่อให้ max->FI ลดเหลือ 10% กำลังใน ~2.4 s"},
-      "tauITT_s": {"v":1.5,"u":"s","scope":"engine","src":["E7"],"conf":"ต่ำ","est":true,"note":"หน่วงการแสดง ITT; JSBSim ใช้ itt_delay แบบ exponential"},
-      "kITTacc": {"v":4,"u":"K per (%Ng/s)","scope":"engine","src":["E7","E10"],"conf":"ต่ำ","est":true,"note":"ITT พุ่งเกินขณะเร่ง (Kong 2000 พบ overshoot เมื่อเพิ่มเชื้อเพลิงเร็ว)"},
+      "tauITT_s": {"v":1.5,"u":"s","scope":"engine","src":["E7"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: หน่วงการแสดง ITT; JSBSim ใช้ itt_delay แบบ exponential"},
+      "kITTacc": {"v":4,"u":"K per (%Ng/s)","scope":"engine","src":["E7","E10"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ITT พุ่งเกินขณะเร่ง (Kong 2000 พบ overshoot เมื่อเพิ่มเชื้อเพลิงเร็ว)"},
       "cert_accel_FI_to_95pct_max_s": {"v":5,"u":"s","scope":"engine","src":["E4"],"conf":"สูง","est":false,"note":"14 CFR 33.73(b) (Amdt. 33-1): จาก fixed minimum flight idle (หรือ ≤ 15% ถ้าไม่มี) ถึง 95% rated take-off power ไม่เกิน 5 s เริ่มจาก stabilized static condition; ข้อ (b) ไม่ได้กำหนดเวลาเลื่อนคันโยก (การเลื่อนสุดช่วงใน 1 s อยู่ในข้อ (a)) โมเดลจึงทดสอบด้วยขั้นบันได"}
     },
     "airframe_coupling": {
-      "spin": {"v":1,"u":"-","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"+1 = ใบพัดหมุนตามเข็มนาฬิกาเมื่อมองจากด้านหลัง (สมมติฐานร่วม; TCDS -62 ไม่ระบุ ให้ดู installation manual)"},
-      "thrust_axis_body": {"v":[1,0,0],"u":"-","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"แกนเพลาใบพัดในแกน FRD; รอบนี้ถือว่าขนานแกน x และผ่าน CG"},
-      "I_gg": {"v":0.12,"u":"kg m2","scope":"engine","src":["E11"],"conf":"ต่ำ","est":true,"note":"โมเมนต์ความเฉื่อยแกน gas generator จากแบบจำลอง PT6A-65 (ไม่ใช่ค่าวัด) ; H ≈ 471 N m s ที่ 100% Ng"},
-      "gg_rotation_rel_prop": {"v":-1,"u":"-","scope":"engine","src":["E6"],"conf":"ต่ำ","est":true,"note":"AFH: CT กับ PT หมุนสวนทางกัน; ทิศสัมพัทธ์กับใบพัดหลังผ่านเกียร์ยังไม่ยืนยัน"}
+      "spin": {"v":1,"u":"-","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: +1 = ใบพัดหมุนตามเข็มนาฬิกาเมื่อมองจากด้านหลัง (สมมติฐานร่วม; TCDS -62 ไม่ระบุ ให้ดู installation manual)"},
+      "thrust_axis_body": {"v":[1,0,0],"u":"-","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: แกนเพลาใบพัดในแกน FRD; รอบนี้ถือว่าขนานแกน x และผ่าน CG"},
+      "I_gg": {"v":0.12,"u":"kg m2","scope":"engine","src":["E11"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: โมเมนต์ความเฉื่อยแกน gas generator จากแบบจำลอง PT6A-65 (ไม่ใช่ค่าวัด) ; H ≈ 471 N m s ที่ 100% Ng"},
+      "gg_rotation_rel_prop": {"v":-1,"u":"-","scope":"engine","src":["E6"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: AFH: CT กับ PT หมุนสวนทางกัน; ทิศสัมพัทธ์กับใบพัดหลังผ่านเกียร์ยังไม่ยืนยัน"}
     },
     "fuel": {
-      "psfc": {"v":0.669,"u":"lb/(hp h)","scope":"engine","src":["E8"],"conf":"ต่ำ","est":true,"note":"ค่าของ Walter M601 ในไฟล์ JSBSim ใช้เป็นตัวยึดตำแหน่งเท่านั้น ยังไม่ยืนยันสำหรับ PT6A"}
+      "psfc": {"v":0.669,"u":"lb/(hp h)","scope":"engine","src":["E8"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ค่าของ Walter M601 ในไฟล์ JSBSim ใช้เป็นตัวยึดตำแหน่งเท่านั้น ยังไม่ยืนยันสำหรับ PT6A"}
     },
     "beta_reverse": {
-      "beta_range_end_frac": {"v":0.64,"u":"-","scope":"engine","src":["E8"],"conf":"ต่ำ","est":true,"note":"ตัวอย่าง JSBSim M601: เมื่อเลือก reverse (Reversed = true) คันโยกช่วงล่าง 64% แรกเป็น beta (กำลัง idle, คันโยกคุมมุมใบ) ส่วนที่เหลือเพิ่มกำลัง reverse ถึง reversemaxpower"},
-      "reverse_max_power_frac": {"v":0.6,"u":"-","scope":"engine","src":["E8"],"conf":"ต่ำ","est":true,"note":"ตัวอย่าง JSBSim M601: กำลังสูงสุดตอน reverse = 60%"},
-      "blade_angle_FI_deg": {"v":11,"u":"deg","scope":"propeller","src":["E9"],"conf":"ต่ำ","est":true,"note":"NAL: มุมใบที่ flight idle 11 องศา reverse -15 องศา (ให้หัวข้อใบพัดยืนยัน)"}
+      "beta_range_end_frac": {"v":0.64,"u":"-","scope":"engine","src":["E8"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ตัวอย่าง JSBSim M601: เมื่อเลือก reverse (Reversed = true) คันโยกช่วงล่าง 64% แรกเป็น beta (กำลัง idle, คันโยกคุมมุมใบ) ส่วนที่เหลือเพิ่มกำลัง reverse ถึง reversemaxpower"},
+      "reverse_max_power_frac": {"v":0.6,"u":"-","scope":"engine","src":["E8"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ตัวอย่าง JSBSim M601: กำลังสูงสุดตอน reverse = 60%"},
+      "blade_angle_FI_deg": {"v":11,"u":"deg","scope":"propeller","src":["E9"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: NAL: มุมใบที่ flight idle 11 องศา reverse -15 องศา (ให้หัวข้อใบพัดยืนยัน)"}
     },
     "sim": {
-      "limiter": {"v":1,"u":"bool","scope":"sim","src":["E1","E7"],"conf":"กลาง","est":true,"note":"1 = จำกัดแรงบิด/ITT/Ng อัตโนมัติ (คล้าย PMU หรือ IELU ใน JSBSim); PT6A-62 จริงเป็น hydro-mechanical ล้วน ผู้บินต้องคุมเอง; ในโหมดคันโยก 'power' คำสั่งถูกสเกลไปที่ P_max อยู่แล้ว ตัวเลือกนี้จึงมีผลจริงเฉพาะโหมด 'ng' (T-E-10, T-E-11)"},
-      "leverMode": {"v":{"mode":"power"},"u":"-","scope":"sim","src":["E13"],"conf":"กลาง","est":true,"note":"'power' = คันโยกสั่งกำลังเชิงเส้นระหว่างกำลัง idle กับ P_max (แนวคิดคล้าย single-lever ที่ E13 บรรยาย) ; 'ng' = คันโยกสั่ง Ng แบบ hydro-mechanical"},
-      "engine_update_rate_Hz": {"v":240,"u":"Hz","scope":"sim","src":[],"conf":"สูง","est":true,"note":"อัปเดตใน actuators() ครั้งละ step นอก RK4"}
+      "limiter": {"v":1,"u":"bool","scope":"sim","src":["E1","E7"],"conf":"กลาง","est":true,"note":"ค่าประมาณ: 1 = จำกัดแรงบิด/ITT/Ng อัตโนมัติ (คล้าย PMU หรือ IELU ใน JSBSim); PT6A-62 จริงเป็น hydro-mechanical ล้วน ผู้บินต้องคุมเอง; ในโหมดคันโยก 'power' คำสั่งถูกสเกลไปที่ P_max อยู่แล้ว ตัวเลือกนี้จึงมีผลจริงเฉพาะโหมด 'ng' (T-E-10, T-E-11)"},
+      "leverMode": {"v":{"mode":"power"},"u":"-","scope":"sim","src":["E13"],"conf":"กลาง","est":true,"note":"ค่าประมาณ: 'power' = คันโยกสั่งกำลังเชิงเส้นระหว่างกำลัง idle กับ P_max (แนวคิดคล้าย single-lever ที่ E13 บรรยาย) ; 'ng' = คันโยกสั่ง Ng แบบ hydro-mechanical"},
+      "engine_update_rate_Hz": {"v":240,"u":"Hz","scope":"sim","src":[],"conf":"สูง","est":true,"note":"ค่าประมาณ: อัปเดตใน actuators() ครั้งละ step นอก RK4"}
     },
     "derived_vtbd": {
       "P_avail_vs_OAT_SL": {"v":{"axes":{"OAT_C":[15,25,31,34,37,38,40,45]},"data":[700,700,700,700,700,694,683,655]},"u":"kW","scope":"engine","src":["E1"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณจากโมเดลนี้ (n = 3) ที่ VTBD สูง 2.65 m static; ถึง 37 °C แน่นอนจาก TCDS เกินนั้นขึ้นกับ n (38 °C: 692-696 kW)"},

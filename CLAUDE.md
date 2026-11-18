@@ -64,7 +64,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 
 ## Research reports (docs/research/)
 - The owner's 5-round research program lives in `docs/research/`: `01-flight-physics.md`, `02-light-aircraft.md`,
-  `03-airliners.md`, `04-weather.md`, `05-airport-city.md`. Each report cites its sources with licences, marks
+  `03-airliners.md`, `04-weather.md`, `05-airport-city.md` (each file appears when its round's pull request is
+  merged). Each report cites its sources with licences, marks
   estimates (ค่าประมาณ), gives test cases with expected values, and ends with "สิ่งที่ Claude Code ควรทำ".
 - Round 1 is split: the summary and prioritised task list are in `01-flight-physics.md`; the 12 topic files,
   the parameter schema (`schema.md`), the merged JSON (`params-trainer.json`) and the computation scripts are in

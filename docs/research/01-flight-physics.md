@@ -6,7 +6,7 @@
 
 ## วิธีอ่านรายงานนี้
 
-เนื้อหาเต็มยาวราว 1.2 MB จึงแยกเป็นไฟล์ละหัวข้อในโฟลเดอร์ [`01-flight-physics/`](01-flight-physics/) เพื่อให้ GitHub แสดงผลได้และให้ Claude Code โหลดเฉพาะส่วนที่ต้องใช้ ทุกไฟล์หัวข้อมีโครงเดียวกัน คือ สรุปสั้น → สภาพปัจจุบันในโค้ด → ฟิสิกส์และสมการ → ค่าพารามิเตอร์ (JSON) → กรณีทดสอบ → ความขัดแย้งของแหล่งข้อมูล → แหล่งอ้างอิงพร้อมสัญญาอนุญาต → งานที่แนะนำ
+เนื้อหาเต็มยาวราว 1.3 MB จึงแยกเป็นไฟล์ละหัวข้อในโฟลเดอร์ [`01-flight-physics/`](01-flight-physics/) เพื่อให้ GitHub แสดงผลได้และให้ Claude Code โหลดเฉพาะส่วนที่ต้องใช้ ทุกไฟล์หัวข้อมีโครงเดียวกัน คือ สรุปสั้น → สภาพปัจจุบันในโค้ด → ฟิสิกส์และสมการ → ค่าพารามิเตอร์ (JSON) → กรณีทดสอบ → ความขัดแย้งของแหล่งข้อมูล → แหล่งอ้างอิงพร้อมสัญญาอนุญาต → งานที่แนะนำ
 
 ไฟล์นี้รวบรวมสิ่งที่ต้องเห็นภาพรวม ได้แก่ ข้อค้นพบหลัก, โครงสร้างโมเดลที่แนะนำสำหรับรอบ 2–3, schema ของพารามิเตอร์, ผลวัดโมเดลปัจจุบัน, ความขัดแย้งที่ยังค้าง, สัญญาอนุญาต และรายการงานรวมที่ท้ายไฟล์ ตัวเลขในไฟล์นี้เป็นตัวเลขสรุปจากไฟล์หัวข้อ แหล่งอ้างอิงปฐมภูมิของแต่ละตัวอยู่ในไฟล์หัวข้อที่ลิงก์ไว้
 
@@ -19,12 +19,12 @@
 
 - **แกนกลางของฟิสิกส์ถูกต้องแล้ว ไม่ต้องเปลี่ยน integrator** ผู้วิจัยสร้างโมเดล JSBSim จากพารามิเตอร์ `AC` ของเราแล้วบินเทียบกัน 25 วินาที ต่างกันสูงสุดเพียง h 4 mm และ θ 0.014° ([หัวข้อ 12](01-flight-physics/12-other-sims.md)) ส่วน RK4 ที่ 240 Hz มี |λ|Δt สูงสุด 0.74 เทียบกับขอบเสถียร 2.785 ([หัวข้อ 9](01-flight-physics/09-numerics.md)) ช่องว่างของความสมจริงอยู่ที่ข้อมูลและโมเดลย่อย
 - **โหมดพลวัตของโมเดลปัจจุบันอยู่ใน Level 1 แล้ว** ตอน approach 95 kt แฟลปลง ได้ short period ωn 2.22 rad/s ζ 0.58 CAP 0.95, phugoid ζ 0.115, Dutch roll ωn 1.61 rad/s ζ 0.139, roll mode τR 0.22 s และ spiral เสถียร ซึ่งผ่านเกณฑ์ Class I Category C ของ MIL-F-8785C ทุกข้อ ([หัวข้อ 10](01-flight-physics/10-validation.md))
-- **ปัญหาที่ใหญ่ที่สุดสำหรับเครื่องฝึกลงจอดอยู่ที่พื้นและใกล้พื้น** โช้คเชิงเส้นให้แรงกระแทกสูงสุดในเฟรมแรก (3.39 เท่าของน้ำหนักที่อัตราจม 3 m/s) ยางด้านข้างผูกกับความเร็วแทนมุม slip เครื่องที่เหยียบเบรกเต็มยังไหล 1.2 cm/s และไม่มีสภาพผิวทางวิ่งตาม GRF ที่ไทยใช้ตั้งแต่ 4 พ.ย. 2021 ([หัวข้อ 7](01-flight-physics/07-gear.md)) ส่วน ground effect อ่อนเกินจริง สูตร Tani ให้ induced drag เหลือ 51% ที่ h/b 0.1 แต่โค้ดให้ 72% และ downwash ที่หางที่ลดลงควรต้องใช้ elevator เพิ่มราว 4° ตอน flare ([หัวข้อ 2](01-flight-physics/02-interference.md))
+- **ปัญหาที่ใหญ่ที่สุดสำหรับเครื่องฝึกลงจอดอยู่ที่พื้นและใกล้พื้น** โช้คเชิงเส้นให้แรงกระแทกสูงสุดในเฟรมแรก (3.39 เท่าของน้ำหนักที่อัตราจม 3 m/s หรือราว 590 fpm) ยางด้านข้างผูกกับความเร็วแทนมุม slip เครื่องที่เหยียบเบรกเต็มยังไหล 1.2 cm/s และไม่มีสภาพผิวทางวิ่งตาม GRF ที่ไทยใช้ตั้งแต่ 4 พ.ย. 2021 ([หัวข้อ 7](01-flight-physics/07-gear.md)) ส่วน ground effect อ่อนเกินจริง สูตร Tani ให้ induced drag เหลือ 51% ที่ h/b 0.1 แต่โค้ดให้ 72% และ downwash ที่หางที่ลดลงควรต้องใช้ elevator เพิ่มราว 4° ตอน flare (ค่าประมาณจาก VLM) ([หัวข้อ 2](01-flight-physics/02-interference.md))
 - **ไม่มีผลของใบพัดเลย** แรงบิดปฏิกิริยา P-factor gyroscopic และ slipstream เป็นศูนย์ทั้งหมด ที่ความเร็ว 0 จึงไม่มีแรงบังคับจากหาง แรงบิดเต็มที่ 3,342 N·m เท่ากับ 26% ของโมเมนต์ม้วนสูงสุดของ aileron ที่ 95 kt ([หัวข้อ 3](01-flight-physics/03-propeller.md), [4](01-flight-physics/04-turboprop.md)) และที่ flight idle โมเดลยังให้แรงขับบวก ทำให้ glide ratio ที่ idle ออกมา 21.7 ทั้งที่ L/D สูงสุดมีแค่ 16.5 ([หัวข้อ 10](01-flight-physics/10-validation.md))
-- **เครื่องยนต์ PT6A-62 ไม่เสียกำลังที่ดอนเมืองในวันร้อน** TCDS ระบุ 708 kW และ flat rate ถึง 37 °C จึงยังให้กำลังเต็มที่ OAT 31–37 °C แต่การตอบสนองต้องเป็นรูปตัว S ตาม 14 CFR 33.73(b) (flight idle ถึง 95% ภายใน 5 s) โมเดลที่เสนอได้ 14–19% ที่ 1 s ขณะที่โค้ดปัจจุบันได้ 65% ([หัวข้อ 4](01-flight-physics/04-turboprop.md)) ใบพัด Hartzell รุ่นที่ใช้กับเครื่องคลาสนี้ไม่ได้รับอนุมัติให้ reverse เครื่องฝึกจึงควรตั้ง `reverseAvailable: false` ([หัวข้อ 3](01-flight-physics/03-propeller.md))
+- **เครื่องยนต์ PT6A-62 ไม่เสียกำลังที่ดอนเมืองในวันร้อน** TCDS ระบุ 708 kW และ flat rate ถึง 37 °C จึงยังให้กำลังเต็มที่ OAT 31–37 °C แต่การตอบสนองต้องเป็นรูปตัว S ตาม 14 CFR 33.73(b) (flight idle ถึง 95% ภายใน 5 s) โมเดลที่เสนอได้ 14–19% ที่ 1 s (ค่าประมาณจากโมเดล) ขณะที่โค้ดปัจจุบันได้ 65% ([หัวข้อ 4](01-flight-physics/04-turboprop.md)) ใบพัด Hartzell รุ่นที่ใช้กับเครื่องคลาสนี้ไม่ได้รับอนุมัติให้ reverse เครื่องฝึกจึงควรตั้ง `reverseAvailable: false` ([หัวข้อ 3](01-flight-physics/03-propeller.md))
 - **Stall ยังไม่ใช่บทเรียนที่ใช้ได้** สัญญาณเตือนดังก่อน stall เพียง 1.3 kt (แฟลปเก็บ) และ 0.6 kt (แฟลปลง) ต่ำกว่าเกณฑ์ ≥ 5 kt ของ 14 CFR 23.207 ฉบับปี 2016 CL ตกหน้าผา 72–75% ภายใน 5° หลัง CLmax และไม่มี wing drop เพราะ Clp คงที่ทุก α ([หัวข้อ 1](01-flight-physics/01-aero.md))
 - **โหมด DIRECT ไม่มี speed stability** auto-trim ที่บวก pitch rate เข้า trim ทำให้ดึงคันแล้วปล่อย เครื่องค้างที่ 80.5 kt แทนที่จะกลับมา 95 kt ซึ่งไม่ผ่าน 14 CFR 23.173(b) และยังไม่มีแนวคิดแรงที่คันบังคับหรือ trim tab ([หัวข้อ 6](01-flight-physics/06-controls.md))
-- **บั๊กอินพุตที่ควรแก้ก่อนอย่างอื่น** คีย์ลดคันเร่งคือ Ctrl และคีย์ดึงหัวขึ้นคือ W เมื่อกดพร้อมกันเป็น Ctrl+W ซึ่ง Chrome ปิดแท็บทันทีและหน้าเว็บดักไม่ได้ ส่วนคีย์บอร์ดจริง ๆ มี ramp อยู่แล้ว (CLAUDE.md เขียนว่า binary) แต่เร็วเกินไป กดค้าง 0.3 s ได้ +0.40 g ([หัวข้อ 11](01-flight-physics/11-input.md))
+- **บั๊กอินพุตที่ควรแก้ก่อนอย่างอื่น** คีย์ลดคันเร่งคือ Ctrl และคีย์ดันหัวลงคือ W เมื่อกดพร้อมกันเป็น Ctrl+W ซึ่ง Chrome ปิดแท็บทันทีและหน้าเว็บดักไม่ได้ ส่วนคีย์บอร์ดจริง ๆ มี ramp อยู่แล้ว (CLAUDE.md ฉบับที่ใช้ตอนค้นคว้าเขียนว่า binary และตอนนี้แก้แล้ว) แต่เร็วเกินไป กดค้าง 0.3 s ได้ +0.40 g ([หัวข้อ 11](01-flight-physics/11-input.md))
 - **ยังไม่มีการทดสอบที่ตกได้** ไฟล์ `test/*.mjs` ทุกไฟล์พิมพ์ผลอย่างเดียว ไม่มี assertion และ CI รันแค่ `geo` กับ `runways` ([หัวข้อ 10](01-flight-physics/10-validation.md)) ภาพยังกระตุกเพราะตัวสะสมเวลาปัดเศษผิดและไม่มีการ interpolate สถานะตอนเรนเดอร์ และผลการบินในความปั่นป่วนเปลี่ยนตาม Δt เพราะสุ่มเลขใหม่ทุกก้าวฟิสิกส์ ([หัวข้อ 9](01-flight-physics/09-numerics.md))
 - **ความปั่นป่วนมีความเข้มถูกแต่รูปสเปกตรัมผิด** ทุกแกนเป็น first-order และไม่มี gust เชิงหมุน ซึ่งเป็นสิ่งที่นักบินเครื่องเล็กรู้สึกชัดที่สุด ([หัวข้อ 8](01-flight-physics/08-wind.md))
 
@@ -37,7 +37,7 @@
 | 3 | [ใบพัด: BEM, CT/CP, governor, beta/reverse, torque, P-factor, gyroscopic](01-flight-physics/03-propeller.md) | กลาง | 15 | 51 | แรงขับไม่ขึ้นกับความหนาแน่น รอบ หรือมุมใบ เสนอคลาส Propeller ที่อ่านตาราง CT/CP(J, β) ซึ่งคำนวณ BEM ไว้ล่วงหน้า |
 | 4 | [เครื่องยนต์เทอร์โบพร็อปคลาส PT6A](01-flight-physics/04-turboprop.md) | กลาง | 15 | 44 | PT6A-62 flat rate ถึง 37 °C จึงไม่เสียกำลังที่ VTBD วันร้อน แต่การเร่งต้องเป็นรูปตัว S ตาม 14 CFR 33.73 ไม่ใช่ lag อันดับหนึ่ง |
 | 5 | [เครื่องยนต์เทอร์โบแฟน: thrust lapse, spool, idle, reverser](01-flight-physics/05-turbofan.md) | กลาง | 15 | 84 | ยังไม่มีเทอร์โบแฟนเลย เสนอ thrust lapse ของ Bartel & Young (M ≤ 0.45), N2 แบบ first-order ที่มี accel schedule (flight idle → 95% ใน 4.6 s ผ่าน 14 CFR 33.73), idle สามระดับ, reverser แบบเครื่องสถานะ และ AC.engines[] สำหรับแรงขับไม่สมมาตร เตรียมไว้ให้รอบ 3 |
-| 6 | [ระบบบังคับ: hinge moment, แรงที่คันบังคับ, trim, actuator, FBW](01-flight-physics/06-controls.md) | กลาง | 15 | 70 | auto-trim ของโหมด DIRECT ลบ speed stability และระบบไม่มีแนวคิด "แรง" เสนอโมเดล reversible จาก hinge moment ที่ให้ 8.9 lbf/g (อยู่ใน Level 1) |
+| 6 | [ระบบบังคับ: hinge moment, แรงที่คันบังคับ, trim, actuator, FBW](01-flight-physics/06-controls.md) | กลาง | 15 | 70 | auto-trim ของโหมด DIRECT ลบ speed stability และระบบไม่มีแนวคิด "แรง" เสนอโมเดล reversible จาก hinge moment ที่ให้ 8.9 lbf/g (ค่าประมาณจากต้นแบบ อยู่ใน Level 1) |
 | 7 | [ล้อและพื้น: oleo, ยาง, เบรก, anti-skid, การเลี้ยว, ทางวิ่งเปียก](01-flight-physics/07-gear.md) | กลาง | 15 | 82 | โช้คให้แรงสูงสุดทันทีที่แตะ, ยางด้านข้างผูกกับความเร็วแทนมุม slip, ไม่มีสภาพผิว GRF/RWYCC และเครื่องที่จอดเหยียบเบรกยังไหล |
 | 8 | [ลม: Dryden/von Kármán, gust, wind shear, microburst, wake vortex](01-flight-physics/08-wind.md) | กลาง | 15 | 39 | ความเข้มของความปั่นป่วนถูกแล้ว แต่สเปกตรัมเป็น first-order และไม่มี gust เชิงหมุน เสนอ Dryden ตาม 8785C แบบ exact discretization, microburst และ wake |
 | 9 | [วิธีเชิงตัวเลข: integrator, ความแข็งของล้อ, fixed timestep](01-flight-physics/09-numerics.md) | สูง | 15 | 40 | RK4 ที่ 240 Hz เสถียรพอแล้ว ปัญหาอยู่ที่แรงเสียดทาน tanh, ตัวสะสมเวลา, การไม่ interpolate ตอนเรนเดอร์ และ Dryden ที่ผลขึ้นกับ Δt |
@@ -93,15 +93,15 @@
 
 | กลุ่มข้อมูลต่อแบบเครื่องบิน | กำหนดไว้ในหมวด JSON | ตัวอย่างค่าที่ต้องเติม |
 |---|---|---|
-| ขนาด มวล inertia | `aero`, `validation` | S, b, c̄, m, Ixx–Izz, Ixz, ตำแหน่ง CG |
-| อากาศพลศาสตร์ | `aero`, `interference` | CLα, CL0 ตามแฟลป, CLmax/α* ตามแฟลป, CDmax, Cmα, derivative ต่าง ๆ, เรขาคณิตหาง (S_t, l_t, dε/dα, η_t) |
+| ขนาด มวล inertia | `aero` (`ref`) | S, b, c̄ ส่วน m, Ixx–Izz, Ixz และตำแหน่ง CG ยังไม่มีในหมวด JSON ของรอบนี้ (ยังอยู่ใน `AC`) ให้เพิ่มเป็นกลุ่ม `mass` ตามโครงไฟล์ของหัวข้อ 12 |
+| อากาศพลศาสตร์ | `aero`, `interference` | CLα, CL0 ตามแฟลป, CLmax/α* ตามแฟลป, CDmax, Cmα, derivative ต่าง ๆ, เรขาคณิตหาง (V_H, l_t, a_t, dε/dα, η_t) |
 | ระบบบังคับ | `controls` | ระยะเคลื่อนของพื้นบังคับ, gearing, hinge-moment coefficient, อัตรา trim, rate limit ของ actuator, ชนิดระบบ (reversible / feel / fbw) |
 | เครื่องยนต์ | `turboprop` หรือ `turbofan` | กำลังหรือแรงขับพิกัด, flat rating, ขีดจำกัด (แรงบิด, ITT, N1/N2), พลวัตการเร่ง, idle, reverser |
 | ใบพัด | `propeller` | D, จำนวนใบ, rpm, ตาราง CT/CP, ช่วงมุมใบ, I_prop, ทิศการหมุน, `reverseAvailable` |
 | ล้อ | `gear` | ตำแหน่งล้อ, stroke, แรงดันก๊าซ, orifice, ขนาดและแรงดันยาง, cornering stiffness, brake torque, มุมเลี้ยว |
 | ค่าอ้างอิงเพื่อตรวจ | `validation` | ความเร็ว stall ตามแฟลป, อัตราไต่, glide ratio, ระยะวิ่งขึ้นและลงจอด, ค่าโหมดพลวัต |
 
-**สถานะใหม่ที่จะเพิ่มใน state vector** (ตามข้อเสนอของหัวข้อ 7 และ 9): stroke ของโช้ค `x[13..15]`, การเบี่ยงด้านข้างของยาง `x[16..18]`, bristle ตามยาว `x[19..21]` ส่วนสถานะที่ไม่ต้องอยู่ใน RK4 (อัปเดตแบบ exact ทีละก้าว) ได้แก่ X ของการแยกตัว, Ng/ITT ของเครื่องยนต์, N2 ของเทอร์โบแฟน, รอบและมุมใบพัด, ตำแหน่ง trim tab และตัวกรองความปั่นป่วน
+**สถานะใหม่ที่จะเพิ่มใน state vector** (ตามข้อเสนอของหัวข้อ 7): stroke ของโช้ค `x[13..15]`, การเบี่ยงด้านข้างของยาง `x[16..18]`, bristle ตามยาว `x[19..21]` แต่หัวข้อ 9 เสนอให้ bristle อยู่นอก RK4 โดยตรึงค่าไว้ระหว่าง stage แล้วอัปเดตด้วยสูตร exponential แม่นตรงหลังจบก้าว (ดูความขัดแย้งด้านล่าง) ส่วนสถานะที่ไม่ต้องอยู่ใน RK4 (อัปเดตแบบ exact ทีละก้าว) ได้แก่ X ของการแยกตัว, Ng/ITT ของเครื่องยนต์, N2 ของเทอร์โบแฟน, รอบและมุมใบพัด, ตำแหน่ง trim tab และตัวกรองความปั่นป่วน
 
 ## Schema พารามิเตอร์
 
@@ -127,23 +127,24 @@
 
 ค่าที่หลายหัวข้อใช้ร่วมกันและต้องใช้ค่าเดียวกันเมื่อนำไปเขียนโค้ด:
 - **เรขาคณิตหางระดับ** (`a_t`, `l_t`, `eta_t`, `deda`) อยู่ทั้งใน `interference.downwash` และ `controls.pitch` ค่า l_t 5.42 m, a_t 3.9 /rad และ η_t 0.9 ตรงกัน แต่ dε/dα ต่างกัน (0.40 ในหัวข้อ 2 และ 0.36 ในหัวข้อ 6) ทั้งสองเป็นค่าประมาณ ให้ใช้ค่าเดียวเมื่อทำหางเป็นชิ้นส่วนแยก (งานข้อ 31 ด้านล่าง) และตรวจซ้ำด้วย T-U-03/T-U-04 กับ T-C-05
-- **ทิศการหมุนของใบพัด** (`interference.slipstream.sense` และ `propeller.identity.sense`) ตรงกัน (+1)
-- **`aero.elevator_fade.a_t`** (10°) เป็นพารามิเตอร์คนละตัวกับ `a_t` ของหาง (คือช่วงมุมที่ประสิทธิผลของ elevator จางลง) อย่าสับสนเมื่อรวมไฟล์
+- **ทิศการหมุนของใบพัด** (`interference.slipstream.sense`, `propeller.identity.sense` และ `turboprop.airframe_coupling.spin`) ตรงกัน (+1) แต่ตัวสุดท้ายมี scope เป็น aircraft และความเชื่อมั่นต่ำ ให้ยึด `propeller.identity.sense` ซึ่งยืนยันจาก TCDS ของใบพัดเป็นค่าหลัก
+- **ค่าที่ส่งระหว่างเครื่องยนต์กับใบพัดยังไม่ตรงกันสามค่า** กำลังเพลาสูงสุดเป็น 708 kW ใน `propeller.engineInterface.maxShaftPower` แต่ `turboprop.ratings.P_rated` ปัดเป็น 700 kW มุมใบที่ flight idle เป็น 10° ที่ 0.75R ใน `propeller.governor.betaFlightIdle` ส่วน `turboprop.beta_reverse.blade_angle_FI_deg` ใช้ 11° จากงาน NAL และขอให้หัวข้อใบพัดยืนยัน และกำลังเพลาที่ flight idle ตั้งไว้ 20 kW ใน `propeller.engineInterface.flightIdleShaftPower` ขณะที่แผนที่กำลังของหัวข้อ 4 ให้ราว 36 kW (แก้แล้ว) หรือ 27 kW ที่ 31 °C ค่าสุดท้ายสำคัญที่สุด เพราะตาราง BEM ของหัวข้อ 3 ที่ 88 kt ให้แรงขับ −126 N ที่ 20 kW แต่ +307 N ที่ 40 kW เครื่องหมายของแรงขับที่ flight idle จึงขึ้นกับค่านี้ ให้ใช้กำลังจากโมเดลเครื่องยนต์เป็นค่าเดียวแล้วคำนวณ T-P-06 ใหม่
+- **`aero.elevator_fade.a_t`** (10 /rad) เป็นพารามิเตอร์คนละตัวกับ `a_t` ของหาง (คือความชันของฟังก์ชัน tanh ใน E(α) ที่ลดประสิทธิผลของ elevator เมื่อ α เข้าใกล้ α_t* 22°) อย่าสับสนเมื่อรวมไฟล์
 
 ## ผลวัดโมเดลปัจจุบัน
 
-ตัวเลขทั้งหมดวัดด้วย Node จากโค้ดที่ commit `cabf0f0` (สคริปต์อยู่ใน `01-flight-physics/scripts/`)
+ตัวเลขทั้งหมดวัดด้วย Node จากโค้ดที่ commit `cabf0f0` (สคริปต์อยู่ใน `01-flight-physics/scripts/`) ค่าในคอลัมน์ "ค่าที่ควรเป็นหรือเกณฑ์" ที่มาจากโมเดลที่เสนอ ต้นแบบ หรือแบบจำลองอ้างอิง (เช่น โช้ค oleo 1.9–2.0, 8.9 lbf/g, ระยะหยุด 288/477 m และ 240.3–240.8 m) เป็นค่าประมาณจากพารามิเตอร์ที่ประมาณเอง ไม่ใช่ข้อมูลวัดของเครื่องจริง ส่วนค่าที่อ้างกฎหรือเกณฑ์ (เช่น ≥ 5 kt, 4.2–28 lbf/g, < 2.785) มาจากเอกสารปฐมภูมิ
 
 | เรื่อง | ผลวัดของโมเดลปัจจุบัน | ค่าที่ควรเป็นหรือเกณฑ์ | หัวข้อ |
 |---|---|---|---|
-| ความถูกต้องของสมการการเคลื่อนที่ | ต่างจาก JSBSim ที่ใช้พารามิเตอร์เดียวกัน: h 4 mm, θ 0.014°, φ 0.039° ใน 25 s | ถูกต้อง | 12 |
+| ความถูกต้องของสมการการเคลื่อนที่ | ต่างจาก JSBSim 1.3.3 ที่ใช้พารามิเตอร์เดียวกัน (JSBSim ใช้ AB3 ที่ 240 Hz และไม่รวม α̇): h 4 mm, θ 0.014°, φ 0.039° ใน 25 s | ถูกต้อง | 12 |
 | ความเสถียรของ RK4 240 Hz | \|λ\|Δt สูงสุด 0.25 ตอนจอด, 0.74 ตอนแตะพื้นแรง | < 2.785 | 9 |
 | โหมดพลวัตที่ approach | SP ωn 2.22, ζ 0.58, CAP 0.95; phugoid ζ 0.115; DR ζ 0.139, ζωn 0.225; τR 0.22 s | Level 1 Class I Cat C ผ่านทุกข้อ | 10 |
 | ระยะเตือน stall | 1.3 kt (แฟลปเก็บ), 0.6 kt (แฟลปลง) | ≥ 5 kt | 1 |
 | CL หลัง CLmax | ลด 72–75% ภายใน 5° | ลดแบบนุ่มนวล (ต้นแบบที่เสนอ 28–32%) | 1 |
 | Speed stability ในโหมด DIRECT | ดึงแล้วปล่อย ค้างที่ 80.5 kt (−15.3%) | กลับภายใน ±10% ของความเร็ว trim | 6 |
 | Stick force per g | ไม่มีโมเดลแรง | 4.2–28 lbf/g (Level 1, centre stick); ต้นแบบได้ 8.9 lbf/g | 6 |
-| แรงล้อตอนแตะพื้น 3 m/s | ΣN/W 3.39 ในเฟรมแรก | โช้ค oleo ที่เสนอ ≈ 1.9–2.0 ที่ ~60 ms | 7 |
+| แรงล้อตอนแตะพื้น 3 m/s (590 fpm) | ΣN/W 3.39 ในเฟรมแรก | โช้ค oleo ที่เสนอ ≈ 1.9–2.0 ที่ ~60 ms | 7 |
 | เบรกเต็มขณะจอด | ไหล 0.012 m/s | 0 (แรงเสียดทานสถิต) | 7, 9 |
 | Cornering stiffness ของยาง | 9.3 /rad ที่ 5 m/s, 55.7 /rad ที่ 30 m/s | ≈ 3.2 /rad และไม่ขึ้นกับความเร็ว | 7 |
 | ระยะหยุดจาก ~85 kt เบรกเต็ม | 332 m ทุกสภาพผิว | แตกต่างตาม RWYCC (แบบจำลองอ้างอิง: แห้ง 288 m, เปียก 477 m) | 7 |
@@ -178,7 +179,7 @@
 | [12. ซิมตัวอื่น](01-flight-physics/12-other-sims.md) | 13 | T-S-01 – T-S-13 | EOM และแกนตรงกับ JSBSim (ออฟไลน์, Python) · ทดสอบ Node กับ fixture จาก JSBSim (ไม่มี dependency) |
 | **รวม** | **179** | | |
 
-หลักการที่ทุกหัวข้อใช้: ผลคาดหวังที่มาจากสมการถูกคำนวณด้วย Node จริง (สคริปต์อยู่ใน `scripts/`) และระบุ tolerance เสมอ ผลคาดหวังที่เป็นเกณฑ์ (เช่น MIL-F-8785C, 14 CFR 33.73) อ้างเอกสารปฐมภูมิ คอลัมน์ "โมเดลปัจจุบัน" ในแต่ละไฟล์แสดงผลที่รันได้วันนี้ จึงเห็นได้ว่ากรณีไหนจะผ่านทันทีและกรณีไหนรอฟีเจอร์ใหม่ ควรเปลี่ยนชุดทดสอบเดิมให้มี assertion และใช้ `node:test` ซึ่งมากับ Node อยู่แล้วโดยไม่ต้องเพิ่ม dependency
+หลักการที่ทุกหัวข้อใช้: ผลคาดหวังที่มาจากสมการถูกคำนวณด้วย Node จริง (ยกเว้น oracle ของหัวข้อ 12 ที่รัน JSBSim ผ่าน Python; สคริปต์อยู่ใน `scripts/`) และระบุ tolerance เสมอ ผลคาดหวังที่เป็นเกณฑ์อ้างเอกสารที่กำหนดเกณฑ์นั้น เช่น 14 CFR 33.73 อ้างข้อความกฎโดยตรง ส่วนตัวเลขของ MIL-F-8785C มาจากเอกสารที่ถอดตารางต่ออีกชั้น เพราะต้นฉบับเป็นภาพสแกน (หัวข้อ 8 และ 10) คอลัมน์ "โมเดลปัจจุบัน" ในแต่ละไฟล์แสดงผลที่รันได้วันนี้ จึงเห็นได้ว่ากรณีไหนจะผ่านทันทีและกรณีไหนรอฟีเจอร์ใหม่ ควรเปลี่ยนชุดทดสอบเดิมให้มี assertion และใช้ `node:test` ซึ่งมากับ Node อยู่แล้วโดยไม่ต้องเพิ่ม dependency
 
 ## ความขัดแย้งของแหล่งข้อมูลและข้อจำกัดที่ยังค้าง
 
@@ -190,7 +191,9 @@
 - **Hot-day lapse ของ PT6A** ความชันที่ได้จากคู่รุ่นต่างกันเกือบ 2 เท่า (−0.5 กับ −1.0 %/°C) แต่ที่ 38 °C ต่างกันไม่ถึง 4 kW
 - **Spool-down ของเทอร์โบพร็อป** JSBSim ตั้งให้ลดช้ากว่าเร่ง แต่ไม่พบข้อมูลวัดของ PT6A ที่เปิดเผยมายืนยันทั้งสองแบบ
 - **dε/dα ของหาง** หัวข้อ 2 ใช้ 0.40 หัวข้อ 6 ใช้ 0.36 (ทั้งคู่เป็นค่าประมาณ) ต้องรวมเป็นค่าเดียวตอน implement
-- **ICAO Doc 9625 และ PANS-ATM เป็นเอกสารมีลิขสิทธิ์** รายงานจึงสรุปเฉพาะโครงสร้าง ส่วน tolerance ใช้ 14 CFR Part 60 ซึ่งเป็นสาธารณสมบัติ
+- **แรงเสียดทานสถิตของล้อ** หัวข้อ 7 ใส่การเบี่ยงด้านข้างของยางและ bristle ตามยาวเป็นสถานะใน RK4 (`x[16..21]`) แล้ว clamp หลังทุกก้าว ส่วนหัวข้อ 9 ใช้ bristle ทั้งตามแนวล้อและด้านข้าง (z0 5 mm) ที่อัปเดตด้วยสูตร exponential หลังจบก้าว เพราะต้นแบบ bristle ที่ใส่ใน RK4 ตรง ๆ ให้ระยะหยุดผิดทิศที่ 240 Hz (แบบ elasto-plastic ของหัวข้อ 7 ยังไม่ได้ทดลองในโมเดล 6-DOF) ทั้งสองหัวข้อไม่ได้อ้างถึงกัน ต้องเลือกแบบเดียวตอนทำงานข้อ 15 และให้ผ่านทั้ง T-G-02 และ T-N-02
+- **ICAO Doc 9625 เป็นเอกสารมีลิขสิทธิ์และต้องซื้อ** รายงานจึงสรุปเฉพาะโครงสร้างจากแหล่งที่เปิดอ้างถึง ส่วน tolerance ใช้ 14 CFR Part 60 ซึ่งเป็นสาธารณสมบัติ
+- **MIL-STD-1797A และ MIL-HDBK-1797 ยังไม่ได้เปิดต้นฉบับ** เกณฑ์ handling qualities ใช้ MIL-F-8785C ผ่านตารางที่รายงาน NASA ถอดไว้ และสเปกตรัมของ 1797 มาจากเอกสาร MathWorks ขอบบน CAP 3.6 ของ Level 1 จึงยังไม่ยืนยัน รอบถัดไปควรเปิดต้นฉบับที่เผยแพร่สาธารณะมาตรวจ ([หัวข้อ 8](01-flight-physics/08-wind.md), [10](01-flight-physics/10-validation.md))
 - **Developed spin** ไม่มีข้อมูลสาธารณะของเครื่องประเภทนี้มากพอ งาน spin จึงเป็น P3 ความเชื่อมั่นต่ำ
 
 ## แหล่งอ้างอิงและสัญญาอนุญาต
@@ -199,34 +202,34 @@
 
 | กลุ่มแหล่ง | จำนวน | ตัวอย่างรหัส | สถานะสิทธิ์ | AirfieldLab ทำอะไรได้ |
 |---|---|---|---|---|
-| งานของรัฐบาลสหรัฐฯ: 14 CFR, FAA AC และคู่มือ, NASA/NACA (NTRS), NOAA/NWS, EPA | 112 | A6, A8, A9, A15 | ไม่มีลิขสิทธิ์ในสหรัฐฯ (17 U.S.C. §105) NTRS ระบุ "Public Use Permitted" | ใช้สมการ ตัวเลข และตารางได้ อ้างแหล่งทุกครั้ง บทความที่ NASA เขียนร่วมกับเอกชนให้ดูบรรทัดอ้างอิง |
-| มาตรฐานและรายงานทางทหารของสหรัฐฯ (MIL-F-8785C, MIL-HDBK-1797, รายงาน DTIC) | 8 | A5, E14, C12, C13 | "Approved for public release; distribution unlimited" | ใช้เกณฑ์และสมการได้เหมือนงานรัฐบาล ใช้เป็นเกณฑ์ทั่วไปเท่านั้น ไม่อ้างหน่วยหรือเครื่องบินทหาร |
+| งานของรัฐบาลสหรัฐฯ: 14 CFR, FAA AC และคู่มือ, NASA/NACA (NTRS), NOAA/NWS, EPA | 112 | A8, A9, A15, A22 | ไม่มีลิขสิทธิ์ในสหรัฐฯ (17 U.S.C. §105) NTRS ระบุ "Public Use Permitted" ยกเว้นซอฟต์แวร์ OpenVSP (A6) ที่ใช้ NOSA 1.3 | ใช้สมการ ตัวเลข และตารางได้ อ้างแหล่งทุกครั้ง บทความที่ NASA เขียนร่วมกับเอกชนให้ดูบรรทัดอ้างอิง ส่วน OpenVSP ใช้เป็นเครื่องมือ offline ได้แต่ไม่รวมโค้ดเข้า repo |
+| มาตรฐานและรายงานทางทหารของสหรัฐฯ (MIL-F-8785C, MIL-HDBK-1797, รายงาน DTIC) | 8 | A5, E14, C12, C13 | รายงาน DTIC เช่น A5 และ C13 ระบุ "Approved for public release; distribution unlimited" ส่วนสำเนา MIL-F-8785C ที่เปิดได้ (C12, V8, W6) และคู่มือ TM 55-1510-218-MTF (E14) ไม่แสดง distribution statement จึงยังไม่ยืนยันสถานะการเผยแพร่ (E14 ใช้เป็นตัวตรวจความสมเหตุสมผลความเชื่อมั่นต่ำเท่านั้น) | ใช้เกณฑ์และสมการได้เหมือนงานรัฐบาล ใช้เป็นเกณฑ์ทั่วไปเท่านั้น ไม่อ้างหน่วยหรือเครื่องบินทหาร |
 | EASA (TCDS, CS, ETSO) | 14 | P3, P4, E1, E2 | © EASA สงวนสิทธิ์ TCDS ระบุ "Proprietary document" | อ้างตัวเลขที่เป็นข้อเท็จจริงพร้อมลิงก์ได้ ห้ามคัดลอกเอกสาร |
 | ICAO (Doc 9625, PANS, Annex) | 3 | F9, G16, V4 | ลิขสิทธิ์ ICAO | สรุปโครงสร้างด้วยคำของเราเท่านั้น ห้ามคัดลอกตารางหรือข้อความ |
 | กพท. (AIP Thailand, AIC) | 4 | G17, W28, W29, W30 | ลิขสิทธิ์ กพท. | อ้างข้อเท็จจริงของสนามและกฎ (เช่น GRF) ได้เหมือนที่ repo ทำอยู่ |
 | โค้ด LGPL: JSBSim, OpenAP | 29 | A2, U4, U5, U6 | LGPL-2.1-or-later (JSBSim), LGPL-3.0 (OpenAP) | อ้างสมการและค่าคงที่ แล้วเขียนโค้ดใหม่เองได้ ถ้าคัดลอกโค้ดหรือไฟล์ข้อมูลต้องทำตาม LGPL ไฟล์ aircraft XML บางไฟล์ของ JSBSim เป็น GPL |
-| โค้ด GPL/AGPL: FlightGear, YASim, AVL, Aeromatic, ไดรเวอร์ Linux | 19 | A3, A4, A7, P13 | GPL-2.0-or-later, AGPL-3.0 | อ้างแนวคิดและตัวเลขได้ ห้ามคัดลอกโค้ดเข้า repo เว้นแต่ repo จะเป็น GPL ใช้เป็นเครื่องมือ offline ได้ |
+| โค้ด GPL/AGPL: FlightGear, YASim, AVL, XROTOR, Aeromatic, XML เครื่องบินบางไฟล์ของ JSBSim | 19 | A3, A4, A7, P13 | GPL-2.0 และ GPL-2.0-or-later (FlightGear/fgdata, YASim), GPL-3.0 (xrotor-python), AGPL-3.0 (Aeromatic), ส่วน AVL, XROTOR และ c172x.xml ระบุเพียง "GPL" | อ้างแนวคิดและตัวเลขได้ ห้ามคัดลอกโค้ดเข้า repo เว้นแต่ repo จะเป็น GPL ใช้เป็นเครื่องมือ offline ได้ |
 | โค้ดและข้อมูลแบบ permissive: three.js, CCBlade.jl, AirfoilPreppy, browser-compat-data, ml-matrix | 7 | A10, P10, N15, N22 | MIT, Apache-2.0, CC0 | คัดลอกได้ถ้าคงประกาศลิขสิทธิ์ (CC0 ไม่ต้อง) ส่วน ml-matrix ใช้เฉพาะใน scripts/ |
-| ข้อกำหนดและเอกสารเว็บ: W3C, WICG, MDN, web.dev, Chromium, ECMA-262 | 23 | A29, C28, N9, N10 | W3C Document License, MDN ข้อความ CC BY-SA 2.5 และโค้ดตัวอย่าง CC0, web.dev CC BY 4.0 | อ้างได้ทั้งหมด ข้อความจาก MDN ถ้าคัดลอกต้องให้เครดิตและใช้ CC BY-SA |
+| ข้อกำหนดและเอกสารเว็บ: W3C, WICG, MDN, web.dev, Chromium, ECMA-262 | 23 | A29, C28, N9, N10 | W3C Software and Document License, MDN ข้อความ CC BY-SA 2.5 และโค้ดตัวอย่าง CC0, web.dev ข้อความ CC BY 4.0 และโค้ด Apache-2.0 | อ้างได้ทั้งหมด ข้อความจาก MDN ถ้าคัดลอกต้องให้เครดิตและใช้ CC BY-SA โค้ดจาก web.dev ถ้าคัดลอกต้องคงประกาศ Apache-2.0 |
 | บทความวิชาการ วิทยานิพนธ์ และตำรา (AIAA, ASME, Elsevier, ICAS ฯลฯ) | 32 | A11, A12, A13, A14 | ลิขสิทธิ์ผู้จัดพิมพ์หรือผู้เขียน | ใช้สมการและตัวเลขที่เป็นข้อเท็จจริงพร้อมอ้างอิง ห้ามคัดลอกข้อความ รูป หรือตาราง |
 | องค์กรมาตรฐาน: ASTM, USB-IF, WMO, EUROCONTROL | 6 | A25, F27, C11, W25 | ลิขสิทธิ์ ASTM ต้องซื้อ BADA ต้องทำสัญญา | อ้างเฉพาะส่วนที่เปิดสาธารณะ ห้ามใส่สัมประสิทธิ์ BADA ใน repo |
 | เอกสารของผู้ผลิตและซิมเชิงพาณิชย์: X-Plane, MSFS, GeoFS, MathWorks, Goodyear, ผู้ผลิตอุปกรณ์ควบคุม | 26 | G18, W1, W2, W3 | proprietary | อ้างข้อเท็จจริงและลิงก์ได้ ห้ามคัดลอกเนื้อหาหรือข้อมูลโมเดล |
-| อื่น ๆ: รายงานสอบสวนอุบัติเหตุ (BEA), Wikipedia, บล็อก, กระดานสนทนา, usb.ids | 6 | C27, W17, N8, N14, I11, I26 | แล้วแต่แหล่ง: Wikipedia เป็น CC BY-SA 4.0, บล็อกและกระทู้เป็นลิขสิทธิ์ผู้เขียน, usb.ids เป็น GPL-2.0 หรือ BSD-3 | ใช้เป็นแหล่งรองหรือชี้ทางเท่านั้น ยืนยันกับแหล่งปฐมภูมิก่อนใช้ค่า |
+| อื่น ๆ: รายงานสอบสวนอุบัติเหตุ (BEA), Wikipedia, บล็อก, กระดานสนทนา, usb.ids | 6 | C27, W17, N8, N14, I11, I26 | แล้วแต่แหล่ง: Wikipedia เป็น CC BY-SA 4.0, บล็อกและกระทู้เป็นลิขสิทธิ์ผู้เขียน, usb.ids ยังไม่ยืนยันสัญญาอนุญาต (สำเนาที่ใช้ไม่มีส่วนหัวสัญญาอนุญาต) | ใช้เป็นแหล่งรองหรือชี้ทางเท่านั้น ยืนยันกับแหล่งปฐมภูมิก่อนใช้ค่า |
 | ภายในโครงการ: โค้ด AirfieldLab, สคริปต์คำนวณ, การอ้างข้ามหัวข้อ | 12 | A1, U1, U16, U17 | ของเจ้าของ (repo ยังไม่มี LICENSE) | ไม่มีข้อจำกัด |
 
 จัดกลุ่มอัตโนมัติจากข้อความในบรรทัดอ้างอิง (สคริปต์ `scripts/integ_refs.mjs`) จำนวนในแต่ละกลุ่มจึงคลาดได้เล็กน้อย สถานะสิทธิ์ของแต่ละแหล่งให้ยึดบรรทัดอ้างอิงในไฟล์หัวข้อเป็นหลัก
 
-**ข้อควรทำเรื่องสัญญาอนุญาต:** repo ยังไม่มีไฟล์ LICENSE แม้เป็น repo สาธารณะ ซึ่งตามกฎหมายแปลว่าผู้อื่นไม่มีสิทธิ์นำไปใช้ เจ้าของควรเลือกสัญญาอนุญาตก่อนรับโค้ดหรือข้อมูลจากภายนอก การเลือกนี้มีผลต่อสิ่งที่นำเข้ามาได้ เช่น ถ้าเลือก MIT ก็จะคัดลอกโค้ด GPL/LGPL เข้ามาไม่ได้ ไม่ว่ากรณีใด ไม่ควรคัดลอกโค้ดของ JSBSim (LGPL-2.1) หรือ FlightGear/YASim (GPL-2.0) และไฟล์ XML เครื่องบินของ JSBSim (หลายไฟล์เป็น GPL หรือไม่ระบุ) เข้ามาใน `src/` หรือ `data/` ให้เขียนสูตรใหม่จากเอกสาร และใช้ JSBSim เป็น oracle แบบออฟไลน์ผ่าน `pip install jsbsim` เท่านั้น (หัวข้อ 12 เสนอ `test/license-guard.test.mjs` ไว้กันพลาด)
+**ข้อควรทำเรื่องสัญญาอนุญาต:** repo ยังไม่มีไฟล์ LICENSE แม้เป็น repo สาธารณะ ซึ่งตามกฎหมายแปลว่าผู้อื่นไม่มีสิทธิ์นำไปใช้ เจ้าของควรเลือกสัญญาอนุญาตก่อนรับโค้ดหรือข้อมูลจากภายนอก การเลือกนี้มีผลต่อสิ่งที่นำเข้ามาได้ เช่น ถ้าเลือก MIT ก็จะคัดลอกโค้ด GPL/LGPL เข้ามาไม่ได้ ไม่ว่ากรณีใด ไม่ควรคัดลอกโค้ดของ JSBSim (LGPL-2.1) หรือ FlightGear/YASim (GPL-2.0-or-later) และไฟล์ XML เครื่องบินของ JSBSim (หลายไฟล์เป็น GPL หรือไม่ระบุ) เข้ามาใน `src/` หรือ `data/` ให้เขียนสูตรใหม่จากเอกสาร และใช้ JSBSim เป็น oracle แบบออฟไลน์ผ่าน `pip install jsbsim` เท่านั้น (หัวข้อ 12 เสนอ `test/license-guard.test.mjs` ไว้กันพลาด)
 
 ## สิ่งที่ Claude Code ควรทำ
 
 ตามที่เจ้าของกำหนด ยังไม่แก้โค้ดฟิสิกส์ในขั้นนี้ รายการนี้คือข้อมูลตั้งต้นของแผนงานรวมหลังครบ 5 รอบ ซึ่งต้องได้รับอนุมัติก่อนลงมือ เมื่อลงมือแล้ว งานที่เปลี่ยน flight model ให้ทำบน branch และเปิด PR ทีละเรื่องเพื่อให้เจ้าของลองก่อน merge ตาม CLAUDE.md ทุก PR ต้องให้ autoland เดิมได้คะแนนในช่วงเดิม และต้องผ่านชุดทดสอบโหมดพลวัตที่ล็อกไว้ในข้อ 3
 
-ลำดับเรียงตามคุณค่าต่อการฝึกลงจอดและตามลำดับที่งานต้องพึ่งกัน รหัส P1/P2/P3 และขนาดงาน S/M/L มาจากไฟล์หัวข้อ
+ลำดับเรียงตามคุณค่าต่อการฝึกลงจอดและตามลำดับที่งานต้องพึ่งกัน รหัส P1/P2/P3 และขนาดงาน S/M/L มาจากไฟล์หัวข้อ ยกเว้นข้อ 30 และ 32 ที่แผนรวมลดจาก P1 เป็น P2 เพราะข้อ 3 ล็อกโหมดเชิงเส้นไว้แล้ว และเครื่องฝึกไม่ใช้เทอร์โบแฟน (หัวข้อ 10 จัดชุดทดสอบโดเมนเวลาเป็น P1 และหัวข้อ 5 จัด thrust lapse กับ `TurbofanEngine` เป็น P1)
 
 **ระยะ 0: แก้บั๊กและวางฐานการทดสอบ (ไม่เปลี่ยนฟิสิกส์)**
-1. **P1 · S** แก้ keymap: เอา Ctrl/Meta/Alt ออก ย้ายคันเร่งไปที่ `=`/`−` และ PageUp/PageDown ไม่ตีความคีย์การบินเมื่อมีตัวปรับกดอยู่ เช็ก `e.repeat` สำหรับ C/T/P/R และล้างคีย์เมื่อแท็บถูกซ่อน — [11](01-flight-physics/11-input.md) · T-I-07, T-I-08
-2. **P1 · S** เปลี่ยน `test/flight`, `stall`, `assist` ให้มี assertion ด้วย `node:test` เพิ่ม `node --test` ใน `.github/workflows/pages.yml` และ export `eulerToQ`, `qToR`, `qToEuler`, `Wind` จาก `test/harness.mjs` — [10](01-flight-physics/10-validation.md), [9](01-flight-physics/09-numerics.md) · T-V-01, T-V-11
+1. **P1 · S** แก้ keymap: เอา Ctrl/Meta/Alt ออก ย้ายคันเร่งไปที่ `=`/`−` และ PageUp/PageDown ไม่ตีความคีย์การบินเมื่อมีตัวปรับกดอยู่ เรียก `preventDefault` กับทุกคีย์ที่ผูกไว้ขณะบิน เช็ก `e.repeat` สำหรับ C/T/P/R และล้างคีย์เมื่อแท็บถูกซ่อน — [11](01-flight-physics/11-input.md) · T-I-07, T-I-08
+2. **P1 · S** เปลี่ยน `test/flight`, `stall`, `assist` ให้มี assertion ด้วย `node:test` เพิ่ม `node --test "test/**/*.test.mjs"` ใน `.github/workflows/pages.yml` (ต้องระบุ glob เพราะ `node --test` ที่ไม่ระบุไฟล์จะรันทุกไฟล์ .mjs ในโฟลเดอร์ `test/` รวมทั้ง `harness.mjs` และ `shots.mjs` ที่ต้องใช้ Playwright) และ export `eulerToQ`, `qToR`, `qToEuler`, `Wind` จาก `test/harness.mjs` — [10](01-flight-physics/10-validation.md), [9](01-flight-physics/09-numerics.md) · T-V-01, T-V-11
 3. **P1 · S** ล็อกโหมดพลวัตปัจจุบันด้วย `test/lib/fstd.mjs` + `test/modes.test.mjs` (trim, linearise, eigen, ระดับ Level) ก่อนเริ่มเปลี่ยนฟิสิกส์ — [10](01-flight-physics/10-validation.md) · T-V-01…T-V-06
 4. **P1 · S** `test/license-guard.test.mjs` และให้เจ้าของเลือก LICENSE — [12](01-flight-physics/12-other-sims.md) · T-S-11
 5. **P1 · S** คำนวณ `air.nz` ใน `updateAir()` — [6](01-flight-physics/06-controls.md) · T-C-01
@@ -235,42 +238,45 @@
 
 **ระยะ 1: โครงสร้างข้อมูลและเครื่องมือตรวจ**
 
-8. **P1 · M** ย้าย `AC` ไปเป็น `data/aircraft/trainer.json` ตาม schema ของรอบนี้ เพิ่มฟังก์ชันอ่านตาราง 1D/2D แบบตัดค่าขอบ และ `AC.engines[]` ที่มีตำแหน่งและทิศแรงขับ (เครื่องฝึกมีเครื่องเดียว ผลต้องเท่าเดิม) — [12](01-flight-physics/12-other-sims.md), [5](01-flight-physics/05-turbofan.md) · T-S-07, T-S-12, T-F-15
-9. **P1 · M** Oracle JSBSim ออฟไลน์: `tools/jsbsim/` สร้าง XML จากข้อมูลของเรา รันด้วย `pip install jsbsim==1.3.3` แล้วเก็บผลเป็น fixture ให้ `test/oracle.test.mjs` แบบ Node ล้วน — [12](01-flight-physics/12-other-sims.md) · T-S-01…T-S-05
-10. **P1 · M** ชั้นอินพุต `src/25-input.js` ที่ไม่ผูก DOM (calibration → invert → scaled dead zone → expo → gain), ramp คีย์บอร์ดใหม่ (pitch 0.5/2.5 ต่อวินาที, roll 1.0/3.0, rudder 1.0/2.0), Shift เป็นโหมดละเอียด และอ่าน Gamepad API ทุกเฟรมด้วยผัง Standard — [11](01-flight-physics/11-input.md) · T-I-01…T-I-06, T-I-09…T-I-12
+8. **P1 · M** ย้าย `AC` ไปเป็น `data/aircraft/trainer.json` ตาม schema ของรอบนี้ เพิ่มฟังก์ชันอ่านตาราง 1D/2D แบบตัดค่าขอบ และ `AC.engines[]` ที่มีตำแหน่งและทิศแรงขับ (เครื่องฝึกมีเครื่องเดียว ผลต้องเท่าเดิม) ทำหลังข้อ 9 เพราะต้องผ่าน oracle T-S-01/T-S-02 ทั้งก่อนและหลังย้าย — [12](01-flight-physics/12-other-sims.md), [5](01-flight-physics/05-turbofan.md) · T-S-07, T-S-12, T-S-02, T-S-10, T-F-15
+9. **P1 · M** Oracle JSBSim ออฟไลน์: `tools/jsbsim/` สร้าง XML จากข้อมูลของเรา รันด้วย `pip install jsbsim==1.3.3` แล้วเก็บผลเป็น fixture ให้ `test/oracle.test.mjs` แบบ Node ล้วน — [12](01-flight-physics/12-other-sims.md) · T-S-01…T-S-03, T-S-05
+10. **P1 · M** ชั้นอินพุต `src/25-input.js` ที่ไม่ผูก DOM (calibration → invert → scaled dead zone → expo → gain), ramp คีย์บอร์ดใหม่ (pitch 0.5/2.5 ต่อวินาที, roll 1.0/3.0, rudder 1.0/2.0), Shift เป็นโหมดละเอียด และอ่าน Gamepad API ทุกเฟรมด้วยผัง Standard — [11](01-flight-physics/11-input.md) · T-I-01…T-I-06, T-I-09…T-I-12, T-C-14
 11. **P2 · S** Trim เชิงตัวเลขแบบ Newton แทนสูตรใน `setApproach` เพื่อรองรับตารางและใบพัด — [12](01-flight-physics/12-other-sims.md) · T-S-04, T-S-06
 
 **ระยะ 2: ฟิสิกส์หลักที่กระทบการฝึกลงจอดมากที่สุด (PR แยกทีละเรื่อง)**
 
 12. **P1 · S** สัญญาณเตือน stall ตาม α ให้ระยะเผื่อ ≥ 5 kt ทั้งใน `Evaluator` และ HUD พร้อมเสียง — [1](01-flight-physics/01-aero.md) · T-A-07
-13. **P1 · S** เอา auto-trim `trimDe += 0.25·q·dt` ออกจาก DIRECT แทนด้วยสถานะ trim ที่ปรับด้วยปุ่ม — [6](01-flight-physics/06-controls.md) · T-C-02
+13. **P1 · S** เอา auto-trim `trimDe += 0.25·q·dt` ออกจาก DIRECT แทนด้วยสถานะ trim ที่ปรับด้วยปุ่ม โดยเพิ่มคีย์ trim ในข้อนี้เลย (ชั่วคราว 0.5 °/s ของ `trimDe` ตามหัวข้อ 11 จนกว่าข้อ 14 จะมี trim tab) ให้ trim เป็นตำแหน่งพักที่ไม่กินระยะคัน (สูตรในหัวข้อ 12.9 สำหรับ `trim.kind = tab`) และให้ rate limit กับ lag ของ actuator ทุกพื้นผิวตั้งค่าได้ต่อเครื่อง — [6](01-flight-physics/06-controls.md), [12](01-flight-physics/12-other-sims.md), [11](01-flight-physics/11-input.md) · T-C-02, T-C-12, T-C-13, T-S-08, T-S-09
 14. **P1 · M** `ControlAxis` แบบสั่งแรง (force-command) สำหรับ pitch พร้อม breakout, trim tab ที่ปรับด้วยปุ่มตามอัตราที่ขึ้นกับแฟลป และ auto-trim บนแรงเสมือนเฉพาะใน ASSIST — [6](01-flight-physics/06-controls.md) · T-C-03…T-C-11
 15. **P1 · M** ล้อชุดแรก: โช้ค oleo แบบอนุกรมที่มี stroke เป็นสถานะ, แรงเสียดทานสถิตแบบ bristle, ยางด้านข้างแบบมุม slip + relaxation + วงกลมแรงเสียดทาน — [7](01-flight-physics/07-gear.md), [9](01-flight-physics/09-numerics.md) · T-G-01…T-G-06, T-G-11…T-G-13, T-N-02…T-N-05
 16. **P1 · S** μ(V, RWYCC) ตาม 14 CFR 25.109(c)/(d) และ AC 25-32 พร้อม hydroplaning 9√p — [7](01-flight-physics/07-gear.md) · T-G-08, T-G-09
 17. **P1 · S** α̇ แบบปิดรูปใน `deriv()` — [2](01-flight-physics/02-interference.md), [10](01-flight-physics/10-validation.md) · T-U-01, T-U-02
 18. **P1 · M** Ground effect แบบ Tani (induced drag, แรงยก, downwash ที่หาง) วัดความสูงที่ MAC ซ้ายและขวา แล้วจูน flare ของ autopilot ใหม่ — [2](01-flight-physics/02-interference.md) · T-U-05…T-U-09
 19. **P1 · M** ความปั่นป่วน Dryden 8785C แบบ exact discretization (u อันดับ 1, v/w อันดับ 2) วางแกนตามลมเฉลี่ย เพิ่ม p_g, q_g, r_g ให้ตัวกรองลมเดินด้วยนาฬิกา 120 Hz และ RNG แยกของตัวเอง และเปลี่ยนโปรไฟล์ลมเป็น log law ที่ปรับ z0 ได้ — [8](01-flight-physics/08-wind.md), [9](01-flight-physics/09-numerics.md) · T-W-01…T-W-08, T-N-06, T-N-10
-20. **P1 · M** ระบบขับเคลื่อน: `Turboprop` (Ng, ITT, แรงบิด, flat rating, S-curve) + `Propeller` (ตาราง CT/CP จาก `tools/prop-bem.mjs`, governor, flight idle ที่ให้แรงต้าน) + แรงบิดปฏิกิริยาและ gyroscopic ใน `deriv()` — [3](01-flight-physics/03-propeller.md), [4](01-flight-physics/04-turboprop.md) · T-P-01…T-P-11, T-E-01…T-E-08, T-E-12…T-E-15
+20. **P1 · M** ระบบขับเคลื่อน: `Turboprop` (Ng, ITT, แรงบิด, flat rating, S-curve) + `Propeller` (ตาราง CT/CP จาก `tools/prop-bem.mjs`, governor, flight idle ที่ให้แรงต้าน) + แรงบิดปฏิกิริยาและ gyroscopic ใน `deriv()` ก่อนเริ่มข้อนี้ต้องมีตัวหาค่าเฉพาะของเมทริกซ์เต็มจากข้อ 30 เพราะแรงบิดและ gyroscopic ทำให้บล็อกตามยาวกับด้านข้างคู่ควบกัน และการแยก 4×4 ที่ล็อกไว้ในข้อ 3 จะใช้ไม่ได้ (หัวข้อ 10.5) — [3](01-flight-physics/03-propeller.md), [4](01-flight-physics/04-turboprop.md), [10](01-flight-physics/10-validation.md) · T-P-01…T-P-11, T-P-14, T-E-01…T-E-08, T-E-12…T-E-15
 21. **P1 · M** Slipstream: q̄ ที่หางระดับและหางดิ่งจากแรงขับ ให้มีแรงบังคับเมื่อ V → 0 — [2](01-flight-physics/02-interference.md) · T-U-10…T-U-12
 22. **P1 · M** แก้อากาศพลศาสตร์ช่วงกว้าง: ความเป็นคาบของ α และ β, กิ่งแยกตัวแบบ Viterna ผสมด้วย X0 แทน `stallBlend` + flat plate, ตัวคูณประสิทธิผล elevator E(α) — [1](01-flight-physics/01-aero.md) · T-A-01…T-A-06, T-A-08
 23. **P1 · M** ชุดทดสอบสมรรถนะ (stall 1 kt/s, climb, glide, ระยะวิ่งขึ้นและลงจอด 50 ft) พร้อม `data/ref/trainer.json` ทำหลังข้อ 20 — [10](01-flight-physics/10-validation.md) · T-V-11…T-V-15
 
 **ระยะ 3: ความสมจริงเพิ่มเติม (P2)**
 
-24. **P2 · M** P-factor แรงตั้งฉากของใบพัด และ swirl ที่หางดิ่ง (หลังข้อ 20–21) แล้วตรวจว่า auto-rudder ของ ASSIST ยังคุมทิศได้ — [3](01-flight-physics/03-propeller.md), [2](01-flight-physics/02-interference.md) · T-P-12, T-P-13, T-U-13
-25. **P2 · M** เบรกซ้าย/ขวา ตรรกะล้อล็อก ล้อหน้าเลี้ยวด้วยแป้น ±12° + caster ±45° spin-up ของล้อ เกณฑ์ bounce/hard landing และ UI ภาษาไทยเลือกสภาพทางวิ่ง — [7](01-flight-physics/07-gear.md) · T-G-07, T-G-10, T-G-14, T-G-15
+24. **P2 · M** P-factor แรงตั้งฉากของใบพัด และ swirl ที่หางดิ่ง (หลังข้อ 20–21) แล้วตรวจว่า auto-rudder ของ ASSIST ยังคุมทิศได้ จากนั้นทำ roll และ yaw เป็น `ControlAxis` พร้อม aileron และ rudder trim — [3](01-flight-physics/03-propeller.md), [2](01-flight-physics/02-interference.md), [6](01-flight-physics/06-controls.md) · T-P-12, T-P-13, T-U-13, T-C-15
+25. **P2 · M** เบรกซ้าย/ขวา ตรรกะล้อล็อก ล้อหน้าเลี้ยวด้วยแป้น ±12° ที่ไม่ลดตามความเร็ว (ต่างจากแผน speed-limited steering ใน CLAUDE.md เพราะเครื่องฝึกใช้แป้นกับสปริง ส่วนตารางเดิมที่ลดมุมจาก 35° เหลือ 6° ตามความเร็วย้ายไปใช้กับเครื่องบินโดยสารที่มีไทลเลอร์) + caster ±45° spin-up ของล้อ เกณฑ์ bounce/hard landing และ UI ภาษาไทยเลือกสภาพทางวิ่ง — [7](01-flight-physics/07-gear.md) · T-G-07, T-G-10, T-G-14, T-G-15
 26. **P2 · L** ปีกแบบ strip 8 แผงต่อข้าง สถานะ X แบบ Goman–Khrabrov และ buffet ที่ส่งเป็นกล้องสั่น เสียง และ rumble — [1](01-flight-physics/01-aero.md), [11](01-flight-physics/11-input.md) · T-A-09…T-A-14, T-I-14
-27. **P2 · M** Wizard ผูกอุปกรณ์ (HOTAS, pedals + toe brakes, yoke) เก็บใน `localStorage`, คีย์ trim/แฟลป/ล้อ/เบรกแยก และปรับจอสัมผัส — [11](01-flight-physics/11-input.md) · T-I-03, T-I-04, T-I-10, T-I-11, T-I-15
+27. **P2 · L** Wizard ผูกอุปกรณ์ (HOTAS, pedals + toe brakes, yoke) เก็บใน `localStorage`, คีย์ trim/แฟลป/ล้อ/เบรกแยก ปรับจอสัมผัส และแถบแสดงแรงที่คันบน HUD (ขีด 10/40/60 lbf) พร้อมไอคอน "ต้อง trim" แทน force feedback — [11](01-flight-physics/11-input.md), [6](01-flight-physics/06-controls.md) · T-I-03, T-I-04, T-I-10, T-I-11, T-I-15
 28. **P2 · M** Gust แบบ 1-cosine, microburst Oseguera–Bowles, F-factor และคำเตือน WINDSHEAR พร้อม debrief — [8](01-flight-physics/08-wind.md) · T-W-09…T-W-14
 29. **P2 · M** หน้าจอเครื่องยนต์ภาษาไทย (TRQ/ITT/Ng/Np), condition lever, ตัวเลือก limiter และเหตุการณ์ overtorque/overtemp — [4](01-flight-physics/04-turboprop.md) · T-E-09…T-E-11
-30. **P2 · M** ทดสอบ handling qualities แบบโดเมนเวลา (pulse, doublet, spiral, roll step), ตัวหา eigen ของเมทริกซ์เต็ม และบันทึกอินพุตเพื่อเล่นซ้ำแบบ deterministic — [10](01-flight-physics/10-validation.md), [9](01-flight-physics/09-numerics.md) · T-V-07…T-V-10, T-N-12
+30. **P2 · M** ทดสอบ handling qualities แบบโดเมนเวลา (pulse, doublet, spiral, roll step), ตัวหา eigen ของเมทริกซ์เต็ม (ส่วนนี้ต้องเสร็จก่อนข้อ 20), บันทึกอินพุตเพื่อเล่นซ้ำแบบ deterministic, ชุด `test/numerics.test.mjs` และ `qToEuler` แบบทนทานที่ gimbal lock — [10](01-flight-physics/10-validation.md), [9](01-flight-physics/09-numerics.md) · T-V-07…T-V-10, T-N-01, T-N-03…T-N-05, T-N-08, T-N-10…T-N-15
 31. **P2 · L** ทำหางเป็นชิ้นส่วนแยก (downwash แบบหน่วงเวลา, ground effect ที่หาง, slipstream และ swirl ในสมการเดียว) และรวม dε/dα ของหัวข้อ 2 กับ 6 เป็นค่าเดียว — [2](01-flight-physics/02-interference.md), [6](01-flight-physics/06-controls.md) · T-U-03, T-U-04, T-U-14
 
 **ระยะ 4: เตรียมเครื่องบินโดยสารและงานเสริม (P2–P3)**
 
 32. **P2 · M** `TurbofanEngine` (N2, accel schedule, idle สามระดับ), thrust lapse ของ Bartel & Young และ reverser แบบ state machine ทำก่อนเพิ่มเครื่องบินโดยสารจากรอบ 3 — [5](01-flight-physics/05-turbofan.md) · T-F-01…T-F-14
-33. **P3 · M** รูปแบบระบบบังคับ `kind: 'feel'` (737) และ `kind: 'fbw'` (A320) ให้รอบ 3 เติมค่า — [6](01-flight-physics/06-controls.md)
+33. **P3 · M** รูปแบบระบบบังคับ `kind: 'feel'` (737) และ `kind: 'fbw'` (A320) ให้รอบ 3 เติมค่า พร้อม trim แบบ stabilizer (THS) ที่ไม่กินระยะ elevator — [6](01-flight-physics/06-controls.md), [12](01-flight-physics/12-other-sims.md) · T-S-13
 34. **P3 · L** Wake vortex จากเครื่องนำ (A320/737-800) และฉากฝึกตามหลังเครื่องบินโดยสาร — [8](01-flight-physics/08-wind.md) · T-W-15
 35. **P3 · L** Developed spin และฉากฝึกการกู้ spin (ป้าย "ค่าประมาณ") — [1](01-flight-physics/01-aero.md) · T-A-15
 36. **P3 · M** ตัวเลือก von Kármán และความปั่นป่วนระดับกลาง/สูงสำหรับเครื่องบินโดยสาร — [8](01-flight-physics/08-wind.md)
-37. **ยังไม่ทำ:** JSBSim-WASM ในหน้าเว็บจริง (ภาระ LGPL และยังไม่มี LICENSE) และ force feedback ผ่าน WebHID — [12](01-flight-physics/12-other-sims.md), [11](01-flight-physics/11-input.md)
+37. **P3 · M** โครง beta/reverse ของใบพัด (`reverseAvailable`, ground interlock, การจับคู่คันเร่งกับ β และขีดจำกัดรอบ reverse) ปิดไว้สำหรับเครื่องฝึกและเตรียมให้ ATR 72 — [3](01-flight-physics/03-propeller.md) · T-P-15
+38. **P3 · M** แบบจำลองความเร็วล้อพร้อม μ–κ และ antiskid แบบ slip control (set point 0.15) สำหรับเครื่องบินโดยสาร — [7](01-flight-physics/07-gear.md) · T-G-13 (ขยาย)
+39. **P3 · M** แบบสอบถาม Cooper–Harper ภาษาไทยในหน้า debrief โดยใช้เกณฑ์ desired และ adequate จาก `Evaluator` (ทดสอบด้วยมือ) — [10](01-flight-physics/10-validation.md)
+40. **ยังไม่ทำ:** JSBSim-WASM ในหน้าเว็บจริง (ภาระ LGPL และยังไม่มี LICENSE) และ force feedback ผ่าน WebHID — [12](01-flight-physics/12-other-sims.md), [11](01-flight-physics/11-input.md)

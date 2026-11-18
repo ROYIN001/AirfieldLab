@@ -7,7 +7,7 @@
 ## 6.0 สรุปสั้น
 - **ปัญหาใหญ่ที่สุดของโค้ดปัจจุบันคือ auto-trim ในโหมด DIRECT ลบ speed stability ทิ้ง** `trimDe += 0.25·q·dt` (20-flight.js:469) ทำงานเหมือนกฎ FBW แบบ neutral speed stability ผลวัดด้วย Node: ดึงคัน 15 % นาน 4 วินาทีแล้วปล่อย เครื่องค้างอยู่ที่ 80.5 kt (−15.3 % จาก 95 kt) และถ้าดันก็ค้างที่ 109.4 kt (+15.2 %) ซึ่งไม่ผ่าน 14 CFR 23.173(b) ที่ให้กลับมาภายใน ±10 % ของความเร็ว trim [C4] เมื่อตรึง trim ไว้ เครื่องกลับมาที่ 95.0 ± 2 kt เอง (ตาราง 6.1)
 - **ไม่มีแนวคิด "แรง" ในระบบเลย** คันบังคับสั่งมุม elevator ตรง ๆ (`c.de = −y·deUp + trimDe`) จึงไม่มี stick force per g ไม่มีแรงตามความเร็ว ไม่มี trim tab และ `air.nz` ถูกตั้งเป็น 0 ตลอด (20-flight.js:291) ทำให้วัด g ไม่ได้
-- **สิ่งที่ควรสร้าง:** โมเดล reversible ที่ใช้สมการ hinge moment $C_h = C_{h0}+C_{h\alpha}\alpha_t+C_{h\delta}\delta_e+C_{h\delta_t}\delta_t$ แล้วให้ผู้เล่นสั่ง **แรง** แทนตำแหน่ง (force-command) elevator จะลอยไปหาจุดสมดุล hinge moment เอง ต้นแบบใน Node (รันบนโมเดล 6-DOF ปัจจุบัน) ได้ stick force per g = 39.7 N/g (8.9 lbf/g) ทุกความเร็ว ปล่อยมือแล้วถือ 95 kt ได้ 94.8–95.0 kt และดึง 1 lbf ค้างได้ 88.1 kt ตรงกับที่คำนวณไว้ 87.6 kt
+- **สิ่งที่ควรสร้าง:** โมเดล reversible ที่ใช้สมการ hinge moment $C_h = C_{h0}+C_{h\alpha}\alpha_t+C_{h\delta}\delta_e+C_{h\delta_t}\delta_t$ แล้วให้ผู้เล่นสั่ง **แรง** แทนตำแหน่ง (force-command) elevator จะลอยไปหาจุดสมดุล hinge moment เอง ต้นแบบใน Node (รันบนโมเดล 6-DOF ปัจจุบัน) ได้ stick force per g = 39.7 N/g (8.9 lbf/g, ค่าประมาณเพราะสัมประสิทธิ์ hinge moment เป็นค่าประมาณ) ทุกความเร็ว ปล่อยมือแล้วถือ 95 kt ได้ 94.8–95.0 kt และดึง 1 lbf ค้างได้ 88.1 kt ตรงกับที่คำนวณไว้ 87.6 kt
 - **ค่าที่ได้อยู่ในกรอบข้อกำหนด:** 8.9 lbf/g อยู่ในช่วง Level 1 ของ MIL-F-8785C สำหรับ centre stick (4.2–28 lbf/g เมื่อ $n_L$ = 6) [C12] แรงดึงถึง 6 g = 44.6 lbf ผ่านเกณฑ์ 23.155 (≥ 35 lbf) [C2] และไม่เกิน 60 lbf ตาม 23.143 [C1] ส่วนความชันแรงตามความเร็ว 0.14 lbf/kt ที่ 95 kt ใกล้กับ Cessna 150/152 ที่วัดจริง (0.05–0.38 lbf/kt) [C20]
 - **Trim และ auto-trim:** เปลี่ยน `trimDe` เป็นสถานะ trim tab ที่ปุ่มเลื่อนได้ด้วยอัตราจำกัด (เสนอ 1.0°/s ตอนแฟลปลง 0.5°/s ตอนแฟลปเก็บ ≈ ลดแรงได้ราว 1 lbf/s) ส่วน auto-trim ให้มีเฉพาะใน ASSIST หรือเป็นตัวเลือกสำหรับมือใหม่ โดยให้ไล่ "แรงเสมือน" เข้าหาศูนย์ ไม่ใช่ไล่ pitch rate
 - **เส้นทางควบคุมเร็วพอ:** equivalent time delay จากคีย์บอร์ดถึง pitch rate วัดได้ 0.042 s (actuator อย่างเดียว 0.025 s) ต่ำกว่าเกณฑ์ Level 1 = 0.10 s [C14] แต่ gamepad บนเว็บไม่มี force feedback [C28] จึงต้องใช้แถบแสดงแรง (มีขีด 10 lbf ใช้ต่อเนื่อง และ 60 lbf ใช้ชั่วคราว) แทนความรู้สึกที่มือ
@@ -287,56 +287,56 @@ class ControlAxis {
 ```json
 {"controls": {
  "pitch": {
-  "architecture": {"v":{"kind":"reversible","input":"force"},"u":"-","scope":"aircraft","src":["C23","C15"],"conf":"สูง","est":true,"note":"เครื่องฝึก: กลไก reversible + trim tab; 737 ใช้ kind feel, A320 ใช้ kind fbw"},
-  "S_e": {"v":1.1,"u":"m2","scope":"aircraft","src":["C17"],"conf":"ต่ำ","est":true,"note":"พื้นที่ elevator หลังบานพับ ประมาณจาก S_h 2.96 m2 ที่ถอยจาก CLde; เทียบ KU-FRL-351: elevator 15.46 ft2 = 1.44 m2 (เครื่อง A) และ 26.39 ft2 = 2.45 m2 (เครื่อง C), โมเดลพื้นบังคับ 12 ft2 = 1.11 m2 (Table 2.1)"},
-  "c_e": {"v":0.3,"u":"m","scope":"aircraft","src":["C17"],"conf":"ต่ำ","est":true,"note":"คอร์ดเฉลี่ยหลังบานพับ"},
-  "gearing": {"v":2.4,"u":"rad/m","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"คันดึงสุด 160 mm = -22 deg, ดันสุด 109 mm = +15 deg"},
-  "eta_t": {"v":0.9,"u":"-","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"อัตราส่วนความดันพลวัตที่หาง"},
-  "a_t": {"v":3.9,"u":"1/rad","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"ความชันแรงยกหาง AR ราว 4.5"},
-  "tau_e": {"v":0.55,"u":"-","scope":"aircraft","src":["C16"],"conf":"กลาง","est":true,"note":"elevator effectiveness; NACA 721 ให้ 0.67 ที่ cf/c 0.40 (ไม่รวมการสูญเสียจริง)"},
-  "l_t": {"v":5.42,"u":"m","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"ถอยจาก -(Cmde/CLde)*cbar ของ AC = 1.15/0.35*1.65"},
-  "deda": {"v":0.36,"u":"-","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"ถอยจาก Cmadot/Cmq ของ AC"},
-  "Ch0": {"v":0,"u":"-","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"รวม i_t - eps0; ปรับร่วมกับ tab"},
-  "Ch_alpha": {"v":-0.1146,"u":"1/rad","scope":"aircraft","src":["C15","C17"],"conf":"ต่ำ","est":true,"note":"-0.0020/deg; plain elevator -0.0025 ถึง -0.003/deg"},
-  "Ch_delta": {"v":-0.3438,"u":"1/rad","scope":"aircraft","src":["C15","C16","C17"],"conf":"ต่ำ","est":true,"note":"-0.0060/deg; plain -0.007 ถึง -0.0085/deg ลดด้วย balance"},
-  "Ch_tab": {"v":-0.2005,"u":"1/rad","scope":"aircraft","src":["C16"],"conf":"ต่ำ","est":true,"note":"-0.0035/deg ลำดับเดียวกับตัวอย่าง NACA 721 (-0.0032/deg)"},
-  "tab_max": {"v":20,"u":"deg","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ต้องใช้ +12.9 (71 kt แฟลปลง) ถึง -4.7 (230 kt) เผื่อ CG"},
-  "trim_rate_flaps_down": {"v":1,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"tab; ≈ 5.6 kt/s ของความเร็ว trim ที่ 95 kt, ลดแรง ≈ 0.8 lbf/s"},
-  "trim_rate_flaps_up": {"v":0.5,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"tab; ≈ 11 kt/s ที่ 150 kt, ลดแรง ≈ 1.0 lbf/s"},
-  "breakout": {"v":4.45,"u":"N","scope":"aircraft","src":["C19","C20"],"conf":"ต่ำ","est":true,"note":"1 lbf; เครื่องที่ Bromfield & Gratton ทดสอบวัดได้ 2.2–4.4 N ด้านดึง (C150M 3.3–4.4 N), NASA TN D-779 breakout ราว 1 lbf"},
-  "friction": {"v":4.45,"u":"N","scope":"aircraft","src":["C18","C19"],"conf":"ต่ำ","est":true,"note":"Coulomb; GA วัดได้ถึง ~6 lbf (elevator) จึงเป็นค่าเบา"},
-  "centring_spring": {"v":{"Kc":60,"qFade":400},"u":"N/rad, Pa","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ใช้เฉพาะ qbar ต่ำ ไม่ให้คันห้อยบนพื้น"},
-  "float_lag": {"v":0.05,"u":"s","scope":"sim","src":["C14"],"conf":"กลาง","est":true,"note":"lag ของ stick-free equilibrium; รักษางบ time delay Level 1"},
+  "architecture": {"v":{"kind":"reversible","input":"force"},"u":"-","scope":"aircraft","src":["C23","C15"],"conf":"สูง","est":true,"note":"ค่าประมาณ: เครื่องฝึก: กลไก reversible + trim tab; 737 ใช้ kind feel, A320 ใช้ kind fbw"},
+  "S_e": {"v":1.1,"u":"m2","scope":"aircraft","src":["C17"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: พื้นที่ elevator หลังบานพับ ประมาณจาก S_h 2.96 m2 ที่ถอยจาก CLde; เทียบ KU-FRL-351: elevator 15.46 ft2 = 1.44 m2 (เครื่อง A) และ 26.39 ft2 = 2.45 m2 (เครื่อง C), โมเดลพื้นบังคับ 12 ft2 = 1.11 m2 (Table 2.1)"},
+  "c_e": {"v":0.3,"u":"m","scope":"aircraft","src":["C17"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: คอร์ดเฉลี่ยหลังบานพับ"},
+  "gearing": {"v":2.4,"u":"rad/m","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: คันดึงสุด 160 mm = -22 deg, ดันสุด 109 mm = +15 deg"},
+  "eta_t": {"v":0.9,"u":"-","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"ค่าประมาณ: อัตราส่วนความดันพลวัตที่หาง"},
+  "a_t": {"v":3.9,"u":"1/rad","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"ค่าประมาณ: ความชันแรงยกหาง AR ราว 4.5"},
+  "tau_e": {"v":0.55,"u":"-","scope":"aircraft","src":["C16"],"conf":"กลาง","est":true,"note":"ค่าประมาณ: elevator effectiveness; NACA 721 ให้ 0.67 ที่ cf/c 0.40 (ไม่รวมการสูญเสียจริง)"},
+  "l_t": {"v":5.42,"u":"m","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"ค่าประมาณ: ถอยจาก -(Cmde/CLde)*cbar ของ AC = 1.15/0.35*1.65"},
+  "deda": {"v":0.36,"u":"-","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"ค่าประมาณ: ถอยจาก Cmadot/Cmq ของ AC"},
+  "Ch0": {"v":0,"u":"-","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: รวม i_t - eps0; ปรับร่วมกับ tab"},
+  "Ch_alpha": {"v":-0.1146,"u":"1/rad","scope":"aircraft","src":["C15","C17"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: -0.0020/deg; plain elevator -0.0025 ถึง -0.003/deg"},
+  "Ch_delta": {"v":-0.3438,"u":"1/rad","scope":"aircraft","src":["C15","C16","C17"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: -0.0060/deg; plain -0.007 ถึง -0.0085/deg ลดด้วย balance"},
+  "Ch_tab": {"v":-0.2005,"u":"1/rad","scope":"aircraft","src":["C16"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: -0.0035/deg ลำดับเดียวกับตัวอย่าง NACA 721 (-0.0032/deg)"},
+  "tab_max": {"v":20,"u":"deg","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ต้องใช้ +12.9 (71 kt แฟลปลง) ถึง -4.7 (230 kt) เผื่อ CG"},
+  "trim_rate_flaps_down": {"v":1,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: tab; ≈ 5.6 kt/s ของความเร็ว trim ที่ 95 kt, ลดแรง ≈ 0.8 lbf/s"},
+  "trim_rate_flaps_up": {"v":0.5,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: tab; ≈ 11 kt/s ที่ 150 kt, ลดแรง ≈ 1.0 lbf/s"},
+  "breakout": {"v":4.45,"u":"N","scope":"aircraft","src":["C19","C20"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: 1 lbf; เครื่องที่ Bromfield & Gratton ทดสอบวัดได้ 2.2–4.4 N ด้านดึง (C150M 3.3–4.4 N), NASA TN D-779 breakout ราว 1 lbf"},
+  "friction": {"v":4.45,"u":"N","scope":"aircraft","src":["C18","C19"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: Coulomb; GA วัดได้ถึง ~6 lbf (elevator) จึงเป็นค่าเบา"},
+  "centring_spring": {"v":{"Kc":60,"qFade":400},"u":"N/rad, Pa","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ใช้เฉพาะ qbar ต่ำ ไม่ให้คันห้อยบนพื้น"},
+  "float_lag": {"v":0.05,"u":"s","scope":"sim","src":["C14"],"conf":"กลาง","est":true,"note":"ค่าประมาณ: lag ของ stick-free equilibrium; รักษางบ time delay Level 1"},
   "stops": {"v":{"teu":22,"ted":15},"u":"deg","scope":"aircraft","src":[],"conf":"กลาง","est":false,"note":"ค่าเดิม AC.deUp/deDn"},
-  "rate_limit": {"v":70,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าเดิม; กลไกจริงจำกัดด้วยมือนักบิน"},
-  "derived_check": {"v":{"Fs_per_g_N":39.7,"grad_95kt_N_per_kt":0.63,"SM_fixed":0.15,"SM_free":0.099,"free_elevator_factor":0.817},"u":"mixed","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"ผลคำนวณ c6_hinge.mjs สำหรับยืนยันการ implement"}
+  "rate_limit": {"v":70,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ค่าเดิม; กลไกจริงจำกัดด้วยมือนักบิน"},
+  "derived_check": {"v":{"Fs_per_g_N":39.7,"grad_95kt_N_per_kt":0.63,"SM_fixed":0.15,"SM_free":0.099,"free_elevator_factor":0.817},"u":"mixed","scope":"aircraft","src":[],"conf":"กลาง","est":true,"note":"ค่าประมาณ: ผลคำนวณ c6_hinge.mjs สำหรับยืนยันการ implement"}
  },
  "roll": {
-  "architecture": {"v":{"kind":"reversible","input":"force"},"u":"-","scope":"aircraft","src":["C31"],"conf":"สูง","est":true,"note":"ATR 72 aileron ก็เป็นแบบนี้ (geared balance tab)"},
-  "S_a_each": {"v":0.65,"u":"m2","scope":"aircraft","src":["C17"],"conf":"ต่ำ","est":true,"note":"KU-FRL-351: 0.54–0.65 m2 ต่อข้างในเครื่องเล็ก"},
-  "c_a": {"v":0.25,"u":"m","scope":"aircraft","src":["C17"],"conf":"ต่ำ","est":true,"note":""},
-  "gearing": {"v":3.88,"u":"rad/m","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"±20 deg ต่อ stick ±90 mm"},
-  "Ch_delta": {"v":-0.1719,"u":"1/rad","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"-0.0030/deg (Frise/balance) ให้ 24.9 lbf ที่ aileron เต็ม 95 kt แต่ 62 lbf ที่ 150 kt (ρ 1.225, c6_misc.mjs) ดังนั้นด้วย F_full 30 lbf จะได้ aileron สูงสุดราว 9.7 deg ที่ 150 kt ซึ่งเป็นข้อจำกัดเชิงแรงที่สมจริง"},
-  "Ch_alpha": {"v":-0.0573,"u":"1/rad","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"-0.0010/deg; ผลรวมสองข้างหักล้างกันเมื่อสมมาตร"},
-  "tab_max": {"v":10,"u":"deg","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"aileron trim เพื่อแรงบิดเครื่อง (6.4 lbf ที่ 80 kt กำลังเต็ม > 5 lbf)"},
-  "trim_rate": {"v":1,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":""},
-  "breakout": {"v":3,"u":"N","scope":"aircraft","src":["C18","C19"],"conf":"ต่ำ","est":true,"note":"GA friction aileron > 2 lbf"},
+  "architecture": {"v":{"kind":"reversible","input":"force"},"u":"-","scope":"aircraft","src":["C31"],"conf":"สูง","est":true,"note":"ค่าประมาณ: ATR 72 aileron ก็เป็นแบบนี้ (geared balance tab)"},
+  "S_a_each": {"v":0.65,"u":"m2","scope":"aircraft","src":["C17"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: KU-FRL-351: 0.54–0.65 m2 ต่อข้างในเครื่องเล็ก"},
+  "c_a": {"v":0.25,"u":"m","scope":"aircraft","src":["C17"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+  "gearing": {"v":3.88,"u":"rad/m","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ±20 deg ต่อ stick ±90 mm"},
+  "Ch_delta": {"v":-0.1719,"u":"1/rad","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: -0.0030/deg (Frise/balance) ให้ 24.9 lbf ที่ aileron เต็ม 95 kt แต่ 62 lbf ที่ 150 kt (ρ 1.225, c6_misc.mjs) ดังนั้นด้วย F_full 30 lbf จะได้ aileron สูงสุดราว 9.7 deg ที่ 150 kt ซึ่งเป็นข้อจำกัดเชิงแรงที่สมจริง"},
+  "Ch_alpha": {"v":-0.0573,"u":"1/rad","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: -0.0010/deg; ผลรวมสองข้างหักล้างกันเมื่อสมมาตร"},
+  "tab_max": {"v":10,"u":"deg","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: aileron trim เพื่อแรงบิดเครื่อง (6.4 lbf ที่ 80 kt กำลังเต็ม > 5 lbf)"},
+  "trim_rate": {"v":1,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+  "breakout": {"v":3,"u":"N","scope":"aircraft","src":["C18","C19"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: GA friction aileron > 2 lbf"},
   "stops": {"v":{"max":20},"u":"deg","scope":"aircraft","src":[],"conf":"กลาง","est":false,"note":"ค่าเดิม AC.daMax"},
-  "rate_limit": {"v":80,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าเดิม"}
+  "rate_limit": {"v":80,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ค่าเดิม"}
  },
  "yaw": {
-  "architecture": {"v":{"kind":"reversible","input":"force"},"u":"-","scope":"aircraft","src":["C23"],"conf":"สูง","est":true,"note":"737 rudder เป็น kind feel (feel and centering unit) [C25]"},
-  "S_r": {"v":0.85,"u":"m2","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":""},
-  "c_r": {"v":0.32,"u":"m","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":""},
-  "gearing": {"v":4.85,"u":"rad/m","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"±25 deg ต่อ pedal ±90 mm"},
-  "Ch_delta": {"v":-0.3438,"u":"1/rad","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"-0.0060/deg; 2.6 lbf/deg ที่ 95 kt"},
-  "Ch_beta": {"v":-0.1146,"u":"1/rad","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"-0.0020/deg ใช้ beta ที่หางดิ่ง"},
-  "slipstream_q_ratio": {"v":[1,2],"u":"-","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ช่วงของ qbar_v/qbar ตอนกำลังเต็ม รอผลหัวข้อ slipstream"},
-  "tab_max": {"v":15,"u":"deg","scope":"aircraft","src":["C18"],"conf":"ต่ำ","est":true,"note":"rudder trim สำหรับ P-factor/swirl"},
-  "trim_rate": {"v":1.5,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":""},
-  "breakout": {"v":13.3,"u":"N","scope":"aircraft","src":["C14"],"conf":"กลาง","est":true,"note":"3 lbf อยู่ในช่วง 1–7 lbf ของ MIL-F-8785 Class II-C"},
+  "architecture": {"v":{"kind":"reversible","input":"force"},"u":"-","scope":"aircraft","src":["C23"],"conf":"สูง","est":true,"note":"ค่าประมาณ: 737 rudder เป็น kind feel (feel and centering unit) [C25]"},
+  "S_r": {"v":0.85,"u":"m2","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+  "c_r": {"v":0.32,"u":"m","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+  "gearing": {"v":4.85,"u":"rad/m","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ±25 deg ต่อ pedal ±90 mm"},
+  "Ch_delta": {"v":-0.3438,"u":"1/rad","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: -0.0060/deg; 2.6 lbf/deg ที่ 95 kt"},
+  "Ch_beta": {"v":-0.1146,"u":"1/rad","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: -0.0020/deg ใช้ beta ที่หางดิ่ง"},
+  "slipstream_q_ratio": {"v":[1,2],"u":"-","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ช่วงของ qbar_v/qbar ตอนกำลังเต็ม รอผลหัวข้อ slipstream"},
+  "tab_max": {"v":15,"u":"deg","scope":"aircraft","src":["C18"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: rudder trim สำหรับ P-factor/swirl"},
+  "trim_rate": {"v":1.5,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+  "breakout": {"v":13.3,"u":"N","scope":"aircraft","src":["C14"],"conf":"กลาง","est":true,"note":"ค่าประมาณ: 3 lbf อยู่ในช่วง 1–7 lbf ของ MIL-F-8785 Class II-C"},
   "stops": {"v":{"max":25},"u":"deg","scope":"aircraft","src":[],"conf":"กลาง","est":false,"note":"ค่าเดิม AC.drMax"},
-  "rate_limit": {"v":60,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าเดิม"}
+  "rate_limit": {"v":60,"u":"deg/s","scope":"aircraft","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: ค่าเดิม"}
  },
  "reference_types": {
   "b737_rudder_rate": {"v":{"dual":66,"primaryOnly":33},"u":"deg/s","scope":"aircraft","src":["C25"],"conf":"กลาง","est":false,"note":"737-300 main rudder PCU"},
@@ -359,14 +359,14 @@ class ControlAxis {
   "pedal_breakout": {"v":{"classIIC":[1,7],"classIIL_III":[1,14]},"u":"lbf","scope":"sim","src":["C14"],"conf":"กลาง","est":false,"note":"II-C และ II-L จาก MIL-F-8785(ASG) 3.2.1; Class III จาก MIL-F-8785B 3.5.2.1 (Level 1–2, ค่าบน x2 ที่ Level 3); อ้างผ่าน DOT/FAA/AR-07/47 §10.2"}
  },
  "input": {
-  "force_full_scale": {"v":{"pitch":267,"roll":133,"yaw":667},"u":"N","scope":"sim","src":["C1"],"conf":"กลาง","est":true,"note":"โปรไฟล์สมจริง = ขีดชั่วคราว 23.143; โปรไฟล์ง่ายใช้ครึ่งหนึ่ง"},
-  "deadzone_gamepad": {"v":0.08,"u":"-","scope":"sim","src":["C28"],"conf":"ต่ำ","est":true,"note":"สเปกไม่กำหนด dead zone"},
-  "deadzone_touch": {"v":0.04,"u":"-","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":""},
-  "expo": {"v":0.5,"u":"-","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"f(u) = (1-e)u + e u^3"},
-  "keyboard_force_ramp": {"v":{"up":45,"release":180,"max":89},"u":"N/s, N/s, N","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"กดค้าง ≈ 10 lbf/s ถึง 20 lbf"},
-  "auto_trim_ref_force": {"v":11.1,"u":"N","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"2.5 lbf; แรงที่ auto-trim ใช้อัตราเต็ม ให้ time constant 3.1 s ที่ 95 kt (1.0 deg/s) และ 2.5 s ที่ 150 kt (0.5 deg/s) จาก c6_rev_check.mjs; ต้องมากกว่า breakout 4.45 N ไม่เช่นนั้นย่านเชิงเส้นหายไป"},
+  "force_full_scale": {"v":{"pitch":267,"roll":133,"yaw":667},"u":"N","scope":"sim","src":["C1"],"conf":"กลาง","est":true,"note":"ค่าประมาณ: โปรไฟล์สมจริง = ขีดชั่วคราว 23.143; โปรไฟล์ง่ายใช้ครึ่งหนึ่ง"},
+  "deadzone_gamepad": {"v":0.08,"u":"-","scope":"sim","src":["C28"],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: สเปกไม่กำหนด dead zone"},
+  "deadzone_touch": {"v":0.04,"u":"-","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ"},
+  "expo": {"v":0.5,"u":"-","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: f(u) = (1-e)u + e u^3"},
+  "keyboard_force_ramp": {"v":{"up":45,"release":180,"max":89},"u":"N/s, N/s, N","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: กดค้าง ≈ 10 lbf/s ถึง 20 lbf"},
+  "auto_trim_ref_force": {"v":11.1,"u":"N","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: 2.5 lbf; แรงที่ auto-trim ใช้อัตราเต็ม ให้ time constant 3.1 s ที่ 95 kt (1.0 deg/s) และ 2.5 s ที่ 150 kt (0.5 deg/s) จาก c6_rev_check.mjs; ต้องมากกว่า breakout 4.45 N ไม่เช่นนั้นย่านเชิงเส้นหายไป"},
   "force_display_marks": {"v":{"pitch":[10,40,60],"roll":[5,30],"yaw":[20,150]},"u":"lbf","scope":"sim","src":["C1","C4"],"conf":"สูง","est":false,"note":"ขีดบนแถบแสดงแรง"},
-  "trim_alert": {"v":{"force_lbf":2,"hold_s":3},"u":"lbf, s","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"แสดง \"ต้อง trim\""}
+  "trim_alert": {"v":{"force_lbf":2,"hold_s":3},"u":"lbf, s","scope":"sim","src":[],"conf":"ต่ำ","est":true,"note":"ค่าประมาณ: แสดง \"ต้อง trim\""}
  }
 }}
 ```

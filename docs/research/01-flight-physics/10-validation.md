@@ -52,7 +52,7 @@
 ## 10.2 Objective tests ของอุปกรณ์ฝึกบินจำลอง (Part 60, ICAO 9625, CS-FSTD(A))
 
 **กรอบกฎหมาย**
-- 14 CFR Part 60 Appendix A ใช้กับ Full Flight Simulator ระดับ A–D ทุกระดับต้องผ่าน objective tests ใน Attachment 2, Table A2A ด้วยการเทียบผลซิมกับข้อมูลบินจริงตาม tolerance ที่กำหนด [V1]
+- 14 CFR Part 60 Appendix A ใช้กับ Full Flight Simulator ระดับ A–D ทุกระดับต้องผ่าน objective tests ใน Attachment 2, Table A2A ด้วยการเทียบผลซิมกับข้อมูลบินจริงตาม tolerance ที่กำหนด [V1] ผลการทดสอบเหล่านี้พร้อมข้อมูลอ้างอิงรวมอยู่ในเอกสาร Qualification Test Guide (QTG) ซึ่งเป็นเอกสารหลักที่ผู้ประเมินใช้ ชุดทดสอบใน 10.7 จึงทำหน้าที่คล้าย QTG แบบอัตโนมัติของเครื่องเรา
   - ใน eCFR ฉบับปัจจุบัน ตัว Table A2A เป็นภาพ (ER09DE22.017–.050; รหัสภาพยังไม่ยืนยันในรอบตรวจ) ไม่ใช่ข้อความ [V1] ตารางนี้ถูกแก้ล่าสุดโดย "Miscellaneous Amendments" ฉบับ 9 ธ.ค. 2022 [V23]
   - ตัวเลข tolerance ที่ยกมาในหัวข้อนี้จึงคัดจากฉบับถอดความของ RisingUp [V2] ซึ่งเป็นข้อความ CFR ฉบับก่อนการแก้ไขปี 2016 (แถว stall ยังเป็นแบบเก่า) และเทียบกับ Appendix B ใน CFR ฉบับปี 2014 ของ govinfo ซึ่งเป็นแหล่งปฐมภูมิ [V3]
   - ค่า phugoid, climb, stall warning และ longitudinal trim ตรงกันทั้งสองแหล่ง
@@ -459,8 +459,8 @@ $$
 {
   "validation": {
     "classification": {
-      "hqClassCategory": {"v": {"class": "I", "approachLanding": "C", "cruiseClimb": "B", "takeoff": "C"}, "u": "-", "scope": "aircraft", "src": ["V7", "V10"], "conf": "กลาง", "est": true, "note": "เครื่องฝึกเบาเครื่องยนต์เดียวจัดเป็น Class I (small, light airplanes); ช่วงลงจอดเป็น Category C; ถ้าต่อไปทำผาดโผนแบบเครื่องฝึกนำเข้า Class IV ให้ตรวจเพิ่มด้วยเกณฑ์ Class IV"},
-      "fstdAnalogue": {"v": {"faa": "FTD Level 5 (generic aero) ถึง Level 6", "easa": "FNPT/BITD (class-specific modelling)"}, "u": "-", "scope": "sim", "src": ["V3", "V5"], "conf": "กลาง", "est": true, "note": "AirfieldLab ไม่ได้ขอรับรอง ใช้ระดับเหล่านี้เป็นกรอบเทียบความลึกของการตรวจเท่านั้น"}
+      "hqClassCategory": {"v": {"class": "I", "approachLanding": "C", "cruiseClimb": "B", "takeoff": "C"}, "u": "-", "scope": "aircraft", "src": ["V7", "V10"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: เครื่องฝึกเบาเครื่องยนต์เดียวจัดเป็น Class I (small, light airplanes); ช่วงลงจอดเป็น Category C; ถ้าต่อไปทำผาดโผนแบบเครื่องฝึกนำเข้า Class IV ให้ตรวจเพิ่มด้วยเกณฑ์ Class IV"},
+      "fstdAnalogue": {"v": {"faa": "FTD Level 5 (generic aero) ถึง Level 6", "easa": "FNPT/BITD (class-specific modelling)"}, "u": "-", "scope": "sim", "src": ["V3", "V5"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: AirfieldLab ไม่ได้ขอรับรอง ใช้ระดับเหล่านี้เป็นกรอบเทียบความลึกของการตรวจเท่านั้น"}
     },
     "hqLimits": {
       "shortPeriodZeta_catAC": {"v": {"L1": [0.35, 1.30], "L2": [0.25, 2.00], "L3": [0.15, null]}, "u": "-", "scope": "sim", "src": ["V7", "V10"], "conf": "สูง", "est": false, "note": "MIL-F-8785C Table IV ตามที่ NASA grant report ถอดไว้; L3 ไม่มีขอบบนที่อ่านได้"},
@@ -500,19 +500,19 @@ $$
       "v50MinFactor_singleEngine": {"v": 1.2, "u": "× VS1", "scope": "aircraft", "src": ["V17"], "conf": "สูง", "est": false, "note": "ความเร็วที่ 50 ft ของเครื่องยนต์เดียวไม่ต่ำกว่า 1.2 VS1 (Part 23 เดิม)"},
       "takeoffRunsRecommended": {"v": 6, "u": "runs", "scope": "sim", "src": ["V17"], "conf": "สูง", "est": false, "note": "AC 23-8C: Six acceptable runs สำหรับหาช่วงเร่งบนพื้นในวิธี segment technique; ในซิมใช้ 1 รันลมสงบ + กรณีลมหน้า/หลัง"},
       "testWindMax": {"v": {"kt": 10, "fracVS1": 0.12}, "u": "kt / -", "scope": "sim", "src": ["V17"], "conf": "สูง", "est": false, "note": "AC 23-8C Table 1 สำหรับการทดสอบ takeoff และ landing: ไม่เกินราว 12% VS1 หรือ 10 kt ค่าที่ต่ำกว่า; ในซิมตั้งลมสงบ"},
-      "linearisation": {"v": {"eps_vel_mps": 1e-3, "eps_rate_rads": 1e-5, "eps_angle_rad": 1e-5, "adot": "quasi-steady"}, "u": "-", "scope": "sim", "src": ["V19"], "conf": "สูง", "est": true, "note": "central difference; ผลตรงกับ ml-matrix 12-state ของ section 9"}
+      "linearisation": {"v": {"eps_vel_mps": 1e-3, "eps_rate_rads": 1e-5, "eps_angle_rad": 1e-5, "adot": "quasi-steady"}, "u": "-", "scope": "sim", "src": ["V19"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: central difference; ผลตรงกับ ml-matrix 12-state ของ section 9"}
     },
     "typicalModes": {
-      "c172x_jsbsim_100kcas_3000ft": {"v": {"sp_wn": 6.50, "sp_zeta": 0.68, "ph_T_s": 32.0, "ph_zeta": 0.13, "dr_wn": 2.25, "dr_zeta": 0.16, "tauR_s": 0.20, "spiral_tau_s": 46}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V15"], "conf": "ต่ำ", "est": true, "note": "คำนวณจากโมเดลเปิด JSBSim c172x ไม่ใช่ข้อมูลบินจริง; spiral เสถียร"},
-      "c172x_jsbsim_65kcas_flaps30": {"v": {"sp_wn": 4.38, "sp_zeta": 0.67, "ph_T_s": 19.7, "ph_zeta": 0.12, "dr_wn": 1.54, "dr_zeta": 0.16, "tauR_s": 0.30, "spiral_tau_s": 64}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V15"], "conf": "ต่ำ", "est": true, "note": "โมเดลเปิด; 1000 ft"},
-      "b737_jsbsim_140kcas_landing": {"v": {"sp_wn": 1.05, "sp_zeta": 0.54, "ph_T_s": 37.2, "ph_zeta": 0.066, "dr_wn": 1.09, "dr_zeta": 0.24, "tauR_s": 0.98, "spiral_tau_s": 14.5}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V15"], "conf": "ต่ำ", "est": true, "note": "โมเดลทั่วไปของ JSBSim ไม่ได้ผ่าน validation; 1500 ft gear down flaps เต็ม"},
+      "c172x_jsbsim_100kcas_3000ft": {"v": {"sp_wn": 6.50, "sp_zeta": 0.68, "ph_T_s": 32.0, "ph_zeta": 0.13, "dr_wn": 2.25, "dr_zeta": 0.16, "tauR_s": 0.20, "spiral_tau_s": 46}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V15"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: คำนวณจากโมเดลเปิด JSBSim c172x ไม่ใช่ข้อมูลบินจริง; spiral เสถียร"},
+      "c172x_jsbsim_65kcas_flaps30": {"v": {"sp_wn": 4.38, "sp_zeta": 0.67, "ph_T_s": 19.7, "ph_zeta": 0.12, "dr_wn": 1.54, "dr_zeta": 0.16, "tauR_s": 0.30, "spiral_tau_s": 64}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V15"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: โมเดลเปิด; 1000 ft"},
+      "b737_jsbsim_140kcas_landing": {"v": {"sp_wn": 1.05, "sp_zeta": 0.54, "ph_T_s": 37.2, "ph_zeta": 0.066, "dr_wn": 1.09, "dr_zeta": 0.24, "tauR_s": 0.98, "spiral_tau_s": 14.5}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V15"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: โมเดลทั่วไปของ JSBSim ไม่ได้ผ่าน validation; 1500 ft gear down flaps เต็ม"},
       "b747_M08_40000ft": {"v": {"sp_wn": 0.962, "sp_zeta": 0.387, "ph_wn": 0.0673, "ph_zeta": 0.0489}, "u": "rad/s, -", "scope": "aircraft", "src": ["V14"], "conf": "กลาง", "est": false, "note": "เอกสารสอน MIT OCW (ทุติยภูมิ): ตัวเลขโหมดจาก Lecture 7, สภาวะ M 0.8 / 40,000 ft จาก Lecture 9 ซึ่งระบุข้อมูลจาก Etkin และ Reid; คาบ phugoid 93.5 s เป็นค่าประมาณจาก ωn และ ζ"},
       "gaFlightTest_dutchRoll": {"v": {"T_s": [2, 4], "t_half_max_s": 2}, "u": "s", "scope": "aircraft", "src": ["V13"], "conf": "กลาง", "est": false, "note": "เครื่อง GA ที่ดีที่สุดในการทดสอบของ NASA 1966"}
     },
     "currentModel": {
-      "approach95": {"v": {"sp_wn": 2.221, "sp_zeta": 0.578, "CAP": 0.951, "nAlpha": 5.19, "ph_T_s": 25.5, "ph_zeta": 0.115, "dr_wn": 1.611, "dr_zeta": 0.139, "dr_zetaWn": 0.225, "tauR_s": 0.218, "spiral_t_half_s": 36.2, "t30_s": 0.80}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V19"], "conf": "สูง", "est": true, "note": "IAS 95 kt flaps 1 gear down 300 m γ −3°; α̇ แบบ quasi-steady"},
-      "cruise155": {"v": {"sp_wn": 3.593, "sp_zeta": 0.560, "CAP": 0.935, "nAlpha": 13.81, "ph_T_s": 42.5, "ph_zeta": 0.073, "dr_wn": 2.525, "dr_zeta": 0.145, "dr_zetaWn": 0.366, "tauR_s": 0.138, "spiral_t_half_s": 86.6, "t30_s": 0.53}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V19"], "conf": "สูง", "est": true, "note": "IAS 155 kt clean 3000 ft ระดับ"},
-      "performance": {"v": {"VSR_flaps1_kt": 71.9, "VCLmax_flaps1_kt": 70.0, "VSR_clean_kt": 79.6, "Vy_SL_kt": 128, "ROCmax_SL_fpm": 3225, "glideLD_zeroThrust": 16.5, "glideLD_idle": 21.7, "TO_groundRoll_flaps0_m": 358, "TO_50ft_flaps0_m": 590, "LDG_50ft_maxBrake_m": 714}, "u": "kt, fpm, -, m", "scope": "aircraft", "src": ["V19"], "conf": "สูง", "est": true, "note": "2250 kg ISA ลมสงบ; ตัวเลข regression ไม่ใช่ค่าจริง"}
+      "approach95": {"v": {"sp_wn": 2.221, "sp_zeta": 0.578, "CAP": 0.951, "nAlpha": 5.19, "ph_T_s": 25.5, "ph_zeta": 0.115, "dr_wn": 1.611, "dr_zeta": 0.139, "dr_zetaWn": 0.225, "tauR_s": 0.218, "spiral_t_half_s": 36.2, "t30_s": 0.80}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V19"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: IAS 95 kt flaps 1 gear down 300 m γ −3°; α̇ แบบ quasi-steady"},
+      "cruise155": {"v": {"sp_wn": 3.593, "sp_zeta": 0.560, "CAP": 0.935, "nAlpha": 13.81, "ph_T_s": 42.5, "ph_zeta": 0.073, "dr_wn": 2.525, "dr_zeta": 0.145, "dr_zetaWn": 0.366, "tauR_s": 0.138, "spiral_t_half_s": 86.6, "t30_s": 0.53}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V19"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: IAS 155 kt clean 3000 ft ระดับ"},
+      "performance": {"v": {"VSR_flaps1_kt": 71.9, "VCLmax_flaps1_kt": 70.0, "VSR_clean_kt": 79.6, "Vy_SL_kt": 128, "ROCmax_SL_fpm": 3225, "glideLD_zeroThrust": 16.5, "glideLD_idle": 21.7, "TO_groundRoll_flaps0_m": 358, "TO_50ft_flaps0_m": 590, "LDG_50ft_maxBrake_m": 714}, "u": "kt, fpm, -, m", "scope": "aircraft", "src": ["V19"], "conf": "สูง", "est": true, "note": "ค่าประมาณ: 2250 kg ISA ลมสงบ; ตัวเลข regression ไม่ใช่ค่าจริง"}
     }
   }
 }

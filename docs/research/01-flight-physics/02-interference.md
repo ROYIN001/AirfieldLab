@@ -6,7 +6,7 @@
 
 ## 2.0 สรุปสั้น
 - **Downwash lag ใช้ได้แล้ว แต่ α̇ ช้า** `CLadot` 1.6 และ `Cmadot` −4.5 อยู่ในช่วงที่เรขาคณิตหางให้ (1.5–2.0 และ −4.9 ถึง −6.6) ค่าที่แนะนำ 1.67 และ −5.50 (ค่าประมาณ) เพิ่ม ζ ของ short period จาก 0.585 เป็น 0.604 เท่านั้น ที่ควรแก้ก่อนคือ α̇ จาก finite difference ผ่าน filter 0.05 s ซึ่งช้ากว่าค่าจริง 46 ms และคลาด 13% RMS
-- **Ground effect อ่อนเกินจริงราว 1.7–5.6 เท่าตอนแตะพื้น (แล้วแต่ปริมาณที่ดู)** สูตร McCormick ในโค้ดให้ induced drag เหลือ 72% ที่ h/b 0.1 แต่สูตร Tani/Torenbeek (NACA TR 738) ให้เหลือ 51% ใกล้กับ PHAK (ลด 47.6% คือเหลือ 52.4%), JSBSim c172p (51.5%) และ Hoerner–Borst (51.1%) พจน์ α ของแรงยกเพิ่ม 3.4% (CL รวมเพิ่มเพียงราว 2%) แทนราว 12% และ downwash ที่หางลดลงต้องใช้ elevator เพิ่มราว 4° ไม่ใช่ 0.7°
+- **Ground effect อ่อนเกินจริงราว 1.7–5.6 เท่าตอนแตะพื้น (แล้วแต่ปริมาณที่ดู)** สูตร McCormick ในโค้ดให้ induced drag เหลือ 72% ที่ h/b 0.1 แต่สูตร Tani/Torenbeek (NACA TR 738) ให้เหลือ 51% ใกล้กับ PHAK (ลด 47.6% คือเหลือ 52.4%), JSBSim c172p (51.5%) และ Hoerner–Borst (51.1%) พจน์ α ของแรงยกเพิ่ม 3.4% (CL รวมเพิ่มเพียงราว 2%) แทนราว 12% และ downwash ที่หางลดลงต้องใช้ elevator เพิ่มราว 4° (ค่าประมาณจาก VLM ใน 2.5) ไม่ใช่ 0.7°
 - **ยังไม่มี slipstream** elevator และ rudder ใช้ $\bar q$ อิสระ ที่ความเร็ว 0 จึงไม่มีแรงบังคับ การเพิ่มกำลังไม่ทำให้เชิดหัวหรือหันเห และไม่มี corkscrew effect [U9, p. 5-31] โมเดลที่เสนอให้ $\bar q_s$ = T/A = 2,459 Pa ตอนอยู่กับที่ elevator มีผล 1.48 เท่าที่ 80 kt กำลังเต็ม และ swirl ต้องใช้ rudder ขวาราว 8° (ค่าประมาณ)
 - **สิ่งที่ควรสร้าง:** (1) α̇ แบบปิดรูปใน `deriv()` (2) ground effect แบบ Tani กับมุมเหนี่ยวนำ แรงต้าน และ downwash ที่หาง วัดความสูงที่ MAC ซ้าย/ขวา (3) `slipstream()` ที่ให้ $\bar q$ ของหางระดับ หางดิ่ง และมุม swirl แล้วจึงย้ายหางเป็นชิ้นส่วนแยกเพื่อรวม downwash หน่วงเวลา ground effect ที่หาง และ slipstream ไว้ในสมการเดียว
 
@@ -270,43 +270,43 @@ function slipstream(up, T, Pshaft, Omega, rho, S, out) { // S = AC.interference.
 ```json
 {"interference": {
  "downwash": {
-  "deda": {"v": 0.40, "u": "-", "scope": "aircraft", "src": ["U4", "U17"], "conf": "ต่ำ", "est": true, "note": "อยู่ระหว่าง 0.36 (ถอยจาก AC) กับ 0.477 (Aeromatic)"},
-  "eps0": {"v": 0, "u": "rad", "scope": "aircraft", "src": [], "conf": "ต่ำ", "est": true, "note": "downwash ที่ CL ปีก = 0; ใช้ ε = eps0 + deda·CL_w/CLa_w"},
-  "l_t": {"v": 5.42, "u": "m", "scope": "aircraft", "src": ["U17", "U1"], "conf": "กลาง", "est": true, "note": "ถอยจาก Cmde/CLde (หัวข้อ 6); โมเดลภาพให้ราว 5.1 m"},
-  "VH": {"v": 0.596, "u": "-", "scope": "aircraft", "src": ["U17"], "conf": "กลาง", "est": true, "note": "S_h l_t/(S c), S_h 2.96 m2"},
-  "a_t": {"v": 3.9, "u": "1/rad", "scope": "aircraft", "src": ["U17"], "conf": "กลาง", "est": true, "note": "ความชันแรงยกหางระดับ"},
-  "eta_t": {"v": 0.90, "u": "-", "scope": "aircraft", "src": ["U11", "U17"], "conf": "กลาง", "est": true, "note": "TR 690 วัด (q/q0)eff ที่หางเมื่อไม่มีใบพัดได้ 0.88–1.01 (Concl. 2)"},
-  "CLadot": {"v": 1.67, "u": "1/(rad·c/2V)", "scope": "aircraft", "src": ["U2", "U4"], "conf": "ต่ำ", "est": true, "note": "2 eta VH a_t deda; ปัจจุบัน 1.6"},
-  "Cmadot": {"v": -5.50, "u": "1/(rad·c/2V)", "scope": "aircraft", "src": ["U2", "U4"], "conf": "ต่ำ", "est": true, "note": "-CLadot l_t/c; ปัจจุบัน -4.5; JSBSim c172p -7.27"},
+  "deda": {"v": 0.40, "u": "-", "scope": "aircraft", "src": ["U4", "U17"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: อยู่ระหว่าง 0.36 (ถอยจาก AC) กับ 0.477 (Aeromatic)"},
+  "eps0": {"v": 0, "u": "rad", "scope": "aircraft", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: downwash ที่ CL ปีก = 0; ใช้ ε = eps0 + deda·CL_w/CLa_w"},
+  "l_t": {"v": 5.42, "u": "m", "scope": "aircraft", "src": ["U17", "U1"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: ถอยจาก Cmde/CLde (หัวข้อ 6); โมเดลภาพให้ราว 5.1 m"},
+  "VH": {"v": 0.596, "u": "-", "scope": "aircraft", "src": ["U17"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: S_h l_t/(S c), S_h 2.96 m2"},
+  "a_t": {"v": 3.9, "u": "1/rad", "scope": "aircraft", "src": ["U17"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: ความชันแรงยกหางระดับ"},
+  "eta_t": {"v": 0.90, "u": "-", "scope": "aircraft", "src": ["U11", "U17"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: TR 690 วัด (q/q0)eff ที่หางเมื่อไม่มีใบพัดได้ 0.88–1.01 (Concl. 2)"},
+  "CLadot": {"v": 1.67, "u": "1/(rad·c/2V)", "scope": "aircraft", "src": ["U2", "U4"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: 2 eta VH a_t deda; ปัจจุบัน 1.6"},
+  "Cmadot": {"v": -5.50, "u": "1/(rad·c/2V)", "scope": "aircraft", "src": ["U2", "U4"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: -CLadot l_t/c; ปัจจุบัน -4.5; JSBSim c172p -7.27"},
   "tailModel": {"v": {"mode": "derivative", "alternative": "delay", "bufferHz": 240, "bufferLen": 256}, "u": "-", "scope": "sim", "src": ["U2", "U3"], "conf": "สูง", "est": false, "note": "delay = หางเป็นชิ้นส่วน ε หน่วง l_t/V"},
   "adotEstimator": {"v": {"method": "closedForm", "clampRadS": 2.0}, "u": "-", "scope": "sim", "src": ["U6"], "conf": "สูง", "est": false, "note": "แทน finite difference + filter 0.05 s (lag 46 ms); สูตร α̇ = (u ẇ − w u̇)/(u²+w²) ตาม FGAuxiliary แต่แก้แบบปิดรูปใน deriv() แทนการใช้ค่ารอบก่อน (หัวข้อ 2.3)"}
  },
  "groundEffect": {
   "sigmaModel": {"v": {"type": "tani", "a": 2.48, "m": 0.768, "cutoffHb": 1.5, "minHb": 0.02}, "u": "-", "scope": "sim", "src": ["U7", "U8", "U9"], "conf": "สูง", "est": false, "note": "sigma = exp(-a (2h/b)^m), kD = 1 - sigma"},
-  "rMac": {"v": [0.0, 2.51, 0.15], "u": "m (FRD จาก CG, y ใช้ ±)", "scope": "aircraft", "src": ["U1"], "conf": "ต่ำ", "est": true, "note": "c/4 ของ MAC จากโมเดลภาพ"},
-  "CLa_w": {"v": 4.4, "u": "1/rad", "scope": "aircraft", "src": ["U17"], "conf": "ต่ำ", "est": true, "note": "4.8 ลบส่วนหาง"},
+  "rMac": {"v": [0.0, 2.51, 0.15], "u": "m (FRD จาก CG, y ใช้ ±)", "scope": "aircraft", "src": ["U1"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: c/4 ของ MAC จากโมเดลภาพ"},
+  "CLa_w": {"v": 4.4, "u": "1/rad", "scope": "aircraft", "src": ["U17"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: 4.8 ลบส่วนหาง"},
   "A": {"v": 6.38, "u": "-", "scope": "aircraft", "src": ["U1"], "conf": "สูง", "est": false, "note": "b^2/S จาก AC"},
-  "rEps": {"v": {"a": 3.99, "m": 0.652}, "u": "-", "scope": "aircraft", "src": ["U7", "U18"], "conf": "กลาง", "est": true, "note": "eps_IGE/eps_OGE = 1 - exp(-a (h/b)^m) fit VLM, RMS 0.010"},
-  "tablesCheck": {"v": {"axes": {"hb": [0.05, 0.1, 0.15, 0.2, 0.3, 0.5, 1.0]}, "data": [[0.345, 0.513, 0.626, 0.707, 0.813, 0.916, 0.985], [1.168, 1.120, 1.089, 1.069, 1.043, 1.019, 1.003], [0.432, 0.589, 0.686, 0.753, 0.838, 0.921, 0.982]]}, "u": "-", "scope": "aircraft", "src": ["U7", "U18"], "conf": "กลาง", "est": true, "note": "แถว kD, kL, rEps สำหรับการทดสอบ"}
+  "rEps": {"v": {"a": 3.99, "m": 0.652}, "u": "-", "scope": "aircraft", "src": ["U7", "U18"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: eps_IGE/eps_OGE = 1 - exp(-a (h/b)^m) fit VLM, RMS 0.010"},
+  "tablesCheck": {"v": {"axes": {"hb": [0.05, 0.1, 0.15, 0.2, 0.3, 0.5, 1.0]}, "data": [[0.345, 0.513, 0.626, 0.707, 0.813, 0.916, 0.985], [1.168, 1.120, 1.089, 1.069, 1.043, 1.019, 1.003], [0.432, 0.589, 0.686, 0.753, 0.838, 0.921, 0.982]]}, "u": "-", "scope": "aircraft", "src": ["U7", "U18"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: แถว kD, kL, rEps สำหรับการทดสอบ"}
  },
  "slipstream": {
-  "diskDiameter": {"v": 2.44, "u": "m", "scope": "propeller", "src": ["U16"], "conf": "ต่ำ", "est": true, "note": "สมมติฐานร่วม (หัวข้อ 3)"},
-  "hubRadius": {"v": 0.25, "u": "m", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "รัศมี spinner สำหรับสูตร swirl"},
-  "hubPos": {"v": [3.94, 0, -0.06], "u": "m (FRD จาก CG)", "scope": "aircraft", "src": ["U16", "U1"], "conf": "ต่ำ", "est": true, "note": "ตำแหน่งดุมจากโมเดลภาพ"},
-  "sense": {"v": 1, "u": "-", "scope": "propeller", "src": ["U16"], "conf": "กลาง", "est": true, "note": "+1 = ตามเข็มเมื่อมองจากด้านหลัง (PT6A)"},
-  "kappa": {"v": 0.43, "u": "-", "scope": "aircraft", "src": ["U11"], "conf": "ต่ำ", "est": true, "note": "(1.30-1)/(1.70-1) จาก TR 690 จุดเดียวที่ Tc' 0.139 (อิงพื้นที่ปีก); เครื่องฝึกใช้ที่ Tc' 0.08-0.55 จึงเป็นการ extrapolate"},
-  "immersionH": {"v": {"axes": {"rs_m": [0.3, 0.5, 0.7, 0.8, 0.9, 1.0, 1.1, 1.22]}, "data": [0, 0.175, 0.327, 0.397, 0.464, 0.529, 0.591, 0.663]}, "u": "-", "scope": "aircraft", "src": ["U1", "U18"], "conf": "ต่ำ", "est": true, "note": "หางระดับสูงกว่าแนวแรงขับ 0.24 m"},
-  "immersionV": {"v": {"axes": {"rs_m": [0.3, 0.5, 0.7, 0.8, 0.9, 1.0, 1.1, 1.22]}, "data": [0.015, 0.161, 0.298, 0.364, 0.427, 0.489, 0.548, 0.616]}, "u": "-", "scope": "aircraft", "src": ["U1", "U18"], "conf": "ต่ำ", "est": true, "note": "หางดิ่งเริ่มเหนือแนวแรงขับ 0.28 m สูง 1.75 m"},
-  "kSwirl": {"v": 0.5, "u": "-", "scope": "aircraft", "src": ["U14"], "conf": "ต่ำ", "est": true, "note": "ปรับได้ 0.5–0.8 เทียบ TN D-3726"},
-  "zSwirl": {"v": 0.55, "u": "m", "scope": "aircraft", "src": ["U18"], "conf": "ต่ำ", "est": true, "note": "แทนการอินทิเกรต คลาด < 2 deg"},
-  "finArea": {"v": 2.06, "u": "m2", "scope": "aircraft", "src": ["U1"], "conf": "ต่ำ", "est": true, "note": "รวม rudder จากโมเดลภาพ"},
-  "finArm": {"v": 5.25, "u": "m", "scope": "aircraft", "src": ["U1"], "conf": "ต่ำ", "est": true, "note": "CG ถึง c/4 เฉลี่ยของหางดิ่ง"},
-  "finLiftSlope": {"v": 2.8, "u": "1/rad", "scope": "aircraft", "src": [], "conf": "ต่ำ", "est": true, "note": "ตรวจ: eta_v Vv a_v = 0.164 /rad; ถ้า tau_r 0.5 ได้ Cndr -0.082 เทียบ AC -0.072 (ต้องใช้ tau_r 0.44)"},
-  "eta_v": {"v": 0.90, "u": "-", "scope": "aircraft", "src": [], "conf": "ต่ำ", "est": true, "note": ""},
+  "diskDiameter": {"v": 2.44, "u": "m", "scope": "propeller", "src": ["U16"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: สมมติฐานร่วม (หัวข้อ 3)"},
+  "hubRadius": {"v": 0.25, "u": "m", "scope": "propeller", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: รัศมี spinner สำหรับสูตร swirl"},
+  "hubPos": {"v": [3.94, 0, -0.06], "u": "m (FRD จาก CG)", "scope": "aircraft", "src": ["U16", "U1"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: ตำแหน่งดุมจากโมเดลภาพ"},
+  "sense": {"v": 1, "u": "-", "scope": "propeller", "src": ["U16"], "conf": "กลาง", "est": true, "note": "ค่าประมาณ: +1 = ตามเข็มเมื่อมองจากด้านหลัง (PT6A)"},
+  "kappa": {"v": 0.43, "u": "-", "scope": "aircraft", "src": ["U11"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: (1.30-1)/(1.70-1) จาก TR 690 จุดเดียวที่ Tc' 0.139 (อิงพื้นที่ปีก); เครื่องฝึกใช้ที่ Tc' 0.08-0.55 จึงเป็นการ extrapolate"},
+  "immersionH": {"v": {"axes": {"rs_m": [0.3, 0.5, 0.7, 0.8, 0.9, 1.0, 1.1, 1.22]}, "data": [0, 0.175, 0.327, 0.397, 0.464, 0.529, 0.591, 0.663]}, "u": "-", "scope": "aircraft", "src": ["U1", "U18"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: หางระดับสูงกว่าแนวแรงขับ 0.24 m"},
+  "immersionV": {"v": {"axes": {"rs_m": [0.3, 0.5, 0.7, 0.8, 0.9, 1.0, 1.1, 1.22]}, "data": [0.015, 0.161, 0.298, 0.364, 0.427, 0.489, 0.548, 0.616]}, "u": "-", "scope": "aircraft", "src": ["U1", "U18"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: หางดิ่งเริ่มเหนือแนวแรงขับ 0.28 m สูง 1.75 m"},
+  "kSwirl": {"v": 0.5, "u": "-", "scope": "aircraft", "src": ["U14"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: ปรับได้ 0.5–0.8 เทียบ TN D-3726"},
+  "zSwirl": {"v": 0.55, "u": "m", "scope": "aircraft", "src": ["U18"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: แทนการอินทิเกรต คลาด < 2 deg"},
+  "finArea": {"v": 2.06, "u": "m2", "scope": "aircraft", "src": ["U1"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: รวม rudder จากโมเดลภาพ"},
+  "finArm": {"v": 5.25, "u": "m", "scope": "aircraft", "src": ["U1"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: CG ถึง c/4 เฉลี่ยของหางดิ่ง"},
+  "finLiftSlope": {"v": 2.8, "u": "1/rad", "scope": "aircraft", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: ตรวจ: eta_v Vv a_v = 0.164 /rad; ถ้า tau_r 0.5 ได้ Cndr -0.082 เทียบ AC -0.072 (ต้องใช้ tau_r 0.44)"},
+  "eta_v": {"v": 0.90, "u": "-", "scope": "aircraft", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ"},
   "blownSpanFactor": {"v": 0.9, "u": "D", "scope": "aircraft", "src": ["U10"], "conf": "กลาง", "est": false, "note": "TR 941 p. 406"},
-  "blownArea": {"v": 2.63, "u": "m2", "scope": "aircraft", "src": ["U10", "U1"], "conf": "ต่ำ", "est": true, "note": "(0.9 D - ความกว้างลำตัว 1.0 m) x คอร์ด 2.2 m"},
-  "kBlown": {"v": 0.5, "u": "-", "scope": "aircraft", "src": [], "conf": "ต่ำ", "est": true, "note": "ผลขอบเจ็ตของปีก ประมาณเท่ากับ kappa"},
-  "k_deda_power": {"v": 0, "u": "-", "scope": "aircraft", "src": ["U11"], "conf": "ต่ำ", "est": true, "note": "ยังไม่มีตัวเลขที่อ่านได้"},
+  "blownArea": {"v": 2.63, "u": "m2", "scope": "aircraft", "src": ["U10", "U1"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: (0.9 D - ความกว้างลำตัว 1.0 m) x คอร์ด 2.2 m"},
+  "kBlown": {"v": 0.5, "u": "-", "scope": "aircraft", "src": [], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: ผลขอบเจ็ตของปีก ประมาณเท่ากับ kappa"},
+  "k_deda_power": {"v": 0, "u": "-", "scope": "aircraft", "src": ["U11"], "conf": "ต่ำ", "est": true, "note": "ค่าประมาณ: ยังไม่มีตัวเลขที่อ่านได้"},
   "propEffectsScale": {"v": 1.0, "u": "-", "scope": "sim", "src": [], "conf": "สูง", "est": false, "note": "ตัวคูณรวมผลใบพัด 0 = ปิด"}
  }
 }}
