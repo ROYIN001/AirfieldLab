@@ -1,0 +1,4 @@
+blocks 8, leaves 161, refs 49
+b737_800.airframe.cg.ref_pctMAC: est true with conf สูง (check)
+b737_800.airframe.wing.AR: est true with conf สูง (check)
+b737_800.interference.groundEffect.A: est true with conf สูง (check)

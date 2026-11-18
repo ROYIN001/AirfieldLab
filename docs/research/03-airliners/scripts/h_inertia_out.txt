@@ -1,0 +1,11 @@
+FG A330: m 97069 I (kg m2) [ 3221000, 6785000, 5978000 ] radii { Rx: 0.191, Ry: 0.263, Rz: 0.253 } (Ixx+Iyy)/Izz 1.674
+B747 empty 523,816 lb Rx 0.316 (Ixx+Iyy)/Izz 1.032
+B747 gross 636,600 lb (ถ้าค่า I เป็นของน้ำหนักบิน) Rx 0.287 (Ixx+Iyy)/Izz 1.032
+selected radii { Rx: 0.305, Ry: 0.466, Rz: 0.549 }
+130 t (ใกล้ OEW+ภาระน้อย)                Ixx 10990000 Iyy 28600000 Izz 37630000 kg m2  | slug ft2 Ixx 8108000
+150 t                                    Ixx 12680000 Iyy 33000000 Izz 43420000 kg m2  | slug ft2 Ixx 9355000
+170 t                                    Ixx 14380000 Iyy 37400000 Izz 49210000 kg m2  | slug ft2 Ixx 10603000
+MLW 187 t                                Ixx 15810000 Iyy 41140000 Izz 54130000 kg m2  | slug ft2 Ixx 11663000
+205.5 t (AF447 ขณะเกิดเหตุ, A330-203)    Ixx 17380000 Iyy 45210000 Izz 59480000 kg m2  | slug ft2 Ixx 12817000
+MTOW 242 t                               Ixx 20460000 Iyy 53240000 Izz 70050000 kg m2  | slug ft2 Ixx 15093000
+stability axes @alpha 5 deg, 187 t: Ixs 16100000 Izs 53840000 Ixzs -3327000

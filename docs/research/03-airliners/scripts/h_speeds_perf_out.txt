@@ -1,0 +1,85 @@
+== 1. anchors ==
+Jenkinson Vapp 136 kt @179 t: CL = 1.619  -> if Vapp=VLS=1.23VS1g: CLmax_FULL = 2.45 ; if Vapp=VLS+5: 2.64 ; Jenkinson CLmax_LDG 2.73 (S 363.1) -> S 361.6: 2.741 ; CL@Vapp*1.3^2 = 2.725
+Jenkinson V2 144 kt @217 t: CL = 1.751  -> V2=1.13VS1g: CLmax_TO = 2.236 ; CL@V2*1.2^2 (S 363.1) = 2.511 (Jenkinson 2.51)
+TSB C-GHLM V2 162 kt @222.7 t CONF1+F: CL@V2 = 1.42  -> lower bound CLmax(1+F) = CL*1.13^2 = 1.813 ; VR 157 kt CL = 1.512
+ICAO cat C (VAT<141 kt, VAT=1.23VSR @MLW 187 t): CLmax_FULL > 2.381
+
+== 2. chosen CLmax (1-g, S 361.6) == {
+  CONF0: 1.26,
+  CONF1: 1.8,
+  'CONF1+F': 2.1,
+  CONF2: 2.24,
+  CONF3: 2.32,
+  FULL: 2.45
+}  clean via A320 1.316*cos29.7/cos25 = 1.261
+
+== 3. VS1g (kt CAS, ISA SL, CAS=EAS) ==
+CONF0    131.4  141.1  150.2  157.6  167  179.3
+CONF1    109.9  118.1  125.7  131.8  139.7  150
+CONF1+F  101.8  109.3  116.4  122.1  129.3  138.9
+CONF2    98.5  105.8  112.7  118.2  125.2  134.4
+CONF3    96.8  104  110.7  116.1  123.1  132.1
+FULL     94.2  101.2  107.7  113  119.8  128.6
+masses 130000 150000 170000 187000 210000 242000
+VLS FULL (1.23): 115.9 124.5 132.5 139 147.3 158.1 
+VLS CONF3 (1.23): 119.1 127.9 136.2 142.8 151.4 162.5
+VAPP FULL = VLS+5: 120.9 129.5 137.5 144 152.3 163.1
+VAT @MLW 187 t = 139 kt -> category C ; margin 2 kt; @179 t VLS 136
+
+== 4. takeoff 242 t == {
+  VS1g_1F: 138.9,
+  V2min_1F: 156.9,
+  VS1g_2: 134.4,
+  V2min_2: 151.9,
+  VS1g_3: 132.1,
+  V2min_3: 149.3
+}
+scale TSB ratio V2/VS1g(1+F) @222.7 t = 1.216 ; VR/V2 = 0.969
+V2 typical CONF2 (1.13*1.03 VS1g) = 156.5  VR = V2-5 = 151.5
+
+== 5. field lengths ==
+TOFL scale W^2/T from Jenkinson 2320 m @217 t: 2737 m = 8979 ft; Raymer TOP raw 217t 2692 242t 3175 ; calibrated 2737
+LFL scale W from Jenkinson 1600 m @179 t ->187 t: 1672 m = 5484 ft; actual = LFL/1.667: 1003 m; @179 t actual 960
+ground roll check: Vtd (VLS-3) = 136 kt; decel for 0.6*LFL/1.667 roll? distance at 1.7/3.0 m/s2: 1440 816 m
+
+== 6. tyre == {
+  perTyre_lb: 62922,
+  perTyre_kN: 279.9,
+  p_est_psi: 204.8,
+  p_est_kPa: 1412,
+  p_est_bar: 14.12,
+  rated_load_kN_54x21: 304.7,
+  rated_p_kPa: 1538,
+  speed_rating_mps: 105.05,
+  gs_limit_mps: 104.95,
+  OD_m: 1.4,
+  width_m: 0.53,
+  nose_OD_m: 1.05,
+  nose_w_m: 0.395
+}
+
+== 7. LEMAC_STA = 28.953  (CG25 ที่ 30.77 m STA); HT c/4 STA = 59.37  VT c/4 STA = 58.27 ; datum(-200) 6.382 m หน้าจมูก
+
+== 8. wake == {
+  b0: 47.36,
+  Vapp187: 144,
+  ISA: { Gamma0: 426.7, w0: 1.434 },
+  DMK_35C: { Gamma0: 456.3, w0: 1.534 },
+  rhoHot: 1.1455,
+  MTOW_V2_ISA: { Gamma0: 508.2, w0: 1.708 }
+}
+
+== 9. units == {
+  MTOW_lb: 533519,
+  MLW_lb: 412264,
+  fuel_kg: 76561,
+  S_ft2: 3892,
+  MAC_in: 286.2,
+  AR: 10.056,
+  AR_jenk: 9.265,
+  VMO_mps: 169.77,
+  VFE: { CONF1: 240, 'CONF1+F': 215, CONF2: 196, CONF3: 186, FULL: 180 },
+  VLE_mps: 128.61,
+  ceiling_ft: 41010,
+  qf72_CAS_kt: 270
+}

@@ -1,0 +1,18 @@
+T1 737 nominal: 100
+T2 JA56AN-like: 15 caps tailstrike,hard
+T3 F-GTAT-like A321: 70 caps 
+T4 VH-FVZ-like ATR: 35 caps hard
+T5 long landing 1000 m: 50 caps long
+T6 crosswind bank 6 crab 7: 94 att 4
+T7 float detector: {"bounce":false,"bounceHigh":false,"tailstrike":false,"float":true,"duckUnder":false,"pitchCall":false}
+T8 tailstrike 10.5° compressed 737: true; limit at comp 0.5 = 10
+T9 bounce: {"bounce":true,"bounceHigh":false,"tailstrike":false,"float":false,"duckUnder":false,"pitchCall":false}
+T10 duck-under: true
+T11 G-DHJH A321 LOAD15 2.65 g -11.5 ft/s: hard=true (nz,sink)
+T11 F-GTAT A321 1st TD 1.9 g 400 fpm: hard=false ()
+T11 VH-YQR 737-8 2nd TD 2.96 g: hard=true (nz)
+T11 VH-YQR comparison flight 1.94 g: hard=false ()
+T11 JA56AN 737-800 2.4 g: hard=true (nz)
+T11 VT-JTD 737-800 2.79 g: hard=true (nz)
+T11 VH-FVZ ATR 2.97 g 928 fpm: hard=true (nz,sink)
+T12 A330 nominal: 100

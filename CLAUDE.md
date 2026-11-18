@@ -71,6 +71,12 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   the parameter schema (`schema.md`), the merged JSON (`params-trainer.json`) and the computation scripts are in
   `01-flight-physics/`. Parameters use the leaf format `{v, u, scope, src, conf, est, note}`; scopes `aircraft`,
   `engine`, `propeller`, `gear` are per aircraft type (rounds 2–3 fill them), `environment` and `sim` are shared.
+- Round 3 (airliners: ATR 72-600, 737-800, A320/A321 ceo and neo, A330-300) follows the same split:
+  `03-airliners.md` holds the summary, conflicts and the task list; `03-airliners/` holds 10 topic files, one
+  merged parameter file per type (`params-<type>.json`, plus `params-common-airliner.json`), the per-type
+  summary `schema.md`, the round-1 schema extension `schema-ext.md` (new categories airframe, speeds, performance,
+  propulsion, controls, afcs, ops; `_inherits` for neo and A321 variants) and the scripts in `scripts/`
+  (`r3_merge.mjs` rebuilds the JSON from the topic files, `r3_schema.mjs` rebuilds `schema.md`).
 - Read the relevant report before changing physics, input or data. Physics code changes wait until the owner
   approves the development plan that follows all five rounds.
 

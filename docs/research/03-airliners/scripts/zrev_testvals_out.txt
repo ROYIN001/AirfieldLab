@@ -1,0 +1,48 @@
+400 ft/s -> m/s, kt                             121.920 236.99
+240 kt -> m/s                                   123.47
+100 m/s -> kt                                   194.38
+15 deg/s -> rad/s                               0.2618
+VMO 350 / 356 / 361 / 366 kt -> m/s             180.056 183.142 185.714 188.287
+6/15/16 kt -> m/s                               3.087 7.717 8.231
+5/10/25/30 kt -> m/s                            2.572 5.144 12.861 15.433
+60/440 kt -> m/s                                30.867 226.356
+1 kt/s, 2 kt/s, 3 kt                            0.514 1.029 1.543
+50/30/100/400 ft -> m                           15.240 9.144 30.480 121.920
+T-Z-01 clean nz @ +1,+.5,-.5,-1                 2.5 1.75 0 -1
+T-Z-01 FULL nz @ +1,+.5,-.5,-1                  2 1.5 0.5 0
+T-Z-02 nzRef(0,30),(0,33),(0,45),(10,0)         1.1547 1.1924 1.1924 0.9848
+acos(1/2.5) deg (max level bank at 2.5 g)       66.42
+r_cmd g tan33/V @133.5 kt deg/s                 5.313
+T-Z-14 VS1g, Vamax/VS1g, CL ratio (1.23)        100.00 1.0700 0.8734
+  with 1.28: VS1g, Vamax/VS1g, CL ratio         96.09 1.1135 0.8065
+ALT stall warning 1.03 VS1g -> CL ratio         0.9426
+T-Z-13 FULL: a(CLmax), amax, aprot, afloor      16.33 12.38 9.38 9.88
+  FULL: VS1g, Vamax, Vafloor, Vaprot, VLS(1.23) 105.1 112.5 118.1 119.3 129.3
+T-Z-13 CONF0: a(CLmax), amax, aprot, afloor     12.86 11.06 8.06 8.56
+  CONF0: VS1g, Vamax, Vafloor, Vaprot, VLS(1.23)155.9 166.8 186.8 191.7 191.7
+T-Z-15 memo2.5 t0,t4,t8,t10                     2.5 0.25 -2 -2
+T-Z-15 memo5 t4; memo-3 t0                      1.5 -2
+flare blend w at 40 ft                          0.50
+sink 3 deg @133.5 kt m/s, fpm                   3.594 708
+3.70 m/s, 2.10 m/s -> fpm                       728 413
+T-Z-18 R(30;67),R(50;67),R(67;67),R(40;45)      0 7.5 15 8.75
+T-Z-18 HSP R(20)=15*20/40                       7.5
+rho(300 m), qbar                                1.1901 2806.7
+Lp, Lu                                          -0.8478 0.3354
+Kphi, Kp, Ki                                    11.92 7.01 5.96
+open-loop steady p full u (-Lu/Lp) deg/s        22.67
+closed loop 2 zeta wn, wn^2                     3.200 4.000
+qbar 133.5 kt SL, sch=8000/q                    2889 2.769
+qbar 330 kt @600 m, sch                         16658 0.480
+T-Z-25 dnz,auth @356,361,366                    0/1 0.375/0.5 0.75/0
+slope 0.075 g/kt -> g/(m/s)                     0.1458
+T-Z-30 breakout, Fpitch, Fout, Fin N            4.89 100.08 24.91 34.70
+T-Z-30 gradients N/deg                          5.949 1.001 1.490
+dual input 2 deg as fraction pitch, roll        0.125 0.100
+T-Z-31 dz0: s, dnz clean                        0.3125 0.4688
+T-Z-31 dz0.04 (gamepad round 1): s, dnz         0.2946 0.4419
+round1 T-I-01 check f(0.5;dz.08,e.5)            0.2758
+keyboard: 1/0.5 s, 1/2.5 s                      2 0.4
+240 Hz step ms                                  4.167
+T-Z-32 blend at 2.5 s, 5 s                      0.5 1
+nz level turn 30/33/45                          1.1547 1.1924 1.4142

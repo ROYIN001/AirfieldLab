@@ -1,0 +1,24 @@
+737-800 60 t: Vref30 137 kt, Vref40 132.1 kt
+737-800 66,361 kg (MLW): Vref30 144.1, Vref40 138.9
+Boeing A/T on, 60 t F30: Vapp 142
+Boeing A/T off F30 60 t HW 0 gust 0: additive 5 -> Vapp 142 kt, kept to TD 0
+Boeing A/T off F30 60 t HW 10 gust 0: additive 5 -> Vapp 142 kt, kept to TD 0
+Boeing A/T off F30 60 t HW 20 gust 0: additive 10 -> Vapp 147 kt, kept to TD 0
+Boeing A/T off F30 60 t HW 20 gust 10: additive 20 -> Vapp 157 kt, kept to TD 10
+Boeing A/T off F30 60 t HW 30 gust 15: additive 20 -> Vapp 157 kt, kept to TD 15
+Boeing A/T off F30 60 t HW 0 gust 25: additive 20 -> Vapp 157 kt, kept to TD 20
+A320 VLS 128.5 HW 0: APPR COR 5 -> VAPP 133.5
+A320 VLS 128.5 HW 12: APPR COR 5 -> VAPP 133.5
+A320 VLS 128.5 HW 15: APPR COR 5 -> VAPP 133.5
+A320 VLS 128.5 HW 20: APPR COR 6.7 -> VAPP 135.2
+A320 VLS 128.5 HW 30: APPR COR 10 -> VAPP 138.5
+A320 VLS 128.5 HW 45: APPR COR 15 -> VAPP 143.5
+A320 VLS 128.5 HW 60: APPR COR 15 -> VAPP 143.5
+A320 VLS 128.5, A/THR off, HW 0: VAPP 133.5 (AFS min 5 kt still applies)
+A320 CONF3 ice (A320 family): APPR COR 10
+GS mini: VAPP 133.5 twr HW 10 current HW 25: ceo target 148.5, neo 138.5
+GS mini: current HW 5 < tower 10: target 133.5
+ATR VREF 106 HW 0 gust 0: WF 0 -> VAPP 106
+ATR VREF 106 HW 15 gust 0: WF 5 -> VAPP 111
+ATR VREF 106 HW 15 gust 10: WF 10 -> VAPP 116
+ATR VREF 106 HW 60 gust 0: WF 15 -> VAPP 121

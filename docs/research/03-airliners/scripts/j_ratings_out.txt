@@ -1,0 +1,99 @@
+== 1. Rating unit checks (TCDS daN or lbf -> N, lbf)
+CFM56-7B24 TO (E.004): 10765 daN = 107.65 kN = 24201 lbf
+CFM56-7B26 TO (E.004): 11699 daN = 116.99 kN = 26300 lbf
+CFM56-7B27 TO (E.004): 12143 daN = 121.43 kN = 27299 lbf
+CFM56-7B26/27 MCT (E.004): 11521 daN = 115.21 kN = 25900 lbf
+CFM56-5B3/P TO (E37NE): 32000 lbf = 142.34 kN = 32000 lbf
+CFM56-5B4/P TO (E37NE): 27000 lbf = 120.10 kN = 27000 lbf
+CFM56-5B6/P TO (E37NE): 23500 lbf = 104.53 kN = 23500 lbf
+LEAP-1A26 TO (E00089EN): 27120 lbf = 120.64 kN = 27120 lbf
+LEAP-1A32/35A TO (E00089EN): 32160 lbf = 143.05 kN = 32160 lbf
+Trent 772B-60 net TO (E.042): 71100 lbf = 316.27 kN = 71100 lbf
+Trent 772B-60 bare TO (E.042): 72000 lbf = 320.27 kN = 72000 lbf
+
+== 2. 100 % rotor speeds from TCDS limits (rpm at limit / limit %)
+CFM56-7B N1: 5382/104% -> 100% = 5175 rpm
+CFM56-7B N2: 15183/105% -> 100% = 14460 rpm
+CFM56-5B N1: 5200/104% -> 100% = 5000 rpm
+CFM56-5B N2 (inferred): 15183/105% -> 100% = 14460 rpm
+LEAP-1A N1: 3894/101% -> 100% = 3855 rpm
+LEAP-1A N2: 19391/116.5% -> 100% = 16645 rpm
+
+== 3. Flat-rating slope kT from ATSB AO-2014-162 (737-838): assumed temp 35 -> 51 C, N1 93.1 -> 88.4 %
+F ~ N1^2: F51/F35 = 0.9016, kT = 0.00615 /K
+F ~ N1^2.3: F51/F35 = 0.8877, kT = 0.00702 /K
+F ~ N1^2.5: F51/F35 = 0.8785, kT = 0.00759 /K
+
+== 4. VTBD take-off thrust per engine (field 9 ft, QNH 1008 hPa) — static and M 0.2
+OAT 15 C (delta 0.9945, M(70 m/s) 0.2057): Theta / F_static/F00 / F(70 m/s)/F00
+   CFM56_7B24 1.0000 / 0.9971 / 0.8088
+   CFM56_7B26 1.0000 / 0.9971 / 0.8107
+   CFM56_7B27 1.0000 / 0.9971 / 0.8107
+   CFM56_5B6 1.0000 / 0.9971 / 0.8036
+   CFM56_5B4 1.0000 / 0.9971 / 0.8053
+   CFM56_5B3 1.0000 / 0.9971 / 0.8079
+   LEAP_1A26 1.0000 / 0.9971 / 0.7750
+   LEAP_1A32 1.0000 / 0.9971 / 0.7772
+   TRENT_772B 1.0000 / 0.9971 / 0.8116
+OAT 30 C (delta 0.9945, M(70 m/s) 0.2006): Theta / F_static/F00 / F(70 m/s)/F00
+   CFM56_7B24 1.0000 / 0.9971 / 0.8128
+   CFM56_7B26 1.0000 / 0.9971 / 0.8147
+   CFM56_7B27 1.0000 / 0.9971 / 0.8147
+   CFM56_5B6 1.0000 / 0.9971 / 0.8078
+   CFM56_5B4 1.0000 / 0.9971 / 0.8094
+   CFM56_5B3 1.0000 / 0.9971 / 0.8120
+   LEAP_1A26 1.0000 / 0.9971 / 0.7796
+   LEAP_1A32 1.0000 / 0.9971 / 0.7819
+   TRENT_772B 1.0000 / 0.9971 / 0.8156
+OAT 35.8 C (delta 0.9945, M(70 m/s) 0.1987): Theta / F_static/F00 / F(70 m/s)/F00
+   CFM56_7B24 0.9623 / 0.9595 / 0.7836
+   CFM56_7B26 0.9623 / 0.9595 / 0.7854
+   CFM56_7B27 0.9623 / 0.9595 / 0.7854
+   CFM56_5B6 1.0000 / 0.9971 / 0.8093
+   CFM56_5B4 1.0000 / 0.9971 / 0.8109
+   CFM56_5B3 0.9623 / 0.9595 / 0.7828
+   LEAP_1A26 1.0000 / 0.9971 / 0.7814
+   LEAP_1A32 0.9623 / 0.9595 / 0.7541
+   TRENT_772B 1.0000 / 0.9971 / 0.8171
+OAT 38 C (delta 0.9945, M(70 m/s) 0.1980): Theta / F_static/F00 / F(70 m/s)/F00
+   CFM56_7B24 0.9480 / 0.9453 / 0.7725
+   CFM56_7B26 0.9480 / 0.9453 / 0.7742
+   CFM56_7B27 0.9480 / 0.9453 / 0.7742
+   CFM56_5B6 1.0000 / 0.9971 / 0.8099
+   CFM56_5B4 1.0000 / 0.9971 / 0.8115
+   CFM56_5B3 0.9480 / 0.9453 / 0.7717
+   LEAP_1A26 1.0000 / 0.9971 / 0.7820
+   LEAP_1A32 0.9480 / 0.9453 / 0.7435
+   TRENT_772B 1.0000 / 0.9971 / 0.8176
+
+== 5. TSFC from EEDB at LTO points (g/(kN s)) and FF ratios
+CFM56_7B24_class: TO 10.09 | CO 9.78 | App 9.54 | Idle 13.67 g/kN/s; idle/TO 0.095 app/TO 0.284
+CFM56_7B26_class: TO 10.37 | CO 9.92 | App 9.43 | Idle 13.19 g/kN/s; idle/TO 0.089 app/TO 0.273
+CFM56_7B27_class: TO 10.65 | CO 9.99 | App 9.42 | Idle 12.94 g/kN/s; idle/TO 0.085 app/TO 0.265
+CFM56_5B6_class: TO 9.23 | CO 9.00 | App 8.90 | Idle 12.98 g/kN/s; idle/TO 0.098 app/TO 0.289
+CFM56_5B4_class: TO 9.51 | CO 9.20 | App 8.77 | Idle 12.13 g/kN/s; idle/TO 0.089 app/TO 0.277
+CFM56_5B3_class: TO 10.27 | CO 9.53 | App 8.64 | Idle 11.34 g/kN/s; idle/TO 0.077 app/TO 0.252
+LEAP_1A26_class: TO 7.14 | CO 6.92 | App 6.74 | Idle 10.78 g/kN/s; idle/TO 0.106 app/TO 0.283
+LEAP_1A32_class: TO 7.42 | CO 7.15 | App 6.62 | Idle 9.79 g/kN/s; idle/TO 0.092 app/TO 0.267
+TRENT_772B_class: TO 9.80 | CO 9.41 | App 8.65 | Idle 12.19 g/kN/s; idle/TO 0.086 app/TO 0.262
+TSFC 7B26 TO in lb/(lbf h): 0.3660
+
+== 6. Quadratic fit FF/FF_TO = c0 + c1 x + c2 x^2 through the 4 EEDB points (least squares)
+CFM56_7B24_class: c = [0.0437, 0.7260, 0.2290], max|res| = 0.0021; FF(50%) lin 0.5215 kg/s quad 0.5038 kg/s
+CFM56_7B26_class: c = [0.0425, 0.6716, 0.2828], max|res| = 0.0048; FF(50%) lin 0.5692 kg/s quad 0.5446 kg/s
+CFM56_7B27_class: c = [0.0448, 0.6081, 0.3404], max|res| = 0.0102; FF(50%) lin 0.5932 kg/s quad 0.5611 kg/s
+CFM56_5B6_class: c = [0.0455, 0.7480, 0.2059], max|res| = 0.0010; FF(50%) lin 0.4685 kg/s quad 0.4545 kg/s
+CFM56_5B4_class: c = [0.0386, 0.7169, 0.2435], max|res| = 0.0016; FF(50%) lin 0.5425 kg/s quad 0.5229 kg/s
+CFM56_5B3_class: c = [0.0404, 0.5622, 0.3899], max|res| = 0.0113; FF(50%) lin 0.6541 kg/s quad 0.6125 kg/s
+LEAP_1A26_class: c = [0.0571, 0.6742, 0.2689], max|res| = 0.0002; FF(50%) lin 0.4135 kg/s quad 0.3973 kg/s
+LEAP_1A32_class: c = [0.0452, 0.6498, 0.3052], max|res| = 0.0003; FF(50%) lin 0.4967 kg/s quad 0.4741 kg/s
+TRENT_772B_class: c = [0.0431, 0.6153, 0.3386], max|res| = 0.0047; FF(50%) lin 1.4425 kg/s quad 1.3666 kg/s
+
+== 7. Lapse cross-checks
+CFM56-7B24 (OpenAP cruise_thrust): data 0.2264 vs B&Y(M0.8, 35kft, out of range) 0.1730
+CFM56-5B4 (OpenAP cruise_thrust): data 0.1886 vs B&Y(M0.8, 35kft, out of range) 0.1688
+BPR 5.1: B&Y SL M0.4 0.6865 vs Poll&Schumann 0.97*(0.825-0.018*BPR) 0.7112; B&Y SL M0.2 0.8169; 3000 ft M0.25 0.7432
+BPR 5.9: B&Y SL M0.4 0.6753 vs Poll&Schumann 0.97*(0.825-0.018*BPR) 0.6972; B&Y SL M0.2 0.8100; 3000 ft M0.25 0.7358
+BPR 11.1: B&Y SL M0.4 0.6325 vs Poll&Schumann 0.97*(0.825-0.018*BPR) 0.6064; B&Y SL M0.2 0.7817; 3000 ft M0.25 0.7060
+BPR 10.5: B&Y SL M0.4 0.6357 vs Poll&Schumann 0.97*(0.825-0.018*BPR) 0.6169; B&Y SL M0.2 0.7840; 3000 ft M0.25 0.7084
+BPR 5: B&Y SL M0.4 0.6881 vs Poll&Schumann 0.97*(0.825-0.018*BPR) 0.7129; B&Y SL M0.2 0.8178; 3000 ft M0.25 0.7442

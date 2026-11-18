@@ -1,0 +1,10 @@
+CL 1.442 V m/s 73.08
+LONG full: osc wn 0.153 zeta 0.057 T 41.09 s | osc wn 0.861 zeta 0.669 T 9.82 s
+  Lanchester T 33.1 s ; improved (Mq-corrected) T 41 s
+LAT stab (Ixx 1928634, Izz 5264086, Ixz -161326): osc wn 0.877 zeta 0.011 T 7.17 s | real -0.0072 (tau 138.53 s) | real -1.0891 (tau 0.92 s)
+LAT body (Ixx 1927945, Izz 5264775, Ixz 154032): real 0.0016 (tau -632.91 s) | osc wn 0.892 zeta 0.032 T 7.04 s | real -1.0399 (tau 0.96 s)
+  Dutch roll approx (report formula): 0.676
+-- with Cnb 0.26, Cnr -0.35, Clp -0.40 (JSBSim)
+LAT stab (Ixx 1928634, Izz 5264086, Ixz -161326): real -0.9484 (tau 1.05 s) | real 0.0034 (tau -290.84 s) | osc wn 0.998 zeta 0.024 T 6.3 s
+-- with Clb -0.157 (cruise value)
+LAT stab (Ixx 1928634, Izz 5264086, Ixz -161326): real 0.0135 (tau -74.03 s) | osc wn 0.825 zeta 0.067 T 7.63 s | real -1.0182 (tau 0.98 s)
