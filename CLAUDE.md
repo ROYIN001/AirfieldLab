@@ -15,7 +15,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Build: `node build.mjs` → `dist/index.html`, and copies `data/*` into `dist/`.
 - Run: `python3 -m http.server 8080 -d dist`, open http://localhost:8080 (needs HTTP: the page fetches its data).
 - Tests (Node ≥ 22, no dependencies, `node:test` + `node:assert/strict`): `node --test "test/**/*.test.mjs"`
-  (quote the glob: a bare `node --test` would also run `test/shots.mjs`, `test/harness.mjs` and `test/lib/*.mjs`).
+  (quote the glob: a bare `node --test` would also run `test/shots.mjs`, `test/harness.mjs`, `test/lib/*.mjs` and
+  the research scripts under `docs/research/` whose names match Node's default test patterns).
   `geo` (AIP geometry), `flight` (start trim, parked, autoland per wind), `runways` (autoland on all four ends),
   `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01), `modes` (trim, linearise and
   MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `page` (parses the assembled page
@@ -62,7 +63,11 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Evaluator: stabilised gates at 500 and 200 ft, callouts, touchdown score (sink 40, position 25, centre line 15,
   speed 10, attitude 10). Touchdown window 300–600 m is "perfect".
 - Verified (`test/runways.test.mjs`, seed 5): autoland on 21R, 21L, 03L, 03R in calm scores 100/100/100/93 and in
-  15 kt gusty crosswind 88/88/90/78 (other turbulence seeds give 74–94 in the crosswind).
+  15 kt gusty crosswind 88/88/90/78. Measured baseline over the turbulence seeds the app draws (7–1006, 1,000
+  autolands each, 2026-11-19): 10 kt headwind on 03L 89–100 (median 100); 10 kt crosswind on 03L 81–97 (median
+  96); 15 kt gusty crosswind on 21R 35–97 (median 85), where 51 flights log a stall warning and 2 (seeds 42 and
+  559) bounce and are flagged as a crash about 5 s after touchdown. Seeds 1–10 give 74–94 in the gusty crosswind
+  on all four runways. Calm has no turbulence, so its scores do not depend on the seed.
 
 ## Controls (current)
 - Keyboard: W/S or ↑/↓ pitch, A/D or ←/→ roll, Q/E rudder, Shift/Ctrl throttle, B brake, C camera, T take control,
