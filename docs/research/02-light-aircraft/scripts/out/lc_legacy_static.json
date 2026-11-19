@@ -1,0 +1,106 @@
+{
+ "type": "c172s",
+ "mode": "static",
+ "T0_input": 3538,
+ "legacy": {
+  "propulsion": {
+   "P": 134230,
+   "eta": 0.883,
+   "T0": 3538,
+   "idle": 0
+  },
+  "aero": {
+   "CD0": 0.05899,
+   "K": 0.07077,
+   "CL0": 0.25,
+   "CLa": 5.17,
+   "CLflap": 0.321,
+   "CDflap": 0.0193,
+   "CDgear": 0,
+   "Cm0": -0.0206,
+   "Cma": -0.942,
+   "Cmflap": -0.0864,
+   "aStall": 18.3,
+   "aStallFlap": 0.57
+  }
+ },
+ "notes": [
+  "polar from glide 68.4 KCAS E 9.114: CD0s 0.0590 Ks 0.0708; idle 0 (POH glide is at idle, windmilling)",
+  "climb fit (static): target Vy 73.2 KCAS ROC 730 fpm → T0 3538 N, Vc 33.5 m/s"
+ ],
+ "targets": {
+  "VS1": 53,
+  "VS0": 48,
+  "Vy": 73.2,
+  "roc": 730,
+  "glide": {
+   "speed_kt": 68,
+   "ratio": 9.114
+  }
+ },
+ "check": {
+  "stall_clean": {
+   "CLmax": 1.4646,
+   "V_CLmax_eas": 52.806,
+   "V_CLmax_cas": 52.811,
+   "nz": 0.94347,
+   "alpha_deg": 15.488,
+   "t": 26.162,
+   "rate": 1.0394,
+   "VSR_eas": 54.366,
+   "VSR_cas": 54.37,
+   "Vmin_eas": 51.606,
+   "de_end_deg": -20.803,
+   "ias0": 80
+  },
+  "stall_full": {
+   "CLmax": 1.7857,
+   "V_CLmax_eas": 47.999,
+   "V_CLmax_cas": 48.003,
+   "nz": 0.95042,
+   "alpha_deg": 15.835,
+   "t": 24.271,
+   "rate": 0.98888,
+   "VSR_eas": 49.235,
+   "VSR_cas": 49.239,
+   "Vmin_eas": 47.08,
+   "de_end_deg": -22,
+   "ias0": 72
+  },
+  "climb": {
+   "Vy_kt": 66.91,
+   "ROCmax_fpm": 743.18,
+   "Vy_grid_kt": 67,
+   "ROC_grid_fpm": 743.18,
+   "Vx_kt": 66,
+   "gammaMax_deg": 6.3705,
+   "atVy": {
+    "ias": 67,
+    "V": 34.522,
+    "alpha": 8.1073,
+    "de": -7.1701,
+    "gamma": 6.2785,
+    "theta": 14.386,
+    "roc_fpm": 743.18,
+    "LoverD": -9.0892
+   },
+   "edge": false
+  },
+  "glide": {
+   "Vbg_kt": 68.217,
+   "LD": 9.1136,
+   "Vbg_grid_kt": 68,
+   "LD_grid": 9.1134,
+   "sink_fpm": 785.27,
+   "edge": false
+  },
+  "takeoff": {
+   "VR": 52,
+   "groundRoll_m": 289.78,
+   "tLiftoff_s": 15.471,
+   "V_LOF_kt": 65.065,
+   "dist50ft_m": 487.89,
+   "V50_kt": 67.72
+  }
+ }
+}

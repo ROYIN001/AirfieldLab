@@ -1,0 +1,302 @@
+{
+ "_meta": {
+  "script": "scripts/ls_fleet.mjs",
+  "register_as_of": "2026-07-09",
+  "generated": "2026-11-19"
+ },
+ "total_rows": 83,
+ "ato_total": 78,
+ "ato_schools_with_aircraft": 9,
+ "clubs": 3,
+ "byType": {
+  "da40d": 9,
+  "da40_180": 7,
+  "da42_tae125": 5,
+  "da42ng": 5,
+  "c172r": 11,
+  "c172s": 35,
+  "c152": 4,
+  "be76": 1,
+  "t206h": 1,
+  "p68c": 1,
+  "p2002jf": 1,
+  "p2006t": 1,
+  "pa28_161": 2
+ },
+ "byVariant": {
+  "c172r|172P": 1,
+  "c172r|172N": 2,
+  "c172r|172M": 3,
+  "c152|C150H": 1,
+  "pa28_161|PA-28-151": 1
+ },
+ "byFam": {
+  "DA40": 16,
+  "DA42": 10,
+  "C172": 46,
+  "C150/152": 4,
+  "other": 7
+ },
+ "wuhu_da42ng": 3,
+ "unknown": [],
+ "c172_family_ato": 44,
+ "c172s_ato": 34,
+ "c172s_share_of_c172_ato_pct": 77.3,
+ "c172_family_share_of_ato_pct": 56.4,
+ "diamond_ato": 26,
+ "twins_ato": 13,
+ "schools_flying": {
+  "da40d": 2,
+  "da40_180": 1,
+  "da42_tae125": 2,
+  "da42ng": 4,
+  "c172r": 4,
+  "c172s": 6,
+  "c152": 2,
+  "be76": 1,
+  "t206h": 1,
+  "p68c": 1,
+  "p2002jf": 1,
+  "p2006t": 1,
+  "pa28_161": 0
+ },
+ "byOp": {
+  "catc": {
+   "n": 22,
+   "base_icao": "VTPH",
+   "types": {
+    "da40d": 7,
+    "da40_180": 7,
+    "da42_tae125": 4,
+    "da42ng": 1,
+    "c172r": 3
+   },
+   "variants": {}
+  },
+  "bac": {
+   "n": 26,
+   "base_icao": "VTUQ",
+   "types": {
+    "da42_tae125": 1,
+    "da42ng": 1,
+    "c172r": 3,
+    "c172s": 21
+   },
+   "variants": {
+    "c172r|172P": 1
+   }
+  },
+  "batc": {
+   "n": 9,
+   "base_icao": "VTPO",
+   "types": {
+    "c172s": 7,
+    "da42ng": 2
+   },
+   "variants": {}
+  },
+  "aat": {
+   "n": 7,
+   "base_icao": "VTSE",
+   "types": {
+    "c172r": 2,
+    "c172s": 2,
+    "c152": 2,
+    "da42ng": 1
+   },
+   "variants": {
+    "c172r|172N": 1,
+    "c172r|172M": 1
+   }
+  },
+  "tif": {
+   "n": 5,
+   "base_icao": "VTPP",
+   "types": {
+    "c172r": 2,
+    "c172s": 2,
+    "be76": 1
+   },
+   "variants": {
+    "c172r|172M": 1,
+    "c172r|172N": 1
+   }
+  },
+  "d0507": {
+   "n": 2,
+   "base_icao": null,
+   "types": {
+    "c172s": 1,
+    "t206h": 1
+   },
+   "variants": {}
+  },
+  "premium": {
+   "n": 2,
+   "base_icao": null,
+   "types": {
+    "c152": 1,
+    "p68c": 1
+   },
+   "variants": {}
+  },
+  "taa": {
+   "n": 3,
+   "base_icao": "VTUV",
+   "types": {
+    "c172s": 1,
+    "p2002jf": 1,
+    "p2006t": 1
+   },
+   "variants": {}
+  },
+  "npu": {
+   "n": 2,
+   "base_icao": "VTUW",
+   "types": {
+    "da40d": 2
+   },
+   "variants": {}
+  },
+  "tfc": {
+   "n": 2,
+   "base_icao": null,
+   "types": {
+    "c172r": 1,
+    "c152": 1
+   },
+   "variants": {
+    "c172r|172M": 1,
+    "c152|C150H": 1
+   }
+  },
+  "phoenix": {
+   "n": 1,
+   "base_icao": null,
+   "types": {
+    "c172s": 1
+   },
+   "variants": {}
+  },
+  "ffc": {
+   "n": 2,
+   "base_icao": null,
+   "types": {
+    "pa28_161": 2
+   },
+   "variants": {
+    "pa28_161|PA-28-151": 1
+   }
+  }
+ },
+ "crossChecks": [
+  {
+   "school": "catc",
+   "source": "LS3 slide 7 (2024)",
+   "stated_airplanes": 25,
+   "register": 22
+  },
+  {
+   "school": "tif",
+   "source": "LS12 (20 Aug 2026)",
+   "stated_airplanes": 5,
+   "register": 5
+  },
+  {
+   "school": "bac",
+   "source": "LS9 (Oct 2017)",
+   "stated_airplanes": 47,
+   "register": 26
+  }
+ ],
+ "ranking": [
+  {
+   "id": "c172r",
+   "ato_aircraft": 10,
+   "all_aircraft": 11,
+   "ato_schools": 4,
+   "fnpt": 3,
+   "distinct": "",
+   "score": 21,
+   "rank": 1,
+   "priority": 1
+  },
+  {
+   "id": "c152",
+   "ato_aircraft": 3,
+   "all_aircraft": 4,
+   "ato_schools": 2,
+   "fnpt": 0,
+   "distinct": "สองที่นั่ง เบากว่า C172",
+   "score": 9,
+   "rank": 2,
+   "priority": 2
+  },
+  {
+   "id": "be76",
+   "ato_aircraft": 1,
+   "all_aircraft": 1,
+   "ato_schools": 1,
+   "fnpt": 0,
+   "distinct": "สองเครื่องยนต์ T-tail",
+   "score": 5,
+   "rank": 3,
+   "priority": 3
+  },
+  {
+   "id": "p2002jf",
+   "ato_aircraft": 1,
+   "all_aircraft": 1,
+   "ato_schools": 1,
+   "fnpt": 0,
+   "distinct": "สองที่นั่ง ปีกต่ำ ระดับ LSA/VLA",
+   "score": 5,
+   "rank": 4,
+   "priority": 3
+  },
+  {
+   "id": "p2006t",
+   "ato_aircraft": 1,
+   "all_aircraft": 1,
+   "ato_schools": 1,
+   "fnpt": 0,
+   "distinct": "สองเครื่องยนต์ Rotax ล้อพับได้",
+   "score": 5,
+   "rank": 5,
+   "priority": 3
+  },
+  {
+   "id": "p68c",
+   "ato_aircraft": 1,
+   "all_aircraft": 1,
+   "ato_schools": 1,
+   "fnpt": 0,
+   "distinct": "สองเครื่องยนต์ ปีกสูง ล้อตายตัว",
+   "score": 5,
+   "rank": 6,
+   "priority": 3
+  },
+  {
+   "id": "t206h",
+   "ato_aircraft": 1,
+   "all_aircraft": 1,
+   "ato_schools": 1,
+   "fnpt": 0,
+   "distinct": "",
+   "score": 3,
+   "rank": 7,
+   "priority": 3
+  },
+  {
+   "id": "pa28_161",
+   "ato_aircraft": 0,
+   "all_aircraft": 2,
+   "ato_schools": 0,
+   "fnpt": 0,
+   "distinct": "",
+   "score": 0,
+   "rank": 8,
+   "priority": 3
+  }
+ ]
+}

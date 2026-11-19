@@ -1,0 +1,332 @@
+{
+ "model": "BEM CT/CP of round 1 (HC-D4N/D9512) + clean polar CD0c + K CL² (K from the T-6 glide polar); ค่าประมาณ",
+ "K": 0.068357,
+ "pc9m": {
+  "CD0c": 0.02204,
+  "eta_at_vmax": 0.869,
+  "vmax_point": {
+   "ktas": 276,
+   "h_ft": 2000,
+   "m": 2100,
+   "src": "LP12"
+  },
+  "MTOW": {
+   "m": 2350,
+   "VS1_kcas": 77,
+   "Vx_model_keas": 76.25,
+   "gamma_max_deg": 20.4,
+   "Vx_card_kcas": 92.4,
+   "gamma_at_Vx_card_deg": 19.8,
+   "ROC_at_Vx_card_fpm": 3173,
+   "Vy_keas": 139.3,
+   "ROC_fpm": 3674,
+   "ROC_ms": 18.7,
+   "eta_at_Vy": 0.789,
+   "P_kW": 708
+  },
+  "training_mass": {
+   "m": 2123.8,
+   "VS1_kcas": 73.2,
+   "Vx_model_keas": 70,
+   "gamma_max_deg": 24.3,
+   "Vx_card_kcas": 87.84,
+   "gamma_at_Vx_card_deg": 23.4,
+   "ROC_at_Vx_card_fpm": 3530,
+   "Vy_keas": 138,
+   "ROC_fpm": 4156,
+   "ROC_ms": 21.1,
+   "eta_at_Vy": 0.786,
+   "P_kW": 708
+  },
+  "hot": [
+   {
+    "oat_C": 15,
+    "sigma": 0.9997,
+    "P_kW": 708,
+    "ROC_fpm_MTOW": 3674,
+    "Vy_keas": 139.3,
+    "thrust_ratio_TO": 0.9998,
+    "takeoff_factor": 1.001,
+    "landing_factor": 1
+   },
+   {
+    "oat_C": 31,
+    "sigma": 0.9471,
+    "P_kW": 708,
+    "ROC_fpm_MTOW": 3656,
+    "Vy_keas": 138.8,
+    "thrust_ratio_TO": 0.9679,
+    "takeoff_factor": 1.091,
+    "landing_factor": 1.056
+   },
+   {
+    "oat_C": 35,
+    "sigma": 0.9348,
+    "P_kW": 708,
+    "ROC_fpm_MTOW": 3652,
+    "Vy_keas": 138.5,
+    "thrust_ratio_TO": 0.9605,
+    "takeoff_factor": 1.114,
+    "landing_factor": 1.07
+   }
+  ],
+  "static_thrust_kN": 12.18
+ },
+ "pc7mk2": {
+  "CD0c": 0.02239,
+  "eta_at_vmax": 0.87,
+  "vmax_point": {
+   "ktas": 242,
+   "h_ft": 0,
+   "m": 2100,
+   "src": "LP9"
+  },
+  "MTOW": {
+   "m": 2250,
+   "VS1_kcas": 75,
+   "Vx_model_keas": 75,
+   "gamma_max_deg": 16,
+   "Vx_card_kcas": 90,
+   "gamma_at_Vx_card_deg": 15.4,
+   "ROC_at_Vx_card_fpm": 2420,
+   "Vy_keas": 139.3,
+   "ROC_fpm": 2726,
+   "ROC_ms": 13.8,
+   "eta_at_Vy": 0.829,
+   "P_kW": 522
+  },
+  "training_mass": {
+   "m": 2068.8,
+   "VS1_kcas": 71.92,
+   "Vx_model_keas": 70.5,
+   "gamma_max_deg": 18.6,
+   "Vx_card_kcas": 86.3,
+   "gamma_at_Vx_card_deg": 17.8,
+   "ROC_at_Vx_card_fpm": 2678,
+   "Vy_keas": 138.3,
+   "ROC_fpm": 3036,
+   "ROC_ms": 15.4,
+   "eta_at_Vy": 0.826,
+   "P_kW": 522
+  },
+  "hot": [
+   {
+    "oat_C": 15,
+    "sigma": 0.9997,
+    "P_kW": 522,
+    "ROC_fpm_MTOW": 2726,
+    "Vy_keas": 139.3,
+    "thrust_ratio_TO": 0.9998,
+    "takeoff_factor": 1,
+    "landing_factor": 1
+   },
+   {
+    "oat_C": 31,
+    "sigma": 0.9471,
+    "P_kW": 522,
+    "ROC_fpm_MTOW": 2735,
+    "Vy_keas": 134,
+    "thrust_ratio_TO": 0.9727,
+    "takeoff_factor": 1.085,
+    "landing_factor": 1.056
+   },
+   {
+    "oat_C": 35,
+    "sigma": 0.9348,
+    "P_kW": 522,
+    "ROC_fpm_MTOW": 2734,
+    "Vy_keas": 132,
+    "thrust_ratio_TO": 0.9665,
+    "takeoff_factor": 1.107,
+    "landing_factor": 1.07
+   }
+  ],
+  "static_thrust_kN": 11.55
+ },
+ "t6a": {
+  "CD0c": 0.02619,
+  "eta_at_vmax": 0.873,
+  "vmax_point": {
+   "ktas": 270,
+   "h_ft": 1000,
+   "m": 2721.55422,
+   "src": "LB16"
+  },
+  "MTOW": {
+   "m": 2948.4,
+   "VS1_kcas": 83.29,
+   "Vx_model_keas": 89.5,
+   "gamma_max_deg": 15.9,
+   "Vx_card_kcas": 99.95,
+   "gamma_at_Vx_card_deg": 15.7,
+   "ROC_at_Vx_card_fpm": 2743,
+   "Vy_keas": 143.8,
+   "ROC_fpm": 3165,
+   "ROC_ms": 16.1,
+   "eta_at_Vy": 0.785,
+   "P_kW": 820
+  },
+  "training_mass": {
+   "m": 2574.6,
+   "VS1_kcas": 77.83,
+   "Vx_model_keas": 80.75,
+   "gamma_max_deg": 20.1,
+   "Vx_card_kcas": 93.4,
+   "gamma_at_Vx_card_deg": 19.8,
+   "ROC_at_Vx_card_fpm": 3202,
+   "Vy_keas": 141.8,
+   "ROC_fpm": 3771,
+   "ROC_ms": 19.2,
+   "eta_at_Vy": 0.781,
+   "P_kW": 820
+  },
+  "m6300": {
+   "m": 2857.6,
+   "VS1_kcas": 82,
+   "Vx_model_keas": 87.5,
+   "gamma_max_deg": 16.8,
+   "Vx_card_kcas": 98.4,
+   "gamma_at_Vx_card_deg": 16.6,
+   "ROC_at_Vx_card_fpm": 2847,
+   "Vy_keas": 143.3,
+   "ROC_fpm": 3299,
+   "ROC_ms": 16.8,
+   "eta_at_Vy": 0.784,
+   "P_kW": 820
+  },
+  "roc_6500_over_6300": 0.9594,
+  "hot": [
+   {
+    "oat_C": 15,
+    "sigma": 0.9997,
+    "P_kW": 820,
+    "ROC_fpm_MTOW": 3164,
+    "Vy_keas": 143.8,
+    "thrust_ratio_TO": 0.9998,
+    "takeoff_factor": 1.001,
+    "landing_factor": 1
+   },
+   {
+    "oat_C": 31,
+    "sigma": 0.9471,
+    "P_kW": 820,
+    "ROC_fpm_MTOW": 3150,
+    "Vy_keas": 143.3,
+    "thrust_ratio_TO": 0.9705,
+    "takeoff_factor": 1.088,
+    "landing_factor": 1.056
+   },
+   {
+    "oat_C": 35,
+    "sigma": 0.9348,
+    "P_kW": 820,
+    "ROC_fpm_MTOW": 3147,
+    "Vy_keas": 143.3,
+    "thrust_ratio_TO": 0.9638,
+    "takeoff_factor": 1.11,
+    "landing_factor": 1.07
+   }
+  ],
+  "static_thrust_kN": 12.68
+ },
+ "t6c": {
+  "CD0c": 0.02619,
+  "eta_at_vmax": 0.873,
+  "vmax_point": "ใช้ CD0c ของ t6a",
+  "MTOW": {
+   "m": 3129.8,
+   "VS1_kcas": 85.82,
+   "Vx_model_keas": 93.25,
+   "gamma_max_deg": 14.3,
+   "Vx_card_kcas": 103,
+   "gamma_at_Vx_card_deg": 14.1,
+   "ROC_at_Vx_card_fpm": 2549,
+   "Vy_keas": 144.5,
+   "ROC_fpm": 2917,
+   "ROC_ms": 14.8,
+   "eta_at_Vy": 0.787,
+   "P_kW": 820
+  },
+  "training_mass": {
+   "m": 2775.5,
+   "VS1_kcas": 80.81,
+   "Vx_model_keas": 85.5,
+   "gamma_max_deg": 17.7,
+   "Vx_card_kcas": 96.98,
+   "gamma_at_Vx_card_deg": 17.4,
+   "ROC_at_Vx_card_fpm": 2945,
+   "Vy_keas": 142.8,
+   "ROC_fpm": 3427,
+   "ROC_ms": 17.4,
+   "eta_at_Vy": 0.783,
+   "P_kW": 820
+  },
+  "hot": [
+   {
+    "oat_C": 15,
+    "sigma": 0.9997,
+    "P_kW": 820,
+    "ROC_fpm_MTOW": 2917,
+    "Vy_keas": 144.5,
+    "thrust_ratio_TO": 0.9998,
+    "takeoff_factor": 1.001,
+    "landing_factor": 1
+   },
+   {
+    "oat_C": 31,
+    "sigma": 0.9471,
+    "P_kW": 820,
+    "ROC_fpm_MTOW": 2902,
+    "Vy_keas": 144.3,
+    "thrust_ratio_TO": 0.9708,
+    "takeoff_factor": 1.088,
+    "landing_factor": 1.056
+   },
+   {
+    "oat_C": 35,
+    "sigma": 0.9348,
+    "P_kW": 820,
+    "ROC_fpm_MTOW": 2898,
+    "Vy_keas": 144,
+    "thrust_ratio_TO": 0.9641,
+    "takeoff_factor": 1.11,
+    "landing_factor": 1.07
+   }
+  ],
+  "static_thrust_kN": 12.68
+ },
+ "check": {
+  "pc7mk2_ROC_MTOW": {
+   "model": 2726,
+   "public": 2840,
+   "src": "LP9"
+  },
+  "pc9m_ROC_MTOW": {
+   "model": 3674,
+   "public": 4090,
+   "src": "LP12/LP13 (mass not stated)"
+  },
+  "t6a_ROC_6300lb": {
+   "model": 3299,
+   "public": 4000,
+   "src": "LP29 (SL ISA 6,300 lb)"
+  },
+  "t6a_Vy_6300lb": {
+   "model": 143.3,
+   "public": 140,
+   "src": "LP29 (KIAS)"
+  },
+  "pc7mk2_TO_from_t6a": {
+   "thrust_07VLOF_kN": {
+    "t6a": 11.82,
+    "pc7mk2": 8.97
+   },
+   "ground_scale": 0.858,
+   "air_scale": 0.827,
+   "ground_roll_m": 366,
+   "dist50ft_m": 517,
+   "public": 415,
+   "src": "LP29 scaled vs LP9"
+  }
+ }
+}

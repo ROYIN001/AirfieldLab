@@ -1,0 +1,108 @@
+{
+ "vmca": {
+  "ref_cg_1900": {
+   "kcas": 72.7,
+   "kias": 73.7
+  },
+  "ref_cg_1510": {
+   "kcas": 73.6,
+   "kias": 74.6
+  },
+  "aft_cg_1510": {
+   "kcas": 74.1,
+   "kias": 75.1
+  },
+  "ref_cg_1900_wingsLevel": {
+   "kcas": 90,
+   "kias": 90
+  },
+  "ref_cg_1900_yawOnly": {
+   "kcas": 66.2,
+   "kias": 67.2
+  },
+  "inputs": {
+   "yE": 1.7,
+   "rudder_right_deg": 29,
+   "Cnda_per_CL": -0.0286,
+   "armAft": 0.988,
+   "CYb": -0.5821,
+   "CYdr": 0.1316,
+   "Clb": -0.069,
+   "Clda": 0.1459,
+   "Cldr": 0.007847,
+   "Cnb": 0.07722,
+   "Cndr": -0.04595
+  },
+  "at_1900": {
+   "kcas": 72.66912227596211,
+   "beta": 4.906574706918671,
+   "da": 9.83841758823675,
+   "dr": -28.99999999999998
+  },
+  "bank_sensitivity_kt_per_deg": 3.46,
+  "afm": {
+   "TCDS_KEAS": 75,
+   "AFM_KIAS": 76
+  }
+ },
+ "layout": {
+  "hub_mDAT": 0.954,
+  "left_y": -1.7,
+  "right_y": 1.7,
+  "z_down": 0.15,
+  "sense": [
+   1,
+   1
+  ],
+  "side": [
+   "left",
+   "right"
+  ],
+  "critical": {
+   "N_left_dead": -4260,
+   "N_right_dead": 3900,
+   "critical": "left"
+  },
+  "checks": {
+   "left_is_negative_y": true,
+   "both_CW": true,
+   "below_cg": true
+  }
+ },
+ "arith": {
+  "ft_to_m": {
+   "1200": 365.8,
+   "1302": 396.8,
+   "1401": 427,
+   "1503": 458.1,
+   "1950": 594.4,
+   "2267": 691,
+   "2329": 709.9,
+   "2405": 733
+  },
+  "hot_day": {
+   "sigma": 0.9351,
+   "factor": 1.093,
+   "roll_m": 500.8,
+   "d50_m": 801.4
+  },
+  "hp": {
+   "kW_to_hp_SAE": 165.6,
+   "kW_to_PS": 167.9,
+   "TAE_99kW_PS": 134.6
+  },
+  "ff_92pct_lph": {
+   "rho080": 32.2,
+   "rho0815": 31.6,
+   "rho084": 30.7,
+   "measured_8p2gph": 31
+  },
+  "bsfc_from_flight_test_g_kWh": 219,
+  "bsfc_VI_60pct_g_kWh": 213,
+  "oei_loss_pct": 82.2,
+  "vat_cat": {
+   "VS0_kcas": 60,
+   "Vat": 78
+  }
+ }
+}

@@ -1,0 +1,722 @@
+{
+ "tests": [
+  {
+   "id": "T-LG-01",
+   "cond": "stall แฟลป UP (0°) ล้อขึ้น idle 1 kt/s 1,180 kg 3,000 ft",
+   "qty": "Vmin KIAS",
+   "expected": 66,
+   "tol": "±2",
+   "origin": "AFM p2-7 green arc (VS1) [LG2]",
+   "current": 64.5,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-02",
+   "cond": "stall แฟลป T/O (15°) ล้อลง idle 1 kt/s 1,180 kg 3,000 ft",
+   "qty": "Vmin KIAS",
+   "expected": 56,
+   "tol": "±2",
+   "origin": "AFM p5-5 [LG4]",
+   "current": 55.61,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-03",
+   "cond": "stall แฟลป FULL (40°) ล้อลง idle 1 kt/s 1,180 kg 3,000 ft",
+   "qty": "Vmin KIAS",
+   "expected": 53,
+   "tol": "±2",
+   "origin": "AFM p5-5 [LG4]",
+   "current": 52.7,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-04",
+   "cond": "stall แฟลป FULL ล้อลง idle 1 kt/s 1,230 kg 3,000 ft",
+   "qty": "Vmin KCAS",
+   "expected": 55,
+   "tol": "±2",
+   "origin": "AFM p W5-5 (1,230 kg) [LG4]; โบรชัวร์ 55 KCAS [LG6]",
+   "current": 55.16,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-05",
+   "cond": "ตาราง stall แฟลป FULL 1,180 kg มุมเอียง 60°: V_S(φ) = V_S0/√cos φ (ฟิสิกส์ n = 1/cos φ)",
+   "qty": "KCAS",
+   "expected": 76.37,
+   "tol": "±1.5",
+   "origin": "ฟิสิกส์; AFM ให้ 76 KCAS [LG4]",
+   "current": 76,
+   "current_note": "= ค่า AFM (ตรวจตาราง AFM กับฟิสิกส์ ไม่ใช่ผลซิม)",
+   "pass": true
+  },
+  {
+   "id": "T-LG-06",
+   "cond": "CLmax 1 g แฟลป FULL จาก 54 KCAS 1,180 kg nz 0.95 (lm_polar)",
+   "qty": "CLmax",
+   "expected": 1.576,
+   "tol": "±0.01",
+   "origin": "ฟิสิกส์ + วิธีหัวข้อ 01 §01.5",
+   "current": 1.577,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-07",
+   "cond": "climb SL ISA เต็มกำลังสองเครื่อง (2 × 73.5 kW) clean ล้อขึ้น 1,180 kg",
+   "qty": "Vy KCAS",
+   "expected": 79,
+   "tol": "±3",
+   "origin": "AFM S4-7: VY 80 KIAS [LG3]",
+   "current": 78.51,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-08",
+   "cond": "เหมือน T-LG-07",
+   "qty": "ROC max fpm",
+   "expected": 1105,
+   "tol": "±80",
+   "origin": "ตาราง en-route ROC (ประมาณที่ 15 °C) [LG4]; โบรชัวร์ 1,036 ที่ 1,230 kg",
+   "current": 1120,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-09",
+   "cond": "ร่อน idle ใบพัดหมุน 3,000 ft clean ล้อขึ้น 1,180 kg",
+   "qty": "L/D",
+   "expected": 11.2,
+   "tol": "±0.6",
+   "origin": "ค่าประมาณจาก polar ทดสอบบิน + แรงต้านใบพัด [LG7][LG0]",
+   "current": 11.2,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-10",
+   "cond": "เหมือน T-LG-09",
+   "qty": "V best glide KCAS",
+   "expected": 82,
+   "tol": "±3",
+   "origin": "AFM S3-56: best glide 83 KIAS (บท 3 เรียกว่า VY; บัตรใช้ VY 80 จาก S4-7) [LG3]",
+   "current": 81.89,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-11",
+   "cond": "trim cruise 110 KCAS 3,000 ft ISA มวลฝึก 1,128 kg clean ล้อขึ้น",
+   "qty": "α deg",
+   "expected": 1.711,
+   "tol": "±0.3",
+   "origin": "ฟิสิกส์ α = (CL − CL0 − CLde δe)/CLα",
+   "current": 1.694,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-12",
+   "cond": "linear modes 110 KCAS 3,000 ft มวลฝึก",
+   "qty": "short period ωn rad/s",
+   "expected": 3.41,
+   "tol": "±15 %",
+   "origin": "ทดสอบบิน [LG7]",
+   "current": 3.847,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-13",
+   "cond": "เหมือน T-LG-12",
+   "qty": "short period ζ",
+   "expected": 0.4,
+   "tol": "±0.1",
+   "origin": "ทดสอบบิน [LG7]",
+   "current": 0.5934,
+   "current_note": "",
+   "pass": false
+  },
+  {
+   "id": "T-LG-14",
+   "cond": "เหมือน T-LG-12",
+   "qty": "Dutch roll ωn rad/s",
+   "expected": 2,
+   "tol": "±15 %",
+   "origin": "ทดสอบบิน [LG7]",
+   "current": 2.162,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-15",
+   "cond": "เหมือน T-LG-12",
+   "qty": "Dutch roll ζ",
+   "expected": 0.26,
+   "tol": "±0.08",
+   "origin": "ทดสอบบิน [LG7]",
+   "current": 0.2372,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-16",
+   "cond": "เหมือน T-LG-12",
+   "qty": "phugoid คาบ s",
+   "expected": 27,
+   "tol": "±20 %",
+   "origin": "ทดสอบบิน [LG7]",
+   "current": 31.06,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-17",
+   "cond": "วิ่งขึ้น SL ISA ลมสงบ ทางแข็ง 1,230 kg แฟลป T/O กำลังเต็ม VR 64 (AFM 1,230 kg ใช้ 65) θ หมุน 12°",
+   "qty": "ground roll m",
+   "expected": 301,
+   "tol": "±20 %",
+   "origin": "โบรชัวร์ 2021 (ไม่ระบุสภาพ) [LG6]",
+   "current": 335,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-18",
+   "cond": "เหมือน T-LG-17",
+   "qty": "ระยะถึง 50 ft m",
+   "expected": 394,
+   "tol": "±20 %",
+   "origin": "โบรชัวร์ 2021 [LG6]",
+   "current": 504.1,
+   "current_note": "",
+   "pass": false
+  },
+  {
+   "id": "T-LG-19",
+   "cond": "ลงจอด SL ISA ลมสงบ ทางแข็ง 1,230 kg แฟลป FULL ล้อลง autoland ของซิมที่ final 70 KIAS (≈ 69 KEAS) เส้นร่อน 3° แล้ว flare เบรกเต็มหลังล้อหน้าแตะพื้น",
+   "qty": "ground roll m",
+   "expected": 231,
+   "tol": "±20 %",
+   "origin": "โบรชัวร์ 2021 [LG6]",
+   "current": 223.7,
+   "current_note": "",
+   "pass": true
+  },
+  {
+   "id": "T-LG-20",
+   "cond": "เหมือน T-LG-19",
+   "qty": "ระยะจาก 50 ft ถึงหยุด m",
+   "expected": 349,
+   "tol": "±20 %",
+   "origin": "โบรชัวร์ 2021 [LG6]",
+   "current": 543.7,
+   "current_note": "",
+   "pass": false
+  },
+  {
+   "id": "T-LG-21",
+   "cond": "Rotax 912 S3 take-off 73.5 kW ที่ใบพัด 2,388 rpm",
+   "qty": "แรงบิดเพลาใบพัด N m",
+   "expected": 293.9,
+   "tol": "±1",
+   "origin": "ฟิสิกส์ Q = P/ω [LG2]",
+   "current": "ไม่รองรับในซิมวันนี้",
+   "current_note": "",
+   "pass": null
+  },
+  {
+   "id": "T-LG-22",
+   "cond": "วันร้อน VTBD 9 ft 35 °C คันเร่งเต็ม (ind_friction f 0.10)",
+   "qty": "P/P_rated",
+   "expected": 0.9634,
+   "tol": "±0.01",
+   "origin": "หัวข้อ 01 §01.6.1",
+   "current": "ไม่รองรับในซิมวันนี้",
+   "current_note": "",
+   "pass": null
+  },
+  {
+   "id": "T-LG-23",
+   "cond": "climb SL 35 °C เต็มกำลัง 1,180 kg",
+   "qty": "ROC fpm",
+   "expected": 971.2,
+   "tol": "±100",
+   "origin": "ตาราง en-route ต่อเส้นตรงจาก 0/25 °C [LG4] (ค่าประมาณ)",
+   "current": "ไม่รองรับในซิมวันนี้",
+   "current_note": "",
+   "pass": null
+  },
+  {
+   "id": "T-LG-24",
+   "cond": "OEI: เครื่องซ้ายดับ feather 1,180 kg SL ISA ที่ VYSE 80 KIAS",
+   "qty": "ROC fpm",
+   "expected": 250,
+   "tol": "±60",
+   "origin": "Flying 2011 [LG9]; ทดสอบ winglet 300 fpm ที่ 800 ft [LG7]",
+   "current": "ไม่รองรับในซิมวันนี้",
+   "current_note": "",
+   "pass": null
+  },
+  {
+   "id": "T-LG-25",
+   "cond": "cruise 110 KCAS 3,000 ft MTOW 1,180 kg ดึงคันใน turn หรือ pull-up (n/α 10.39 g/rad)",
+   "qty": "แรงที่ wheel ต่อ g (lbf/g)",
+   "expected": "12.5–48.1 (56–214 N/g)",
+   "tol": "ช่วงปิด ส่วนเผื่อ 0",
+   "origin": "MIL-F-8785C Level 1 wheel [R1:C12] + 14 CFR 23.155 W/100 [LM3] (แถบเป้าหมายค่าประมาณ ไม่ใช่ค่าวัด)",
+   "current": "ไม่รองรับในซิมวันนี้",
+   "current_note": "(ไม่มีแบบจำลองแรงที่คัน)",
+   "pass": null
+  },
+  {
+   "id": "T-LG-26",
+   "cond": "stall แฟลป UP ปีกระดับ สองเครื่อง idle แล้วฟื้นตามวิธีมาตรฐาน (ลดมุมปะทะ เพิ่มกำลัง) 1,180 kg",
+   "qty": "ความสูงที่เสีย ft",
+   "expected": 180,
+   "tol": "±30",
+   "origin": "AFM p5-5: สูงสุด 180 ft (55 m) [LG5]",
+   "current": "ไม่รองรับในซิมวันนี้",
+   "current_note": "",
+   "pass": null
+  }
+ ],
+ "summary": {
+  "n": 26,
+  "pass": 17,
+  "fail": 3,
+  "na": 6
+ },
+ "runs": {
+  "m1180": {
+   "stall": {
+    "UP": {
+     "f": 0,
+     "gear": 0,
+     "CLmax": 1.08891,
+     "V_CLmax_eas": 66.0507,
+     "V_CLmax_cas": 66.0599,
+     "nz": 0.98223,
+     "alpha_deg": 13.1514,
+     "t": 23.4083,
+     "rate": 0.980391,
+     "VSR_eas": 66.6455,
+     "VSR_cas": 66.6547,
+     "Vmin_eas": 63.4952,
+     "de_end_deg": -15,
+     "ias0": 89,
+     "VSR_kias": 67.6547,
+     "Vmin_kias": 64.4952
+    },
+    "T/O": {
+     "f": 0.7735,
+     "gear": 1,
+     "CLmax": 1.46573,
+     "V_CLmax_eas": 56.8883,
+     "V_CLmax_cas": 56.894,
+     "nz": 0.980767,
+     "alpha_deg": 12.4861,
+     "t": 20.8083,
+     "rate": 0.918462,
+     "VSR_eas": 57.4434,
+     "VSR_cas": 57.4492,
+     "Vmin_eas": 55.6121,
+     "de_end_deg": -15,
+     "ias0": 76,
+     "VSR_kias": 57.4492,
+     "Vmin_kias": 55.6121
+    },
+    "FULL": {
+     "f": 1,
+     "gear": 1,
+     "CLmax": 1.57725,
+     "V_CLmax_eas": 54.8293,
+     "V_CLmax_cas": 54.8343,
+     "nz": 0.980373,
+     "alpha_deg": 12.3103,
+     "t": 20.2167,
+     "rate": 0.898799,
+     "VSR_eas": 55.3754,
+     "VSR_cas": 55.3805,
+     "Vmin_eas": 53.6987,
+     "de_end_deg": -15,
+     "ias0": 73,
+     "VSR_kias": 54.5073,
+     "Vmin_kias": 52.6987
+    }
+   },
+   "climb": {
+    "Vy_kt": 78.5075,
+    "ROCmax_fpm": 1119.97,
+    "Vy_grid_kt": 78,
+    "ROC_grid_fpm": 1119.87,
+    "Vx_kt": 74,
+    "gammaMax_deg": 8.52199,
+    "atVy": {
+     "ias": 78,
+     "V": 40.1896,
+     "alpha": 7.32528,
+     "de": -6.0552,
+     "gamma": 8.1377,
+     "theta": 15.463,
+     "roc_fpm": 1119.87,
+     "LoverD": -6.99338
+    },
+    "edge": false
+   },
+   "glide": {
+    "zeroThrust": {
+     "Vbg_kt": 81.8915,
+     "LD": 11.198,
+     "Vbg_grid_kt": 82,
+     "LD_grid": 11.198,
+     "sink_fpm": 772.216,
+     "edge": false
+    },
+    "idle": {
+     "Vbg_kt": 81.8915,
+     "LD": 11.198,
+     "Vbg_grid_kt": 82,
+     "LD_grid": 11.198,
+     "sink_fpm": 772.216,
+     "edge": false
+    }
+   },
+   "takeoff": {
+    "flap": "T/O",
+    "VR": 64,
+    "groundRoll_m": 319.357,
+    "tLiftoff_s": 14.9292,
+    "V_LOF_kt": 71.5656,
+    "dist50ft_m": 482.106,
+    "V50_kt": 71.2826
+   },
+   "landing": {
+    "asIs": {
+     "ias50_kt": 69.0089,
+     "vtd_kt": 64.7649,
+     "sinkTD_fpm": -134.589,
+     "td_s": 323.654,
+     "air_m": 320.403,
+     "ground_m": 348.738,
+     "total_m": 669.141
+    },
+    "maxBrake": {
+     "ias50_kt": 69.0089,
+     "vtd_kt": 64.7649,
+     "sinkTD_fpm": -134.589,
+     "td_s": 323.654,
+     "air_m": 320.403,
+     "ground_m": 219.941,
+     "total_m": 540.344
+    }
+   },
+   "trim": {
+    "Vy_climb": {
+     "ias_kt": 79,
+     "alpha_deg": 7.05977,
+     "theta_deg": 15.0938,
+     "de_deg": -5.9275,
+     "thr": 1,
+     "gamma_deg": 8.03401,
+     "roc_fpm": 1119.87
+    },
+    "cruise": {
+     "ias_kt": 110,
+     "h_m": 914.4,
+     "V_kt": 115.003,
+     "alpha_deg": 1.94975,
+     "theta_deg": 1.94975,
+     "de_deg": -3.46875,
+     "thr": 0.63373
+    },
+    "approach": {
+     "ias_kt": 70,
+     "h_m": 300,
+     "V_kt": 71.0278,
+     "alpha_deg": 2.51109,
+     "theta_deg": -0.488915,
+     "de_deg": -6.90249,
+     "thr": 0.429822
+    }
+   },
+   "modes": {
+    "cruise": {
+     "sp": {
+      "wn": 3.74227,
+      "zeta": 0.583483,
+      "T": 2.06738
+     },
+     "ph": {
+      "wn": 0.204688,
+      "zeta": 0.109968,
+      "T": 30.8838
+     },
+     "dr": {
+      "wn": 2.11145,
+      "zeta": 0.230249,
+      "T": 3.05793
+     },
+     "roll_tau": 0.202618,
+     "spiral": {
+      "lam": 0.00819145,
+      "t2": 84.6183,
+      "grows": true
+     },
+     "nAlpha": 10.3873,
+     "CAP": 1.34824
+    },
+    "approach": {
+     "sp": {
+      "wn": 2.40754,
+      "zeta": 0.603509,
+      "T": 3.27306
+     },
+     "ph": {
+      "wn": 0.328816,
+      "zeta": 0.127264,
+      "T": 19.2652
+     },
+     "dr": {
+      "wn": 1.39329,
+      "zeta": 0.230848,
+      "T": 4.63479
+     },
+     "roll_tau": 0.306938,
+     "spiral": {
+      "lam": 0.00280799,
+      "t2": 246.849,
+      "grows": true
+     },
+     "nAlpha": 4.20626,
+     "CAP": 1.37801
+    }
+   }
+  },
+  "m1230": {
+   "stall": {
+    "UP": {
+     "f": 0,
+     "gear": 0,
+     "CLmax": 1.08895,
+     "V_CLmax_eas": 67.8934,
+     "V_CLmax_cas": 67.9034,
+     "nz": 0.995652,
+     "alpha_deg": 13.1528,
+     "t": 22.125,
+     "rate": 0.95397,
+     "VSR_eas": 68.0415,
+     "VSR_cas": 68.0515,
+     "Vmin_eas": 65.337,
+     "de_end_deg": -15,
+     "ias0": 89,
+     "VSR_kias": 69.0515,
+     "Vmin_kias": 66.337
+    },
+    "T/O": {
+     "f": 0.7735,
+     "gear": 1,
+     "CLmax": 1.46574,
+     "V_CLmax_eas": 58.4108,
+     "V_CLmax_cas": 58.417,
+     "nz": 0.991941,
+     "alpha_deg": 12.4845,
+     "t": 19.6792,
+     "rate": 0.893797,
+     "VSR_eas": 58.6476,
+     "VSR_cas": 58.6538,
+     "Vmin_eas": 57.1449,
+     "de_end_deg": -15,
+     "ias0": 76,
+     "VSR_kias": 58.6538,
+     "Vmin_kias": 57.1449
+    },
+    "FULL": {
+     "f": 1,
+     "gear": 1,
+     "CLmax": 1.57724,
+     "V_CLmax_eas": 56.2752,
+     "V_CLmax_cas": 56.2806,
+     "nz": 0.990776,
+     "alpha_deg": 12.3107,
+     "t": 19.1,
+     "rate": 0.875646,
+     "VSR_eas": 56.5365,
+     "VSR_cas": 56.542,
+     "Vmin_eas": 55.1581,
+     "de_end_deg": -15,
+     "ias0": 73,
+     "VSR_kias": 56.056,
+     "Vmin_kias": 54.2108
+    }
+   },
+   "takeoff": {
+    "flap": "T/O",
+    "VR": 64,
+    "groundRoll_m": 334.962,
+    "tLiftoff_s": 15.6417,
+    "V_LOF_kt": 71.5861,
+    "dist50ft_m": 504.12,
+    "V50_kt": 70.9838
+   },
+   "landing": {
+    "asIs": {
+     "ias50_kt": 69.0094,
+     "vtd_kt": 64.8593,
+     "sinkTD_fpm": -134.671,
+     "td_s": 323.243,
+     "air_m": 320.047,
+     "ground_m": 348.274,
+     "total_m": 668.321
+    },
+    "maxBrake": {
+     "ias50_kt": 69.0094,
+     "vtd_kt": 64.8593,
+     "sinkTD_fpm": -134.671,
+     "td_s": 323.243,
+     "air_m": 320.047,
+     "ground_m": 223.684,
+     "total_m": 543.731
+    }
+   },
+   "climb": {
+    "Vy_kt": 79.3901,
+    "ROCmax_fpm": 1041.89,
+    "Vy_grid_kt": 80,
+    "ROC_grid_fpm": 1041.76,
+    "Vx_kt": 76,
+    "gammaMax_deg": 7.73619,
+    "atVy": {
+     "ias": 80,
+     "V": 41.2201,
+     "alpha": 7.26557,
+     "de": -6.02648,
+     "gamma": 7.3764,
+     "theta": 14.642,
+     "roc_fpm": 1041.76,
+     "LoverD": -7.72448
+    },
+    "edge": false
+   }
+  },
+  "training": {
+   "m": 1128,
+   "trim": {
+    "Vy_climb": {
+     "ias_kt": 79,
+     "alpha_deg": 6.56667,
+     "theta_deg": 15.2258,
+     "de_deg": -5.69035,
+     "thr": 1,
+     "gamma_deg": 8.65916,
+     "roc_fpm": 1206.37
+    },
+    "cruise": {
+     "ias_kt": 110,
+     "h_m": 914.4,
+     "V_kt": 115.003,
+     "alpha_deg": 1.69394,
+     "theta_deg": 1.69394,
+     "de_deg": -3.34571,
+     "thr": 0.624149
+    },
+    "approach": {
+     "ias_kt": 70,
+     "h_m": 300,
+     "V_kt": 71.0278,
+     "alpha_deg": 1.89044,
+     "theta_deg": -1.10956,
+     "de_deg": -6.604,
+     "thr": 0.416808
+    }
+   },
+   "modes": {
+    "cruise": {
+     "sp": {
+      "wn": 3.84747,
+      "zeta": 0.593394,
+      "T": 2.02888
+     },
+     "ph": {
+      "wn": 0.203658,
+      "zeta": 0.115005,
+      "T": 31.0577
+     },
+     "dr": {
+      "wn": 2.16213,
+      "zeta": 0.23722,
+      "T": 2.9914
+     },
+     "roll_tau": 0.194064,
+     "spiral": {
+      "lam": 0.00752635,
+      "t2": 92.0961,
+      "grows": true
+     },
+     "nAlpha": 10.8662,
+     "CAP": 1.36229
+    },
+    "approach": {
+     "sp": {
+      "wn": 2.47592,
+      "zeta": 0.613031,
+      "T": 3.21206
+     },
+     "ph": {
+      "wn": 0.327224,
+      "zeta": 0.130995,
+      "T": 19.3683
+     },
+     "dr": {
+      "wn": 1.42389,
+      "zeta": 0.236343,
+      "T": 4.54134
+     },
+     "roll_tau": 0.293772,
+     "spiral": {
+      "lam": 0.000404242,
+      "t2": 1714.68,
+      "grows": true
+     },
+     "nAlpha": 4.40028,
+     "CAP": 1.39314
+    }
+   },
+   "takeoff": {
+    "flap": "T/O",
+    "VR": 64,
+    "groundRoll_m": 303.149,
+    "tLiftoff_s": 14.1875,
+    "V_LOF_kt": 71.5282,
+    "dist50ft_m": 460.249,
+    "V50_kt": 71.6201
+   },
+   "landing": {
+    "asIs": {
+     "ias50_kt": 69.0085,
+     "vtd_kt": 64.6366,
+     "sinkTD_fpm": -134.444,
+     "td_s": 324.037,
+     "air_m": 321.318,
+     "ground_m": 348.6,
+     "total_m": 669.918
+    },
+    "maxBrake": {
+     "ias50_kt": 69.0085,
+     "vtd_kt": 64.6366,
+     "sinkTD_fpm": -134.444,
+     "td_s": 324.037,
+     "air_m": 321.318,
+     "ground_m": 216.462,
+     "total_m": 537.78
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,102 @@
+{
+ "type": "p2006t",
+ "legacy": {
+  "propulsion": {
+   "P": 147000,
+   "eta": 0.893,
+   "T0": 4556,
+   "idle": 0
+  },
+  "aero": {
+   "CD0": 0.03881,
+   "K": 0.07842,
+   "CL0": 0.289,
+   "CLa": 4.152,
+   "CLflap": 0.574,
+   "CDflap": 0.05,
+   "CDgear": 0.012,
+   "Cm0": -0.08,
+   "Cma": -0.871,
+   "Cmflap": -0.1,
+   "aStall": 15.88,
+   "aStallFlap": -0.41
+  }
+ },
+ "notes": [
+  "polar from glide 82.0 KCAS E 11.2: CD0s 0.0388 Ks 0.0784; idle 0 (POH glide is at idle, windmilling)",
+  "climb fit (static): target Vy 79.0 KCAS ROC 1105 fpm → T0 4556 N, Vc 28.8 m/s"
+ ],
+ "targets": {
+  "VS1": 65,
+  "VS0": 54,
+  "Vy": 79,
+  "roc": 1105,
+  "glide": {
+   "speed_kt": 83,
+   "ratio": 11.2
+  }
+ },
+ "check": {
+  "stall_clean": {
+   "CLmax": 1.088,
+   "V_CLmax_eas": 64.247,
+   "V_CLmax_cas": 64.255,
+   "nz": 0.92858,
+   "alpha_deg": 13.153,
+   "t": 30.825,
+   "rate": 1.095,
+   "VSR_eas": 66.672,
+   "VSR_cas": 66.681,
+   "Vmin_eas": 63.435,
+   "de_end_deg": -15,
+   "ias0": 98
+  },
+  "stall_full": {
+   "CLmax": 1.5764,
+   "V_CLmax_eas": 53.559,
+   "V_CLmax_cas": 53.564,
+   "nz": 0.935,
+   "alpha_deg": 12.31,
+   "t": 26.471,
+   "rate": 1.0366,
+   "VSR_eas": 55.389,
+   "VSR_cas": 55.394,
+   "Vmin_eas": 52.814,
+   "de_end_deg": -15,
+   "ias0": 81
+  },
+  "climb": {
+   "Vy_kt": 80,
+   "ROCmax_fpm": 1119.2,
+   "Vx_kt": 80,
+   "gammaMax_deg": 7.9281,
+   "atVy": {
+    "ias": 80,
+    "V": 41.22,
+    "alpha": 6.8035,
+    "de": -5.8042,
+    "gamma": 7.9281,
+    "theta": 14.732,
+    "roc_fpm": 1119.2,
+    "LoverD": -7.1807
+   },
+   "edge": true
+  },
+  "glide": {
+   "Vbg_kt": 81.892,
+   "LD": 11.199,
+   "Vbg_grid_kt": 82,
+   "LD_grid": 11.198,
+   "sink_fpm": 772.18,
+   "edge": false
+  },
+  "takeoff": {
+   "VR": 64,
+   "groundRoll_m": 319.36,
+   "tLiftoff_s": 14.929,
+   "V_LOF_kt": 71.566,
+   "dist50ft_m": 482.11,
+   "V50_kt": 71.283
+  }
+ }
+}

@@ -1,0 +1,363 @@
+{
+ "date": "2026-11-19",
+ "method": "A: CT/CP card tables + calibrated polar (shape only); C: Vx = k·VS1 (class, card value); B: sim sweep (lm_card)",
+ "class": {
+  "c172s": {
+   "VX": 62,
+   "VX_u": "kt IAS",
+   "VS1": 53,
+   "VS1_u": "kt CAS",
+   "ratio": 1.2
+  },
+  "c172r": {
+   "VX": 60,
+   "VX_u": "kt IAS",
+   "VS1": 52,
+   "VS1_u": "kt CAS",
+   "ratio": 1.192
+  },
+  "c152": {
+   "VX": 55,
+   "VX_u": "kt IAS",
+   "VS1": 48,
+   "VS1_u": "kt CAS",
+   "ratio": 1.177
+  }
+ },
+ "k": 1.19,
+ "ids": {
+  "da40ng": {
+   "mtow": 1310,
+   "train_kg": 1150,
+   "roc_ref_fpm": 651,
+   "AR": 10.223,
+   "climbTO": {
+    "kias": 72,
+    "note": "ไต่หลังวิ่งขึ้น/Vy แฟลป T/O ทุกมวล [LD3]",
+    "check": {
+     "afm_kias": 72,
+     "afm_kcas": 71.1,
+     "rule_kcas": 72.2,
+     "VS_TO_kias": 62
+    }
+   },
+   "A": {
+    "0.65": {
+     "K": 0.0479,
+     "CD0": 0.0533,
+     "opt": {
+      "Vx": 61.7,
+      "Vy": 73,
+      "gmax_deg": 5.48
+     },
+     "gamma_deg": {
+      "1.1VS1": 5.18,
+      "k·VS1": 4.75,
+      "1.3VS1": 3.98
+     }
+    },
+    "0.75": {
+     "K": 0.0415,
+     "CD0": 0.0621,
+     "opt": {
+      "Vx": 58.1,
+      "Vy": 69.5,
+      "gmax_deg": 5.79
+     },
+     "gamma_deg": {
+      "1.1VS1": 5.18,
+      "k·VS1": 4.62,
+      "1.3VS1": 3.69
+     }
+    },
+    "0.85": {
+     "K": 0.0366,
+     "CD0": 0.0701,
+     "opt": {
+      "Vx": 54.7,
+      "Vy": 66.7,
+      "gmax_deg": 6.07
+     },
+     "gamma_deg": {
+      "1.1VS1": 5.12,
+      "k·VS1": 4.44,
+      "1.3VS1": 3.38
+     }
+    }
+   },
+   "C": {
+    "mtow": {
+     "VS1_kcas": 64.6,
+     "Vx_kcas": 76.9,
+     "Vx_kias": 78
+    },
+    "train": {
+     "mass": 1150,
+     "VS1_kcas": 60.5,
+     "Vx_kcas": 72,
+     "Vx_kias": 73
+    }
+   },
+   "B": {
+    "mtow": {
+     "mass": 1310,
+     "v0": 66.75,
+     "Vx": 69.5,
+     "gmax_deg": 5.08,
+     "Vy": 79.75,
+     "rocmax_fpm": 666,
+     "Vx_kias": 70.7
+    },
+    "train": {
+     "mass": 1150,
+     "v0": 62.5,
+     "Vx": 64,
+     "gmax_deg": 7.29,
+     "Vy": 76.75,
+     "rocmax_fpm": 894,
+     "Vx_kias": 65.4
+    }
+   }
+  },
+  "da40_180": {
+   "mtow": 1200,
+   "train_kg": 1050,
+   "roc_ref_fpm": 780,
+   "AR": 10.53,
+   "climbTO": {
+    "kias": 67,
+    "note": "ไต่หลังวิ่งขึ้นแฟลป T/O 1,200 kg [LD6 p.5-13]",
+    "check": {
+     "afm_kias": 67,
+     "afm_kcas": 68.3,
+     "rule_kcas": 66.9,
+     "VS_TO_kias": 52
+    }
+   },
+   "A": {
+    "0.65": {
+     "K": 0.0465,
+     "CD0": 0.0653,
+     "opt": {
+      "Vx": 55.3,
+      "Vy": 69.1,
+      "gmax_deg": 7.13
+     },
+     "gamma_deg": {
+      "1.1VS1": 6.9,
+      "k·VS1": 6.54,
+      "1.3VS1": 5.92
+     }
+    },
+    "0.75": {
+     "K": 0.0403,
+     "CD0": 0.0737,
+     "opt": {
+      "Vx": 52.2,
+      "Vy": 66.2,
+      "gmax_deg": 7.53
+     },
+     "gamma_deg": {
+      "1.1VS1": 7.03,
+      "k·VS1": 6.55,
+      "1.3VS1": 5.77
+     }
+    },
+    "0.85": {
+     "K": 0.0356,
+     "CD0": 0.0813,
+     "opt": {
+      "Vx": 49.6,
+      "Vy": 63.8,
+      "gmax_deg": 7.88
+     },
+     "gamma_deg": {
+      "1.1VS1": 7.09,
+      "k·VS1": 6.5,
+      "1.3VS1": 5.6
+     }
+    }
+   },
+   "C": {
+    "mtow": {
+     "VS1_kcas": 56.7,
+     "Vx_kcas": 67.5,
+     "Vx_kias": 67
+    },
+    "train": {
+     "mass": 1050,
+     "VS1_kcas": 53.1,
+     "Vx_kcas": 63.1,
+     "Vx_kias": 61
+    }
+   },
+   "B": {
+    "mtow": {
+     "mass": 1200,
+     "v0": 58.5,
+     "Vx": 60,
+     "gmax_deg": 6.95,
+     "Vy": 71.25,
+     "rocmax_fpm": 799,
+     "Vx_kias": 57
+    },
+    "train": {
+     "mass": 1050,
+     "v0": 54.75,
+     "Vx": 55,
+     "gmax_deg": 9.66,
+     "Vy": 69,
+     "rocmax_fpm": 1040,
+     "Vx_kias": 50.9
+    }
+   }
+  },
+  "da40d": {
+   "mtow": 1150,
+   "train_kg": 1060,
+   "roc_ref_fpm": 550,
+   "AR": 10.53,
+   "climbTO": {
+    "kias": 66,
+    "note": "ไต่หลังวิ่งขึ้นแฟลป T/O 1,150 kg [LD6 p.5-13][LD8]",
+    "check": {
+     "afm_kias": 66,
+     "afm_kcas": 67.4,
+     "rule_kcas": 65.7,
+     "VS_TO_kias": 51
+    }
+   },
+   "A": {
+    "0.65": {
+     "K": 0.0465,
+     "CD0": 0.0582,
+     "opt": {
+      "Vx": 56.4,
+      "Vy": 65.9,
+      "gmax_deg": 5.1
+     },
+     "gamma_deg": {
+      "1.1VS1": 4.98,
+      "k·VS1": 4.68,
+      "1.3VS1": 4.12
+     }
+    },
+    "0.75": {
+     "K": 0.0403,
+     "CD0": 0.0677,
+     "opt": {
+      "Vx": 52,
+      "Vy": 62.6,
+      "gmax_deg": 5.43
+     },
+     "gamma_deg": {
+      "1.1VS1": 5.06,
+      "k·VS1": 4.62,
+      "1.3VS1": 3.9
+     }
+    },
+    "0.85": {
+     "K": 0.0356,
+     "CD0": 0.0765,
+     "opt": {
+      "Vx": 49.3,
+      "Vy": 60,
+      "gmax_deg": 5.72
+     },
+     "gamma_deg": {
+      "1.1VS1": 5.06,
+      "k·VS1": 4.5,
+      "1.3VS1": 3.64
+     }
+    }
+   },
+   "C": {
+    "mtow": {
+     "VS1_kcas": 55.9,
+     "Vx_kcas": 66.5,
+     "Vx_kias": 66
+    },
+    "train": {
+     "mass": 1060,
+     "VS1_kcas": 53.7,
+     "Vx_kcas": 63.8,
+     "Vx_kias": 62
+    }
+   },
+   "B": {
+    "mtow": {
+     "mass": 1150,
+     "v0": 57.75,
+     "Vx": 59.5,
+     "gmax_deg": 5.06,
+     "Vy": 67.5,
+     "rocmax_fpm": 565,
+     "Vx_kias": 56.4
+    },
+    "train": {
+     "mass": 1060,
+     "v0": 55.5,
+     "Vx": 56.5,
+     "gmax_deg": 6.42,
+     "Vy": 66,
+     "rocmax_fpm": 688,
+     "Vx_kias": 52.7
+    }
+   }
+  }
+ },
+ "stall_alt_loss": {
+  "class": {
+   "c172s": {
+    "loss_ft": 230,
+    "src": [
+     "LC2"
+    ],
+    "VS1_kcas": 53,
+    "coef": 0.0819
+   },
+   "c152": {
+    "loss_ft": 160,
+    "src": [
+     "LF1"
+    ],
+    "VS1_kcas": 48,
+    "coef": 0.0694
+   },
+   "p2006t": {
+    "loss_ft": 180,
+    "src": [
+     "LG5"
+    ],
+    "VS1_kcas": 65,
+    "coef": 0.0426
+   }
+  },
+  "coef_mean": 0.0646,
+  "coef_min": 0.0426,
+  "coef_max": 0.0819,
+  "ids": {
+   "da40ng": {
+    "mass": 1150,
+    "VS1_kcas": 60.5,
+    "loss_ft": 240,
+    "min_ft": 160,
+    "max_ft": 300
+   },
+   "da40_180": {
+    "mass": 1050,
+    "VS1_kcas": 53.1,
+    "loss_ft": 180,
+    "min_ft": 120,
+    "max_ft": 230
+   },
+   "da40d": {
+    "mass": 1060,
+    "VS1_kcas": 53.7,
+    "loss_ft": 190,
+    "min_ft": 120,
+    "max_ft": 240
+   }
+  }
+ }
+}
