@@ -1,53 +1,91 @@
-// Keyboard map safety (owner's research round 1, docs/research/01-flight-physics/11-input.md, T-I-07 and T-I-08).
-// Run: node --test test/keys.test.mjs
+// Keyboard handling (owner's research round 1, docs/research/01-flight-physics/11-input.md, T-I-07 and T-I-08).
+// The decisions live in src/18-keys.js (KeyState); src/90-app.js only applies them, and the last test checks that it
+// still does. Run: node --test test/keys.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const src = fs.readFileSync(new URL('../src/18-keys.js', import.meta.url), 'utf8');
-const K = new Function('"use strict";\n' + src + '\nreturn { DEFAULT_KEYMAP, TOGGLE_ACTIONS, keymapProblems, resolveKey, isToggleEdge };')();
+const K = new Function('"use strict";\n' + src + '\nreturn { DEFAULT_KEYMAP, TOGGLE_ACTIONS, keymapProblems, resolveKey, isToggleEdge, KeyState };')();
+const FLY = { train: true, flying: true };
+const ev = (code, o = {}) => ({ code, repeat: false, ctrlKey: false, metaKey: false, altKey: false, shiftKey: false, ...o });
 
-test('T-I-07: no modifier keys in the keymap; flight keys ignored with Ctrl, Meta or Alt', () => {
+test('T-I-07: no modifier keys in the keymap; keys pressed with Ctrl, Meta or Alt do nothing', () => {
   assert.deepEqual(K.keymapProblems(K.DEFAULT_KEYMAP), []);
   assert.equal(K.resolveKey('KeyW', { ctrl: true }), null);
   assert.equal(K.resolveKey('KeyR', { meta: true }), null);
-  assert.equal(K.resolveKey('KeyS', { alt: true }), null);
-  // the check itself: the old map (Shift/Ctrl throttle) is flagged
+  // the check itself flags the old map (Shift/Ctrl throttle)
   assert.deepEqual(K.keymapProblems({ ShiftLeft: 'tu', ControlLeft: 'td', ControlRight: 'td' }), ['ControlLeft', 'ControlRight']);
+  // through the handler: Ctrl+W, Ctrl+S, Cmd+R and Alt+D neither hold a key, fire a toggle nor block the browser
+  const k = new K.KeyState();
+  for (const e of [ev('KeyW', { ctrlKey: true }), ev('KeyS', { ctrlKey: true }), ev('KeyR', { metaKey: true }), ev('KeyD', { altKey: true })]) {
+    const d = k.down(e, FLY);
+    assert.ok(!d.fire && !d.prevent && d.act === null, e.code);
+  }
+  assert.equal(k.size, 0);
 });
 
-test('keys resolve by physical code, Shift alone does not block', () => {
-  assert.equal(K.resolveKey('KeyW'), 'up');
-  assert.equal(K.resolveKey('KeyW', { shift: true }), 'up');
-  assert.equal(K.resolveKey('KeyQ', {}), 'rl');
-  assert.equal(K.resolveKey('KeyX'), null);
-  assert.equal(K.resolveKey('toString'), null);   // no inherited properties
+test('pressing Ctrl, Meta or Alt releases held flight keys; Shift does not', () => {
+  const k = new K.KeyState();
+  k.down(ev('KeyS'), FLY); assert.ok(k.has('dn'));
+  k.down(ev('ShiftLeft', { shiftKey: true }), FLY); assert.ok(k.has('dn'), 'Shift keeps the held key');
+  k.down(ev('ControlLeft', { ctrlKey: true }), FLY); assert.equal(k.size, 0, 'Ctrl releases it');
+  k.down(ev('KeyA'), FLY); k.down(ev('AltLeft', { altKey: true }), FLY); assert.equal(k.size, 0, 'Alt releases it');
+});
+
+test('macOS: S held, Cmd pressed and released, no keyup for S arrives: nothing stays held', () => {
+  const k = new K.KeyState();
+  k.down(ev('KeyS'), FLY);
+  k.down(ev('MetaLeft', { metaKey: true }), FLY);
+  k.up(ev('MetaLeft'));   // the browser never sends the keyup of S released while Cmd was down
+  assert.equal(k.size, 0);
 });
 
 test('throttle on = / − , PageUp / PageDown and Numpad 9 / 3, not on Shift or Ctrl', () => {
   for (const c of ['Equal', 'PageUp', 'Numpad9']) assert.equal(K.resolveKey(c), 'tu', c);
   for (const c of ['Minus', 'PageDown', 'Numpad3']) assert.equal(K.resolveKey(c), 'td', c);
   for (const c of ['ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight']) assert.equal(K.resolveKey(c), null, c);
+  const k = new K.KeyState();
+  k.down(ev('PageUp'), FLY); assert.ok(k.has('tu')); k.up(ev('PageUp')); assert.ok(!k.has('tu'));
+  assert.equal(K.resolveKey('toString'), null);   // no inherited properties
 });
 
-test('T-I-08: a held toggle key fires once (key repeat ignored)', () => {
-  // keydown C (repeat false), then 20 auto-repeat keydowns, then keyup: the camera changes once
-  const events = [{ type: 'keydown', code: 'KeyC', repeat: false }];
-  for (let i = 0; i < 20; i++) events.push({ type: 'keydown', code: 'KeyC', repeat: true });
-  events.push({ type: 'keyup', code: 'KeyC', repeat: false });
-  let edges = 0, cams = 0;
-  for (const e of events) {
-    if (e.type !== 'keydown') continue;
-    const act = K.resolveKey(e.code, { ctrl: e.ctrlKey, meta: e.metaKey, alt: e.altKey });
-    if (K.TOGGLE_ACTIONS.has(act) && K.isToggleEdge(e)) { edges++; if (act === 'cam') cams++; }
+test('T-I-08: a held toggle key fires once (key repeat ignored), for C, T, P and R', () => {
+  for (const code of ['KeyC', 'KeyT', 'KeyP', 'KeyR']) {
+    const k = new K.KeyState();
+    let fired = 0;
+    if (k.down(ev(code), FLY).fire) fired++;
+    for (let i = 0; i < 20; i++) if (k.down(ev(code, { repeat: true }), FLY).fire) fired++;
+    k.up(ev(code));
+    assert.equal(fired, 1, code);
+    assert.equal(k.size, 0, `${code} is not a held key`);
   }
-  assert.equal(edges, 1);
-  assert.equal(cams, 1);
-  assert.equal(K.isToggleEdge({ repeat: false, ctrlKey: true }), false);
+  // toggles only in training mode; Ctrl+C never
+  const k = new K.KeyState();
+  assert.equal(k.down(ev('KeyC'), { train: false, flying: false }).fire, false);
+  assert.equal(k.down(ev('KeyC', { ctrlKey: true }), FLY).fire, false);
+});
+
+test('while flying, every bound key blocks the page default (no scrolling); otherwise nothing is blocked', () => {
+  const k = new K.KeyState();
+  for (const code of Object.keys(K.DEFAULT_KEYMAP)) assert.equal(k.down(ev(code), FLY).prevent, true, code);
+  for (const code of ['ArrowDown', 'PageDown', 'KeyC']) assert.equal(new K.KeyState().down(ev(code), { train: true, flying: false }).prevent, false, code);
+  assert.equal(k.down(ev('Space'), FLY).prevent, false, 'unbound keys keep their default');
 });
 
 test('every toggle and held action has a key', () => {
   const acts = new Set(Object.values(K.DEFAULT_KEYMAP));
   for (const a of ['up', 'dn', 'lt', 'rt', 'rl', 'rr', 'tu', 'td', 'br', 'cam', 'take', 'pause', 'restart']) assert.ok(acts.has(a), a);
-  for (const a of K.TOGGLE_ACTIONS) assert.ok(acts.has(a), a);
+});
+
+test('the app applies these decisions (src/90-app.js wiring)', () => {
+  const app = fs.readFileSync(new URL('../src/90-app.js', import.meta.url), 'utf8');
+  assert.match(app, /keys:\s*new KeyState\(\)/, 'app.keys is a KeyState');
+  assert.match(app, /addEventListener\('keydown',[\s\S]{0,300}?app\.keys\.down\(e,/, 'keydown goes through app.keys.down');
+  assert.match(app, /if \(k\.prevent\) e\.preventDefault\(\)/, 'keydown applies prevent');
+  assert.match(app, /if \(!k\.fire\) return;/, 'toggles only when fire');
+  assert.match(app, /addEventListener\('keyup', \(e\) => app\.keys\.up\(e\)\)/, 'keyup goes through app.keys.up');
+  assert.match(app, /addEventListener\('blur', \(\) => app\.keys\.clear\(\)\)/, 'blur clears');
+  assert.match(app, /addEventListener\('visibilitychange', \(\) => \{ if \(document\.hidden\) app\.keys\.clear\(\); \}\)/, 'hidden tab clears');
+  assert.doesNotMatch(app, /KEYMAP\[e\.code\]|e\.code === 'Key[CTPR]'/, 'no second key map or raw toggle checks in the app');
 });
