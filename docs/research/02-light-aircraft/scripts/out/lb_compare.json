@@ -1,0 +1,567 @@
+{
+ "generated_by": "lb_compare.mjs",
+ "thresholds": "≤5% ตรง, 5–15% ใกล้, >15% ไม่ตรง",
+ "rows": [
+  {
+   "model": "c172p",
+   "qty": "VS1 flaps up, power off",
+   "unit": "KCAS",
+   "model_value": 54.5,
+   "published": 51,
+   "error_pct": 6.8,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB9 Fig 5-3, LB10",
+   "note": "POH aft CG 51, fwd CG 52 KCAS"
+  },
+  {
+   "model": "c172p",
+   "qty": "VS flaps 10",
+   "unit": "KCAS",
+   "model_value": 51.1,
+   "published": 48,
+   "error_pct": 6.4,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB9 Fig 5-3",
+   "note": "POH aft CG 48, fwd CG 49"
+  },
+  {
+   "model": "c172p",
+   "qty": "VS0 flaps 30",
+   "unit": "KCAS",
+   "model_value": 48.8,
+   "published": 46,
+   "error_pct": 6,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB9 Fig 5-3, LB10",
+   "note": ""
+  },
+  {
+   "model": "c172p",
+   "qty": "CLmax flaps up (static sweep)",
+   "unit": "-",
+   "model_value": 1.47,
+   "published": null,
+   "error_pct": null,
+   "verdict": "เทียบไม่ได้",
+   "src": "lb_aero",
+   "note": "model only"
+  },
+  {
+   "model": "c172p",
+   "qty": "Vy SL",
+   "unit": "KCAS",
+   "model_value": 95.6,
+   "published": 75.4,
+   "error_pct": 26.8,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB9 Fig 5-5",
+   "note": "POH 76 KIAS → 75.4 KCAS (Fig 5-1)"
+  },
+  {
+   "model": "c172p",
+   "qty": "ROC max SL ISA",
+   "unit": "fpm",
+   "model_value": 1165,
+   "published": 700,
+   "error_pct": 66.4,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB9 Fig 5-5, LB10",
+   "note": "POH 745 @0°C, 685 @20°C → 700 @15°C; spec page 700"
+  },
+  {
+   "model": "c172p",
+   "qty": "best glide speed",
+   "unit": "KCAS",
+   "model_value": 85,
+   "published": 66,
+   "error_pct": 28.8,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB9 Fig 3-1",
+   "note": "POH 65 KIAS → 66.0 KCAS; model prop stopped"
+  },
+  {
+   "model": "c172p",
+   "qty": "glide ratio (max)",
+   "unit": "-",
+   "model_value": 10.46,
+   "published": null,
+   "error_pct": null,
+   "verdict": "เทียบไม่ได้",
+   "src": "-",
+   "note": "POH chart not machine-readable (ดู 03.8)"
+  },
+  {
+   "model": "c172p",
+   "qty": "KTAS at 75% (120 hp), 8,000 ft",
+   "unit": "KTAS",
+   "model_value": 120.9,
+   "published": 120,
+   "error_pct": 0.8,
+   "verdict": "ตรง (≤5%)",
+   "src": "LB10",
+   "note": "model power from FGPiston power-hp"
+  },
+  {
+   "model": "c172p",
+   "qty": "short-field ground roll, flaps 10, SL",
+   "unit": "ft",
+   "model_value": 1124,
+   "published": 890,
+   "error_pct": 26.3,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB10",
+   "note": "model lift-off 58.4 KCAS"
+  },
+  {
+   "model": "c172p",
+   "qty": "short-field over 50 ft, flaps 10, SL",
+   "unit": "ft",
+   "model_value": 1823,
+   "published": 1625,
+   "error_pct": 12.2,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB10",
+   "note": ""
+  },
+  {
+   "model": "c172p",
+   "qty": "static full-throttle power",
+   "unit": "hp",
+   "model_value": 205.9,
+   "published": 160,
+   "error_pct": 28.7,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB10 (rating)",
+   "note": "2538 rpm; rating 160 hp at 2700 rpm"
+  },
+  {
+   "model": "c172x",
+   "qty": "VS1 flaps up, power off",
+   "unit": "KCAS",
+   "model_value": 42.7,
+   "published": 51,
+   "error_pct": -16.2,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB9 Fig 5-3, LB10",
+   "note": "POH aft CG 51, fwd CG 52 KCAS"
+  },
+  {
+   "model": "c172x",
+   "qty": "VS flaps 10",
+   "unit": "KCAS",
+   "model_value": 41.3,
+   "published": 48,
+   "error_pct": -13.9,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB9 Fig 5-3",
+   "note": "POH aft CG 48, fwd CG 49"
+  },
+  {
+   "model": "c172x",
+   "qty": "VS0 flaps 30",
+   "unit": "KCAS",
+   "model_value": 41.2,
+   "published": 46,
+   "error_pct": -10.5,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB9 Fig 5-3, LB10",
+   "note": ""
+  },
+  {
+   "model": "c172x",
+   "qty": "CLmax flaps up (static sweep)",
+   "unit": "-",
+   "model_value": 2.94,
+   "published": null,
+   "error_pct": null,
+   "verdict": "เทียบไม่ได้",
+   "src": "lb_aero",
+   "note": "model only"
+  },
+  {
+   "model": "c172x",
+   "qty": "Vy SL",
+   "unit": "KCAS",
+   "model_value": 96.3,
+   "published": 75.4,
+   "error_pct": 27.7,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB9 Fig 5-5",
+   "note": "POH 76 KIAS → 75.4 KCAS (Fig 5-1)"
+  },
+  {
+   "model": "c172x",
+   "qty": "ROC max SL ISA",
+   "unit": "fpm",
+   "model_value": 1168,
+   "published": 700,
+   "error_pct": 66.9,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB9 Fig 5-5, LB10",
+   "note": "POH 745 @0°C, 685 @20°C → 700 @15°C; spec page 700"
+  },
+  {
+   "model": "c172x",
+   "qty": "best glide speed",
+   "unit": "KCAS",
+   "model_value": 65,
+   "published": 66,
+   "error_pct": -1.6,
+   "verdict": "ตรง (≤5%)",
+   "src": "LB9 Fig 3-1",
+   "note": "POH 65 KIAS → 66.0 KCAS; model prop stopped"
+  },
+  {
+   "model": "c172x",
+   "qty": "glide ratio (max)",
+   "unit": "-",
+   "model_value": 13.94,
+   "published": null,
+   "error_pct": null,
+   "verdict": "เทียบไม่ได้",
+   "src": "-",
+   "note": "POH chart not machine-readable (ดู 03.8)"
+  },
+  {
+   "model": "c172x",
+   "qty": "KTAS at 75% (120 hp), 8,000 ft",
+   "unit": "KTAS",
+   "model_value": 116.3,
+   "published": 120,
+   "error_pct": -3.1,
+   "verdict": "ตรง (≤5%)",
+   "src": "LB10",
+   "note": "model power from FGPiston power-hp"
+  },
+  {
+   "model": "c172x",
+   "qty": "short-field ground roll, flaps 10, SL",
+   "unit": "ft",
+   "model_value": 875,
+   "published": 890,
+   "error_pct": -1.7,
+   "verdict": "ตรง (≤5%)",
+   "src": "LB10",
+   "note": "model lift-off 54.8 KCAS"
+  },
+  {
+   "model": "c172x",
+   "qty": "short-field over 50 ft, flaps 10, SL",
+   "unit": "ft",
+   "model_value": 1512,
+   "published": 1625,
+   "error_pct": -7,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB10",
+   "note": ""
+  },
+  {
+   "model": "c172x",
+   "qty": "static full-throttle power",
+   "unit": "hp",
+   "model_value": 205.7,
+   "published": 160,
+   "error_pct": 28.6,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB10 (rating)",
+   "note": "2537 rpm; rating 160 hp at 2700 rpm"
+  },
+  {
+   "model": "c172r",
+   "qty": "VS1 flaps up, power off",
+   "unit": "KCAS",
+   "model_value": 54.1,
+   "published": 51,
+   "error_pct": 6.1,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB11",
+   "note": ""
+  },
+  {
+   "model": "c172r",
+   "qty": "VS0 flaps 30",
+   "unit": "KCAS",
+   "model_value": 48.6,
+   "published": 47,
+   "error_pct": 3.4,
+   "verdict": "ตรง (≤5%)",
+   "src": "LB11",
+   "note": ""
+  },
+  {
+   "model": "c172r",
+   "qty": "ROC max SL ISA",
+   "unit": "fpm",
+   "model_value": 878,
+   "published": 720,
+   "error_pct": 21.9,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB11",
+   "note": "model Vy 88.7 KCAS"
+  },
+  {
+   "model": "c172r",
+   "qty": "KTAS at 80% (128 hp of 160), 8,000 ft",
+   "unit": "KTAS",
+   "model_value": 124.4,
+   "published": 122,
+   "error_pct": 1.9,
+   "verdict": "ตรง (≤5%)",
+   "src": "LB11",
+   "note": "model engine is 180 hp/2700 rpm, real 160 hp/2400 rpm"
+  },
+  {
+   "model": "c172r",
+   "qty": "ground roll, SL",
+   "unit": "ft",
+   "model_value": 921,
+   "published": 945,
+   "error_pct": -2.5,
+   "verdict": "ตรง (≤5%)",
+   "src": "LB11",
+   "note": "model flaps 10 short-field technique"
+  },
+  {
+   "model": "c172r",
+   "qty": "over 50 ft, SL",
+   "unit": "ft",
+   "model_value": 1547,
+   "published": 1685,
+   "error_pct": -8.2,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB11",
+   "note": ""
+  },
+  {
+   "model": "c172r",
+   "qty": "static full-throttle power",
+   "unit": "hp",
+   "model_value": 146.2,
+   "published": 160,
+   "error_pct": -8.6,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB11 (rating)",
+   "note": "2124 rpm; real rating 160 hp at 2400 rpm"
+  },
+  {
+   "model": "pa28",
+   "qty": "VS flaps up, power off",
+   "unit": "KCAS",
+   "model_value": 64.3,
+   "published": 59.1,
+   "error_pct": 8.7,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB13 p1, p24",
+   "note": "68 mph CAS; model limit: elevator stop"
+  },
+  {
+   "model": "pa28",
+   "qty": "VS0 flaps 40",
+   "unit": "KCAS",
+   "model_value": 72.8,
+   "published": 53,
+   "error_pct": 37.3,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB13 p1, p24",
+   "note": "61 mph CAS; model limit: elevator stop"
+  },
+  {
+   "model": "pa28",
+   "qty": "Vy SL",
+   "unit": "kt",
+   "model_value": 86.7,
+   "published": 73.9,
+   "error_pct": 17.4,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB13 p1",
+   "note": "85 mph IAS ≈ CAS (ค่าประมาณ)"
+  },
+  {
+   "model": "pa28",
+   "qty": "ROC max SL",
+   "unit": "fpm",
+   "model_value": 427,
+   "published": 725,
+   "error_pct": -41.1,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB13 p1",
+   "note": ""
+  },
+  {
+   "model": "pa28",
+   "qty": "best glide speed",
+   "unit": "kt",
+   "model_value": 100,
+   "published": 69.5,
+   "error_pct": 43.9,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB13 sec IV p36",
+   "note": "80 mph IAS; model best at sweep edge"
+  },
+  {
+   "model": "pa28",
+   "qty": "ground run, 25° flaps, SL",
+   "unit": "ft",
+   "model_value": null,
+   "published": 720,
+   "error_pct": null,
+   "verdict": "เทียบไม่ได้",
+   "src": "LB13 p1",
+   "note": "model never lifted off (flaps 0, VR 60)"
+  },
+  {
+   "model": "pa28",
+   "qty": "static full-throttle power",
+   "unit": "hp",
+   "model_value": 173.2,
+   "published": 180,
+   "error_pct": -3.8,
+   "verdict": "ตรง (≤5%)",
+   "src": "LB13 sec II p5 (rating)",
+   "note": "2631 rpm, constant-speed prop in model, fixed pitch on real type"
+  },
+  {
+   "model": "pc7",
+   "qty": "VS0 flaps 30, gear down, power off",
+   "unit": "KCAS",
+   "model_value": 69.1,
+   "published": 64,
+   "error_pct": 8,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB14",
+   "note": "published 64 kt (IAS/CAS not stated); model limit: elevator stop"
+  },
+  {
+   "model": "pc7",
+   "qty": "ROC max SL",
+   "unit": "fpm",
+   "model_value": 1221,
+   "published": 2150,
+   "error_pct": -43.2,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB14",
+   "note": "published weight not stated (likely aerobatic weight)"
+  },
+  {
+   "model": "pc7",
+   "qty": "max level speed at 20,000 ft",
+   "unit": "KTAS",
+   "model_value": null,
+   "published": 222,
+   "error_pct": null,
+   "verdict": "เทียบไม่ได้",
+   "src": "LB14",
+   "note": "model could not hold 20,000 ft"
+  },
+  {
+   "model": "pc7",
+   "qty": "static full-throttle power",
+   "unit": "hp",
+   "model_value": 510.7,
+   "published": 550,
+   "error_pct": -7.1,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB14 (rating)",
+   "note": ""
+  },
+  {
+   "model": "t6texan2",
+   "qty": "max level speed at 1,000 ft",
+   "unit": "KTAS",
+   "model_value": 294.9,
+   "published": 270,
+   "error_pct": 9.2,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LB16",
+   "note": "Navy: 270 kt at 1,000 ft; USAF: 320 mph (278 kt), altitude not stated"
+  },
+  {
+   "model": "t6texan2",
+   "qty": "VS1 flaps up, power off",
+   "unit": "KCAS",
+   "model_value": 82.4,
+   "published": null,
+   "error_pct": null,
+   "verdict": "เทียบไม่ได้",
+   "src": "-",
+   "note": "no public figure found"
+  },
+  {
+   "model": "t6texan2",
+   "qty": "ROC max SL",
+   "unit": "fpm",
+   "model_value": 4344,
+   "published": null,
+   "error_pct": null,
+   "verdict": "เทียบไม่ได้",
+   "src": "-",
+   "note": "no public figure found"
+  }
+ ],
+ "implied_cl": [
+  {
+   "type": "C172P POH",
+   "w_lb": 2400,
+   "s_ft2": 174,
+   "cfg": "flaps 0",
+   "vs_kcas": 51,
+   "cl": 1.566
+  },
+  {
+   "type": "C172P POH",
+   "w_lb": 2400,
+   "s_ft2": 174,
+   "cfg": "flaps 30",
+   "vs_kcas": 46,
+   "cl": 1.925
+  },
+  {
+   "type": "jsbsim c172p",
+   "w_lb": 2400,
+   "s_ft2": 174,
+   "cfg": "flaps 0",
+   "vs_kcas": 54.49,
+   "cl": 1.372
+  },
+  {
+   "type": "jsbsim c172p",
+   "w_lb": 2400,
+   "s_ft2": 174,
+   "cfg": "flaps 30",
+   "vs_kcas": 48.77,
+   "cl": 1.713
+  },
+  {
+   "type": "C172S manual",
+   "w_lb": 2550,
+   "s_ft2": 174,
+   "cfg": "flaps 0",
+   "vs_kcas": 53,
+   "cl": 1.541
+  },
+  {
+   "type": "C172S manual",
+   "w_lb": 2550,
+   "s_ft2": 174,
+   "cfg": "flaps 30",
+   "vs_kcas": 48,
+   "cl": 1.879
+  },
+  {
+   "type": "PA-28-180 handbook",
+   "w_lb": 2450,
+   "s_ft2": 160,
+   "cfg": "flaps 0",
+   "vs_kcas": 59.09,
+   "cl": 1.295
+  },
+  {
+   "type": "PA-28-180 handbook",
+   "w_lb": 2450,
+   "s_ft2": 160,
+   "cfg": "flaps 40",
+   "vs_kcas": 53.01,
+   "cl": 1.61
+  }
+ ]
+}

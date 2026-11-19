@@ -1,0 +1,469 @@
+{
+ "geom": {
+  "MTOW_kg": 1156.66,
+  "ramp_kg": 1160.29,
+  "BEW_kg": 754.3,
+  "useful_kg": 406,
+  "utility_MTOW_kg": 997.9,
+  "S_m2": 16.165,
+  "S_tcds_m2": 16.3045,
+  "S_diff_pct": 0.86,
+  "b_m": 10.9982,
+  "MAC_m": 1.4935,
+  "AR": 7.483,
+  "AR_tcds": 7.419,
+  "mean_chord_m": 1.47,
+  "wing_loading_kg_m2": 71.6,
+  "wing_loading_lb_ft2": 14.66,
+  "power_loading_lb_hp": 14.17,
+  "wheelbase_m": 1.651,
+  "prop_D_m": 1.9304,
+  "prop_clear_m": 0.286,
+  "fuel_usable_kg": 144.2,
+  "fuel_usable_L": 200.6
+ },
+ "cg": {
+  "LEMAC_m": 0.6579,
+  "MAC_m": 1.4935,
+  "normal": [
+   [
+    884.5,
+    0.889,
+    1.2014
+   ],
+   [
+    1156.66,
+    1.0414,
+    1.2014
+   ]
+  ],
+  "normal_pctMAC": {
+   "fwd_low": 15.5,
+   "fwd_mtow": 25.7,
+   "aft": 36.4
+  },
+  "utility": [
+   [
+    884.5,
+    0.889,
+    1.0287
+   ],
+   [
+    997.9,
+    0.9525,
+    1.0287
+   ]
+  ],
+  "utility_pctMAC": {
+   "fwd": 19.7,
+   "aft": 24.8
+  },
+  "ref_in": 42,
+  "ref_m": 1.0668,
+  "ref_pctMAC": 27.4,
+  "mid_mtow_in": 44.15,
+  "mid_mtow_pctMAC": 31
+ },
+ "training": {
+  "BEW_kg": 754.3,
+  "crew_kg": 160,
+  "fuel_kg": 95.3,
+  "total_kg": 1009.6
+ },
+ "stallTableCheck": {
+  "maxDev_kt": 0.46,
+  "note": "all KCAS cells vs V0/sqrt(cos phi)"
+ },
+ "CLmax": {
+  "fwd": {
+   "0": {
+    "vs_kcas": 53,
+    "CLapp": 1.541,
+    "CLmax_1g": 1.464,
+    "V1g_kcas": 54.38,
+    "range_nz": [
+     1.387,
+     1.541
+    ],
+    "range_round": [
+     1.437,
+     1.492
+    ]
+   },
+   "10": {
+    "vs_kcas": 51,
+    "CLapp": 1.664,
+    "CLmax_1g": 1.581,
+    "V1g_kcas": 52.32,
+    "range_nz": [
+     1.498,
+     1.664
+    ],
+    "range_round": [
+     1.551,
+     1.613
+    ]
+   },
+   "20": {
+    "CLmax_1g": 1.717,
+    "V1g_kcas": 50.21,
+    "vs_kcas_equiv_min": 48.94,
+    "est": true
+   },
+   "30": {
+    "vs_kcas": 48,
+    "CLapp": 1.879,
+    "CLmax_1g": 1.785,
+    "V1g_kcas": 49.25,
+    "range_nz": [
+     1.691,
+     1.879
+    ],
+    "range_round": [
+     1.748,
+     1.823
+    ]
+   }
+  },
+  "aft": {
+   "0": {
+    "vs_kcas": 53,
+    "CLapp": 1.541,
+    "CLmax_1g": 1.464,
+    "V1g_kcas": 54.38,
+    "range_nz": [
+     1.387,
+     1.541
+    ],
+    "range_round": [
+     1.437,
+     1.492
+    ]
+   },
+   "10": {
+    "vs_kcas": 50,
+    "CLapp": 1.732,
+    "CLmax_1g": 1.645,
+    "V1g_kcas": 51.3,
+    "range_nz": [
+     1.558,
+     1.732
+    ],
+    "range_round": [
+     1.613,
+     1.678
+    ]
+   },
+   "20": {
+    "CLmax_1g": 1.738,
+    "V1g_kcas": 49.9,
+    "vs_kcas_equiv_min": 48.64,
+    "est": true
+   },
+   "30": {
+    "vs_kcas": 48,
+    "CLapp": 1.879,
+    "CLmax_1g": 1.785,
+    "V1g_kcas": 49.25,
+    "range_nz": [
+     1.691,
+     1.879
+    ],
+    "range_round": [
+     1.748,
+     1.823
+    ]
+   }
+  }
+ },
+ "flaps": {
+  "10": {
+   "dCLmax": 0.117,
+   "dCLmax_aft": 0.181
+  },
+  "20": {
+   "dCLmax": 0.253,
+   "dCLmax_aft": 0.274
+  },
+  "30": {
+   "dCLmax": 0.321,
+   "dCLmax_aft": 0.321
+  }
+ },
+ "speedsCAS": {
+  "VY_74": 73.2,
+  "VX_62": 63.6,
+  "VG_68": 68.4,
+  "VR_51_f10": 57.6,
+  "V50_56_f10": 60.6,
+  "VREF_61_f30": 63.9,
+  "VAPP_65_f30": 67.5,
+  "VA_105": 102,
+  "VNO_129": 126,
+  "VNE_163_extrap": 160,
+  "VFE10_110": 107,
+  "VFE30_85": 86,
+  "note": "POH p2-4 gives VNE 160, VNO 126, VA 102, VFE10 107, VFE 84/85 KCAS: compare"
+ },
+ "glide": {
+  "E": 9.114,
+  "vbg_kcas": 68.4,
+  "CL": 0.9252,
+  "CD0": 0.0508,
+  "K": 0.0593,
+  "e": 0.717,
+  "sim": {
+   "CD0": 0.059,
+   "K": 0.0708,
+   "Emax": 9.114,
+   "CLstar": 0.925
+  },
+  "sink_fpm": 760,
+  "E_range_1p4_1p6": [
+   8.51,
+   9.72
+  ]
+ },
+ "cruise75": {
+  "rho": 0.9481,
+  "CL": 0.3638,
+  "CD_eta080": 0.0405,
+  "CD_glidepolar": 0.0586,
+  "CD0_implied_K_glide": 0.0326,
+  "ratio": 0.691
+ },
+ "cleanPolar": {
+  "CD0": 0.033,
+  "K": 0.0567,
+  "e": 0.75,
+  "Emax": 11.56,
+  "CLstar": 0.763,
+  "dCD_windmill_at_glide": 0.02
+ },
+ "inertia": {
+  "radii_TM80163": {
+   "Rx": 0.235,
+   "Ry": 0.324,
+   "Rz": 0.364
+  },
+  "MTOW_TM": {
+   "Ixx": 1925,
+   "Iyy": 2046,
+   "Izz": 3539,
+   "Ixz": 170
+  },
+  "radii_class": {
+   "Rx": 0.257,
+   "Ry": 0.357,
+   "Rz": 0.404,
+   "n": 4,
+   "range": {
+    "Rx": [
+     0.225,
+     0.29
+    ],
+    "Ry": [
+     0.324,
+     0.4
+    ],
+    "Rz": [
+     0.364,
+     0.456
+    ]
+   }
+  },
+  "MTOW_class": {
+   "Ixx": 2310,
+   "Iyy": 2481,
+   "Izz": 4351
+  },
+  "fuel_Ixx_add": 577,
+  "note": "fuel 144 kg at |y| ~2.0 m (est) adds ~576 kg m2 to Ixx and Izz"
+ },
+ "hot": {
+  "15": {
+   "to_roll_ft": 960,
+   "to_50_ft": 1633,
+   "ldg_roll_ft": 575,
+   "ldg_50_ft": 1335,
+   "roc_fpm": 729,
+   "to_roll_m": 293,
+   "to_50_m": 498,
+   "ldg_roll_m": 175,
+   "ldg_50_m": 407
+  },
+  "30": {
+   "to_roll_ft": 1070,
+   "to_50_ft": 1810,
+   "ldg_roll_ft": 605,
+   "ldg_50_ft": 1380,
+   "roc_fpm": 678,
+   "to_roll_m": 326,
+   "to_50_m": 552,
+   "ldg_roll_m": 184,
+   "ldg_50_m": 421
+  },
+  "35": {
+   "to_roll_ft": 1110,
+   "to_50_ft": 1878,
+   "ldg_roll_ft": 615,
+   "ldg_50_ft": 1398,
+   "roc_fpm": 661,
+   "to_roll_m": 338,
+   "to_50_m": 572,
+   "ldg_roll_m": 187,
+   "ldg_50_m": 426
+  }
+ },
+ "rocISA": [
+  [
+   0,
+   74,
+   729
+  ],
+  [
+   2000,
+   73,
+   656
+  ],
+  [
+   4000,
+   73,
+   597
+  ],
+  [
+   6000,
+   73,
+   505
+  ],
+  [
+   8000,
+   72,
+   408
+  ],
+  [
+   10000,
+   72,
+   314
+  ],
+  [
+   12000,
+   72,
+   221
+  ]
+ ],
+ "lapseVTBD": {
+  "ind_friction_35C": 0.9637,
+  "gagg_farrar_35C": 0.9265,
+  "ind_friction_30C": 0.9724,
+  "POH_roc_ratio_35_15": 0.907
+ },
+ "part23": {
+  "WS_lb_ft2": 14.66,
+  "Vdesc_fps": 8.61,
+  "Vdesc_mps": 2.624
+ },
+ "prop": {
+  "chordScale": 1.0827,
+  "static": {
+   "rpm": 2350,
+   "T0_N": 3538,
+   "T0_lbf": 795,
+   "P_hp": 158.7,
+   "FM": 0.664
+  },
+  "staticISA20": {
+   "rpm": 2385,
+   "T0_N": 3423
+  },
+  "vmax126": {
+   "rpm": 2790,
+   "J": 0.722,
+   "T_N": 1798,
+   "eta": 0.843,
+   "drag_clean_N": 1548
+  },
+  "v100": {
+   "rpm": 2543,
+   "J": 0.629,
+   "T_N": 2005,
+   "eta": 0.811,
+   "drag_clean_N": 1143
+  },
+  "vy": {
+   "rpm": 2358,
+   "J": 0.496,
+   "T_N": 2310,
+   "eta": 0.733,
+   "drag_clean_N": 983
+  },
+  "table": [
+   [
+    0,
+    0.1365,
+    0.0606,
+    0
+   ],
+   [
+    0.1,
+    0.1331,
+    0.0633,
+    0.21
+   ],
+   [
+    0.2,
+    0.128,
+    0.0658,
+    0.389
+   ],
+   [
+    0.3,
+    0.1176,
+    0.066,
+    0.534
+   ],
+   [
+    0.4,
+    0.1039,
+    0.0642,
+    0.648
+   ],
+   [
+    0.5,
+    0.0877,
+    0.0597,
+    0.735
+   ],
+   [
+    0.6,
+    0.0698,
+    0.0524,
+    0.799
+   ],
+   [
+    0.7,
+    0.0505,
+    0.0421,
+    0.84
+   ],
+   [
+    0.8,
+    0.03,
+    0.0285,
+    0.844
+   ],
+   [
+    0.9,
+    0.0086,
+    0.0114,
+    0.676
+   ],
+   [
+    1,
+    -0.0136,
+    -0.0089,
+    0
+   ]
+  ]
+ }
+}

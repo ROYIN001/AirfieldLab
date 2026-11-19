@@ -1,0 +1,256 @@
+{
+ "note": "sim = da40ng card in AirfieldLab physics at commit cabf0f0 (lm_card), h 1,000 ft ISA, thr 0",
+ "rows": [
+  {
+   "mass": 1100,
+   "label": "clean idle",
+   "det": "UP",
+   "kias": 88,
+   "reported": {
+    "theta_deg": -2.5,
+    "LoD": 9.9
+   },
+   "sim": {
+    "theta_deg": -2.6,
+    "alpha_deg": 3.4,
+    "LoD": 9.49,
+    "vz_fpm": -948
+   }
+  },
+  {
+   "mass": 1100,
+   "label": "T/O idle",
+   "det": "TO",
+   "kias": 88,
+   "reported": {
+    "theta_deg": -7.5,
+    "LoD": 9.9
+   },
+   "sim": {
+    "theta_deg": -10.1,
+    "alpha_deg": -2.3,
+    "LoD": 7.3,
+    "vz_fpm": -1227
+   }
+  },
+  {
+   "mass": 1100,
+   "label": "T/O idle",
+   "det": "TO",
+   "kias": 84,
+   "reported": {
+    "theta_deg": -6,
+    "LoD": 14.18
+   },
+   "sim": {
+    "theta_deg": -9.1,
+    "alpha_deg": -1.6,
+    "LoD": 7.55,
+    "vz_fpm": -1133
+   }
+  },
+  {
+   "mass": 1100,
+   "label": "LDG idle",
+   "det": "LDG",
+   "kias": 88,
+   "reported": {
+    "theta_deg": -12.5,
+    "LoD": 6.86
+   },
+   "sim": {
+    "theta_deg": -14,
+    "alpha_deg": -4.8,
+    "LoD": 6.24,
+    "vz_fpm": -1431
+   }
+  },
+  {
+   "mass": 1100,
+   "label": "LDG idle",
+   "det": "LDG",
+   "kias": 84,
+   "reported": {
+    "theta_deg": -6.5,
+    "LoD": 17.01
+   },
+   "sim": {
+    "theta_deg": -12.9,
+    "alpha_deg": -4.1,
+    "LoD": 6.51,
+    "vz_fpm": -1310
+   }
+  },
+  {
+   "mass": 1100,
+   "label": "LDG idle (TDI video)",
+   "det": "LDG",
+   "kias": 73,
+   "reported": {
+    "theta_deg": -6.5,
+    "LoD": 7.04
+   },
+   "sim": {
+    "theta_deg": -9.7,
+    "alpha_deg": -1.6,
+    "LoD": 7.01,
+    "vz_fpm": -1059
+   }
+  },
+  {
+   "mass": 1310,
+   "label": "clean idle",
+   "det": "UP",
+   "kias": 88,
+   "reported": {
+    "theta_deg": -2.5,
+    "LoD": 9.9
+   },
+   "sim": {
+    "theta_deg": -1.1,
+    "alpha_deg": 4.8,
+    "LoD": 9.7,
+    "vz_fpm": -928
+   }
+  },
+  {
+   "mass": 1310,
+   "label": "T/O idle",
+   "det": "TO",
+   "kias": 88,
+   "reported": {
+    "theta_deg": -7.5,
+    "LoD": 9.9
+   },
+   "sim": {
+    "theta_deg": -8.3,
+    "alpha_deg": -0.9,
+    "LoD": 7.72,
+    "vz_fpm": -1161
+   }
+  },
+  {
+   "mass": 1310,
+   "label": "T/O idle",
+   "det": "TO",
+   "kias": 84,
+   "reported": {
+    "theta_deg": -6,
+    "LoD": 14.18
+   },
+   "sim": {
+    "theta_deg": -7.3,
+    "alpha_deg": -0.1,
+    "LoD": 7.85,
+    "vz_fpm": -1092
+   }
+  },
+  {
+   "mass": 1310,
+   "label": "LDG idle",
+   "det": "LDG",
+   "kias": 88,
+   "reported": {
+    "theta_deg": -12.5,
+    "LoD": 6.86
+   },
+   "sim": {
+    "theta_deg": -11.9,
+    "alpha_deg": -3.5,
+    "LoD": 6.71,
+    "vz_fpm": -1332
+   }
+  },
+  {
+   "mass": 1310,
+   "label": "LDG idle",
+   "det": "LDG",
+   "kias": 84,
+   "reported": {
+    "theta_deg": -6.5,
+    "LoD": 17.01
+   },
+   "sim": {
+    "theta_deg": -10.9,
+    "alpha_deg": -2.6,
+    "LoD": 6.89,
+    "vz_fpm": -1240
+   }
+  },
+  {
+   "mass": 1310,
+   "label": "LDG idle (TDI video)",
+   "det": "LDG",
+   "kias": 73,
+   "reported": {
+    "theta_deg": -6.5,
+    "LoD": 7.04
+   },
+   "sim": {
+    "theta_deg": -7.7,
+    "alpha_deg": 0.5,
+    "LoD": 7.01,
+    "vz_fpm": -1059
+   }
+  }
+ ],
+ "engines": {
+  "AE300_E4": {
+   "dry_kg": 185,
+   "P_kW": 123.5,
+   "crank_rpm": 3880,
+   "gear": 1.69,
+   "prop_rpm": 2296,
+   "src": "EASA E.200 Issue 12 p.5 [LD10]"
+  },
+  "TAE125_01": {
+   "dry_kg": 134,
+   "disp_cm3": 1689,
+   "P_kW": 99,
+   "crank_rpm": 3900,
+   "gear": 1.689,
+   "prop_rpm": 2309,
+   "src": "EASA E.055 Issue 16 p.6 [LD11]"
+  },
+  "TAE125_02_99": {
+   "dry_kg": 153,
+   "disp_cm3": 1991,
+   "P_kW": 99,
+   "crank_rpm": 3900,
+   "gear": 1.689,
+   "prop_rpm": 2309,
+   "src": "EASA E.055 Issue 16 p.6 [LD11]"
+  }
+ },
+ "propellers": {
+  "MTV-6-R/190-69": {
+   "D_m": 1.9,
+   "blades": 3,
+   "mass_kg": 14,
+   "P_max_kW": 125,
+   "rpm_max": 2500,
+   "src": "EASA P.094 Issue 04 p.7–8 [LD9]"
+  },
+  "MTV-6-A/187-129": {
+   "D_m": 1.87,
+   "blades": 3,
+   "mass_kg": 14,
+   "P_max_kW": 125,
+   "rpm_max": 2500,
+   "src": "EASA P.094 Issue 04 p.7–8 [LD9]"
+  },
+  "MTV-12-B/180-17": {
+   "D_m": 1.8,
+   "blades": 3,
+   "mass_kg": 20,
+   "P_max_kW": 168,
+   "rpm_max": 2800,
+   "src": "EASA P.013 Issue 02 p.6–7 [LD16]"
+  }
+ },
+ "hot_day": {
+  "sigma": 0.9351,
+  "flat": 1.0936,
+  "gagg_ferrar": 1.1507
+ }
+}

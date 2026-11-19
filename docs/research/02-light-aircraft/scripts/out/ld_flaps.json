@@ -1,0 +1,127 @@
+{
+ "tau": 0.609,
+ "cfc": 0.25,
+ "datcom": {
+  "TO": {
+   "flap_deg": 20,
+   "eta_delta": 0.8,
+   "dcl": 1.02,
+   "dCL0": 0.527
+  },
+  "LDG": {
+   "flap_deg": 42,
+   "eta_delta": 0.55,
+   "dcl": 1.473,
+   "dCL0": 0.761
+  }
+ },
+ "forum": [
+  {
+   "name": "clean idle (NG p17/p20)",
+   "flap": "UP",
+   "kias": 88,
+   "theta_deg": -2.5,
+   "gamma_deg": -5.8,
+   "alpha_deg": 3.3,
+   "CL0_1100": 0.332,
+   "CL0_1200": 0.391,
+   "CL0_1300": 0.449
+  },
+  {
+   "name": "T/O full power (NG p17)",
+   "flap": "TO",
+   "kias": 73,
+   "theta_deg": 7.5,
+   "gamma_deg": 6.6,
+   "alpha_deg": 0.9,
+   "CL0_1100": 0.851,
+   "CL0_1200": 0.936,
+   "CL0_1300": 1.022
+  },
+  {
+   "name": "T/O idle (NG p20)",
+   "flap": "TO",
+   "kias": 84,
+   "theta_deg": -6,
+   "gamma_deg": -4.04,
+   "alpha_deg": -1.96,
+   "CL0_1100": 0.896,
+   "CL0_1200": 0.961,
+   "CL0_1300": 1.025
+  },
+  {
+   "name": "T/O idle 88 kt (NG p20)",
+   "flap": "TO",
+   "kias": 88,
+   "theta_deg": -7.5,
+   "gamma_deg": -5.8,
+   "alpha_deg": -1.7,
+   "CL0_1100": 0.808,
+   "CL0_1200": 0.866,
+   "CL0_1300": 0.925
+  },
+  {
+   "name": "LDG idle 88 kt (NG p20)",
+   "flap": "LDG",
+   "kias": 88,
+   "theta_deg": -12.5,
+   "gamma_deg": -8.39,
+   "alpha_deg": -4.11,
+   "CL0_1100": 1.033,
+   "CL0_1200": 1.091,
+   "CL0_1300": 1.15
+  },
+  {
+   "name": "LDG idle 84 kt (NG p20)",
+   "flap": "LDG",
+   "kias": 84,
+   "theta_deg": -6.5,
+   "gamma_deg": -3.37,
+   "alpha_deg": -3.13,
+   "CL0_1100": 1.009,
+   "CL0_1200": 1.073,
+   "CL0_1300": 1.138
+  },
+  {
+   "name": "T/O idle (TDI video p16/p20)",
+   "flap": "TO",
+   "kias": 84,
+   "theta_deg": -7.5,
+   "gamma_deg": -6.41,
+   "alpha_deg": -1.09,
+   "CL0_1100": 0.811,
+   "CL0_1200": 0.875,
+   "CL0_1300": 0.94
+  },
+  {
+   "name": "LDG idle (TDI video p16/p20)",
+   "flap": "LDG",
+   "kias": 73,
+   "theta_deg": -6.5,
+   "gamma_deg": -8.17,
+   "alpha_deg": 1.67,
+   "CL0_1100": 0.775,
+   "CL0_1200": 0.86,
+   "CL0_1300": 0.945
+  }
+ ],
+ "forum_dCL0_1200": {
+  "TO_power_NG": 0.545,
+  "TO_idle_NG_84": 0.57,
+  "TO_idle_NG_88": 0.475,
+  "LDG_idle_NG_88": 0.7,
+  "LDG_idle_NG_84": 0.682,
+  "TO_idle_TDI": 0.484,
+  "LDG_idle_TDI": 0.469
+ },
+ "glide_ratio": {
+  "clean idle (NG p17/p20)": 9.9,
+  "T/O full power (NG p17)": -8.7,
+  "T/O idle (NG p20)": 14.18,
+  "T/O idle 88 kt (NG p20)": 9.9,
+  "LDG idle 88 kt (NG p20)": 6.86,
+  "LDG idle 84 kt (NG p20)": 17.01,
+  "T/O idle (TDI video p16/p20)": 8.95,
+  "LDG idle (TDI video p16/p20)": 7.04
+ }
+}

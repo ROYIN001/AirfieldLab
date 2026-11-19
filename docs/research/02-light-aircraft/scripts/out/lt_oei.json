@@ -1,0 +1,415 @@
+{
+ "static": {
+  "derivs": {
+   "CYb": -0.5821,
+   "CYdr": 0.1316,
+   "Clb": -0.069,
+   "Clda": 0.1459,
+   "Cldr": 0.007847,
+   "Cnb": 0.07722,
+   "Cndr": -0.04595,
+   "Cnda_per_CL": -0.029
+  },
+  "vmca": {
+   "ng_1900_wm_5deg": {
+    "VMCA_kcas": 72.7,
+    "kcas": 72.73925575438099,
+    "beta_deg": 4.87,
+    "da_deg": 9.8,
+    "dr_deg": -29,
+    "phi_deg": 5,
+    "T_live_N": 2406,
+    "D_dead_N": 158,
+    "Cn_eng": -0.02325,
+    "Cl_eng": -0.01511,
+    "CW": 1.334
+   },
+   "ng_1900_wm_5deg_yawOnly": {
+    "VMCA_kcas": 66.3,
+    "kcas": 66.2714619303403,
+    "beta_deg": 7.22,
+    "da_deg": 4.97,
+    "dr_deg": -29,
+    "phi_deg": 5,
+    "T_live_N": 2522,
+    "D_dead_N": 131,
+    "Cn_eng": -0.02898,
+    "Cl_eng": 0,
+    "CW": 1.607
+   },
+   "ng_1900_wm_0deg": {
+    "VMCA_kcas": 89.9,
+    "kcas": 89.93307424256514,
+    "beta_deg": -6.57,
+    "da_deg": 1.01,
+    "dr_deg": -29,
+    "phi_deg": 0,
+    "T_live_N": 2119,
+    "D_dead_N": 241,
+    "Cn_eng": -0.014,
+    "Cl_eng": -0.006511,
+    "CW": 0.8724
+   },
+   "ng_1510_wm_5deg": {
+    "VMCA_kcas": 73.7,
+    "kcas": 73.67638377025848,
+    "beta_deg": 2.29,
+    "da_deg": 7.34,
+    "dr_deg": -29,
+    "phi_deg": 5,
+    "T_live_N": 2390,
+    "D_dead_N": 162,
+    "Cn_eng": -0.02255,
+    "Cl_eng": -0.01196,
+    "CW": 1.033
+   },
+   "ng_1900_feathered_5deg": {
+    "VMCA_kcas": 71.3,
+    "kcas": 71.32436575344727,
+    "beta_deg": 5.33,
+    "da_deg": 10.5,
+    "dr_deg": -29,
+    "phi_deg": 5,
+    "T_live_N": 2431,
+    "D_dead_N": 19,
+    "Cn_eng": -0.02311,
+    "Cl_eng": -0.01636,
+    "CW": 1.387
+   },
+   "ng_1900_wm_5deg_Pfactor": {
+    "VMCA_kcas": 74,
+    "kcas": 73.96529601040989,
+    "beta_deg": 4.5,
+    "da_deg": 9.24,
+    "dr_deg": -29,
+    "phi_deg": 5,
+    "T_live_N": 2385,
+    "D_dead_N": 163,
+    "Cn_eng": -0.02333,
+    "Cl_eng": -0.01413,
+    "CW": 1.29
+   },
+   "ng_1900_wm_5deg_sim27": {
+    "VMCA_kcas": 74.1,
+    "kcas": 74.06717349980774,
+    "beta_deg": 4.92,
+    "da_deg": 9.3,
+    "dr_deg": -27,
+    "phi_deg": 5,
+    "T_live_N": 2383,
+    "D_dead_N": 164,
+    "Cn_eng": -0.02227,
+    "Cl_eng": -0.01405,
+    "CW": 1.286
+   },
+   "tdi_1785_wm_5deg": {
+    "VMCA_kcas": 67.4,
+    "kcas": 67.44073826407728,
+    "beta_deg": 5.94,
+    "da_deg": 10.7,
+    "dr_deg": -29,
+    "phi_deg": 5,
+    "T_live_N": 2082,
+    "D_dead_N": 136,
+    "Cn_eng": -0.02339,
+    "Cl_eng": -0.01616,
+    "CW": 1.458
+   },
+   "vi_1999_wm_5deg": {
+    "VMCA_kcas": 72.8,
+    "kcas": 72.82469158284783,
+    "beta_deg": 5.44,
+    "da_deg": 10.3,
+    "dr_deg": -29,
+    "phi_deg": 5,
+    "T_live_N": 2419,
+    "D_dead_N": 158,
+    "Cn_eng": -0.02332,
+    "Cl_eng": -0.01576,
+    "CW": 1.4
+   }
+  },
+  "vi_rudder_scale_for_70": 1.16,
+  "zeroSideslip": {
+   "ng_1900_VYSE_feathered": {
+    "kcas": 84.6,
+    "phi_deg": 2.86,
+    "da_deg": 4.4,
+    "dr_deg": -21.4,
+    "beta_deg": 0,
+    "T_live_N": 2204,
+    "D_dead_N": 27,
+    "Cn_eng": -0.01495,
+    "Cl_eng": -0.008274,
+    "CW": 0.9859
+   },
+   "ng_1900_VYSE_feathered_yawOnly": {
+    "kcas": 84.6,
+    "phi_deg": 2.58,
+    "da_deg": 1.04,
+    "dr_deg": -19.3,
+    "beta_deg": 0,
+    "T_live_N": 2204,
+    "D_dead_N": 27,
+    "Cn_eng": -0.01495,
+    "Cl_eng": 0,
+    "CW": 0.9859
+   },
+   "ng_1510_VYSE_feathered": {
+    "kcas": 84.6,
+    "phi_deg": 3.45,
+    "da_deg": 3.85,
+    "dr_deg": -20.5,
+    "beta_deg": 0,
+    "T_live_N": 2204,
+    "D_dead_N": 27,
+    "Cn_eng": -0.01495,
+    "Cl_eng": -0.006991,
+    "CW": 0.7835
+   },
+   "ng_1900_VYSE_windmill": {
+    "kcas": 84.6,
+    "phi_deg": 3.07,
+    "da_deg": 4.49,
+    "dr_deg": -23,
+    "beta_deg": 0,
+    "T_live_N": 2204,
+    "D_dead_N": 213,
+    "Cn_eng": -0.0162,
+    "Cl_eng": -0.008274,
+    "CW": 0.9859
+   },
+   "ng_1900_VYSE_wingsLevel": {
+    "kcas": 84.6,
+    "beta_deg": -7.15,
+    "da_deg": 1.57,
+    "dr_deg": -31.6,
+    "phi_deg": 0,
+    "T_live_N": 2204,
+    "D_dead_N": 27,
+    "Cn_eng": -0.01495,
+    "Cl_eng": -0.008274,
+    "CW": 0.9859
+   }
+  },
+  "ceiling": {
+   "note": "ค่าประมาณ: เครื่องที่เหลือ MCP 114 kW คงที่ถึง h_c 16,000 ft (โบรชัวร์ DA42-VI: MCP ที่ 16,000 ft) แล้วลดตาม σ^1.1; ใบพัดซ้าย feather; trim ΔCD 0.002",
+   "vi_1999_service_ft": 18800,
+   "vi_1999_absolute_ft": 20000,
+   "ng_1900_service_ft": 20100,
+   "ng_1900_SL_MCP_fpm": 304,
+   "ng_1900_SL_max_fpm": 380,
+   "tdi_1785_SL_fpm": 269,
+   "tdi_1785_service_ft_hc0": 7320,
+   "kEta_for_210fpm": 0.827,
+   "vi_1999_service_ft_calibrated": 10200,
+   "vi_1999_absolute_ft_calibrated": 16100,
+   "ng_1900_service_ft_calibrated": 16100
+  }
+ },
+ "sim": {
+  "cut_VYSE": {
+   "trim_climb": {
+    "kcas": 84.6,
+    "gamma_deg": 7.86,
+    "roc_fpm": 1188
+   },
+   "rows": [
+    {
+     "t_s": 1,
+     "dpsi_deg": -4.65,
+     "phi_deg": -5.01,
+     "beta_deg": 3.53,
+     "r_dps": -9.42,
+     "p_dps": -8.92,
+     "ias_kt": 83.1
+    },
+    {
+     "t_s": 2,
+     "dpsi_deg": -14.7,
+     "phi_deg": -20.1,
+     "beta_deg": 8.46,
+     "r_dps": -9.22,
+     "p_dps": -15.5,
+     "ias_kt": 80.9
+    },
+    {
+     "t_s": 3,
+     "dpsi_deg": -20.5,
+     "phi_deg": -36.6,
+     "beta_deg": 6.63,
+     "r_dps": -7.04,
+     "p_dps": -14.9,
+     "ias_kt": 79.2
+    },
+    {
+     "t_s": 5,
+     "dpsi_deg": -36.1,
+     "phi_deg": -64,
+     "beta_deg": 3.58,
+     "r_dps": -15.6,
+     "p_dps": -14.4,
+     "ias_kt": 81.6
+    }
+   ],
+   "rdot_expected_dps2": -20.7,
+   "rdot_at_0p5s_dps2": -12.3
+  },
+  "instant_cut": {
+   "N_Nm": -3676,
+   "rdot_expected_dps2": -20.6,
+   "rdot_sim_dps2": -20.58
+  },
+  "cut_VYSE_recovery": {
+   "delay_s": 1,
+   "max_dpsi_deg": 12,
+   "max_bank_deg": 7.82,
+   "after20s": {
+    "dpsi_deg": -10.6,
+    "phi_deg": 1.22,
+    "beta_deg": -2.55,
+    "dr_deg": -21.5,
+    "da_deg": 2.26,
+    "ias_kt": 89.2
+   }
+  },
+  "trim": {
+   "VYSE_feathered_zeroBeta": {
+    "kcas": 84.6,
+    "alpha_deg": 6.85,
+    "theta_deg": 8.61,
+    "de_deg": -7.22,
+    "da_deg": 4.01,
+    "dr_deg": -19.1,
+    "beta_deg": 0,
+    "phi_deg": 2.57,
+    "roc_fpm": 264,
+    "dr_saturated": false
+   },
+   "VYSE_windmill_zeroBeta": {
+    "kcas": 84.6,
+    "alpha_deg": 6.87,
+    "theta_deg": 8.04,
+    "de_deg": -7.23,
+    "da_deg": 4.1,
+    "dr_deg": -20.7,
+    "beta_deg": 0,
+    "phi_deg": 2.79,
+    "roc_fpm": 177,
+    "dr_saturated": false
+   },
+   "VYSE_feathered_phi5": {
+    "kcas": 84.6,
+    "alpha_deg": 6.82,
+    "theta_deg": 8.47,
+    "de_deg": -7.2,
+    "da_deg": 6.03,
+    "dr_deg": -11.8,
+    "beta_deg": 5.08,
+    "phi_deg": 5,
+    "roc_fpm": 184,
+    "dr_saturated": false
+   },
+   "VYSE_feathered_wingsLevel": {
+    "kcas": 84.6,
+    "alpha_deg": 6.86,
+    "theta_deg": 8.51,
+    "de_deg": -7.23,
+    "da_deg": 1.87,
+    "dr_deg": -26.9,
+    "beta_deg": -5.39,
+    "phi_deg": 0,
+    "roc_fpm": 245,
+    "dr_saturated": false
+   }
+  },
+  "vmca_sim_phi5_wm": {
+   "VMCA_kcas": 69.2,
+   "kcas": 69.23643862828612,
+   "alpha_deg": 12.2,
+   "theta_deg": 13.6,
+   "de_deg": -12.1,
+   "da_deg": 10.5,
+   "dr_deg": -27,
+   "beta_deg": 5.11,
+   "phi_deg": 5,
+   "roc_fpm": 123,
+   "dr_saturated": true
+  },
+  "oei_climb_sweep": [
+   [
+    72,
+    255
+   ],
+   [
+    74,
+    264
+   ],
+   [
+    76,
+    269
+   ],
+   [
+    78,
+    272
+   ],
+   [
+    80,
+    272
+   ],
+   [
+    82,
+    269
+   ],
+   [
+    84,
+    265
+   ],
+   [
+    86,
+    259
+   ],
+   [
+    88,
+    251
+   ],
+   [
+    90,
+    240
+   ],
+   [
+    92,
+    228
+   ],
+   [
+    94,
+    214
+   ],
+   [
+    96,
+    197
+   ],
+   [
+    98,
+    179
+   ],
+   [
+    100,
+    159
+   ]
+  ],
+  "oei_best": {
+   "kcas": 78,
+   "alpha_deg": 8.68,
+   "theta_deg": 10.6,
+   "de_deg": -8.89,
+   "da_deg": 5.38,
+   "dr_deg": -23.8,
+   "beta_deg": 0,
+   "phi_deg": 2.74,
+   "roc_fpm": 272,
+   "dr_saturated": false
+  }
+ },
+ "vyse_kcas": 84.6
+}

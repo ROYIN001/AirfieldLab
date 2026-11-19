@@ -1,0 +1,754 @@
+{
+ "type": "c172s",
+ "mass_kg": 1156.7,
+ "travel": {
+  "used": "card",
+  "card_rad": {
+   "deUp": 0.48869,
+   "deDn": 0.40143,
+   "daMax": 0.30543,
+   "drMax": 0.30945
+  },
+  "r1_rad": {
+   "deUp": 0.38397,
+   "deDn": 0.2618,
+   "daMax": 0.34907,
+   "drMax": 0.43633
+  }
+ },
+ "tests": [
+  {
+   "id": "T-LC-01",
+   "cond": "POH p1-2/TCDS: span 36 ft 1 in, wing area 174 ft² (POH) / 175.5 ft² (TCDS)",
+   "qty": "AR = b²/S",
+   "expected": 7.48,
+   "tol": 0.02,
+   "unit": "-",
+   "origin": "POH [LC1] p1-2; TCDS 3A12 [LC6] ให้ 7.42",
+   "current": 7.483,
+   "pass": true
+  },
+  {
+   "id": "T-LC-02",
+   "cond": "normal category, MTOW 2,550 lb: forward limit 41.0 in, aft limit 47.3 in aft of datum; LEMAC 25.9 in, MAC 58.8 in",
+   "qty": "CG เป็น %MAC (fwd / aft)",
+   "expected": "25.7 / 36.4",
+   "tol": 0.2,
+   "unit": "%MAC",
+   "origin": "POH p2-7/2-8 [LC1]; TCDS MAC/LEMAC [LC3, LC6]; lc_calc.mjs [LC0]",
+   "current": "25.7 / 36.4",
+   "pass": true
+  },
+  {
+   "id": "T-LC-03",
+   "cond": "ตาราง stall ของ POH (Fig 5-3, CG หน้าสุด แฟลปขึ้น, power off): VS0° 53 KCAS",
+   "qty": "VS(φ) = VS0/√cosφ ที่ 45° และ 60°",
+   "expected": "63 / 75 (POH)",
+   "tol": 1,
+   "unit": "KCAS",
+   "origin": "POH Fig 5-3 (ManualsLib หน้า 146) [LC2]; ทุกช่องของตารางต่างจากสูตรไม่เกิน 0.46 kt",
+   "current": "63 / 75",
+   "pass": true
+  },
+  {
+   "id": "T-LC-04",
+   "cond": "2,550 lb, S 174 ft², VS1 53 / VS0 48 KCAS ถือเป็นความเร็วต่ำสุด (nz 0.95 ที่ Vmin, ลด 1 kt/s)",
+   "qty": "CLmax 1 g แฟลป 0 / 30",
+   "expected": "1.464 / 1.785",
+   "tol": 0.03,
+   "unit": "-",
+   "origin": "lm_polar.clmaxFromStall kind min [LM0]; นิยาม VS [LM1, LM3]; POH p ii, Fig 5-3 [LC1, LC2]",
+   "current": "ซิมวัด CLmax 1.465 / 1.786",
+   "pass": true
+  },
+  {
+   "id": "T-LC-05",
+   "cond": "ตาราง airspeed calibration (POH Fig 5-1) ตีความเชิงเส้น",
+   "qty": "KCAS ของ Vy 74 KIAS แฟลปขึ้น / Vref 61 KIAS แฟลป 30 / Vx 62 KIAS",
+   "expected": "73.2 / 63.9 / 63.6",
+   "tol": 0.1,
+   "unit": "KCAS",
+   "origin": "POH Fig 5-1 p5-9 [LC2]; lc_calc.mjs [LC0]",
+   "current": "73.2 / 63.9 / 63.6",
+   "pass": true
+  },
+  {
+   "id": "T-LC-06",
+   "cond": "ซิม: MTOW 1,156.7 kg CG อ้างอิง 27.4 %MAC, 3,000 ft ISA, idle, แฟลป 0, ปีกระดับ, ลด 1 kt/s",
+   "qty": "VS1 (Vmin, KEAS≈KCAS)",
+   "expected": 53,
+   "tol": 3,
+   "unit": "KCAS",
+   "origin": "POH p ii, Fig 5-3 [LC1, LC2]; tolerance ±3 kt ตาม Part 60 2.c.8 [R1:V2]",
+   "current": 53.2,
+   "pass": true
+  },
+  {
+   "id": "T-LC-07",
+   "cond": "เหมือน T-LC-06 แฟลป 10",
+   "qty": "VS (Vmin)",
+   "expected": 51,
+   "tol": 3,
+   "unit": "KCAS",
+   "origin": "POH Fig 5-3 [LC2] (CG หน้าสุด)",
+   "current": 51.4,
+   "pass": true
+  },
+  {
+   "id": "T-LC-08",
+   "cond": "เหมือน T-LC-06 แฟลป 30",
+   "qty": "VS0 (Vmin)",
+   "expected": 48,
+   "tol": 3,
+   "unit": "KCAS",
+   "origin": "POH p ii, Fig 5-3 [LC1, LC2]",
+   "current": 48.3,
+   "pass": true
+  },
+  {
+   "id": "T-LC-09",
+   "cond": "ซิม: MTOW, SL ISA (h 30 m), คันเร่งสุด, แฟลป 0, กวาด IAS ทีละ 2 kt",
+   "qty": "ROCmax / Vy",
+   "expected": "730 / 73.2",
+   "tol": "±100 fpm (หรือ 5 %) / ±3 kt",
+   "unit": "fpm / KCAS",
+   "origin": "POH p ii, Fig 5-6 p5-17 [LC1, LC2]; Part 60 1.c.1 [R1:V2]",
+   "current": "743 / 66.9",
+   "pass": false
+  },
+  {
+   "id": "T-LC-10",
+   "cond": "เหมือน T-LC-09",
+   "qty": "Vx (γ สูงสุด)",
+   "expected": 63.6,
+   "tol": 3,
+   "unit": "KCAS",
+   "origin": "POH p4-5 Vx 62 KIAS [LC1] แปลงด้วย Fig 5-1",
+   "current": 60,
+   "pass": false
+  },
+  {
+   "id": "T-LC-11",
+   "cond": "ซิม: MTOW, 8,000 ft ISA, คันเร่งสุด, แฟลป 0",
+   "qty": "ROCmax",
+   "expected": 408,
+   "tol": 100,
+   "unit": "fpm",
+   "origin": "POH Fig 5-6 p5-17 [LC2]; ซิมไม่มี power lapse จึงคาดว่าไม่ผ่าน",
+   "current": 733,
+   "pass": false
+  },
+  {
+   "id": "T-LC-12",
+   "cond": "ซิม: MTOW, 3,000 ft ISA, แรงขับศูนย์, แฟลป 0, กวาด IAS ทีละ 1 kt",
+   "qty": "ความเร็วร่อนดีสุด / L/D",
+   "expected": "68.4 / 9.1",
+   "tol": "±3 kt / ±0.5",
+   "unit": "KCAS / -",
+   "origin": "POH VG 68 KIAS p3-3 [LC1]; ระยะร่อน 1.5 NM ต่อ 1,000 ft [LC4]; Part 60 1.d.4 (idle descent: ±3 kt) [R1:V2]; L/D ±0.5 ผู้เขียนตั้ง",
+   "current": "68.2 / 9.11",
+   "pass": true
+  },
+  {
+   "id": "T-LC-13",
+   "cond": "ซิม: short field แฟลป 10, MTOW, SL ISA 15 °C, ลมสงบ, ทางแห้ง, เบรกค้าง 3 s คันเร่งสุด, VR 52 KEAS, θ 12°",
+   "qty": "ground roll",
+   "expected": 293,
+   "tol": "±5 % หรือ ±61 m",
+   "unit": "m",
+   "origin": "POH Fig 5-5 p5-14 (960 ft) [LC2]; Part 60 1.b.1 [R1:V2]",
+   "current": 290,
+   "pass": true
+  },
+  {
+   "id": "T-LC-14",
+   "cond": "เหมือน T-LC-13",
+   "qty": "ระยะถึง 50 ft",
+   "expected": 497,
+   "tol": "±10 % (ดัดแปลงจาก 1.b.1)",
+   "unit": "m",
+   "origin": "POH Fig 5-5 p5-14 (1,630 ft) [LC2]",
+   "current": 488,
+   "pass": true
+  },
+  {
+   "id": "T-LC-15",
+   "cond": "เหมือน T-LC-13 แต่ OAT 35 °C (ISA+20, ค่าประจำของ VTBD ตอนบ่าย)",
+   "qty": "ground roll / ถึง 50 ft",
+   "expected": "338 / 572",
+   "tol": "±10 %",
+   "unit": "m",
+   "origin": "POH Fig 5-5 p5-14 ตีความเชิงเส้นระหว่าง 30 และ 40 °C [LC2]; thrustAvail ไม่มีพจน์ ρ จึงคาดว่าสั้นเกิน",
+   "current": "308 / 514",
+   "pass": false
+  },
+  {
+   "id": "T-LC-16",
+   "cond": "ซิม: autoland ของ Flight, ลมสงบ, 15 °C, MTOW, แฟลป 30, ข้าม threshold ที่ 64 KCAS (= 61 KIAS ตาม short field), เบรกเต็มเมื่อล้อหน้าแตะ",
+   "qty": "ระยะรวมจาก 50 ft ถึงหยุด",
+   "expected": 407,
+   "tol": "±10 %",
+   "unit": "m",
+   "origin": "POH Fig 5-11 p5-23/24 (1,335 ft) [LC2]",
+   "current": "540 (อากาศ 318 + พื้น 222); autoland ปกติ Vapp 67 KCAS = 535",
+   "pass": false
+  },
+  {
+   "id": "T-LC-17",
+   "cond": "เหมือน T-LC-16",
+   "qty": "ground roll (แตะพื้นถึงหยุด)",
+   "expected": 175,
+   "tol": "±10 % หรือ ±61 m ค่าที่เล็กกว่า = ±17.5 m",
+   "unit": "m",
+   "origin": "POH Fig 5-11 (575 ft) [LC2]; Part 60 1.e.1 [R1:V2]",
+   "current": 222,
+   "pass": false
+  },
+  {
+   "id": "T-LC-18",
+   "cond": "ซิม: MTOW, SL ISA, คันเร่งสุด, แฟลป 0, บินระดับ",
+   "qty": "ความเร็วสูงสุด",
+   "expected": 126,
+   "tol": 3,
+   "unit": "KTAS",
+   "origin": "POH p ii [LC1]",
+   "current": 106.1,
+   "pass": false
+  },
+  {
+   "id": "T-LC-19",
+   "cond": "ซิม: MTOW, 8,500 ft ISA, บินระดับ 124 KTAS",
+   "qty": "กำลังที่ต้องใช้ T·V/(η P)",
+   "expected": 0.75,
+   "tol": 0.05,
+   "unit": "-",
+   "origin": "POH p ii (75 % BHP, 124 KTAS) [LC1]; η ของซิมคงที่ 0.883",
+   "current": 1.044,
+   "pass": false
+  },
+  {
+   "id": "T-LC-20",
+   "cond": "ซิม linearise: cruise 110 KCAS 3,000 ft แฟลป 0 (Category B)",
+   "qty": "short period ζ / ωn / CAP",
+   "expected": "ζ 0.30–2.00; ωn ใกล้ JSBSim c172x 6.5 rad/s ±30 % (cross-check)",
+   "tol": "-",
+   "unit": "- / rad/s / 1/s²",
+   "origin": "MIL-F-8785C Level 1 Class I [R1:V7, R1:V10]; JSBSim c172x 100 KCAS ของรอบที่ 1 [R1:V15]",
+   "current": "0.702 / 5.6 / 2.17",
+   "pass": true
+  },
+  {
+   "id": "T-LC-21",
+   "cond": "เหมือน T-LC-20",
+   "qty": "phugoid ζ / คาบ",
+   "expected": "ζ ≥ 0.04; คาบ Lanchester π√2·V/g = 26.8 s (ข้อมูลประกอบ ไม่ใช้ตัดสิน)",
+   "tol": "-",
+   "unit": "- / s",
+   "origin": "MIL-F-8785C Level 1 [R1:V10, R1:V11]; JSBSim c172x 32 s [R1:V15]",
+   "current": "0.196 / 33",
+   "pass": true
+  },
+  {
+   "id": "T-LC-22",
+   "cond": "ซิม linearise: approach 67 KCAS 300 m แฟลป 30 γ −3° (Category C) และ cruise",
+   "qty": "Dutch roll ωn / ζ / ζωn",
+   "expected": "ζ ≥ 0.08, ζωn ≥ 0.15, ωn ≥ 1.0 (approach)",
+   "tol": "-",
+   "unit": "rad/s / - / rad/s",
+   "origin": "MIL-F-8785C Level 1 Class I Cat C [R1:V10]; NASA CR-2337 Cardinal ωn 1.6–2.1 [LC11]",
+   "current": "approach 1.76 / 0.309 / 0.546; cruise 2.34 / 0.253",
+   "pass": true
+  },
+  {
+   "id": "T-LC-23",
+   "cond": "เหมือน T-LC-22",
+   "qty": "roll mode τR (approach / cruise)",
+   "expected": "≤ 1.0 (Cat C) / ≤ 1.4 (Cat B)",
+   "tol": "-",
+   "unit": "s",
+   "origin": "MIL-F-8785C Table 5 [R1:V7, R1:V10]",
+   "current": "0.222 / 0.13",
+   "pass": true
+  },
+  {
+   "id": "T-LC-24",
+   "cond": "เหมือน T-LC-22",
+   "qty": "spiral: เวลาเพิ่มเป็นสองเท่า T₂ (approach / cruise)",
+   "expected": "T₂ ≥ 12 s (Cat C) / ≥ 20 s (Cat B)",
+   "tol": "-",
+   "unit": "s",
+   "origin": "MIL-F-8785C Table 6 [R1:V7, R1:V10]",
+   "current": "38.1 / เสถียร",
+   "pass": true
+  },
+  {
+   "id": "T-LC-25",
+   "cond": "ลมขวาง 15 kt (demonstrated) ที่ 63.9 KCAS SL, wing-low ไม่มี crab: β = asin(15/V)",
+   "qty": "δr / δa / มุมเอียงที่ต้องใช้",
+   "expected": "β 13.6°; ขนาด δr ไม่เกิน 17.7°, δa ไม่เกิน 17.5°",
+   "tol": "-",
+   "unit": "deg",
+   "origin": "POH p4-5 [LC1]; travel จาก TCDS [LC3, LC6]; สมการ steady sideslip (Etkin) ใช้อนุพันธ์ของบัตร",
+   "current": "δr 8 / δa 4.1 / φ 6.2",
+   "pass": true
+  },
+  {
+   "id": "T-LC-26",
+   "cond": "เครื่อง IO-360-L2A คันเร่งสุด SL, OAT 35 °C",
+   "qty": "P/P_ISA (indicated-minus-friction, f 0.10)",
+   "expected": 0.964,
+   "tol": 0.005,
+   "unit": "-",
+   "origin": "lm_engine [LM0]; NACA Rep. 190 [LM17]; เทียบ POH ROC 661/729 = 0.907 ที่ 35 °C [LC2]",
+   "current": 0.9637,
+   "pass": true
+  },
+  {
+   "id": "T-LC-27",
+   "cond": "ใบพัด McCauley 1A170E/JHA7660 (76 in) BEM, SL ISA, คันเร่งสุด, ความเร็วศูนย์",
+   "qty": "static rpm",
+   "expected": "2,300–2,400",
+   "tol": "-",
+   "unit": "rpm",
+   "origin": "TCDS IM.A.051 C.6 [LC3]; POH p2-5 [LC1]; lm_prop [LM0]; ซิมไม่มีใบพัด (T0 คงที่ 3,538 N)",
+   "current": 2350,
+   "pass": true
+  },
+  {
+   "id": "T-LC-28",
+   "cond": "BEM ใบพัดเดิม คันเร่งสุด 180 hp, SL ISA, 126 KTAS",
+   "qty": "rpm ที่สมดุลกำลัง",
+   "expected": "≤ 2,700 (rpm สูงสุด)",
+   "tol": "-",
+   "unit": "rpm",
+   "origin": "POH p2-5 [LC1]; lm_prop [LM0]",
+   "current": "2790 (J 0.722)",
+   "pass": false
+  },
+  {
+   "id": "T-LC-29",
+   "cond": "POH Fig 5-5 short field takeoff, 2,550 lb, SL, ตีความเชิงเส้นระหว่าง 30 และ 40 °C",
+   "qty": "ระยะถึง 50 ft ที่ 35 °C",
+   "expected": 1878,
+   "tol": 10,
+   "unit": "ft",
+   "origin": "POH p5-14 [LC2]; lc_calc.mjs [LC0]",
+   "current": 1878,
+   "pass": true
+  },
+  {
+   "id": "T-LC-30",
+   "cond": "W/S = 14.66 lb/ft² (2,550 lb, 174 ft²)",
+   "qty": "limit descent velocity V = 4.4 (W/S)^¼ (ไม่ต่ำกว่า 7, ไม่เกิน 10 fps)",
+   "expected": 8.61,
+   "tol": 0.02,
+   "unit": "fps",
+   "origin": "14 CFR 23.473(d) ฉบับ 2011 [LM3] (รอบที่ 1 [R1:G3]); lc_calc.mjs [LC0]",
+   "current": 8.61,
+   "pass": true
+  },
+  {
+   "id": "T-LC-31",
+   "cond": "ซิม trim: 63.9 KCAS แฟลป 30 γ −3° ที่ 300 m, MTOW, CG อ้างอิง",
+   "qty": "elevator ที่ต้องใช้ / ระยะเผื่อถึง travel ขึ้น 28°",
+   "expected": "เผื่อ ≥ 10° ไว้ flare (เกณฑ์ภายใน ค่าประมาณ)",
+   "tol": "-",
+   "unit": "deg",
+   "origin": "TCDS travel [LC3, LC6]; เกณฑ์ของผู้เขียน",
+   "current": "de -9.7 / α 6.1 / θ 3.1 / thr 0.34",
+   "pass": true
+  }
+ ],
+ "raw": {
+  "stall": {
+   "0": {
+    "f": 0,
+    "gear": 1,
+    "CLmax": 1.4646,
+    "V_CLmax_eas": 54.152,
+    "V_CLmax_cas": 54.157,
+    "nz": 0.99218,
+    "alpha_deg": 15.49,
+    "t": 16.933,
+    "rate": 0.93589,
+    "VSR_eas": 54.365,
+    "VSR_cas": 54.37,
+    "Vmin_eas": 53.244,
+    "de_end_deg": -21.057,
+    "ias0": 70,
+    "VSR_kias": 47.284,
+    "Vmin_kias": 45.407
+   },
+   "10": {
+    "f": 0.3645,
+    "gear": 1,
+    "CLmax": 1.581,
+    "V_CLmax_eas": 51.907,
+    "V_CLmax_cas": 51.912,
+    "nz": 0.98406,
+    "alpha_deg": 15.612,
+    "t": 14.412,
+    "rate": 0.97781,
+    "VSR_eas": 52.326,
+    "VSR_cas": 52.331,
+    "Vmin_eas": 51.412,
+    "de_end_deg": -22.424,
+    "ias0": 66,
+    "VSR_kias": 42.218,
+    "Vmin_kias": 40.687
+   },
+   "20": {
+    "f": 0.7882,
+    "gear": 1,
+    "CLmax": 1.7173,
+    "V_CLmax_eas": 49.886,
+    "V_CLmax_cas": 49.89,
+    "nz": 0.98722,
+    "alpha_deg": 15.76,
+    "t": 15.079,
+    "rate": 0.93602,
+    "VSR_eas": 50.207,
+    "VSR_cas": 50.211,
+    "Vmin_eas": 49.301,
+    "de_end_deg": -23.902,
+    "ias0": 64,
+    "VSR_kias": 40.352,
+    "Vmin_kias": 38.834
+   },
+   "30": {
+    "f": 1,
+    "gear": 1,
+    "CLmax": 1.7856,
+    "V_CLmax_eas": 48.922,
+    "V_CLmax_cas": 48.925,
+    "nz": 0.98722,
+    "alpha_deg": 15.836,
+    "t": 15.275,
+    "rate": 0.92167,
+    "VSR_eas": 49.237,
+    "VSR_cas": 49.241,
+    "Vmin_eas": 48.316,
+    "de_end_deg": -24.708,
+    "ias0": 63,
+    "VSR_kias": 38.735,
+    "Vmin_kias": 37.194
+   }
+  },
+  "climb": {
+   "Vy_kt": 66.911,
+   "ROCmax_fpm": 743.18,
+   "Vy_grid_kt": 66,
+   "ROC_grid_fpm": 742.76,
+   "Vx_kt": 60,
+   "gammaMax_deg": 6.7843,
+   "atVy": {
+    "ias": 66,
+    "V": 34.007,
+    "alpha": 8.4238,
+    "de": -7.4125,
+    "gamma": 6.3704,
+    "theta": 14.794,
+    "roc_fpm": 742.76,
+    "LoverD": -8.957
+   },
+   "edge": false
+  },
+  "glide": {
+   "zeroThrust": {
+    "Vbg_kt": 68.218,
+    "LD": 9.1132,
+    "Vbg_grid_kt": 68,
+    "LD_grid": 9.113,
+    "sink_fpm": 785.3,
+    "edge": false
+   },
+   "idle": {
+    "Vbg_kt": 68.218,
+    "LD": 9.1132,
+    "Vbg_grid_kt": 68,
+    "LD_grid": 9.113,
+    "sink_fpm": 785.3,
+    "edge": false
+   }
+  },
+  "trim": {
+   "Vy_climb": {
+    "ias_kt": 73.2,
+    "alpha_deg": 6.4095,
+    "theta_deg": 12.004,
+    "de_deg": -5.8698,
+    "thr": 1,
+    "gamma_deg": 5.5941,
+    "roc_fpm": 723.74
+   },
+   "cruise": {
+    "ias_kt": 110,
+    "h_m": 914.4,
+    "V_kt": 115,
+    "alpha_deg": 1.3394,
+    "theta_deg": 1.3394,
+    "de_deg": -1.9854,
+    "thr": 1.128
+   },
+   "approach": {
+    "ias_kt": 67,
+    "h_m": 300,
+    "V_kt": 67.984,
+    "alpha_deg": 4.988,
+    "theta_deg": 1.988,
+    "de_deg": -8.8044,
+    "thr": 0.35634
+   }
+  },
+  "modes": {
+   "cruise": {
+    "sp": {
+     "wn": 5.5961,
+     "zeta": 0.70219,
+     "T": 1.577
+    },
+    "ph": {
+     "wn": 0.19427,
+     "zeta": 0.19626,
+     "T": 32.985
+    },
+    "dr": {
+     "wn": 2.3443,
+     "zeta": 0.25331,
+     "T": 2.7705
+    },
+    "roll_tau": 0.13028,
+    "spiral": {
+     "lam": -0.021469,
+     "t2": 32.287,
+     "grows": false
+    },
+    "nAlpha": 14.451,
+    "CAP": 2.167,
+    "trim": {
+     "V_kt": 115,
+     "alpha_deg": 1.3394,
+     "theta_deg": 1.3394,
+     "de_deg": -1.9854,
+     "thr": 1.128
+    }
+   },
+   "approach": {
+    "sp": {
+     "wn": 3.4482,
+     "zeta": 0.71739,
+     "T": 2.6156
+    },
+    "ph": {
+     "wn": 0.32514,
+     "zeta": 0.11347,
+     "T": 19.45
+    },
+    "dr": {
+     "wn": 1.7632,
+     "zeta": 0.3094,
+     "T": 3.7475
+    },
+    "roll_tau": 0.22158,
+    "spiral": {
+     "lam": 0.018191,
+     "t2": 38.103,
+     "grows": true
+    },
+    "nAlpha": 5.3612,
+    "CAP": 2.2177
+   }
+  },
+  "takeoff": {
+   "flap": "10",
+   "VR": 52,
+   "groundRoll_m": 289.78,
+   "tLiftoff_s": 15.471,
+   "V_LOF_kt": 65.065,
+   "dist50ft_m": 487.89,
+   "V50_kt": 67.72
+  },
+  "landing": {
+   "asIs": {
+    "ias50_kt": 63.854,
+    "vtd_kt": 59.308,
+    "sinkTD_fpm": -123.73,
+    "td_s": 299.09,
+    "air_m": 315.72,
+    "ground_m": 317.48,
+    "total_m": 633.2
+   },
+   "maxBrake": {
+    "ias50_kt": 63.854,
+    "vtd_kt": 59.308,
+    "sinkTD_fpm": -123.73,
+    "td_s": 299.09,
+    "air_m": 315.72,
+    "ground_m": 219.12,
+    "total_m": 534.84
+   }
+  },
+  "extra": {
+   "modesCruise_approachCfg": {
+    "sp": {
+     "wn": 5.5967,
+     "zeta": 0.70104,
+     "T": 1.5743
+    },
+    "ph": {
+     "wn": 0.19425,
+     "zeta": 0.19625,
+     "T": 32.987
+    },
+    "dr": {
+     "wn": 2.7787,
+     "zeta": 0.291,
+     "T": 2.3634
+    },
+    "roll_tau": 0.13765,
+    "spiral": {
+     "lam": 0.009867,
+     "t2": 70.249,
+     "grows": true
+    },
+    "nAlpha": 14.451,
+    "CAP": 2.1675
+   },
+   "tmLateralSensitivity": {
+    "cruise": {
+     "sp": {
+      "wn": 5.5961,
+      "zeta": 0.70219,
+      "T": 1.577
+     },
+     "ph": {
+      "wn": 0.19427,
+      "zeta": 0.19626,
+      "T": 32.985
+     },
+     "dr": {
+      "wn": 2.3133,
+      "zeta": 0.25037,
+      "T": 2.8055
+     },
+     "roll_tau": 0.12969,
+     "spiral": {
+      "lam": -0.028345,
+      "t2": 24.454,
+      "grows": false
+     },
+     "nAlpha": 14.451,
+     "CAP": 2.167,
+     "trim": {
+      "V_kt": 115,
+      "alpha_deg": 1.3394,
+      "theta_deg": 1.3394,
+      "de_deg": -1.9854,
+      "thr": 1.128
+     }
+    },
+    "approach": {
+     "sp": {
+      "wn": 3.4482,
+      "zeta": 0.71739,
+      "T": 2.6156
+     },
+     "ph": {
+      "wn": 0.32514,
+      "zeta": 0.11347,
+      "T": 19.45
+     },
+     "dr": {
+      "wn": 1.6174,
+      "zeta": 0.2635,
+      "T": 4.0271
+     },
+     "roll_tau": 0.21094,
+     "spiral": {
+      "lam": -0.011435,
+      "t2": 60.616,
+      "grows": false
+     },
+     "nAlpha": 5.3612,
+     "CAP": 2.2177,
+     "trim": {
+      "V_kt": 67.984,
+      "alpha_deg": 4.988,
+      "theta_deg": 1.988,
+      "de_deg": -8.8044,
+      "thr": 0.35634
+     }
+    }
+   },
+   "ldgShort": {
+    "ias50_kt": 64.007,
+    "vtd_kt": 60.191,
+    "sinkTD_fpm": -123,
+    "td_s": 316.14,
+    "air_m": 318.01,
+    "ground_m": 222.14,
+    "total_m": 540.15
+   },
+   "toHot": {
+    "VR": 52,
+    "groundRoll_m": 307.9,
+    "tLiftoff_s": 15.979,
+    "V_LOF_kt": 64.559,
+    "dist50ft_m": 513.73,
+    "V50_kt": 67.168
+   },
+   "climb8k": {
+    "Vy_kt": 65.051,
+    "ROCmax_fpm": 732.86,
+    "Vy_grid_kt": 66,
+    "ROC_grid_fpm": 732.36,
+    "Vx_kt": 60,
+    "gammaMax_deg": 6.0155,
+    "atVy": {
+     "ias": 66,
+     "V": 38.3,
+     "alpha": 8.463,
+     "de": -7.441,
+     "gamma": 5.5743,
+     "theta": 14.037,
+     "roc_fpm": 732.36,
+     "LoverD": -10.246
+    },
+    "edge": false
+   },
+   "vmaxSL": {
+    "keas": 105.97,
+    "ktas": 106.14
+   },
+   "cruise85": {
+    "eas": 109.08,
+    "thr": 1.1788,
+    "powerFrac": 1.0437,
+    "alpha_deg": 1.4103
+   },
+   "apprShort": {
+    "alpha_deg": 6.0941,
+    "theta_deg": 3.0941,
+    "de_deg": -9.6515,
+    "thr": 0.34398
+   },
+   "xwind": {
+    "beta_deg": 13.576,
+    "da_deg": 4.124,
+    "dr_deg": 8.018,
+    "phi_deg": 6.1823,
+    "daMax_deg": 17.5,
+    "drMax_deg": 17.73
+   },
+   "altPolar": {
+    "CD0_sim": 0.039488,
+    "K_sim": 0.070577,
+    "vmaxSL_keas": 124.09,
+    "Vy_kt": 74.715,
+    "ROC_fpm": 906.36,
+    "Vbg_kt": 75.195,
+    "LD": 11.559
+   }
+  }
+ }
+}

@@ -1,0 +1,110 @@
+[
+ {
+  "id": "pc9m",
+  "oat": 15,
+  "sigma": 0.9997,
+  "P_kW": 708,
+  "TO_roll_factor": 1,
+  "ROC_125KEAS_fpm": 3706,
+  "TAS_per_EAS": 1.0002
+ },
+ {
+  "id": "pc9m",
+  "oat": 31,
+  "sigma": 0.9471,
+  "P_kW": 708,
+  "TO_roll_factor": 1.075,
+  "ROC_125KEAS_fpm": 3675,
+  "TAS_per_EAS": 1.0276
+ },
+ {
+  "id": "pc9m",
+  "oat": 35,
+  "sigma": 0.9348,
+  "P_kW": 708,
+  "TO_roll_factor": 1.094,
+  "ROC_125KEAS_fpm": 3667,
+  "TAS_per_EAS": 1.0343
+ },
+ {
+  "id": "pc7mk2",
+  "oat": 15,
+  "sigma": 0.9997,
+  "P_kW": 522,
+  "TO_roll_factor": 1,
+  "ROC_125KEAS_fpm": 2585,
+  "TAS_per_EAS": 1.0002
+ },
+ {
+  "id": "pc7mk2",
+  "oat": 31,
+  "sigma": 0.9471,
+  "P_kW": 522,
+  "TO_roll_factor": 1.075,
+  "ROC_125KEAS_fpm": 2554,
+  "TAS_per_EAS": 1.0276
+ },
+ {
+  "id": "pc7mk2",
+  "oat": 35,
+  "sigma": 0.9348,
+  "P_kW": 522,
+  "TO_roll_factor": 1.094,
+  "ROC_125KEAS_fpm": 2546,
+  "TAS_per_EAS": 1.0343
+ },
+ {
+  "id": "t6a",
+  "oat": 15,
+  "sigma": 0.9997,
+  "P_kW": 820,
+  "TO_roll_factor": 1,
+  "ROC_125KEAS_fpm": 3344,
+  "TAS_per_EAS": 1.0002
+ },
+ {
+  "id": "t6a",
+  "oat": 31,
+  "sigma": 0.9471,
+  "P_kW": 820,
+  "TO_roll_factor": 1.075,
+  "ROC_125KEAS_fpm": 3313,
+  "TAS_per_EAS": 1.0276
+ },
+ {
+  "id": "t6a",
+  "oat": 35,
+  "sigma": 0.9348,
+  "P_kW": 820,
+  "TO_roll_factor": 1.094,
+  "ROC_125KEAS_fpm": 3306,
+  "TAS_per_EAS": 1.0343
+ },
+ {
+  "id": "trainer",
+  "oat": 15,
+  "sigma": 0.9997,
+  "P_kW": 700,
+  "TO_roll_factor": 1,
+  "ROC_125KEAS_fpm": 3855,
+  "TAS_per_EAS": 1.0002
+ },
+ {
+  "id": "trainer",
+  "oat": 31,
+  "sigma": 0.9471,
+  "P_kW": 700,
+  "TO_roll_factor": 1.075,
+  "ROC_125KEAS_fpm": 3824,
+  "TAS_per_EAS": 1.0276
+ },
+ {
+  "id": "trainer",
+  "oat": 35,
+  "sigma": 0.9348,
+  "P_kW": 700,
+  "TO_roll_factor": 1.094,
+  "ROC_125KEAS_fpm": 3816,
+  "TAS_per_EAS": 1.0343
+ }
+]

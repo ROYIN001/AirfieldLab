@@ -1,0 +1,5889 @@
+{
+ "note": "LO0 circuits on VTBD; runway frame x along landing direction from threshold, y right; h AGL m",
+ "runs": [
+  {
+   "rwy": "21L",
+   "id": "c172s",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 28.8,
+   "descent_deg": 1.82,
+   "vsBase_fpm": -242,
+   "vsFinal_fpm": -345,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 5.73,
+   "Rb_m": 418,
+   "Rf_m": 417,
+   "rMax_NM": 2.17,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1338,
+   "dwFromOtherCL_m": -1733,
+   "rule45": {
+    "F_m": 920,
+    "rollout_ft": 211,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2559,
+     "e": 570,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 481,
+     "e": 2238,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2250,
+     "e": 3208,
+     "h_ft": 589
+    },
+    {
+     "k": "final_turn",
+     "n": 3059,
+     "e": 2602,
+     "h_ft": 468
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "c172r",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 29.3,
+   "descent_deg": 1.85,
+   "vsBase_fpm": -229,
+   "vsFinal_fpm": -345,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 5.66,
+   "Rb_m": 370,
+   "Rf_m": 363,
+   "rMax_NM": 2.13,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1338,
+   "dwFromOtherCL_m": -1733,
+   "rule45": {
+    "F_m": 974,
+    "rollout_ft": 221,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2598,
+     "e": 549,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 481,
+     "e": 2238,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2244,
+     "e": 3205,
+     "h_ft": 586
+    },
+    {
+     "k": "final_turn",
+     "n": 3038,
+     "e": 2529,
+     "h_ft": 461
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "c152",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1141,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 26.1,
+   "descent_deg": 1.98,
+   "vsBase_fpm": -227,
+   "vsFinal_fpm": -318,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 6.11,
+   "Rb_m": 284,
+   "Rf_m": 313,
+   "rMax_NM": 2.1,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1141,
+   "dwFromOtherCL_m": -1536,
+   "rule45": {
+    "F_m": 828,
+    "rollout_ft": 195,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2414,
+     "e": 425,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 576,
+     "e": 2065,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2371,
+     "e": 3050,
+     "h_ft": 568
+    },
+    {
+     "k": "final_turn",
+     "n": 3018,
+     "e": 2461,
+     "h_ft": 456
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "pa28_161",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 28.8,
+   "descent_deg": 1.81,
+   "vsBase_fpm": -240,
+   "vsFinal_fpm": -372,
+   "xCw_m": 3151,
+   "hCw_ft": 722,
+   "time_min": 5.56,
+   "Rb_m": 370,
+   "Rf_m": 417,
+   "rMax_NM": 2.17,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1338,
+   "dwFromOtherCL_m": -1733,
+   "rule45": {
+    "F_m": 920,
+    "rollout_ft": 211,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 722
+    },
+    {
+     "k": "downwind_join",
+     "n": -2598,
+     "e": 549,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 481,
+     "e": 2238,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2292,
+     "e": 3231,
+     "h_ft": 586
+    },
+    {
+     "k": "final_turn",
+     "n": 3059,
+     "e": 2602,
+     "h_ft": 468
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "da40ng",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1445,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 30.3,
+   "descent_deg": 1.74,
+   "vsBase_fpm": -240,
+   "vsFinal_fpm": -403,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 5.6,
+   "Rb_m": 352,
+   "Rf_m": 451,
+   "rMax_NM": 2.19,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1445,
+   "dwFromOtherCL_m": -1840,
+   "rule45": {
+    "F_m": 994,
+    "rollout_ft": 224,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2596,
+     "e": 672,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 430,
+     "e": 2332,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2286,
+     "e": 3350,
+     "h_ft": 589
+    },
+    {
+     "k": "final_turn",
+     "n": 3073,
+     "e": 2648,
+     "h_ft": 471
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "da42ng",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 30.9,
+   "descent_deg": 1.58,
+   "vsBase_fpm": -265,
+   "vsFinal_fpm": -446,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 4.98,
+   "Rb_m": 579,
+   "Rf_m": 669,
+   "rMax_NM": 2.33,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1609,
+   "dwFromOtherCL_m": -2005,
+   "rule45": {
+    "F_m": 940,
+    "rollout_ft": 215,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2823,
+     "e": 736,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 351,
+     "e": 2476,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2199,
+     "e": 3490,
+     "h_ft": 610
+    },
+    {
+     "k": "final_turn",
+     "n": 3159,
+     "e": 2944,
+     "h_ft": 495
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "da40_180",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1445,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 30.3,
+   "descent_deg": 1.74,
+   "vsBase_fpm": -240,
+   "vsFinal_fpm": -387,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 5.77,
+   "Rb_m": 370,
+   "Rf_m": 451,
+   "rMax_NM": 2.19,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1445,
+   "dwFromOtherCL_m": -1840,
+   "rule45": {
+    "F_m": 994,
+    "rollout_ft": 224,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2560,
+     "e": 692,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 430,
+     "e": 2332,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2270,
+     "e": 3341,
+     "h_ft": 591
+    },
+    {
+     "k": "final_turn",
+     "n": 3073,
+     "e": 2648,
+     "h_ft": 471
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "da40d",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 28.7,
+   "descent_deg": 1.8,
+   "vsBase_fpm": -242,
+   "vsFinal_fpm": -377,
+   "xCw_m": 3151,
+   "hCw_ft": 743,
+   "time_min": 5.84,
+   "Rb_m": 352,
+   "Rf_m": 428,
+   "rMax_NM": 2.18,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1338,
+   "dwFromOtherCL_m": -1733,
+   "rule45": {
+    "F_m": 909,
+    "rollout_ft": 209,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 743
+    },
+    {
+     "k": "downwind_join",
+     "n": -2502,
+     "e": 601,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 481,
+     "e": 2238,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2317,
+     "e": 3245,
+     "h_ft": 584
+    },
+    {
+     "k": "final_turn",
+     "n": 3063,
+     "e": 2617,
+     "h_ft": 469
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "da42_tae125",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 31.6,
+   "descent_deg": 1.61,
+   "vsBase_fpm": -256,
+   "vsFinal_fpm": -435,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 5.28,
+   "Rb_m": 522,
+   "Rf_m": 601,
+   "rMax_NM": 2.29,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1609,
+   "dwFromOtherCL_m": -2005,
+   "rule45": {
+    "F_m": 1009,
+    "rollout_ft": 226,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2728,
+     "e": 787,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 351,
+     "e": 2476,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2189,
+     "e": 3484,
+     "h_ft": 607
+    },
+    {
+     "k": "final_turn",
+     "n": 3132,
+     "e": 2851,
+     "h_ft": 487
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "be76",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 32.2,
+   "descent_deg": 1.64,
+   "vsBase_fpm": -246,
+   "vsFinal_fpm": -425,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 5.21,
+   "Rb_m": 469,
+   "Rf_m": 536,
+   "rMax_NM": 2.24,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1609,
+   "dwFromOtherCL_m": -2005,
+   "rule45": {
+    "F_m": 1074,
+    "rollout_ft": 238,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2778,
+     "e": 760,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 351,
+     "e": 2476,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2179,
+     "e": 3479,
+     "h_ft": 605
+    },
+    {
+     "k": "final_turn",
+     "n": 3106,
+     "e": 2763,
+     "h_ft": 479
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "p2006t",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1557,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 32,
+   "descent_deg": 1.7,
+   "vsBase_fpm": -240,
+   "vsFinal_fpm": -372,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 5.44,
+   "Rb_m": 469,
+   "Rf_m": 475,
+   "rMax_NM": 2.21,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1557,
+   "dwFromOtherCL_m": -1953,
+   "rule45": {
+    "F_m": 1083,
+    "rollout_ft": 239,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2736,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 376,
+     "e": 2431,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2150,
+     "e": 3404,
+     "h_ft": 603
+    },
+    {
+     "k": "final_turn",
+     "n": 3082,
+     "e": 2680,
+     "h_ft": 472
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "p2002jf",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1051,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 24.7,
+   "descent_deg": 2.06,
+   "vsBase_fpm": -219,
+   "vsFinal_fpm": -265,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 6.42,
+   "Rb_m": 245,
+   "Rf_m": 267,
+   "rMax_NM": 2.07,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1051,
+   "dwFromOtherCL_m": -1446,
+   "rule45": {
+    "F_m": 784,
+    "rollout_ft": 188,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2378,
+     "e": 343,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 619,
+     "e": 1987,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2408,
+     "e": 2968,
+     "h_ft": 559
+    },
+    {
+     "k": "final_turn",
+     "n": 3000,
+     "e": 2398,
+     "h_ft": 450
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "p68c",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 31.6,
+   "descent_deg": 1.62,
+   "vsBase_fpm": -257,
+   "vsFinal_fpm": -398,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 5.1,
+   "Rb_m": 579,
+   "Rf_m": 601,
+   "rMax_NM": 2.29,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1609,
+   "dwFromOtherCL_m": -2005,
+   "rule45": {
+    "F_m": 1009,
+    "rollout_ft": 226,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2823,
+     "e": 736,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 351,
+     "e": 2476,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2139,
+     "e": 3457,
+     "h_ft": 611
+    },
+    {
+     "k": "final_turn",
+     "n": 3132,
+     "e": 2851,
+     "h_ft": 487
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "t206h",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1557,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 32,
+   "descent_deg": 1.7,
+   "vsBase_fpm": -240,
+   "vsFinal_fpm": -372,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 5.33,
+   "Rb_m": 469,
+   "Rf_m": 475,
+   "rMax_NM": 2.21,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1557,
+   "dwFromOtherCL_m": -1953,
+   "rule45": {
+    "F_m": 1083,
+    "rollout_ft": 239,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2798,
+     "e": 690,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 376,
+     "e": 2431,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2150,
+     "e": 3404,
+     "h_ft": 603
+    },
+    {
+     "k": "final_turn",
+     "n": 3082,
+     "e": 2680,
+     "h_ft": 472
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "ct4",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 29.3,
+   "descent_deg": 1.85,
+   "vsBase_fpm": -229,
+   "vsFinal_fpm": -318,
+   "xCw_m": 3151,
+   "hCw_ft": 800,
+   "time_min": 5.66,
+   "Rb_m": 370,
+   "Rf_m": 363,
+   "rMax_NM": 2.13,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1338,
+   "dwFromOtherCL_m": -1733,
+   "rule45": {
+    "F_m": 974,
+    "rollout_ft": 221,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 774,
+     "e": 873,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -2648,
+     "e": 522,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 481,
+     "e": 2238,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 2244,
+     "e": 3205,
+     "h_ft": 586
+    },
+    {
+     "k": "final_turn",
+     "n": 3038,
+     "e": 2529,
+     "h_ft": 461
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "pc7mk2",
+   "side": "L",
+   "hP_ft": 1000,
+   "D_m": 1931,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 33.5,
+   "descent_deg": 2.09,
+   "vsBase_fpm": -407,
+   "vsFinal_fpm": -488,
+   "xCw_m": 3151,
+   "hCw_ft": 1000,
+   "time_min": 4.32,
+   "Rb_m": 833,
+   "Rf_m": 897,
+   "rMax_NM": 2.48,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1931,
+   "dwFromOtherCL_m": -2326,
+   "rule45": {
+    "F_m": 1033,
+    "rollout_ft": 231,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 511,
+     "e": 728,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": -3297,
+     "e": 842,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 196,
+     "e": 2758,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": 2021,
+     "e": 3759,
+     "h_ft": 750
+    },
+    {
+     "k": "final_turn",
+     "n": 3249,
+     "e": 3254,
+     "h_ft": 569
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "pc9m",
+   "side": "L",
+   "hP_ft": 1000,
+   "D_m": 2085,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 34.8,
+   "descent_deg": 1.99,
+   "vsBase_fpm": -405,
+   "vsFinal_fpm": -504,
+   "xCw_m": 3151,
+   "hCw_ft": 1000,
+   "time_min": 4.26,
+   "Rb_m": 904,
+   "Rf_m": 981,
+   "rMax_NM": 2.54,
+   "inATZ": true,
+   "dwFromOwnCL_m": -2085,
+   "dwFromOtherCL_m": -2480,
+   "rule45": {
+    "F_m": 1104,
+    "rollout_ft": 243,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 511,
+     "e": 728,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": -3433,
+     "e": 943,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 122,
+     "e": 2893,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": 1958,
+     "e": 3900,
+     "h_ft": 761
+    },
+    {
+     "k": "final_turn",
+     "n": 3282,
+     "e": 3367,
+     "h_ft": 576
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "trainer_r2",
+   "side": "L",
+   "hP_ft": 1000,
+   "D_m": 1931,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 33.5,
+   "descent_deg": 2.09,
+   "vsBase_fpm": -407,
+   "vsFinal_fpm": -504,
+   "xCw_m": 3151,
+   "hCw_ft": 1000,
+   "time_min": 4.28,
+   "Rb_m": 833,
+   "Rf_m": 897,
+   "rMax_NM": 2.48,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1931,
+   "dwFromOtherCL_m": -2326,
+   "rule45": {
+    "F_m": 1033,
+    "rollout_ft": 231,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 511,
+     "e": 728,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": -3359,
+     "e": 808,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 196,
+     "e": 2758,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": 2021,
+     "e": 3759,
+     "h_ft": 750
+    },
+    {
+     "k": "final_turn",
+     "n": 3249,
+     "e": 3254,
+     "h_ft": 569
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21L",
+   "id": "t6a",
+   "side": "L",
+   "hP_ft": 1000,
+   "D_m": 1931,
+   "F_m": 2018,
+   "rollout_ft": 400,
+   "baseAngle_deg": 33.5,
+   "descent_deg": 2.09,
+   "vsBase_fpm": -407,
+   "vsFinal_fpm": -531,
+   "xCw_m": 3151,
+   "hCw_ft": 1000,
+   "time_min": 4.16,
+   "Rb_m": 833,
+   "Rf_m": 897,
+   "rMax_NM": 2.48,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1931,
+   "dwFromOtherCL_m": -2326,
+   "rule45": {
+    "F_m": 1033,
+    "rollout_ft": 231,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 511,
+     "e": 728,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1638,
+     "e": -450,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": -3561,
+     "e": 697,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 196,
+     "e": 2758,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": 2021,
+     "e": 3759,
+     "h_ft": 750
+    },
+    {
+     "k": "final_turn",
+     "n": 3249,
+     "e": 3254,
+     "h_ft": 569
+    },
+    {
+     "k": "rollout",
+     "n": 2894,
+     "e": 2036,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 854,
+     "e": 917,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "c172s",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 28.6,
+   "descent_deg": 1.81,
+   "vsBase_fpm": -241,
+   "vsFinal_fpm": -345,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 6.02,
+   "Rb_m": 418,
+   "Rf_m": 417,
+   "rMax_NM": 2.26,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1338,
+   "dwFromOtherCL_m": 1731,
+   "rule45": {
+    "F_m": 920,
+    "rollout_ft": 208,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1066,
+     "e": 2559,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2281,
+     "e": 723,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4065,
+     "e": -256,
+     "h_ft": 589
+    },
+    {
+     "k": "final_turn",
+     "n": -3989,
+     "e": -1264,
+     "h_ft": 468
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "c172r",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 29.1,
+   "descent_deg": 1.85,
+   "vsBase_fpm": -228,
+   "vsFinal_fpm": -345,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 5.94,
+   "Rb_m": 370,
+   "Rf_m": 363,
+   "rMax_NM": 2.23,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1338,
+   "dwFromOtherCL_m": 1731,
+   "rule45": {
+    "F_m": 974,
+    "rollout_ft": 218,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1105,
+     "e": 2580,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2281,
+     "e": 723,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4060,
+     "e": -253,
+     "h_ft": 586
+    },
+    {
+     "k": "final_turn",
+     "n": -3916,
+     "e": -1285,
+     "h_ft": 460
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "c152",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1141,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 25.9,
+   "descent_deg": 1.97,
+   "vsBase_fpm": -226,
+   "vsFinal_fpm": -318,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 6.43,
+   "Rb_m": 284,
+   "Rf_m": 313,
+   "rMax_NM": 2.19,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1141,
+   "dwFromOtherCL_m": 1535,
+   "rule45": {
+    "F_m": 828,
+    "rollout_ft": 192,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1111,
+     "e": 2359,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2186,
+     "e": 550,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -3997,
+     "e": -443,
+     "h_ft": 567
+    },
+    {
+     "k": "final_turn",
+     "n": -3848,
+     "e": -1305,
+     "h_ft": 455
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "pa28_161",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 28.6,
+   "descent_deg": 1.8,
+   "vsBase_fpm": -239,
+   "vsFinal_fpm": -372,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 5.83,
+   "Rb_m": 370,
+   "Rf_m": 417,
+   "rMax_NM": 2.26,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1338,
+   "dwFromOtherCL_m": 1731,
+   "rule45": {
+    "F_m": 920,
+    "rollout_ft": 208,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1105,
+     "e": 2580,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2281,
+     "e": 723,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4107,
+     "e": -279,
+     "h_ft": 585
+    },
+    {
+     "k": "final_turn",
+     "n": -3989,
+     "e": -1264,
+     "h_ft": 468
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "da40ng",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1445,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 30.2,
+   "descent_deg": 1.73,
+   "vsBase_fpm": -239,
+   "vsFinal_fpm": -403,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 5.88,
+   "Rb_m": 352,
+   "Rf_m": 451,
+   "rMax_NM": 2.28,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1445,
+   "dwFromOtherCL_m": 1838,
+   "rule45": {
+    "F_m": 994,
+    "rollout_ft": 221,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1000,
+     "e": 2644,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2332,
+     "e": 817,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4204,
+     "e": -210,
+     "h_ft": 589
+    },
+    {
+     "k": "final_turn",
+     "n": -4035,
+     "e": -1250,
+     "h_ft": 470
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "da42ng",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 30.8,
+   "descent_deg": 1.57,
+   "vsBase_fpm": -264,
+   "vsFinal_fpm": -446,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 5.21,
+   "Rb_m": 579,
+   "Rf_m": 669,
+   "rMax_NM": 2.42,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1609,
+   "dwFromOtherCL_m": 2003,
+   "rule45": {
+    "F_m": 940,
+    "rollout_ft": 212,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1068,
+     "e": 2870,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2412,
+     "e": 961,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4276,
+     "e": -61,
+     "h_ft": 609
+    },
+    {
+     "k": "final_turn",
+     "n": -4331,
+     "e": -1164,
+     "h_ft": 495
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "da40_180",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1445,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 30.2,
+   "descent_deg": 1.73,
+   "vsBase_fpm": -239,
+   "vsFinal_fpm": -387,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 6.07,
+   "Rb_m": 370,
+   "Rf_m": 451,
+   "rMax_NM": 2.28,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1445,
+   "dwFromOtherCL_m": 1838,
+   "rule45": {
+    "F_m": 994,
+    "rollout_ft": 221,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 964,
+     "e": 2625,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2332,
+     "e": 817,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4188,
+     "e": -201,
+     "h_ft": 590
+    },
+    {
+     "k": "final_turn",
+     "n": -4035,
+     "e": -1250,
+     "h_ft": 470
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "da40d",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 28.5,
+   "descent_deg": 1.79,
+   "vsBase_fpm": -241,
+   "vsFinal_fpm": -377,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 6.14,
+   "Rb_m": 352,
+   "Rf_m": 428,
+   "rMax_NM": 2.27,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1338,
+   "dwFromOtherCL_m": 1731,
+   "rule45": {
+    "F_m": 909,
+    "rollout_ft": 206,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1009,
+     "e": 2527,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2281,
+     "e": 723,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4133,
+     "e": -293,
+     "h_ft": 583
+    },
+    {
+     "k": "final_turn",
+     "n": -4004,
+     "e": -1259,
+     "h_ft": 469
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "da42_tae125",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 31.4,
+   "descent_deg": 1.6,
+   "vsBase_fpm": -255,
+   "vsFinal_fpm": -435,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 5.54,
+   "Rb_m": 522,
+   "Rf_m": 601,
+   "rMax_NM": 2.38,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1609,
+   "dwFromOtherCL_m": 2003,
+   "rule45": {
+    "F_m": 1009,
+    "rollout_ft": 223,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 974,
+     "e": 2818,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2412,
+     "e": 961,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4265,
+     "e": -56,
+     "h_ft": 606
+    },
+    {
+     "k": "final_turn",
+     "n": -4238,
+     "e": -1191,
+     "h_ft": 486
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "be76",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 32,
+   "descent_deg": 1.63,
+   "vsBase_fpm": -245,
+   "vsFinal_fpm": -425,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 5.46,
+   "Rb_m": 469,
+   "Rf_m": 536,
+   "rMax_NM": 2.34,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1609,
+   "dwFromOtherCL_m": 2003,
+   "rule45": {
+    "F_m": 1074,
+    "rollout_ft": 235,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1024,
+     "e": 2846,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2412,
+     "e": 961,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4255,
+     "e": -50,
+     "h_ft": 604
+    },
+    {
+     "k": "final_turn",
+     "n": -4150,
+     "e": -1217,
+     "h_ft": 479
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "p2006t",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1557,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 31.8,
+   "descent_deg": 1.69,
+   "vsBase_fpm": -239,
+   "vsFinal_fpm": -372,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 5.7,
+   "Rb_m": 469,
+   "Rf_m": 475,
+   "rMax_NM": 2.3,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1557,
+   "dwFromOtherCL_m": 1951,
+   "rule45": {
+    "F_m": 1083,
+    "rollout_ft": 236,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1032,
+     "e": 2791,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2387,
+     "e": 916,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4177,
+     "e": -66,
+     "h_ft": 603
+    },
+    {
+     "k": "final_turn",
+     "n": -4067,
+     "e": -1241,
+     "h_ft": 472
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "p2002jf",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1051,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 24.5,
+   "descent_deg": 2.05,
+   "vsBase_fpm": -218,
+   "vsFinal_fpm": -265,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 6.75,
+   "Rb_m": 245,
+   "Rf_m": 267,
+   "rMax_NM": 2.16,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1051,
+   "dwFromOtherCL_m": 1445,
+   "rule45": {
+    "F_m": 784,
+    "rollout_ft": 185,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1161,
+     "e": 2284,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2143,
+     "e": 472,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -3948,
+     "e": -518,
+     "h_ft": 558
+    },
+    {
+     "k": "final_turn",
+     "n": -3785,
+     "e": -1323,
+     "h_ft": 449
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "p68c",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 31.4,
+   "descent_deg": 1.61,
+   "vsBase_fpm": -256,
+   "vsFinal_fpm": -398,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 5.33,
+   "Rb_m": 579,
+   "Rf_m": 601,
+   "rMax_NM": 2.38,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1609,
+   "dwFromOtherCL_m": 2003,
+   "rule45": {
+    "F_m": 1009,
+    "rollout_ft": 223,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1068,
+     "e": 2870,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2412,
+     "e": 961,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4216,
+     "e": -28,
+     "h_ft": 610
+    },
+    {
+     "k": "final_turn",
+     "n": -4238,
+     "e": -1191,
+     "h_ft": 487
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "t206h",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1557,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 31.8,
+   "descent_deg": 1.69,
+   "vsBase_fpm": -239,
+   "vsFinal_fpm": -372,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 5.58,
+   "Rb_m": 469,
+   "Rf_m": 475,
+   "rMax_NM": 2.3,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1557,
+   "dwFromOtherCL_m": 1951,
+   "rule45": {
+    "F_m": 1083,
+    "rollout_ft": 236,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1093,
+     "e": 2824,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2387,
+     "e": 916,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4177,
+     "e": -66,
+     "h_ft": 603
+    },
+    {
+     "k": "final_turn",
+     "n": -4067,
+     "e": -1241,
+     "h_ft": 472
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "ct4",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 29.1,
+   "descent_deg": 1.85,
+   "vsBase_fpm": -228,
+   "vsFinal_fpm": -318,
+   "xCw_m": 3501,
+   "hCw_ft": 800,
+   "time_min": 5.93,
+   "Rb_m": 370,
+   "Rf_m": 363,
+   "rMax_NM": 2.23,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1338,
+   "dwFromOtherCL_m": 1731,
+   "rule45": {
+    "F_m": 974,
+    "rollout_ft": 218,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1287,
+     "e": -258,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 1155,
+     "e": 2607,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2281,
+     "e": 723,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -4060,
+     "e": -253,
+     "h_ft": 586
+    },
+    {
+     "k": "final_turn",
+     "n": -3916,
+     "e": -1285,
+     "h_ft": 460
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "pc7mk2",
+   "side": "R",
+   "hP_ft": 1000,
+   "D_m": 1931,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 33.4,
+   "descent_deg": 2.09,
+   "vsBase_fpm": -406,
+   "vsFinal_fpm": -488,
+   "xCw_m": 3501,
+   "hCw_ft": 1000,
+   "time_min": 4.5,
+   "Rb_m": 833,
+   "Rf_m": 897,
+   "rMax_NM": 2.57,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1931,
+   "dwFromOtherCL_m": 2324,
+   "rule45": {
+    "F_m": 1033,
+    "rollout_ft": 228,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1024,
+     "e": -113,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": 1234,
+     "e": 3327,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2566,
+     "e": 1243,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": -4407,
+     "e": 233,
+     "h_ft": 749
+    },
+    {
+     "k": "final_turn",
+     "n": -4641,
+     "e": -1074,
+     "h_ft": 569
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "pc9m",
+   "side": "R",
+   "hP_ft": 1000,
+   "D_m": 2085,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 34.7,
+   "descent_deg": 1.99,
+   "vsBase_fpm": -404,
+   "vsFinal_fpm": -504,
+   "xCw_m": 3501,
+   "hCw_ft": 1000,
+   "time_min": 4.43,
+   "Rb_m": 904,
+   "Rf_m": 981,
+   "rMax_NM": 2.63,
+   "inATZ": true,
+   "dwFromOwnCL_m": 2085,
+   "dwFromOtherCL_m": 2479,
+   "rule45": {
+    "F_m": 1104,
+    "rollout_ft": 240,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1024,
+     "e": -113,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": 1222,
+     "e": 3496,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2640,
+     "e": 1378,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": -4492,
+     "e": 362,
+     "h_ft": 760
+    },
+    {
+     "k": "final_turn",
+     "n": -4754,
+     "e": -1041,
+     "h_ft": 575
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "trainer_r2",
+   "side": "R",
+   "hP_ft": 1000,
+   "D_m": 1931,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 33.4,
+   "descent_deg": 2.09,
+   "vsBase_fpm": -406,
+   "vsFinal_fpm": -504,
+   "xCw_m": 3501,
+   "hCw_ft": 1000,
+   "time_min": 4.45,
+   "Rb_m": 833,
+   "Rf_m": 897,
+   "rMax_NM": 2.57,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1931,
+   "dwFromOtherCL_m": 2324,
+   "rule45": {
+    "F_m": 1033,
+    "rollout_ft": 228,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1024,
+     "e": -113,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": 1296,
+     "e": 3361,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2566,
+     "e": 1243,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": -4407,
+     "e": 233,
+     "h_ft": 749
+    },
+    {
+     "k": "final_turn",
+     "n": -4641,
+     "e": -1074,
+     "h_ft": 569
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03R",
+   "id": "t6a",
+   "side": "R",
+   "hP_ft": 1000,
+   "D_m": 1931,
+   "F_m": 2036,
+   "rollout_ft": 400,
+   "baseAngle_deg": 33.4,
+   "descent_deg": 2.09,
+   "vsBase_fpm": -406,
+   "vsFinal_fpm": -531,
+   "xCw_m": 3501,
+   "hCw_ft": 1000,
+   "time_min": 4.32,
+   "Rb_m": 833,
+   "Rf_m": 897,
+   "rMax_NM": 2.57,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1931,
+   "dwFromOtherCL_m": 2324,
+   "rule45": {
+    "F_m": 1033,
+    "rollout_ft": 228,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1024,
+     "e": -113,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1431,
+     "e": 1233,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": 1497,
+     "e": 3472,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -2566,
+     "e": 1243,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": -4407,
+     "e": 233,
+     "h_ft": 749
+    },
+    {
+     "k": "final_turn",
+     "n": -4641,
+     "e": -1074,
+     "h_ft": 569
+    },
+    {
+     "k": "rollout",
+     "n": -3422,
+     "e": -1429,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1383,
+     "e": -310,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "c172s",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 28.9,
+   "descent_deg": 1.83,
+   "vsBase_fpm": -242,
+   "vsFinal_fpm": -345,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.17,
+   "Rb_m": 418,
+   "Rf_m": 417,
+   "rMax_NM": 2.5,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1338,
+   "dwFromOtherCL_m": -1731,
+   "rule45": {
+    "F_m": 920,
+    "rollout_ft": 213,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2246,
+     "e": -296,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1278,
+     "e": -2227,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -3037,
+     "e": -3191,
+     "h_ft": 590
+    },
+    {
+     "k": "final_turn",
+     "n": -3846,
+     "e": -2584,
+     "h_ft": 469
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "c172r",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 29.4,
+   "descent_deg": 1.86,
+   "vsBase_fpm": -230,
+   "vsFinal_fpm": -345,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.08,
+   "Rb_m": 370,
+   "Rf_m": 363,
+   "rMax_NM": 2.47,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1338,
+   "dwFromOtherCL_m": -1731,
+   "rule45": {
+    "F_m": 974,
+    "rollout_ft": 223,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2285,
+     "e": -275,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1278,
+     "e": -2227,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -3032,
+     "e": -3188,
+     "h_ft": 587
+    },
+    {
+     "k": "final_turn",
+     "n": -3825,
+     "e": -2511,
+     "h_ft": 461
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "c152",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1141,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 26.2,
+   "descent_deg": 1.99,
+   "vsBase_fpm": -228,
+   "vsFinal_fpm": -318,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.6,
+   "Rb_m": 284,
+   "Rf_m": 313,
+   "rMax_NM": 2.44,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1141,
+   "dwFromOtherCL_m": -1534,
+   "rule45": {
+    "F_m": 828,
+    "rollout_ft": 197,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2101,
+     "e": -151,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1373,
+     "e": -2055,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -3158,
+     "e": -3033,
+     "h_ft": 568
+    },
+    {
+     "k": "final_turn",
+     "n": -3805,
+     "e": -2443,
+     "h_ft": 456
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "pa28_161",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 28.9,
+   "descent_deg": 1.82,
+   "vsBase_fpm": -241,
+   "vsFinal_fpm": -372,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.98,
+   "Rb_m": 370,
+   "Rf_m": 417,
+   "rMax_NM": 2.5,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1338,
+   "dwFromOtherCL_m": -1731,
+   "rule45": {
+    "F_m": 920,
+    "rollout_ft": 213,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2285,
+     "e": -275,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1278,
+     "e": -2227,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -3079,
+     "e": -3214,
+     "h_ft": 586
+    },
+    {
+     "k": "final_turn",
+     "n": -3846,
+     "e": -2584,
+     "h_ft": 468
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "da40ng",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1445,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 30.4,
+   "descent_deg": 1.74,
+   "vsBase_fpm": -240,
+   "vsFinal_fpm": -403,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.03,
+   "Rb_m": 352,
+   "Rf_m": 451,
+   "rMax_NM": 2.52,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1445,
+   "dwFromOtherCL_m": -1838,
+   "rule45": {
+    "F_m": 994,
+    "rollout_ft": 226,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2283,
+     "e": -398,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1227,
+     "e": -2321,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -3073,
+     "e": -3333,
+     "h_ft": 590
+    },
+    {
+     "k": "final_turn",
+     "n": -3859,
+     "e": -2630,
+     "h_ft": 471
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "da42ng",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 31,
+   "descent_deg": 1.58,
+   "vsBase_fpm": -265,
+   "vsFinal_fpm": -446,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.34,
+   "Rb_m": 579,
+   "Rf_m": 669,
+   "rMax_NM": 2.65,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1609,
+   "dwFromOtherCL_m": -2003,
+   "rule45": {
+    "F_m": 940,
+    "rollout_ft": 217,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2510,
+     "e": -462,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1148,
+     "e": -2465,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -2987,
+     "e": -3473,
+     "h_ft": 610
+    },
+    {
+     "k": "final_turn",
+     "n": -3946,
+     "e": -2926,
+     "h_ft": 495
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "da40_180",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1445,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 30.4,
+   "descent_deg": 1.75,
+   "vsBase_fpm": -241,
+   "vsFinal_fpm": -387,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.22,
+   "Rb_m": 370,
+   "Rf_m": 451,
+   "rMax_NM": 2.52,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1445,
+   "dwFromOtherCL_m": -1838,
+   "rule45": {
+    "F_m": 994,
+    "rollout_ft": 226,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2247,
+     "e": -418,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1227,
+     "e": -2321,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -3057,
+     "e": -3324,
+     "h_ft": 591
+    },
+    {
+     "k": "final_turn",
+     "n": -3859,
+     "e": -2630,
+     "h_ft": 471
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "da40d",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 28.8,
+   "descent_deg": 1.81,
+   "vsBase_fpm": -243,
+   "vsFinal_fpm": -377,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.3,
+   "Rb_m": 352,
+   "Rf_m": 428,
+   "rMax_NM": 2.51,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1338,
+   "dwFromOtherCL_m": -1731,
+   "rule45": {
+    "F_m": 909,
+    "rollout_ft": 211,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2189,
+     "e": -328,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1278,
+     "e": -2227,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -3105,
+     "e": -3228,
+     "h_ft": 584
+    },
+    {
+     "k": "final_turn",
+     "n": -3850,
+     "e": -2599,
+     "h_ft": 470
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "da42_tae125",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 31.7,
+   "descent_deg": 1.61,
+   "vsBase_fpm": -256,
+   "vsFinal_fpm": -435,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.68,
+   "Rb_m": 522,
+   "Rf_m": 601,
+   "rMax_NM": 2.61,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1609,
+   "dwFromOtherCL_m": -2003,
+   "rule45": {
+    "F_m": 1009,
+    "rollout_ft": 228,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2415,
+     "e": -513,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1148,
+     "e": -2465,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -2976,
+     "e": -3467,
+     "h_ft": 608
+    },
+    {
+     "k": "final_turn",
+     "n": -3919,
+     "e": -2833,
+     "h_ft": 487
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "be76",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 32.3,
+   "descent_deg": 1.64,
+   "vsBase_fpm": -247,
+   "vsFinal_fpm": -425,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.59,
+   "Rb_m": 469,
+   "Rf_m": 536,
+   "rMax_NM": 2.57,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1609,
+   "dwFromOtherCL_m": -2003,
+   "rule45": {
+    "F_m": 1074,
+    "rollout_ft": 240,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2465,
+     "e": -486,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1148,
+     "e": -2465,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -2966,
+     "e": -3462,
+     "h_ft": 605
+    },
+    {
+     "k": "final_turn",
+     "n": -3893,
+     "e": -2745,
+     "h_ft": 479
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "p2006t",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1557,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 32.1,
+   "descent_deg": 1.7,
+   "vsBase_fpm": -240,
+   "vsFinal_fpm": -372,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.83,
+   "Rb_m": 469,
+   "Rf_m": 475,
+   "rMax_NM": 2.54,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1557,
+   "dwFromOtherCL_m": -1951,
+   "rule45": {
+    "F_m": 1083,
+    "rollout_ft": 241,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2423,
+     "e": -450,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1173,
+     "e": -2420,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -2937,
+     "e": -3387,
+     "h_ft": 604
+    },
+    {
+     "k": "final_turn",
+     "n": -3869,
+     "e": -2662,
+     "h_ft": 473
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "p2002jf",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1051,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 24.8,
+   "descent_deg": 2.07,
+   "vsBase_fpm": -220,
+   "vsFinal_fpm": -265,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.92,
+   "Rb_m": 245,
+   "Rf_m": 267,
+   "rMax_NM": 2.41,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1051,
+   "dwFromOtherCL_m": -1445,
+   "rule45": {
+    "F_m": 784,
+    "rollout_ft": 190,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2065,
+     "e": -69,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1416,
+     "e": -1976,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -3195,
+     "e": -2951,
+     "h_ft": 559
+    },
+    {
+     "k": "final_turn",
+     "n": -3786,
+     "e": -2380,
+     "h_ft": 450
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "p68c",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 31.7,
+   "descent_deg": 1.62,
+   "vsBase_fpm": -258,
+   "vsFinal_fpm": -398,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.45,
+   "Rb_m": 579,
+   "Rf_m": 601,
+   "rMax_NM": 2.61,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1609,
+   "dwFromOtherCL_m": -2003,
+   "rule45": {
+    "F_m": 1009,
+    "rollout_ft": 228,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2510,
+     "e": -462,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1148,
+     "e": -2465,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -2926,
+     "e": -3440,
+     "h_ft": 612
+    },
+    {
+     "k": "final_turn",
+     "n": -3919,
+     "e": -2833,
+     "h_ft": 488
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "t206h",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1557,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 32.1,
+   "descent_deg": 1.7,
+   "vsBase_fpm": -240,
+   "vsFinal_fpm": -372,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.71,
+   "Rb_m": 469,
+   "Rf_m": 475,
+   "rMax_NM": 2.54,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1557,
+   "dwFromOtherCL_m": -1951,
+   "rule45": {
+    "F_m": 1083,
+    "rollout_ft": 241,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2485,
+     "e": -416,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1173,
+     "e": -2420,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -2937,
+     "e": -3387,
+     "h_ft": 604
+    },
+    {
+     "k": "final_turn",
+     "n": -3869,
+     "e": -2662,
+     "h_ft": 473
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "ct4",
+   "side": "L",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 29.4,
+   "descent_deg": 1.86,
+   "vsBase_fpm": -230,
+   "vsFinal_fpm": -318,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.06,
+   "Rb_m": 370,
+   "Rf_m": 363,
+   "rMax_NM": 2.47,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1338,
+   "dwFromOtherCL_m": -1731,
+   "rule45": {
+    "F_m": 974,
+    "rollout_ft": 223,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1570,
+     "e": -862,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": 2335,
+     "e": -248,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -1278,
+     "e": -2227,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": -3032,
+     "e": -3188,
+     "h_ft": 587
+    },
+    {
+     "k": "final_turn",
+     "n": -3825,
+     "e": -2511,
+     "h_ft": 461
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "pc7mk2",
+   "side": "L",
+   "hP_ft": 1000,
+   "D_m": 1931,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 33.6,
+   "descent_deg": 2.1,
+   "vsBase_fpm": -408,
+   "vsFinal_fpm": -488,
+   "xCw_m": 3702,
+   "hCw_ft": 1000,
+   "time_min": 4.59,
+   "Rb_m": 833,
+   "Rf_m": 897,
+   "rMax_NM": 2.79,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1931,
+   "dwFromOtherCL_m": -2324,
+   "rule45": {
+    "F_m": 1033,
+    "rollout_ft": 233,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1307,
+     "e": -718,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": 2984,
+     "e": -568,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -993,
+     "e": -2747,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": -2809,
+     "e": -3742,
+     "h_ft": 751
+    },
+    {
+     "k": "final_turn",
+     "n": -4036,
+     "e": -3236,
+     "h_ft": 569
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "pc9m",
+   "side": "L",
+   "hP_ft": 1000,
+   "D_m": 2085,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 34.9,
+   "descent_deg": 2,
+   "vsBase_fpm": -406,
+   "vsFinal_fpm": -504,
+   "xCw_m": 3702,
+   "hCw_ft": 1000,
+   "time_min": 4.52,
+   "Rb_m": 904,
+   "Rf_m": 981,
+   "rMax_NM": 2.85,
+   "inATZ": true,
+   "dwFromOwnCL_m": -2085,
+   "dwFromOtherCL_m": -2478,
+   "rule45": {
+    "F_m": 1104,
+    "rollout_ft": 245,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1307,
+     "e": -718,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": 3120,
+     "e": -670,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -919,
+     "e": -2882,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": -2746,
+     "e": -3883,
+     "h_ft": 762
+    },
+    {
+     "k": "final_turn",
+     "n": -4069,
+     "e": -3349,
+     "h_ft": 576
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "trainer_r2",
+   "side": "L",
+   "hP_ft": 1000,
+   "D_m": 1931,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 33.6,
+   "descent_deg": 2.1,
+   "vsBase_fpm": -408,
+   "vsFinal_fpm": -504,
+   "xCw_m": 3702,
+   "hCw_ft": 1000,
+   "time_min": 4.54,
+   "Rb_m": 833,
+   "Rf_m": 897,
+   "rMax_NM": 2.79,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1931,
+   "dwFromOtherCL_m": -2324,
+   "rule45": {
+    "F_m": 1033,
+    "rollout_ft": 233,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1307,
+     "e": -718,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": 3046,
+     "e": -534,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -993,
+     "e": -2747,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": -2809,
+     "e": -3742,
+     "h_ft": 751
+    },
+    {
+     "k": "final_turn",
+     "n": -4036,
+     "e": -3236,
+     "h_ft": 569
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "03L",
+   "id": "t6a",
+   "side": "L",
+   "hP_ft": 1000,
+   "D_m": 1931,
+   "F_m": 2006,
+   "rollout_ft": 400,
+   "baseAngle_deg": 33.6,
+   "descent_deg": 2.1,
+   "vsBase_fpm": -408,
+   "vsFinal_fpm": -531,
+   "xCw_m": 3702,
+   "hCw_ft": 1000,
+   "time_min": 4.4,
+   "Rb_m": 833,
+   "Rf_m": 897,
+   "rMax_NM": 2.79,
+   "inATZ": true,
+   "dwFromOwnCL_m": -1931,
+   "dwFromOtherCL_m": -2324,
+   "rule45": {
+    "F_m": 1033,
+    "rollout_ft": 233,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": -1307,
+     "e": -718,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": 1326,
+     "e": 724,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": 3248,
+     "e": -424,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": -993,
+     "e": -2747,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": -2809,
+     "e": -3742,
+     "h_ft": 751
+    },
+    {
+     "k": "final_turn",
+     "n": -4036,
+     "e": -3236,
+     "h_ft": 569
+    },
+    {
+     "k": "rollout",
+     "n": -3681,
+     "e": -2018,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": -1640,
+     "e": -900,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "c172s",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 28.8,
+   "descent_deg": 1.83,
+   "vsBase_fpm": -242,
+   "vsFinal_fpm": -345,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.17,
+   "Rb_m": 418,
+   "Rf_m": 417,
+   "rMax_NM": 2.14,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1338,
+   "dwFromOtherCL_m": 1733,
+   "rule45": {
+    "F_m": 920,
+    "rollout_ft": 212,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1556,
+     "e": -2379,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 1968,
+     "e": -449,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3732,
+     "e": 518,
+     "h_ft": 590
+    },
+    {
+     "k": "final_turn",
+     "n": 3657,
+     "e": 1526,
+     "h_ft": 469
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "c172r",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 29.4,
+   "descent_deg": 1.86,
+   "vsBase_fpm": -230,
+   "vsFinal_fpm": -345,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.08,
+   "Rb_m": 370,
+   "Rf_m": 363,
+   "rMax_NM": 2.11,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1338,
+   "dwFromOtherCL_m": 1733,
+   "rule45": {
+    "F_m": 974,
+    "rollout_ft": 222,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1595,
+     "e": -2401,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 1968,
+     "e": -449,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3727,
+     "e": 515,
+     "h_ft": 587
+    },
+    {
+     "k": "final_turn",
+     "n": 3584,
+     "e": 1547,
+     "h_ft": 461
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "c152",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1141,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 26.1,
+   "descent_deg": 1.98,
+   "vsBase_fpm": -228,
+   "vsFinal_fpm": -318,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.6,
+   "Rb_m": 284,
+   "Rf_m": 313,
+   "rMax_NM": 2.08,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1141,
+   "dwFromOtherCL_m": 1536,
+   "rule45": {
+    "F_m": 828,
+    "rollout_ft": 196,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1601,
+     "e": -2179,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 1874,
+     "e": -276,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3664,
+     "e": 705,
+     "h_ft": 568
+    },
+    {
+     "k": "final_turn",
+     "n": 3516,
+     "e": 1567,
+     "h_ft": 456
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "pa28_161",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 28.8,
+   "descent_deg": 1.82,
+   "vsBase_fpm": -241,
+   "vsFinal_fpm": -372,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.98,
+   "Rb_m": 370,
+   "Rf_m": 417,
+   "rMax_NM": 2.14,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1338,
+   "dwFromOtherCL_m": 1733,
+   "rule45": {
+    "F_m": 920,
+    "rollout_ft": 212,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1595,
+     "e": -2401,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 1968,
+     "e": -449,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3774,
+     "e": 541,
+     "h_ft": 586
+    },
+    {
+     "k": "final_turn",
+     "n": 3657,
+     "e": 1526,
+     "h_ft": 468
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "da40ng",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1445,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 30.4,
+   "descent_deg": 1.74,
+   "vsBase_fpm": -240,
+   "vsFinal_fpm": -403,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.04,
+   "Rb_m": 352,
+   "Rf_m": 451,
+   "rMax_NM": 2.16,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1445,
+   "dwFromOtherCL_m": 1840,
+   "rule45": {
+    "F_m": 994,
+    "rollout_ft": 225,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1490,
+     "e": -2465,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 2020,
+     "e": -543,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3871,
+     "e": 472,
+     "h_ft": 590
+    },
+    {
+     "k": "final_turn",
+     "n": 3703,
+     "e": 1512,
+     "h_ft": 471
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "da42ng",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 31,
+   "descent_deg": 1.58,
+   "vsBase_fpm": -265,
+   "vsFinal_fpm": -446,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.34,
+   "Rb_m": 579,
+   "Rf_m": 669,
+   "rMax_NM": 2.29,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1609,
+   "dwFromOtherCL_m": 2005,
+   "rule45": {
+    "F_m": 940,
+    "rollout_ft": 216,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1559,
+     "e": -2691,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 2099,
+     "e": -687,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3943,
+     "e": 323,
+     "h_ft": 610
+    },
+    {
+     "k": "final_turn",
+     "n": 3999,
+     "e": 1426,
+     "h_ft": 495
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "da40_180",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1445,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 30.4,
+   "descent_deg": 1.74,
+   "vsBase_fpm": -240,
+   "vsFinal_fpm": -387,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.22,
+   "Rb_m": 370,
+   "Rf_m": 451,
+   "rMax_NM": 2.16,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1445,
+   "dwFromOtherCL_m": 1840,
+   "rule45": {
+    "F_m": 994,
+    "rollout_ft": 225,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1455,
+     "e": -2446,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 2020,
+     "e": -543,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3855,
+     "e": 463,
+     "h_ft": 591
+    },
+    {
+     "k": "final_turn",
+     "n": 3703,
+     "e": 1512,
+     "h_ft": 471
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "da40d",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 28.7,
+   "descent_deg": 1.8,
+   "vsBase_fpm": -242,
+   "vsFinal_fpm": -377,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.31,
+   "Rb_m": 352,
+   "Rf_m": 428,
+   "rMax_NM": 2.15,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1338,
+   "dwFromOtherCL_m": 1733,
+   "rule45": {
+    "F_m": 909,
+    "rollout_ft": 210,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1499,
+     "e": -2348,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 1968,
+     "e": -449,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3800,
+     "e": 555,
+     "h_ft": 584
+    },
+    {
+     "k": "final_turn",
+     "n": 3672,
+     "e": 1521,
+     "h_ft": 470
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "da42_tae125",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 31.6,
+   "descent_deg": 1.61,
+   "vsBase_fpm": -256,
+   "vsFinal_fpm": -435,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.68,
+   "Rb_m": 522,
+   "Rf_m": 601,
+   "rMax_NM": 2.25,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1609,
+   "dwFromOtherCL_m": 2005,
+   "rule45": {
+    "F_m": 1009,
+    "rollout_ft": 227,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1464,
+     "e": -2639,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 2099,
+     "e": -687,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3932,
+     "e": 317,
+     "h_ft": 607
+    },
+    {
+     "k": "final_turn",
+     "n": 3906,
+     "e": 1453,
+     "h_ft": 487
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "be76",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 32.3,
+   "descent_deg": 1.64,
+   "vsBase_fpm": -246,
+   "vsFinal_fpm": -425,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.59,
+   "Rb_m": 469,
+   "Rf_m": 536,
+   "rMax_NM": 2.21,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1609,
+   "dwFromOtherCL_m": 2005,
+   "rule45": {
+    "F_m": 1074,
+    "rollout_ft": 239,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1514,
+     "e": -2666,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 2099,
+     "e": -687,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3922,
+     "e": 312,
+     "h_ft": 605
+    },
+    {
+     "k": "final_turn",
+     "n": 3818,
+     "e": 1479,
+     "h_ft": 479
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "p2006t",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1557,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 32.1,
+   "descent_deg": 1.7,
+   "vsBase_fpm": -240,
+   "vsFinal_fpm": -372,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.83,
+   "Rb_m": 469,
+   "Rf_m": 475,
+   "rMax_NM": 2.17,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1557,
+   "dwFromOtherCL_m": 1953,
+   "rule45": {
+    "F_m": 1083,
+    "rollout_ft": 240,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1522,
+     "e": -2612,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 2074,
+     "e": -642,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3844,
+     "e": 328,
+     "h_ft": 604
+    },
+    {
+     "k": "final_turn",
+     "n": 3735,
+     "e": 1503,
+     "h_ft": 472
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "p2002jf",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1051,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 24.8,
+   "descent_deg": 2.07,
+   "vsBase_fpm": -219,
+   "vsFinal_fpm": -265,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.92,
+   "Rb_m": 245,
+   "Rf_m": 267,
+   "rMax_NM": 2.05,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1051,
+   "dwFromOtherCL_m": 1446,
+   "rule45": {
+    "F_m": 784,
+    "rollout_ft": 189,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1651,
+     "e": -2104,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 1831,
+     "e": -197,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3615,
+     "e": 780,
+     "h_ft": 559
+    },
+    {
+     "k": "final_turn",
+     "n": 3453,
+     "e": 1585,
+     "h_ft": 450
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "p68c",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1609,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 31.6,
+   "descent_deg": 1.62,
+   "vsBase_fpm": -257,
+   "vsFinal_fpm": -398,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.46,
+   "Rb_m": 579,
+   "Rf_m": 601,
+   "rMax_NM": 2.25,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1609,
+   "dwFromOtherCL_m": 2005,
+   "rule45": {
+    "F_m": 1009,
+    "rollout_ft": 227,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1559,
+     "e": -2691,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 2099,
+     "e": -687,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3883,
+     "e": 290,
+     "h_ft": 612
+    },
+    {
+     "k": "final_turn",
+     "n": 3906,
+     "e": 1453,
+     "h_ft": 487
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "t206h",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1557,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 32.1,
+   "descent_deg": 1.7,
+   "vsBase_fpm": -240,
+   "vsFinal_fpm": -372,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 5.71,
+   "Rb_m": 469,
+   "Rf_m": 475,
+   "rMax_NM": 2.17,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1557,
+   "dwFromOtherCL_m": 1953,
+   "rule45": {
+    "F_m": 1083,
+    "rollout_ft": 240,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1584,
+     "e": -2645,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 2074,
+     "e": -642,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3844,
+     "e": 328,
+     "h_ft": 604
+    },
+    {
+     "k": "final_turn",
+     "n": 3735,
+     "e": 1503,
+     "h_ft": 472
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "ct4",
+   "side": "R",
+   "hP_ft": 800,
+   "D_m": 1338,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 29.4,
+   "descent_deg": 1.86,
+   "vsBase_fpm": -230,
+   "vsFinal_fpm": -318,
+   "xCw_m": 3702,
+   "hCw_ft": 800,
+   "time_min": 6.07,
+   "Rb_m": 370,
+   "Rf_m": 363,
+   "rMax_NM": 2.11,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1338,
+   "dwFromOtherCL_m": 1733,
+   "rule45": {
+    "F_m": 974,
+    "rollout_ft": 222,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 975,
+     "e": 532,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 800
+    },
+    {
+     "k": "downwind_join",
+     "n": -1645,
+     "e": -2428,
+     "h_ft": 800
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 1968,
+     "e": -449,
+     "h_ft": 800
+    },
+    {
+     "k": "base_turn",
+     "n": 3727,
+     "e": 515,
+     "h_ft": 587
+    },
+    {
+     "k": "final_turn",
+     "n": 3584,
+     "e": 1547,
+     "h_ft": 461
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "pc7mk2",
+   "side": "R",
+   "hP_ft": 1000,
+   "D_m": 1931,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 33.6,
+   "descent_deg": 2.1,
+   "vsBase_fpm": -408,
+   "vsFinal_fpm": -488,
+   "xCw_m": 3702,
+   "hCw_ft": 1000,
+   "time_min": 4.59,
+   "Rb_m": 833,
+   "Rf_m": 897,
+   "rMax_NM": 2.44,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1931,
+   "dwFromOtherCL_m": 2326,
+   "rule45": {
+    "F_m": 1033,
+    "rollout_ft": 232,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 712,
+     "e": 388,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": -1724,
+     "e": -3148,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 2253,
+     "e": -969,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": 4074,
+     "e": 29,
+     "h_ft": 751
+    },
+    {
+     "k": "final_turn",
+     "n": 4308,
+     "e": 1335,
+     "h_ft": 569
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "pc9m",
+   "side": "R",
+   "hP_ft": 1000,
+   "D_m": 2085,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 34.9,
+   "descent_deg": 2,
+   "vsBase_fpm": -406,
+   "vsFinal_fpm": -504,
+   "xCw_m": 3702,
+   "hCw_ft": 1000,
+   "time_min": 4.52,
+   "Rb_m": 904,
+   "Rf_m": 981,
+   "rMax_NM": 2.49,
+   "inATZ": true,
+   "dwFromOwnCL_m": 2085,
+   "dwFromOtherCL_m": 2480,
+   "rule45": {
+    "F_m": 1104,
+    "rollout_ft": 244,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 712,
+     "e": 388,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": -1712,
+     "e": -3317,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 2327,
+     "e": -1104,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": 4159,
+     "e": -101,
+     "h_ft": 761
+    },
+    {
+     "k": "final_turn",
+     "n": 4421,
+     "e": 1302,
+     "h_ft": 576
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "trainer_r2",
+   "side": "R",
+   "hP_ft": 1000,
+   "D_m": 1931,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 33.6,
+   "descent_deg": 2.1,
+   "vsBase_fpm": -408,
+   "vsFinal_fpm": -504,
+   "xCw_m": 3702,
+   "hCw_ft": 1000,
+   "time_min": 4.54,
+   "Rb_m": 833,
+   "Rf_m": 897,
+   "rMax_NM": 2.44,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1931,
+   "dwFromOtherCL_m": 2326,
+   "rule45": {
+    "F_m": 1033,
+    "rollout_ft": 232,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 712,
+     "e": 388,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": -1786,
+     "e": -3182,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 2253,
+     "e": -969,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": 4074,
+     "e": 29,
+     "h_ft": 751
+    },
+    {
+     "k": "final_turn",
+     "n": 4308,
+     "e": 1335,
+     "h_ft": 569
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  },
+  {
+   "rwy": "21R",
+   "id": "t6a",
+   "side": "R",
+   "hP_ft": 1000,
+   "D_m": 1931,
+   "F_m": 2012,
+   "rollout_ft": 400,
+   "baseAngle_deg": 33.6,
+   "descent_deg": 2.1,
+   "vsBase_fpm": -408,
+   "vsFinal_fpm": -531,
+   "xCw_m": 3702,
+   "hCw_ft": 1000,
+   "time_min": 4.41,
+   "Rb_m": 833,
+   "Rf_m": 897,
+   "rMax_NM": 2.44,
+   "inATZ": true,
+   "dwFromOwnCL_m": 1931,
+   "dwFromOtherCL_m": 2326,
+   "rule45": {
+    "F_m": 1033,
+    "rollout_ft": 232,
+    "finalOK": true
+   },
+   "wp": [
+    {
+     "k": "liftoff",
+     "n": 712,
+     "e": 388,
+     "h_ft": 0
+    },
+    {
+     "k": "crosswind_turn",
+     "n": -1921,
+     "e": -1054,
+     "h_ft": 1000
+    },
+    {
+     "k": "downwind_join",
+     "n": -1988,
+     "e": -3292,
+     "h_ft": 1000
+    },
+    {
+     "k": "abeam_threshold",
+     "n": 2253,
+     "e": -969,
+     "h_ft": 1000
+    },
+    {
+     "k": "base_turn",
+     "n": 4074,
+     "e": 29,
+     "h_ft": 751
+    },
+    {
+     "k": "final_turn",
+     "n": 4308,
+     "e": 1335,
+     "h_ft": 569
+    },
+    {
+     "k": "rollout",
+     "n": 3090,
+     "e": 1691,
+     "h_ft": 400
+    },
+    {
+     "k": "aim",
+     "n": 1050,
+     "e": 574,
+     "h_ft": 0
+    }
+   ]
+  }
+ ],
+ "windExample": {
+  "rwy": "21L",
+  "type": "c172s",
+  "wind": "090/10",
+  "legs": {
+   "upwind": {
+    "trk": 208.7,
+    "crab_deg": -6.8,
+    "gs_kt": 78.3
+   },
+   "crosswind": {
+    "trk": 298.7,
+    "crab_deg": 3.7,
+    "gs_kt": 82.6
+   },
+   "downwind": {
+    "trk": 28.7,
+    "crab_deg": 5.6,
+    "gs_kt": 84.8
+   },
+   "base": {
+    "trk": 118.7,
+    "crab_deg": -3.7,
+    "gs_kt": 66.1
+   },
+   "final": {
+    "trk": 208.7,
+    "crab_deg": -7.8,
+    "gs_kt": 69.2
+   }
+  }
+ }
+}

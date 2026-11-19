@@ -1,0 +1,133 @@
+{
+ "vref": {
+  "class_VS0_POH_2250kg": 67.52,
+  "class_Vref_2250kg": 87.77,
+  "pc7mk2_Vref": 87.1,
+  "pc9m_Vref_2350kg": 89.7,
+  "pc9m_Vref_over_VSR1g": 1.271,
+  "pc7mk2_Vref_over_VSR1g": 1.266,
+  "r1": {
+   "VSR_full": 71.86,
+   "VS0_POHeq": 70.04,
+   "Vref": 88,
+   "ratio_POH": 1.256,
+   "ratio_1g": 1.225,
+   "ratio_simVmin": 1.287
+  },
+  "r2": {
+   "VSR_full": 69.25,
+   "VS0_POHeq": 67.5,
+   "Vref": 88,
+   "ratio_POH": 1.304
+  },
+  "note": "VREF ≥ 1.3 VS0 (old 14 CFR 23.73, AFH) uses VS0 = minimum speed of the 1 kt/s stall test (23.49/23.201), i.e. the POH/TCDS number, not the 1-g V_SR"
+ },
+ "roc_class_2250kg_700kW": {
+  "cases": [
+   {
+    "eta": 0.75,
+    "from": "PC-7 MkII 2,250 kg",
+    "ROC_fpm": 4031
+   },
+   {
+    "eta": 0.75,
+    "from": "PC-9 (มวลสมมติ 2,350 kg)",
+    "ROC_fpm": 4248
+   },
+   {
+    "eta": 0.75,
+    "from": "PC-9 (มวลสมมติ 2,100 kg)",
+    "ROC_fpm": 3664
+   },
+   {
+    "eta": 0.8,
+    "from": "PC-7 MkII 2,250 kg",
+    "ROC_fpm": 4111
+   },
+   {
+    "eta": 0.8,
+    "from": "PC-9 (มวลสมมติ 2,350 kg)",
+    "ROC_fpm": 4264
+   },
+   {
+    "eta": 0.8,
+    "from": "PC-9 (มวลสมมติ 2,100 kg)",
+    "ROC_fpm": 3626
+   },
+   {
+    "eta": 0.85,
+    "from": "PC-7 MkII 2,250 kg",
+    "ROC_fpm": 4190
+   },
+   {
+    "eta": 0.85,
+    "from": "PC-9 (มวลสมมติ 2,350 kg)",
+    "ROC_fpm": 4281
+   },
+   {
+    "eta": 0.85,
+    "from": "PC-9 (มวลสมมติ 2,100 kg)",
+    "ROC_fpm": 3588
+   }
+  ],
+  "min": 3588,
+  "max": 4281
+ },
+ "takeoff_class_700kW": {
+  "scaled_m": 341,
+  "factor": 0.8223,
+  "note": "distance ∝ 1/T0, T0 ∝ P^(2/3); flap TO as PC-7 MkII; ค่าประมาณ ±20 %"
+ },
+ "t6_cg": {
+  "fuelled": [
+   {
+    "lb": 5850,
+    "kg": 2653.5,
+    "fwd_m": 4.1826,
+    "aft_m": 4.3015,
+    "fwd_pct": 18.8,
+    "aft_pct": 26
+   },
+   {
+    "lb": 6900,
+    "kg": 3129.8,
+    "fwd_m": 4.2024,
+    "aft_m": 4.3015,
+    "fwd_pct": 20,
+    "aft_pct": 26
+   },
+   {
+    "lb": 6950,
+    "kg": 3152.5,
+    "fwd_m": 4.2024,
+    "aft_m": 4.3015,
+    "fwd_pct": 20,
+    "aft_pct": 26
+   }
+  ],
+  "zero_fuel": {
+   "lb": 5850,
+   "fwd_pct": 19,
+   "aft_pct": 25.8
+  }
+ },
+ "t6_glide": {
+  "at6000ft": {
+   "1100": 12.59,
+   "1225": 11.3,
+   "1300": 10.65,
+   "1350": 10.26
+  },
+  "low_3000ft_1350": 9.802,
+  "high_9000ft_1100": 13.18
+ },
+ "Rx": {
+  "trainer_r1": 0.2108,
+  "trainer_r2": 0.2514,
+  "class_mean": 0.261,
+  "class_range": [
+   0.219,
+   0.303
+  ]
+ }
+}

@@ -1,0 +1,396 @@
+{
+ "c172p": {
+  "0": {
+   "flap_deg": 0.0,
+   "CL0": 0.2501,
+   "CLalpha_per_rad": 5.465,
+   "CLmax": 1.469,
+   "alpha_CLmax_deg": 16.0,
+   "CDmin": 0.0271,
+   "alpha_CDmin": -3.0,
+   "Cm0": 0.1112,
+   "Cmalpha_per_rad": -1.873,
+   "CD_at_CL05": 0.0471,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/CLq",
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "10": {
+   "flap_deg": 10.0,
+   "CL0": 0.4501,
+   "CLalpha_per_rad": 5.465,
+   "CLmax": 1.669,
+   "alpha_CLmax_deg": 16.0,
+   "CDmin": 0.034,
+   "alpha_CDmin": -5.5,
+   "Cm0": 0.0523,
+   "Cmalpha_per_rad": -1.878,
+   "CD_at_CL05": 0.0548,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/CLq",
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "20": {
+   "flap_deg": 20.0,
+   "CL0": 0.5501,
+   "CLalpha_per_rad": 5.465,
+   "CLmax": 1.769,
+   "alpha_CLmax_deg": 16.0,
+   "CDmin": 0.0395,
+   "alpha_CDmin": -5.5,
+   "Cm0": 0.0242,
+   "Cmalpha_per_rad": -1.881,
+   "CD_at_CL05": 0.0602,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/CLq",
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "30": {
+   "flap_deg": 30.0,
+   "CL0": 0.6001,
+   "CLalpha_per_rad": 5.465,
+   "CLmax": 1.819,
+   "alpha_CLmax_deg": 16.0,
+   "CDmin": 0.0464,
+   "alpha_CDmin": -5.5,
+   "Cm0": 0.012,
+   "Cmalpha_per_rad": -1.882,
+   "CD_at_CL05": 0.0662,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/CLq",
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  }
+ },
+ "c172r": {
+  "0": {
+   "flap_deg": 0.0,
+   "CL0": 0.2501,
+   "CLalpha_per_rad": 5.465,
+   "CLmax": 1.469,
+   "alpha_CLmax_deg": 16.0,
+   "CDmin": 0.0261,
+   "alpha_CDmin": -3.0,
+   "Cm0": 0.1202,
+   "Cmalpha_per_rad": -1.707,
+   "CD_at_CL05": 0.0461,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/CLq",
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "10": {
+   "flap_deg": 10.0,
+   "CL0": 0.4501,
+   "CLalpha_per_rad": 5.465,
+   "CLmax": 1.669,
+   "alpha_CLmax_deg": 16.0,
+   "CDmin": 0.033,
+   "alpha_CDmin": -5.5,
+   "Cm0": 0.0684,
+   "Cmalpha_per_rad": -1.713,
+   "CD_at_CL05": 0.0538,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/CLq",
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "20": {
+   "flap_deg": 20.0,
+   "CL0": 0.5501,
+   "CLalpha_per_rad": 5.465,
+   "CLmax": 1.769,
+   "alpha_CLmax_deg": 16.0,
+   "CDmin": 0.0385,
+   "alpha_CDmin": -5.5,
+   "Cm0": 0.044,
+   "Cmalpha_per_rad": -1.715,
+   "CD_at_CL05": 0.0592,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/CLq",
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "30": {
+   "flap_deg": 30.0,
+   "CL0": 0.6001,
+   "CLalpha_per_rad": 5.465,
+   "CLmax": 1.819,
+   "alpha_CLmax_deg": 16.0,
+   "CDmin": 0.0454,
+   "alpha_CDmin": -5.5,
+   "Cm0": 0.0338,
+   "Cmalpha_per_rad": -1.717,
+   "CD_at_CL05": 0.0652,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/CLq",
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  }
+ },
+ "c172x": {
+  "0": {
+   "flap_deg": 0.0,
+   "CL0": 0.25,
+   "CLalpha_per_rad": 9.994,
+   "CLmax": 2.94,
+   "alpha_CLmax_deg": 24.0,
+   "CDmin": 0.0322,
+   "alpha_CDmin": -3.0,
+   "Cm0": 0.1225,
+   "Cmalpha_per_rad": -1.636,
+   "CD_at_CL05": 0.0452,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/CLq",
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "10": {
+   "flap_deg": 10.0,
+   "CL0": 0.4999,
+   "CLalpha_per_rad": 9.956,
+   "CLmax": 3.167,
+   "alpha_CLmax_deg": 24.0,
+   "CDmin": 0.0392,
+   "alpha_CDmin": -5.5,
+   "Cm0": 0.1097,
+   "Cmalpha_per_rad": -1.662,
+   "CD_at_CL05": 0.0559,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/CLq",
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "20": {
+   "flap_deg": 20.0,
+   "CL0": 0.5498,
+   "CLalpha_per_rad": 9.906,
+   "CLmax": 3.19,
+   "alpha_CLmax_deg": 24.0,
+   "CDmin": 0.0446,
+   "alpha_CDmin": -5.5,
+   "Cm0": 0.0971,
+   "Cmalpha_per_rad": -1.645,
+   "CD_at_CL05": 0.0653,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/CLq",
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "30": {
+   "flap_deg": 30.0,
+   "CL0": 0.5997,
+   "CLalpha_per_rad": 9.846,
+   "CLmax": 3.208,
+   "alpha_CLmax_deg": 24.0,
+   "CDmin": 0.0515,
+   "alpha_CDmin": -5.5,
+   "Cm0": 0.0934,
+   "Cmalpha_per_rad": -1.647,
+   "CD_at_CL05": 0.0757,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/CLq",
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  }
+ },
+ "pa28": {
+  "0": {
+   "flap_deg": 0.0,
+   "CL0": 0.524,
+   "CLalpha_per_rad": 5.966,
+   "CLmax": 1.911,
+   "alpha_CLmax_deg": 18.0,
+   "CDmin": 0.049,
+   "alpha_CDmin": -4.0,
+   "Cm0": -0.0536,
+   "Cmalpha_per_rad": -2.341,
+   "CD_at_CL05": 0.064,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "15": {
+   "flap_deg": 15.0,
+   "CL0": 0.589,
+   "CLalpha_per_rad": 5.966,
+   "CLmax": 1.976,
+   "alpha_CLmax_deg": 18.0,
+   "CDmin": 0.059,
+   "alpha_CDmin": -4.0,
+   "Cm0": -0.1346,
+   "Cmalpha_per_rad": -2.337,
+   "CD_at_CL05": 0.069,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "25": {
+   "flap_deg": 25.0,
+   "CL0": 0.54,
+   "CLalpha_per_rad": 5.966,
+   "CLmax": 1.927,
+   "alpha_CLmax_deg": 18.0,
+   "CDmin": 0.079,
+   "alpha_CDmin": -4.0,
+   "Cm0": -0.1581,
+   "Cmalpha_per_rad": -2.346,
+   "CD_at_CL05": 0.0915,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "40": {
+   "flap_deg": 40.0,
+   "CL0": 0.778,
+   "CLalpha_per_rad": 5.966,
+   "CLmax": 2.165,
+   "alpha_CLmax_deg": 18.0,
+   "CDmin": 0.099,
+   "alpha_CDmin": -4.0,
+   "Cm0": -0.2296,
+   "Cmalpha_per_rad": -2.326,
+   "CD_at_CL05": 0.1015,
+   "excluded_rate_functions": [
+    "aero/coefficient/CLadot",
+    "aero/coefficient/Cmadot"
+   ]
+  }
+ },
+ "pc7": {
+  "0": {
+   "flap_deg": 0.0,
+   "CL0": 0.3619,
+   "CLalpha_per_rad": 4.746,
+   "CLmax": 1.637,
+   "alpha_CLmax_deg": 15.5,
+   "CDmin": 0.0267,
+   "alpha_CDmin": 0.0,
+   "Cm0": 0.1107,
+   "Cmalpha_per_rad": 0.248,
+   "CD_at_CL05": 0.0376,
+   "excluded_rate_functions": [
+    "aero/force/Lift_pitch_rate",
+    "aero/force/Lift_alpha_rate",
+    "aero/moment/Pitch_damp",
+    "aero/moment/Pitch_alphadot"
+   ]
+  },
+  "15": {
+   "flap_deg": 15.0,
+   "CL0": 0.4879,
+   "CLalpha_per_rad": 4.634,
+   "CLmax": 1.729,
+   "alpha_CLmax_deg": 15.5,
+   "CDmin": 0.05,
+   "alpha_CDmin": -1.0,
+   "Cm0": 0.1587,
+   "Cmalpha_per_rad": 0.945,
+   "CD_at_CL05": 0.0504,
+   "excluded_rate_functions": [
+    "aero/force/Lift_pitch_rate",
+    "aero/force/Lift_alpha_rate",
+    "aero/moment/Pitch_damp",
+    "aero/moment/Pitch_alphadot"
+   ]
+  },
+  "30": {
+   "flap_deg": 30.0,
+   "CL0": 0.6139,
+   "CLalpha_per_rad": 4.522,
+   "CLmax": 1.822,
+   "alpha_CLmax_deg": 15.5,
+   "CDmin": 0.0735,
+   "alpha_CDmin": -2.5,
+   "Cm0": 0.2069,
+   "Cmalpha_per_rad": 1.642,
+   "CD_at_CL05": 0.0738,
+   "excluded_rate_functions": [
+    "aero/force/Lift_pitch_rate",
+    "aero/force/Lift_alpha_rate",
+    "aero/moment/Pitch_damp",
+    "aero/moment/Pitch_alphadot"
+   ]
+  }
+ },
+ "t6texan2": {
+  "0": {
+   "flap_deg": 0.0,
+   "CL0": 0.2501,
+   "CLalpha_per_rad": 5.465,
+   "CLmax": 1.469,
+   "alpha_CLmax_deg": 16.0,
+   "CDmin": 0.0231,
+   "alpha_CDmin": -3.0,
+   "Cm0": 0.0417,
+   "Cmalpha_per_rad": -1.89,
+   "CD_at_CL05": 0.0431,
+   "excluded_rate_functions": [
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "15": {
+   "flap_deg": 15.0,
+   "CL0": 0.5001,
+   "CLalpha_per_rad": 5.465,
+   "CLmax": 1.719,
+   "alpha_CLmax_deg": 16.0,
+   "CDmin": 0.0257,
+   "alpha_CDmin": -4.0,
+   "Cm0": 0.0229,
+   "Cmalpha_per_rad": -1.893,
+   "CD_at_CL05": 0.0406,
+   "excluded_rate_functions": [
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  },
+  "30": {
+   "flap_deg": 30.0,
+   "CL0": 0.6001,
+   "CLalpha_per_rad": 5.465,
+   "CLmax": 1.819,
+   "alpha_CLmax_deg": 16.0,
+   "CDmin": 0.0244,
+   "alpha_CDmin": -5.5,
+   "Cm0": 0.0036,
+   "Cmalpha_per_rad": -1.891,
+   "CD_at_CL05": 0.0442,
+   "excluded_rate_functions": [
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ]
+  }
+ }
+}

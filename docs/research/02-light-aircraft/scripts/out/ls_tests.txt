@@ -1,0 +1,10 @@
+PASS T-LS-01 ATO aircraft / ATOs: got 78 / 9, expected 78 / 9
+PASS T-LS-02 sum(types) == total for every leaf: got all, expected all
+PASS T-LS-03 most numerous ATO type (count, % of ATO fleet): got c172s 34 (43.6%), expected c172s 34 (43.6%)
+PASS T-LS-04 DA40 D / DA40 (IO-360) / DA40 NG at ATOs: got 9 / 7 / 0, expected 9 / 7 / 0
+PASS T-LS-05 DA42 TAE125 / NG / NG Wuhu / ATOs with DA42: got 5 / 5 / 3 / 4, expected 5 / 5 / 3 / 4
+PASS T-LS-06 base_icao format / VTBD absent / set: got true / true / VTPH,VTPO,VTPP,VTSE,VTUQ,VTUV,VTUW, expected true / true / VTPH,VTPO,VTPP,VTSE,VTUQ,VTUV,VTUW
+PASS T-LS-07 forbidden military terms (military leaf + whole block): got 0, expected 0
+PASS T-LS-08 ranking_extra[0..1], others P3: got c172r:P1, c152:P2, P3 rest: true, expected c172r:P1, c152:P2, P3 rest: true
+PASS T-LS-09 C172 % of ATO fleet / C172S % of C172 / ATOs with C172 / ATOs with C172S: got 56.4 / 77.3 / 7 / 6, expected 56.4 / 77.3 (±0.1) / 7 / 6
+9/9 passed

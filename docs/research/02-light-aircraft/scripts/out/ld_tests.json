@@ -1,0 +1,489 @@
+{
+ "date": "2026-11-19",
+ "nPass": 30,
+ "nFail": 7,
+ "hot": {
+  "factorTurbo": 1.093598898679556,
+  "factorNA": 1.150673106488445,
+  "sigma": 0.9350965438909622,
+  "hotNG": {
+   "VR": 66.9,
+   "groundRoll_m": 427.5724608600875,
+   "tLiftoff_s": 19.274999999998908,
+   "V_LOF_kt": 72.45563763038687,
+   "dist50ft_m": 654.6985941507809,
+   "V50_kt": 72.1464546591351
+  },
+  "hotD": {
+   "VR": 62.1,
+   "groundRoll_m": 390.3718158801685,
+   "tLiftoff_s": 18.79583333333227,
+   "V_LOF_kt": 67.16803524212473,
+   "dist50ft_m": 612.8228062541733,
+   "V50_kt": 66.29410766436185
+  }
+ },
+ "cruise14": {
+  "ias": 99.97381936033902,
+  "V": 63.79025524882178,
+  "alpha": 0.04952191965814639,
+  "de": -0.0403508672985446,
+  "thr": 0.8014242533501229,
+  "theta": 0.04952191965814639,
+  "gamma": 0,
+  "y0": [
+   63.712050967578286,
+   0,
+   3.157724847820246,
+   0,
+   0,
+   0,
+   0,
+   0.04952191965814639,
+   0
+  ],
+  "h": 4267.2,
+  "rho": 0.796299035465193
+ },
+ "glideNG": {
+  "clean88": {
+   "ias": 88,
+   "V": 45.94646737192186,
+   "alpha": 3.4005031066122196,
+   "de": -2.925687313305838,
+   "gamma": -6.018217836980684,
+   "theta": -2.6177147303684642,
+   "roc_fpm": -948.276092300108,
+   "LoverD": 9.485351415444233
+  },
+  "ldg88": {
+   "ias": 88,
+   "V": 45.94646737192186,
+   "alpha": -4.847119333172983,
+   "de": 2.160564697834139,
+   "gamma": -9.105407651198938,
+   "theta": -13.95252698437192,
+   "roc_fpm": -1431.316211146147,
+   "LoverD": 6.239437685326432
+  }
+ },
+ "glideNG1310": {
+  "ias": 88,
+  "V": 45.94646737192186,
+  "alpha": -3.4610452695484932,
+  "de": 0.6498572715404173,
+  "gamma": -8.470918157147727,
+  "theta": -11.931963426696221,
+  "roc_fpm": -1332.3335329406623,
+  "LoverD": 6.714467868273131
+ },
+ "tests": [
+  {
+   "id": "T-LD-01",
+   "cond": "DA40 NG AFM: span 11.63 m, wing area 13.244 m²",
+   "qty": "AR = b²/S",
+   "exp": 10.223,
+   "tol": 0.02,
+   "unit": "",
+   "src": "[LD2 p.1-5] ให้ 10.223",
+   "cur": 10.213,
+   "pass": true
+  },
+  {
+   "id": "T-LD-02",
+   "cond": "CG หน้า 2.40 m (≤ 1,080 kg), 2.469 m (1,310 kg), หลัง 2.53 m DAT; LEMAC 2.229 m (ค่าประมาณ ld_geom), MAC 1.171 m",
+   "qty": "CG เป็น %MAC: หน้าสุด / หน้าที่ MTOW / หลังสุด",
+   "exp": "14.6 / 20.5 / 25.7",
+   "tol": "±1 %MAC (จาก LEMAC ค่าประมาณ)",
+   "unit": "%MAC",
+   "src": "[LD1 p.29][LD2 p.2-18]; ld_geom.mjs",
+   "cur": "CG อ้างอิงของบัตร 20.6 %MAC อยู่ในช่วง",
+   "pass": true
+  },
+  {
+   "id": "T-LD-03",
+   "cond": "ตาราง stall checklist แฟลป UP: 66 KIAS ที่ 1,310 kg",
+   "qty": "VS ที่ 1,000 kg = 66·√(1000/1310)",
+   "exp": 57.7,
+   "tol": 1,
+   "unit": "KIAS",
+   "src": "[LD3] ตารางให้ 58 KIAS",
+   "cur": 58,
+   "pass": true
+  },
+  {
+   "id": "T-LD-04",
+   "cond": "1,310 kg, S 13.244 m², VS 66/62/60 KIAS → 64.6/60.7/58.0 KCAS (ld_iascas) ถือเป็นความเร็วต่ำสุด (n_z 0.95)",
+   "qty": "CLmax 1 g UP / TO / LDG",
+   "exp": "1.362 / 1.543 / 1.69",
+   "tol": 0.03,
+   "unit": "",
+   "src": "lm_polar.clmaxFromStall [LM2]; [LD3][LD4]",
+   "cur": "1.363 / 1.589 / 1.691",
+   "pass": false
+  },
+  {
+   "id": "T-LD-05",
+   "cond": "ซิม: da40ng 1,310 kg, CG อ้างอิง, 3,000 ft ISA, idle, แฟลป UP, ลด 1 kt/s",
+   "qty": "Vmin (KEAS ≈ KCAS)",
+   "exp": 64.6,
+   "tol": 3,
+   "unit": "KCAS",
+   "src": "[LD3] แปลงด้วย ld_iascas; ±3 kt ตาม Part 60 [R1:V2]",
+   "cur": 63.4,
+   "pass": true
+  },
+  {
+   "id": "T-LD-06",
+   "cond": "ซิม: da40ng 1,310 kg, CG อ้างอิง, 3,000 ft ISA, idle, แฟลป TO, ลด 1 kt/s",
+   "qty": "Vmin (KEAS ≈ KCAS)",
+   "exp": 60.7,
+   "tol": 3,
+   "unit": "KCAS",
+   "src": "[LD3] แปลงด้วย ld_iascas; ±3 kt ตาม Part 60 [R1:V2]",
+   "cur": 58.8,
+   "pass": true
+  },
+  {
+   "id": "T-LD-07",
+   "cond": "ซิม: da40ng 1,310 kg, CG อ้างอิง, 3,000 ft ISA, idle, แฟลป LDG, ลด 1 kt/s",
+   "qty": "Vmin (KEAS ≈ KCAS)",
+   "exp": 58,
+   "tol": 3,
+   "unit": "KCAS",
+   "src": "[LD3] แปลงด้วย ld_iascas; Diamond ระบุ 58 KCAS [LD4]; ±3 kt ตาม Part 60 [R1:V2]",
+   "cur": 57.2,
+   "pass": true
+  },
+  {
+   "id": "T-LD-08",
+   "cond": "ซิม: da40ng 1,310 kg, SL ISA, คันเร่งสุด, แฟลป UP, กวาด IAS",
+   "qty": "ROC สูงสุด",
+   "exp": 651,
+   "tol": "±100 fpm (หรือ 5 %)",
+   "unit": "fpm",
+   "src": "[LD4] 3.3 m/s; Part 60 [R1:V2]",
+   "cur": 666,
+   "pass": true
+  },
+  {
+   "id": "T-LD-09",
+   "cond": "เหมือน T-LD-08",
+   "qty": "Vy",
+   "exp": 71.1,
+   "tol": 3,
+   "unit": "KCAS",
+   "src": "Vy 72 KIAS แฟลป T/O [LD3] (ซิมไต่แฟลป UP — ต่างโครงแบบ)",
+   "cur": 79.6,
+   "pass": false
+  },
+  {
+   "id": "T-LD-10",
+   "cond": "ซิม: da40ng 1,310 kg, 3,000 ft ISA, แรงขับศูนย์, แฟลป UP",
+   "qty": "ความเร็วร่อนดีสุด / L/D",
+   "exp": "87.5 / 9.7",
+   "tol": "±3 kt / ±0.5",
+   "unit": "KCAS / -",
+   "src": "[LD2 p.3-4][LD3]",
+   "cur": "87.3 / 9.7",
+   "pass": true
+  },
+  {
+   "id": "T-LD-11",
+   "cond": "ซิม: da40ng 1,310 kg, SL ISA 15 °C, แฟลป T/O, คันเร่งสุด, VR 66.9 KCAS, θ 8°",
+   "qty": "ground roll",
+   "exp": 397,
+   "tol": "±5 % หรือ ±61 m (ค่าเล็ก = ±20 m)",
+   "unit": "m",
+   "src": "[LD4]; Part 60 [R1:V2]; หมายเหตุ: T0 ของซิมถูกปรับให้ตรงข้อนี้ (§05.9)",
+   "cur": 397,
+   "pass": true
+  },
+  {
+   "id": "T-LD-12",
+   "cond": "เหมือน T-LD-11",
+   "qty": "ระยะถึง 50 ft",
+   "exp": 590,
+   "tol": "±10 % (59 m; ผู้เขียนตั้ง ไม่มีเกณฑ์ Part 60 ตรง)",
+   "unit": "m",
+   "src": "[LD4]",
+   "cur": 616,
+   "pass": true
+  },
+  {
+   "id": "T-LD-13",
+   "cond": "ซิม: autoland da40ng 1,310 kg (MLW จริง 1,280), ลมสงบ, 15 °C, แฟลป LDG, VREF 76 KCAS, เบรกเต็ม",
+   "qty": "ระยะจาก 50 ft ถึงหยุด",
+   "exp": 650,
+   "tol": "±10 % หรือ ±61 m (ค่าเล็ก = ±61 m)",
+   "unit": "m",
+   "src": "[LD4]; Part 60 1.e [R1:V2]",
+   "cur": 642,
+   "pass": true
+  },
+  {
+   "id": "T-LD-14",
+   "cond": "เหมือน T-LD-13",
+   "qty": "ground roll",
+   "exp": 318,
+   "tol": "±10 % หรือ ±61 m (ค่าเล็ก = ±32 m)",
+   "unit": "m",
+   "src": "[LD4]",
+   "cur": 311,
+   "pass": true
+  },
+  {
+   "id": "T-LD-15",
+   "cond": "วันร้อนที่ดอนเมือง 35 °C SL (ISA+20), da40ng 1,310 kg แฟลป T/O",
+   "qty": "ground roll = 397 × 1/(σ·σ^⅓) (เครื่อง flat-rated กำลังคงที่)",
+   "exp": 434,
+   "tol": "±10 % (ค่าประมาณ)",
+   "unit": "m",
+   "src": "σ 0.935; สเกลจาก [LD4]; ค่าประมาณ ไม่มีตาราง AFM บท 5",
+   "cur": 428,
+   "pass": true
+  },
+  {
+   "id": "T-LD-16",
+   "cond": "ซิม linearise da40ng 1,310 kg: approach 76 KCAS แฟลป LDG γ −3° (Cat C) / cruise 110 KCAS 3,000 ft (Cat B)",
+   "qty": "short period ζ (approach / cruise)",
+   "exp": "0.35–1.30 / 0.30–2.00",
+   "tol": "ขอบ Level 1",
+   "unit": "",
+   "src": "MIL-F-8785C Class I [R1:V7, R1:V10]",
+   "cur": "0.572 / 0.555",
+   "pass": true
+  },
+  {
+   "id": "T-LD-17",
+   "cond": "เหมือน T-LD-16",
+   "qty": "CAP = ωsp²/(n/α) (approach / cruise)",
+   "exp": "0.16–3.6 (Cat C) / 0.085–3.6 (Cat B)",
+   "tol": "ขอบ Level 1 (ขอบบน 3.6 ยังไม่ยืนยันจากต้นฉบับตามรอบที่ 1)",
+   "unit": "1/s²",
+   "src": "MIL-F-8785C §3.2.2.1.1 [R1:V7][R1:V9]; ฉบับแรกใช้ 0.15 / 0.28 (0.28 เป็นของ Cat A)",
+   "cur": "2.06 / 2.03",
+   "pass": true
+  },
+  {
+   "id": "T-LD-18",
+   "cond": "เหมือน T-LD-16 (cruise)",
+   "qty": "phugoid ζ / คาบ",
+   "exp": "ζ ≥ 0.04; คาบ Lanchester π√2·V/g = 26.8 s (ข้อมูลประกอบ)",
+   "tol": "-",
+   "unit": "- / s",
+   "src": "MIL-F-8785C [R1:V10]",
+   "cur": "0.116 / 30.3",
+   "pass": true
+  },
+  {
+   "id": "T-LD-19",
+   "cond": "เหมือน T-LD-16 (approach)",
+   "qty": "Dutch roll ζ / ζωn / ωn",
+   "exp": "ζ ≥ 0.08, ζωn ≥ 0.15, ωn ≥ 0.4",
+   "tol": "-",
+   "unit": "- / rad/s",
+   "src": "MIL-F-8785C Table 3 Class I Cat C [R1:V10]",
+   "cur": "0.206 / 0.308 / 1.5",
+   "pass": true
+  },
+  {
+   "id": "T-LD-20",
+   "cond": "เหมือน T-LD-16",
+   "qty": "roll mode τR (approach / cruise)",
+   "exp": "≤ 1.0 / ≤ 1.4",
+   "tol": "-",
+   "unit": "s",
+   "src": "MIL-F-8785C Table 5 [R1:V10]",
+   "cur": "0.252 / 0.181",
+   "pass": true
+  },
+  {
+   "id": "T-LD-21",
+   "cond": "เหมือน T-LD-16",
+   "qty": "spiral T₂ (approach / cruise)",
+   "exp": "≥ 12 / ≥ 20",
+   "tol": "-",
+   "unit": "s",
+   "src": "MIL-F-8785C Table 6 [R1:V10]",
+   "cur": "61.1 / 32",
+   "pass": true
+  },
+  {
+   "id": "T-LD-22",
+   "cond": "รุ่นเดิม 1,150 kg: VREF แฟลป UP 73 KIAS [LD8] ถือว่า IAS ≈ CAS ที่ 73 kt และ VREF = 1.3 VS",
+   "qty": "VS1 (KCAS) = 73/1.3 เทียบตาราง ias_cas ที่ VS1 52 KIAS",
+   "exp": 56.2,
+   "tol": 1.5,
+   "unit": "KCAS",
+   "src": "[LD8][LD6 p.5-8]; ld_iascas.mjs (ตรวจอิสระ)",
+   "cur": 55.9,
+   "pass": true
+  },
+  {
+   "id": "T-LD-23",
+   "cond": "DA40 NG 1,280 kg แฟลป T/O: V50 72 KIAS, VS(T/O) 61.5 KIAS (ตีความตาราง)",
+   "qty": "V50 / VS (KCAS)",
+   "exp": 1.2,
+   "tol": "≥ 1.20 − 0.03 (การอ่านค่า)",
+   "unit": "-",
+   "src": "14 CFR 23.53 ก่อน Amdt 64 [LD12]; [LD3]",
+   "cur": "AFM 1.182; ซิม 1.183",
+   "pass": true
+  },
+  {
+   "id": "T-LD-24",
+   "cond": "MTOW 1,310 kg, S 13.244 m² → W/S 20.26 lb/ft²",
+   "qty": "limit descent velocity 4.4 (W/S)^¼",
+   "exp": 9.33,
+   "tol": 0.02,
+   "unit": "fps",
+   "src": "14 CFR 23.473(d) ก่อน Amdt 64 [LD12]",
+   "cur": "ค่าในบัตร 9.33",
+   "pass": true
+  },
+  {
+   "id": "T-LD-25",
+   "cond": "ใบพัด NG 1.90 m 123.5 kW SL ISA ความเร็วศูนย์",
+   "qty": "แรงขับสถิตอุดมคติ (P²·2ρA)^⅓ / BEM (FM)",
+   "exp": "4.73 kN / FM 0.55–0.80",
+   "tol": "-",
+   "unit": "kN",
+   "src": "ทฤษฎีโมเมนตัม; lm_prop [LM0]",
+   "cur": "BEM 3.45 kN (FM 0.623); T0 ซิม 4.05 kN (FM เทียบเท่า 0.79)",
+   "pass": true
+  },
+  {
+   "id": "T-LD-26",
+   "cond": "ซิม: da40ng 1,310 kg, 14,000 ft ISA, บินระดับ 124 KTAS (โบรชัวร์: load 60 %)",
+   "qty": "คันเร่งที่ซิมต้องใช้ (≈ สัดส่วนกำลัง)",
+   "exp": 0.6,
+   "tol": "±0.05",
+   "unit": "-",
+   "src": "[LD4]",
+   "cur": 0.801,
+   "pass": false
+  },
+  {
+   "id": "T-LD-27",
+   "cond": "ซิม: da40_180 1,200 kg, 3,000 ft ISA, idle, ลด 1 kt/s",
+   "qty": "Vmin UP / LDG",
+   "exp": "56.7 / 55.7",
+   "tol": 3,
+   "unit": "KCAS",
+   "src": "[LD6 p.5-8][LD4] แปลงด้วยตารางรุ่นเดิม",
+   "cur": "55.9 / 55",
+   "pass": true
+  },
+  {
+   "id": "T-LD-28",
+   "cond": "ซิม: da40_180 1,200 kg SL ISA คันเร่งสุด / ร่อนแรงขับศูนย์",
+   "qty": "ROC สูงสุด / L/D ร่อน",
+   "exp": "780 / 8.8",
+   "tol": "±100 fpm / ±0.5",
+   "unit": "fpm / -",
+   "src": "[LD4][LD6 p.3-28]",
+   "cur": "799 / 8.8",
+   "pass": true
+  },
+  {
+   "id": "T-LD-29",
+   "cond": "ซิม: da40_180 1,200 kg SL ISA แฟลป T/O VR ≈ 62 KCAS θ 8°",
+   "qty": "ground roll / ระยะถึง 50 ft",
+   "exp": "305 / 450",
+   "tol": "±15 m (5 %) / ±45 m (10 %)",
+   "unit": "m",
+   "src": "[LD4] (XLT)",
+   "cur": "310 / 510",
+   "pass": false
+  },
+  {
+   "id": "T-LD-30",
+   "cond": "da40_180 1,200 kg SL ISA คันเร่งสุด บินระดับ (quasi-steady แบบแรงของซิม)",
+   "qty": "ความเร็วสูงสุด",
+   "exp": 142,
+   "tol": "±3 kt",
+   "unit": "KTAS",
+   "src": "[LD4] max cruise MSL",
+   "cur": 113.9,
+   "pass": false
+  },
+  {
+   "id": "T-LD-31",
+   "cond": "ซิม: da40d 1,150 kg 3,000 ft idle / SL คันเร่งสุด",
+   "qty": "Vmin UP / ROC สูงสุด",
+   "exp": "55.9 / 550 (ค่าประมาณ)",
+   "tol": "±3 kt / ±100 fpm",
+   "unit": "KCAS / fpm",
+   "src": "[LD8][LD14]",
+   "cur": "55.3 / 565",
+   "pass": true
+  },
+  {
+   "id": "T-LD-32",
+   "cond": "ซิม: da40d 1,150 kg SL ISA แฟลป T/O VR ≈ 62 KCAS",
+   "qty": "ระยะถึง 50 ft",
+   "exp": 640,
+   "tol": "±10 % (64 m; ผู้เขียนตั้ง)",
+   "unit": "m",
+   "src": "[LD8]",
+   "cur": 577,
+   "pass": true
+  },
+  {
+   "id": "T-LD-33",
+   "cond": "วันร้อนที่ดอนเมือง 35 °C SL, da40d 1,150 kg แฟลป T/O",
+   "qty": "ระยะถึง 50 ft = 640 × 1/(σ·σ^⅓)",
+   "exp": 700,
+   "tol": "±10 % (ค่าประมาณ)",
+   "unit": "m",
+   "src": "[LD8] สเกลด้วย σ; ค่าประมาณ",
+   "cur": 613,
+   "pass": false
+  },
+  {
+   "id": "T-LD-34",
+   "cond": "da40d 1,150 kg, SL ISA, คันเร่งสุด บินระดับ (quasi-steady)",
+   "qty": "ความเร็วสูงสุด",
+   "exp": 125,
+   "tol": "±5 kt (ค่าประมาณจากนักบิน ~130 KIAS ที่ความสูง)",
+   "unit": "KTAS",
+   "src": "[LD14] (ต่ำ)",
+   "cur": 103,
+   "pass": false
+  },
+  {
+   "id": "T-LD-35",
+   "cond": "ซิม: da40ng 1,100 kg (ค่าประมาณจาก \"เชื้อเพลิงเต็ม + นักบิน 1 คน\") / 1,310 kg, 1,000 ft ISA, idle, แฟลป LDG, 88 KIAS",
+   "qty": "อัตราร่อน L/D ≈ V / (อัตราจม)",
+   "exp": 6.9,
+   "tol": "±0.7 (แหล่งความเชื่อมั่นต่ำ)",
+   "unit": "-",
+   "src": "[LD13] โพสต์ 20: DA40 NG −12.5° 88 kt −1,300 fpm (ไม่ใช่จุด DA 40 TDI 73 kt ที่ใช้ปรับ CDflap)",
+   "cur": "6.24 / 6.71",
+   "pass": true
+  },
+  {
+   "id": "T-LD-36",
+   "cond": "ซิม: da40ng 1,100 kg, 1,000 ft ISA, idle, แฟลป UP, 88 KIAS",
+   "qty": "pitch attitude θ",
+   "exp": -2.5,
+   "tol": "±1.5° (ผู้เขียนตั้ง; แหล่งความเชื่อมั่นต่ำ)",
+   "unit": "deg",
+   "src": "[LD13] โพสต์ 17/20: DA40 NG −2.5° 88 kt −900 to −950 fpm",
+   "cur": -2.6,
+   "pass": true
+  },
+  {
+   "id": "T-LD-37",
+   "cond": "บัตรที่ merge แล้วของ da40ng, da40_180, da40d (รุ่นย่อยรับค่าจาก NG ผ่าน _inherits)",
+   "qty": "propeller.identity.diameter = interference.slipstream.diskDiameter; controls.surfaces.* travel = controls.pitch/yaw.stops",
+   "exp": "เท่ากันทุก id",
+   "tol": "ตรงทุกค่า",
+   "unit": "-",
+   "src": "[LD1 p.5, 7, 13–14, 27, 29]",
+   "cur": "da40ng: D 1.9/1.9 m, elev 21/17 vs 21/17, rud 24/26 vs 24/26; da40_180: D 1.8/1.8 m, elev 18/16 vs 18/16, rud 29/31 vs 29/31; da40d: D 1.87/1.87 m, elev 23/15 vs 23/15, rud 29/31 vs 29/31",
+   "pass": true
+  }
+ ]
+}

@@ -1,0 +1,681 @@
+{
+ "type": "c172r",
+ "mass_kg": 1111.3,
+ "travel": {
+  "used": "card",
+  "card_rad": {
+   "deUp": 0.48869,
+   "deDn": 0.40143,
+   "daMax": 0.30543,
+   "drMax": 0.30945
+  },
+  "r1_rad": {
+   "deUp": 0.38397,
+   "deDn": 0.2618,
+   "daMax": 0.34907,
+   "drMax": 0.43633
+  }
+ },
+ "tests": [
+  {
+   "id": "T-LE-01",
+   "cond": "ตาราง stall ของ POH 172R (Fig 5-3, CG หน้าสุด แฟลปขึ้น power off 2,450 lb): VS 52 KCAS ที่ปีกระดับ",
+   "qty": "VS(φ) = VS(0°)/√cos φ ที่ 45° และ 60°",
+   "expected": "62 / 74 (POH)",
+   "tol": 1,
+   "unit": "KCAS",
+   "origin": "POH Fig 5-3 p5-12 [LE3]; ทุกช่องของสองตารางต่างจากสูตรไม่เกิน 1.12 kt",
+   "current": "61.8 / 73.5",
+   "pass": true
+  },
+  {
+   "id": "T-LE-02",
+   "cond": "normal category MTOW 2,450 lb: หน้า 40.0 in หลัง 47.3 in หลัง datum; LEMAC 25.9 in, MAC 58.8 in",
+   "qty": "CG เป็น %MAC (fwd / aft)",
+   "expected": "24.0 / 36.4",
+   "tol": 0.2,
+   "unit": "%MAC",
+   "origin": "TCDS 3A12 [LE1]; IM p2-7/2-8 [LE2]; le_calc.mjs [LE0]",
+   "current": "24 / 36.4",
+   "pass": true
+  },
+  {
+   "id": "T-LE-03",
+   "cond": "ปีกเดียวกับ 172S: ใช้ CLmax ของบัตร c172s (1.464 / 1.581 / 1.785, nz 0.95) กับมวล 2,450 lb",
+   "qty": "ความเร็ว stall ต่ำสุดแฟลป 0 / 10 / 30",
+   "expected": "52 / 50 / 47 (POH 172R CG หน้า)",
+   "tol": 0.5,
+   "unit": "KCAS",
+   "origin": "POH Fig 5-3 [LE3]; บัตร c172s [LC0]; lm_polar [LM0]",
+   "current": "51.95 / 49.99 / 47.05",
+   "pass": true
+  },
+  {
+   "id": "T-LE-04",
+   "cond": "ตาราง airspeed calibration ของ 172R (Fig 5-1) ตีความเชิงเส้น",
+   "qty": "KCAS ของ Vy 79 KIAS / Vx 60 KIAS / VG 65 KIAS (แฟลปขึ้น) / Vref 62 KIAS (แฟลป 30)",
+   "expected": "78.1 / 62.0 / 66.0 / 62.8",
+   "tol": 0.1,
+   "unit": "KCAS",
+   "origin": "POH Fig 5-1 p5-9 [LE3]; le_calc.mjs [LE0]",
+   "current": "78.1 / 62 / 66 / 62.8",
+   "pass": true
+  },
+  {
+   "id": "T-LE-05",
+   "cond": "ซิม: 1,111.3 kg CG อ้างอิง 27.4 %MAC, 3,000 ft ISA, idle, แฟลป 0, ปีกระดับ, ลด 1 kt/s",
+   "qty": "VS1 (Vmin, KEAS ≈ KCAS)",
+   "expected": 52,
+   "tol": 3,
+   "unit": "KCAS",
+   "origin": "POH Fig 5-3 [LE3] (IM p ii ให้ 51 = CG หลัง); ±3 kt ตาม Part 60 2.c.8 [R1:V2]",
+   "current": 51.9,
+   "pass": true
+  },
+  {
+   "id": "T-LE-06",
+   "cond": "เหมือน T-LE-05 แฟลป 10",
+   "qty": "VS (Vmin)",
+   "expected": 50,
+   "tol": 3,
+   "unit": "KCAS",
+   "origin": "POH Fig 5-3 [LE3] (CG หน้าสุด)",
+   "current": 50.3,
+   "pass": true
+  },
+  {
+   "id": "T-LE-07",
+   "cond": "เหมือน T-LE-05 แฟลป 30",
+   "qty": "VS0 (Vmin)",
+   "expected": 47,
+   "tol": 3,
+   "unit": "KCAS",
+   "origin": "IM p ii, POH Fig 5-3 [LE2, LE3]",
+   "current": 47.2,
+   "pass": true
+  },
+  {
+   "id": "T-LE-08",
+   "cond": "ซิม: MTOW, SL ISA (h 30 m), คันเร่งสุด, แฟลป 0, กวาด IAS ทีละ 2 kt",
+   "qty": "ROCmax / Vy",
+   "expected": "720 / 78.1",
+   "tol": "±100 fpm / ±3 kt",
+   "unit": "fpm / KCAS",
+   "origin": "IM p ii, POH Fig 5-6 p5-15 [LE2, LE3]; Part 60 1.c.1 [R1:V2]",
+   "current": "731 / 68.5",
+   "pass": false
+  },
+  {
+   "id": "T-LE-09",
+   "cond": "เหมือน T-LE-08",
+   "qty": "Vx (γ สูงสุด)",
+   "expected": 62,
+   "tol": 3,
+   "unit": "KCAS",
+   "origin": "IM p4-5 Vx 60 KIAS [LE2] แปลงด้วย Fig 5-1",
+   "current": 60,
+   "pass": true
+  },
+  {
+   "id": "T-LE-10",
+   "cond": "ซิม: MTOW, 8,000 ft ISA, คันเร่งสุด, แฟลป 0",
+   "qty": "ROCmax",
+   "expected": 367,
+   "tol": 100,
+   "unit": "fpm",
+   "origin": "POH Fig 5-6 คอลัมน์ ISA (−0.8 °C) [LE3]; ซิมไม่มี power lapse จึงคาดว่าไม่ผ่าน",
+   "current": 746,
+   "pass": false
+  },
+  {
+   "id": "T-LE-11",
+   "cond": "ซิม: MTOW, 3,000 ft ISA, แรงขับศูนย์, แฟลป 0, กวาด IAS ทีละ 1 kt",
+   "qty": "ความเร็วร่อนดีสุด / L/D",
+   "expected": "66.0 / 9.1",
+   "tol": "±3 kt / ±0.5",
+   "unit": "KCAS / -",
+   "origin": "IM p3-3 VG 65 KIAS [LE2]; 1.5 NM ต่อ 1,000 ft [LC4] (ค่าประมาณ); Part 60 1.d.4 [R1:V2]",
+   "current": "65.8 / 9.11",
+   "pass": true
+  },
+  {
+   "id": "T-LE-12",
+   "cond": "ซิม: short field แฟลป 10, MTOW, SL ISA 15 °C, ลมสงบ, ทางแห้ง, เบรกค้าง 3 s คันเร่งสุด, VR 49 KEAS, θ 12° (ค่าประมาณของวิธีทดสอบ)",
+   "qty": "ground roll",
+   "expected": 288,
+   "tol": "±5 % หรือ ±61 m",
+   "unit": "m",
+   "origin": "POH Fig 5-5 p5-14 (945 ft) [LE3]; Part 60 1.b.1 [R1:V2]",
+   "current": 283,
+   "pass": true
+  },
+  {
+   "id": "T-LE-13",
+   "cond": "เหมือน T-LE-12",
+   "qty": "ระยะถึง 50 ft / ความเร็วยกล้อ",
+   "expected": "514 / 55.7",
+   "tol": "±10 % / ข้อมูลประกอบ",
+   "unit": "m / KCAS",
+   "origin": "POH Fig 5-5 (1,685 ft; lift-off 51 KIAS) [LE3]",
+   "current": "486 / 62.4",
+   "pass": true
+  },
+  {
+   "id": "T-LE-14",
+   "cond": "เหมือน T-LE-12 แต่ OAT 35 °C (ISA+20 ค่าประจำของ VTBD ตอนบ่าย)",
+   "qty": "ground roll / ถึง 50 ft",
+   "expected": "334 / 593",
+   "tol": "±10 %",
+   "unit": "m",
+   "origin": "POH Fig 5-5 ตีความเชิงเส้นระหว่าง 30 และ 40 °C [LE3]; thrustAvail ไม่มีพจน์ ρ จึงคาดว่าสั้นเกิน",
+   "current": "300 / 511",
+   "pass": false
+  },
+  {
+   "id": "T-LE-15",
+   "cond": "ซิม: autoland ของ Flight, ลมสงบ, 15 °C, MTOW, แฟลป 30, ข้าม 50 ft ที่ Vref 63 KCAS (= 62 KIAS short field), เบรกเต็มเมื่อล้อหน้าแตะ",
+   "qty": "ระยะรวมจาก 50 ft ถึงหยุด",
+   "expected": 395,
+   "tol": "±10 %",
+   "unit": "m",
+   "origin": "POH Fig 5-11 p5-21 (1,295 ft) [LE3]",
+   "current": "528 (อากาศ 316 + พื้น 213; 62.9 kt ที่ 50 ft)",
+   "pass": false
+  },
+  {
+   "id": "T-LE-16",
+   "cond": "เหมือน T-LE-15",
+   "qty": "ground roll (แตะพื้นถึงหยุด)",
+   "expected": 168,
+   "tol": "±10 % = ±17 m",
+   "unit": "m",
+   "origin": "POH Fig 5-11 (550 ft) [LE3]; Part 60 1.e.1 [R1:V2]",
+   "current": 213,
+   "pass": false
+  },
+  {
+   "id": "T-LE-17",
+   "cond": "ซิม: MTOW, SL ISA, คันเร่งสุด, แฟลป 0, บินระดับ",
+   "qty": "ความเร็วสูงสุด",
+   "expected": 123,
+   "tol": 3,
+   "unit": "KTAS",
+   "origin": "IM p ii (เครื่องติด speed fairing; ไม่มี ≈ 121 KTAS ยังอยู่ใน tolerance) [LE2]",
+   "current": 106.5,
+   "pass": false
+  },
+  {
+   "id": "T-LE-18",
+   "cond": "ซิม: MTOW, 8,000 ft ISA, บินระดับ 122 KTAS (80 % BHP ตาม POH)",
+   "qty": "คันเร่งที่ต้องใช้ (thr ของซิม)",
+   "expected": "≤ 1.0 (บินได้)",
+   "tol": "-",
+   "unit": "-",
+   "origin": "IM p ii, p4-27 [LE2]",
+   "current": 1.12,
+   "pass": false
+  },
+  {
+   "id": "T-LE-19",
+   "cond": "ซิม linearise: cruise 110 KCAS 3,000 ft แฟลป 0 (Category B; สภาพเดียวกับ c172s)",
+   "qty": "short period ζ / ωn",
+   "expected": "ζ 0.30–2.00; ωn = c172s 5.60 rad/s ± 10 % (โครงลำเดียวกัน มวลต่ำกว่า 4 %)",
+   "tol": "-",
+   "unit": "- / rad/s",
+   "origin": "MIL-F-8785C Level 1 Class I [R1:V7, R1:V10]; บัตร c172s §04.9 [LC0]",
+   "current": "0.708 / 5.69",
+   "pass": true
+  },
+  {
+   "id": "T-LE-20",
+   "cond": "เหมือน T-LE-19",
+   "qty": "phugoid ζ / คาบ",
+   "expected": "ζ ≥ 0.04 (คาบ c172s 33 s ข้อมูลประกอบ)",
+   "tol": "-",
+   "unit": "- / s",
+   "origin": "MIL-F-8785C Level 1 [R1:V10]; บัตร c172s [LC0]",
+   "current": "0.2 / 33.2",
+   "pass": true
+  },
+  {
+   "id": "T-LE-21",
+   "cond": "ซิม linearise: approach 66 KCAS 300 m แฟลป 30 γ −3° (Category C) และ cruise",
+   "qty": "Dutch roll ωn / ζ / ζωn",
+   "expected": "ζ ≥ 0.08, ζωn ≥ 0.15, ωn ≥ 1.0 (approach)",
+   "tol": "-",
+   "unit": "rad/s / - / rad/s",
+   "origin": "MIL-F-8785C Level 1 Class I Cat C [R1:V10]",
+   "current": "approach 1.77 / 0.317 / 0.56; cruise 2.83 / 0.299",
+   "pass": true
+  },
+  {
+   "id": "T-LE-22",
+   "cond": "เหมือน T-LE-21",
+   "qty": "roll mode τR (approach / cruise)",
+   "expected": "≤ 1.0 (Cat C) / ≤ 1.4 (Cat B)",
+   "tol": "-",
+   "unit": "s",
+   "origin": "MIL-F-8785C Table 5 [R1:V7, R1:V10]",
+   "current": "0.217 / 0.133",
+   "pass": true
+  },
+  {
+   "id": "T-LE-23",
+   "cond": "เหมือน T-LE-21",
+   "qty": "spiral: เวลาเพิ่มเป็นสองเท่า T₂ (approach / cruise)",
+   "expected": "T₂ ≥ 12 s (Cat C) / ≥ 20 s (Cat B)",
+   "tol": "-",
+   "unit": "s",
+   "origin": "MIL-F-8785C Table 6 [R1:V7, R1:V10]",
+   "current": "38.6 / 73.5",
+   "pass": true
+  },
+  {
+   "id": "T-LE-24",
+   "cond": "ลมขวาง 15 kt (demonstrated) ที่ 62.8 KCAS SL, wing-low ไม่มี crab: β = asin(15/V)",
+   "qty": "δr / δa / มุมเอียงที่ต้องใช้",
+   "expected": "β 13.8°; ขนาด δr ≤ 17.7° และ δa ≤ 17.5°",
+   "tol": "-",
+   "unit": "deg",
+   "origin": "IM p4-5 [LE2]; travel จาก TCDS [LE1]; สมการ steady sideslip (Etkin) กับอนุพันธ์ของบัตร",
+   "current": "δr 8.2 / δa 4.2 / φ 6.3",
+   "pass": true
+  },
+  {
+   "id": "T-LE-25",
+   "cond": "ซิม trim: 62.8 KCAS แฟลป 30 γ −3° ที่ 300 m, MTOW, CG อ้างอิง",
+   "qty": "elevator ที่ใช้ / ระยะเผื่อถึง travel ขึ้น 28°",
+   "expected": "เผื่อ ≥ 10° ไว้ flare (เกณฑ์ภายใน ค่าประมาณ)",
+   "tol": "-",
+   "unit": "deg",
+   "origin": "TCDS travel [LE1]; เกณฑ์ของผู้เขียน",
+   "current": "de -9.6 / α 6 / θ 3 / thr 0.34",
+   "pass": true
+  },
+  {
+   "id": "T-LE-26",
+   "cond": "เครื่อง IO-360-L2A คันเร่งสุด SL OAT 35 °C",
+   "qty": "P/P_ISA (indicated-minus-friction f 0.10)",
+   "expected": 0.964,
+   "tol": 0.005,
+   "unit": "-",
+   "origin": "lm_engine [LM0]; NACA Rep. 190 [LM17]; เทียบ POH ROC 656/721 = 0.91 [LE3]",
+   "current": 0.9637,
+   "pass": true
+  },
+  {
+   "id": "T-LE-27",
+   "cond": "ใบพัด 1C235/LFA7570 (75 in × 70 in) BEM ที่ปรับเชือกใบให้รอบสถิต 2,115 rpm, SL ISA",
+   "qty": "figure of merit สถิต / แรงขับสถิต",
+   "expected": "FM 0.50–0.75 (ช่วงใบพัด GA สองใบ); T0 ระหว่างค่าที่รอบ 2,065 และ 2,165 rpm",
+   "tol": "-",
+   "unit": "- / N",
+   "origin": "TCDS 3A12 static rpm [LE1]; lm_prop [LM0]; ช่วง FM ของหัวข้อ 01 §01.7 [LM0]",
+   "current": "0.565 / 2933 (2912–2953)",
+   "pass": true
+  },
+  {
+   "id": "T-LE-28",
+   "cond": "BEM ใบพัดเดิม คันเร่งสุด 160 hp SL ISA บินระดับ 123 KTAS (แรงต้านจาก polar สะอาด)",
+   "qty": "rpm ที่สมดุลกำลัง",
+   "expected": "2,400 (rpm สูงสุด, คาดว่าความเร็วสูงสุดอยู่ใกล้รอบ redline)",
+   "tol": 50,
+   "unit": "rpm",
+   "origin": "IM p2-5, p ii [LE2]; lm_prop [LM0]",
+   "current": "2434 (J 0.819)",
+   "pass": true
+  },
+  {
+   "id": "T-LE-29",
+   "cond": "POH Fig 5-5 short field takeoff, 2,450 lb, SL, ตีความเชิงเส้นระหว่าง 30 และ 40 °C",
+   "qty": "ระยะถึง 50 ft ที่ 35 °C",
+   "expected": 1945,
+   "tol": 10,
+   "unit": "ft",
+   "origin": "POH p5-14 [LE3]; le_calc.mjs [LE0]",
+   "current": 1945,
+   "pass": true
+  },
+  {
+   "id": "T-LE-30",
+   "cond": "W/S = 14.08 lb/ft² (2,450 lb, 174 ft²)",
+   "qty": "limit descent velocity V = 4.4 (W/S)^¼ (7–10 fps)",
+   "expected": 8.52,
+   "tol": 0.02,
+   "unit": "fps",
+   "origin": "14 CFR 23.473(d) ฉบับ 2011 [LM3]; le_calc.mjs [LE0]",
+   "current": 8.52,
+   "pass": true
+  },
+  {
+   "id": "T-LE-31",
+   "cond": "คอลัมน์ ISA ของ POH Fig 5-6 (interpolate OAT ISA ทุกความสูง) extrapolate ถึง 100 fpm",
+   "qty": "service ceiling",
+   "expected": 13500,
+   "tol": 300,
+   "unit": "ft",
+   "origin": "IM p ii 13,500 ft [LE2]; POH Fig 5-6 [LE3]",
+   "current": 13394,
+   "pass": true
+  },
+  {
+   "id": "T-LE-32",
+   "cond": "ตาราง cruise Fig 5-8 คอลัมน์ ISA 34 จุด ทั้งสองแผ่น (recommended lean): GPH × 6.0 lb / (%BHP × 160 hp)",
+   "qty": "BSFC",
+   "expected": "0.42–0.45 (ช่วงปกติของ IO-360 lean)",
+   "tol": "-",
+   "unit": "lb/(hp h)",
+   "origin": "POH p5-17, p5-18 [LE3]; le_calc.mjs [LE0]",
+   "current": "0.431 (0.427–0.439)",
+   "pass": true
+  },
+  {
+   "id": "T-LE-33",
+   "cond": "รุ่นเก่า 172P (ปีกเดียวกัน 2,400 lb แฟลป 30) และ 172N (2,300 lb แฟลป 40) ด้วย CLmax ของบัตร (1.464 แฟลป 0, 1.785 แฟลป 30)",
+   "qty": "VS1 ของ 172P / VS0 ของ 172N (แฟลป 30 ของบัตรเทียบ 40° จริง)",
+   "expected": "52 (172P CG หน้า) / 44 (172N แฟลป 40)",
+   "tol": "±1 / ข้อมูลประกอบ",
+   "unit": "KCAS",
+   "origin": "172P POH ผ่านหัวข้อ 03 [LB9]; 172N POH 1978 p ii [LE4]; แฟลป 40° ของ 172N ให้ CLmax สูงกว่า 30° ราว 0.13",
+   "current": "51.4 / 45.6",
+   "pass": true
+  },
+  {
+   "id": "T-LE-34",
+   "cond": "BEM ใบพัด 1C235/LFA7570 ของบัตร (ค่าประมาณ) ที่จุด cruise ของ POH: 8,000 ft ISA, 2,400 rpm, 122 KTAS (มี speed fairing), 2,450 lb",
+   "qty": "กำลังที่ใบพัดดูด CP ρ n³ D⁵",
+   "expected": "128 (80 % × 160 hp)",
+   "tol": "±10 %",
+   "unit": "hp",
+   "origin": "POH Fig 5-8 แผ่น 2 p5-18 [LE3]; lm_prop [LM0]; ทุกจุดของสองแผ่นได้ 0.90–0.95 เท่า",
+   "current": "120.1 (J 0.824, -6.2 %)",
+   "pass": true
+  },
+  {
+   "id": "T-LE-35",
+   "cond": "polar cruise สะอาดของบัตร (CD0 0.0325, K 0.0567) เทียบจุดคอลัมน์ ISA ของ Fig 5-8 ทั้งสองแผ่นที่ %BHP ≥ 55 (28 จุด, KTAS ตามที่พิมพ์, η 0.80 สมมติ)",
+   "qty": "CD ที่ต้องการตาม POH ÷ CD ของ polar (ต่ำสุด / สูงสุด)",
+   "expected": 1,
+   "tol": 0.1,
+   "unit": "-",
+   "origin": "POH Fig 5-8 p5-17, p5-18 [LE3]; le_calc.mjs [LE0]; จุดกำลังต่ำ (50–54 %) เบี่ยงถึง +10 % เพราะ η 0.80 คงที่",
+   "current": "0.991 / 1.056",
+   "pass": true
+  }
+ ],
+ "raw": {
+  "stall": {
+   "0": {
+    "f": 0,
+    "gear": 1,
+    "CLmax": 1.4647,
+    "V_CLmax_eas": 53.028,
+    "V_CLmax_cas": 53.033,
+    "nz": 0.99032,
+    "alpha_deg": 15.49,
+    "t": 18.333,
+    "rate": 0.92574,
+    "VSR_eas": 53.287,
+    "VSR_cas": 53.291,
+    "Vmin_eas": 51.92,
+    "de_end_deg": -21.003,
+    "ias0": 70,
+    "VSR_kias": 45.486,
+    "Vmin_kias": 43.2
+   },
+   "10": {
+    "f": 0.3645,
+    "gear": 1,
+    "CLmax": 1.5812,
+    "V_CLmax_eas": 51.003,
+    "V_CLmax_cas": 51.007,
+    "nz": 0.98895,
+    "alpha_deg": 15.611,
+    "t": 16.017,
+    "rate": 0.93632,
+    "VSR_eas": 51.287,
+    "VSR_cas": 51.292,
+    "Vmin_eas": 50.276,
+    "de_end_deg": -22.344,
+    "ias0": 66,
+    "VSR_kias": 43.819,
+    "Vmin_kias": 42.127
+   },
+   "20": {
+    "f": 0.7882,
+    "gear": 1,
+    "CLmax": 1.7174,
+    "V_CLmax_eas": 48.891,
+    "V_CLmax_cas": 48.895,
+    "nz": 0.98704,
+    "alpha_deg": 15.759,
+    "t": 16.529,
+    "rate": 0.91407,
+    "VSR_eas": 49.211,
+    "VSR_cas": 49.215,
+    "Vmin_eas": 48.144,
+    "de_end_deg": -23.849,
+    "ias0": 64,
+    "VSR_kias": 38.692,
+    "Vmin_kias": 36.907
+   },
+   "30": {
+    "f": 1,
+    "gear": 1,
+    "CLmax": 1.7857,
+    "V_CLmax_eas": 47.91,
+    "V_CLmax_cas": 47.913,
+    "nz": 0.98551,
+    "alpha_deg": 15.836,
+    "t": 16.662,
+    "rate": 0.90565,
+    "VSR_eas": 48.26,
+    "VSR_cas": 48.264,
+    "Vmin_eas": 47.172,
+    "de_end_deg": -24.649,
+    "ias0": 63,
+    "VSR_kias": 42.106,
+    "Vmin_kias": 40.287
+   }
+  },
+  "climb": {
+   "Vy_kt": 68.49,
+   "ROCmax_fpm": 730.58,
+   "Vy_grid_kt": 68,
+   "ROC_grid_fpm": 730.46,
+   "Vx_kt": 60,
+   "gammaMax_deg": 6.55,
+   "atVy": {
+    "ias": 68,
+    "V": 35.037,
+    "alpha": 7.4046,
+    "de": -6.6319,
+    "gamma": 6.0795,
+    "theta": 13.484,
+    "roc_fpm": 730.46,
+    "LoverD": -9.389
+   },
+   "edge": false
+  },
+  "glide": {
+   "zeroThrust": {
+    "Vbg_kt": 65.832,
+    "LD": 9.1132,
+    "Vbg_grid_kt": 66,
+    "LD_grid": 9.1131,
+    "sink_fpm": 762.2,
+    "edge": false
+   },
+   "idle": {
+    "Vbg_kt": 65.832,
+    "LD": 9.1132,
+    "Vbg_grid_kt": 66,
+    "LD_grid": 9.1131,
+    "sink_fpm": 762.2,
+    "edge": false
+   }
+  },
+  "trim": {
+   "Vy_climb": {
+    "ias_kt": 78.1,
+    "alpha_deg": 5.0135,
+    "theta_deg": 9.9696,
+    "de_deg": -4.8007,
+    "thr": 1,
+    "gamma_deg": 4.9561,
+    "roc_fpm": 684.36
+   },
+   "cruise": {
+    "ias_kt": 110,
+    "h_m": 914.4,
+    "V_kt": 115,
+    "alpha_deg": 1.1754,
+    "theta_deg": 1.1754,
+    "de_deg": -1.8598,
+    "thr": 1.1103
+   },
+   "approach": {
+    "ias_kt": 66,
+    "h_m": 300,
+    "V_kt": 66.969,
+    "alpha_deg": 4.8779,
+    "theta_deg": 1.8779,
+    "de_deg": -8.72,
+    "thr": 0.35719
+   }
+  },
+  "modes": {
+   "cruise": {
+    "sp": {
+     "wn": 5.6927,
+     "zeta": 0.70812,
+     "T": 1.5631
+    },
+    "ph": {
+     "wn": 0.1931,
+     "zeta": 0.19979,
+     "T": 33.209
+    },
+    "dr": {
+     "wn": 2.8286,
+     "zeta": 0.29856,
+     "T": 2.3275
+    },
+    "roll_tau": 0.13254,
+    "spiral": {
+     "lam": 0.0094263,
+     "t2": 73.533,
+     "grows": true
+    },
+    "nAlpha": 15.041,
+    "CAP": 2.1546
+   },
+   "approach": {
+    "sp": {
+     "wn": 3.4561,
+     "zeta": 0.72426,
+     "T": 2.6366
+    },
+    "ph": {
+     "wn": 0.32795,
+     "zeta": 0.10994,
+     "T": 19.276
+    },
+    "dr": {
+     "wn": 1.7689,
+     "zeta": 0.31677,
+     "T": 3.7449
+    },
+    "roll_tau": 0.21656,
+    "spiral": {
+     "lam": 0.017961,
+     "t2": 38.591,
+     "grows": true
+    },
+    "nAlpha": 5.4147,
+    "CAP": 2.2059
+   }
+  },
+  "takeoff": {
+   "flap": "10",
+   "VR": 49,
+   "groundRoll_m": 282.9,
+   "tLiftoff_s": 16.237,
+   "V_LOF_kt": 62.395,
+   "dist50ft_m": 486.46,
+   "V50_kt": 65.696
+  },
+  "landing": {
+   "asIs": {
+    "ias50_kt": 62.852,
+    "vtd_kt": 58.552,
+    "sinkTD_fpm": -121.11,
+    "td_s": 302.57,
+    "air_m": 315.69,
+    "ground_m": 307.68,
+    "total_m": 623.37
+   },
+   "maxBrake": {
+    "ias50_kt": 62.852,
+    "vtd_kt": 58.552,
+    "sinkTD_fpm": -121.11,
+    "td_s": 302.57,
+    "air_m": 315.69,
+    "ground_m": 212.55,
+    "total_m": 528.23
+   }
+  },
+  "extra": {
+   "toHot": {
+    "VR": 49,
+    "groundRoll_m": 299.68,
+    "tLiftoff_s": 16.725,
+    "V_LOF_kt": 61.948,
+    "dist50ft_m": 510.95,
+    "V50_kt": 65.254
+   },
+   "climb8k": {
+    "Vy_kt": 66.721,
+    "ROCmax_fpm": 746.14,
+    "Vy_grid_kt": 66,
+    "ROC_grid_fpm": 745.84,
+    "Vx_kt": 56,
+    "gammaMax_deg": 6.0891,
+    "atVy": {
+     "ias": 66,
+     "V": 38.3,
+     "alpha": 8.0308,
+     "de": -7.11,
+     "gamma": 5.6773,
+     "theta": 13.708,
+     "roc_fpm": 745.84,
+     "LoverD": -10.059
+    },
+    "edge": false
+   },
+   "vmaxSL": {
+    "keas": 106.29,
+    "ktas": 106.45
+   },
+   "cruise80": {
+    "eas": 108.15,
+    "thr": 1.12,
+    "alpha_deg": 1.3135
+   },
+   "apprShort": {
+    "alpha_deg": 6.0304,
+    "theta_deg": 3.0304,
+    "de_deg": -9.6027,
+    "thr": 0.34467
+   },
+   "xwind": {
+    "beta_deg": 13.819,
+    "da_deg": 4.1977,
+    "dr_deg": 8.1612,
+    "phi_deg": 6.3266,
+    "daMax_deg": 17.5,
+    "drMax_deg": 17.73
+   }
+  }
+ }
+}

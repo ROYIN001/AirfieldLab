@@ -1,0 +1,105 @@
+{
+ "type": "c152",
+ "mode": "static",
+ "T0_input": 2382.2,
+ "legacy": {
+  "propulsion": {
+   "P": 82027,
+   "eta": 0.9014,
+   "T0": 2382,
+   "idle": 0
+  },
+  "aero": {
+   "CD0": 0.05536,
+   "K": 0.07737,
+   "CL0": 0.25,
+   "CLa": 5.002,
+   "CLflap": 0.3138,
+   "CDflap": 0.0193,
+   "CDgear": 0,
+   "Cm0": -0.01907,
+   "Cma": -0.8421,
+   "Cmflap": -0.08643,
+   "aStall": 16.4,
+   "aStallFlap": 0.64
+  }
+ },
+ "notes": [
+  "polar from glide 60.0 KCAS E 9.114: CD0s 0.0554 Ks 0.0774; idle 0 (POH glide is at idle, windmilling)",
+  "climb fit (static): target Vy 66.3 KCAS ROC 715 fpm → T0 2382 N, Vc 31.0 m/s",
+  "travel patched (deUp 25 deDn 18, daMax 17.5, drMax 23); stall centres re-solved: aStall 16.4, aStallFlap 0.64"
+ ],
+ "targets": {
+  "VS1": 48,
+  "VS0": 43,
+  "Vy": 66.3,
+  "roc": 715,
+  "glide": {
+   "speed_kt": 60,
+   "ratio": 9.114
+  }
+ },
+ "check": {
+  "stall_clean": {
+   "CLmax": 1.2758,
+   "V_CLmax_eas": 48.174,
+   "V_CLmax_cas": 48.178,
+   "nz": 0.95734,
+   "alpha_deg": 13.686,
+   "t": 23.9,
+   "rate": 0.9969,
+   "VSR_eas": 49.236,
+   "VSR_cas": 49.239,
+   "Vmin_eas": 46.952,
+   "de_end_deg": -23.996,
+   "ias0": 72
+  },
+  "stall_full": {
+   "CLmax": 1.5894,
+   "V_CLmax_eas": 43.169,
+   "V_CLmax_cas": 43.172,
+   "nz": 0.95778,
+   "alpha_deg": 14.082,
+   "t": 22.754,
+   "rate": 0.95942,
+   "VSR_eas": 44.111,
+   "VSR_cas": 44.113,
+   "Vmin_eas": 42.348,
+   "de_end_deg": -25,
+   "ias0": 65
+  },
+  "climb": {
+   "Vy_kt": 60,
+   "ROCmax_fpm": 727.4,
+   "Vx_kt": 60,
+   "gammaMax_deg": 6.8648,
+   "atVy": {
+    "ias": 60,
+    "V": 30.915,
+    "alpha": 7.1675,
+    "de": -7.1962,
+    "gamma": 6.8648,
+    "theta": 14.032,
+    "roc_fpm": 727.4,
+    "LoverD": -8.3064
+   },
+   "edge": true
+  },
+  "glide": {
+   "Vbg_kt": 59.876,
+   "LD": 9.1124,
+   "Vbg_grid_kt": 60,
+   "LD_grid": 9.1124,
+   "sink_fpm": 692.96,
+   "edge": false
+  },
+  "takeoff": {
+   "VR": 52,
+   "groundRoll_m": 254.99,
+   "tLiftoff_s": 14.358,
+   "V_LOF_kt": 61.308,
+   "dist50ft_m": 418.52,
+   "V50_kt": 62.354
+  }
+ }
+}

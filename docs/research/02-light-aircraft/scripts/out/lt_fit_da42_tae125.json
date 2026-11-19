@@ -1,0 +1,156 @@
+{
+ "id": "da42_tae125",
+ "T0_BEM": 6248,
+ "legacy": {
+  "propulsion": {
+   "P": 198000,
+   "eta": 0.9304,
+   "T0": 6248,
+   "idle": 0
+  },
+  "aero": {
+   "CD0": 0.04369,
+   "K": 0.04601,
+   "CL0": 0.35,
+   "CLa": 5.511,
+   "CLflap": 0.6,
+   "CDflap": 0.045,
+   "CDgear": 0.012,
+   "Cm0": -0.02,
+   "Cma": -1.1,
+   "Cmflap": -0.06,
+   "aStall": 16.92,
+   "aStallFlap": -1.76
+  }
+ },
+ "notes": [
+  "polar from glide 82.0 KCAS E 13: CD0s 0.0437 Ks 0.0460; idle 0 (POH glide is at idle, windmilling)",
+  "climb fit (static): target Vy 79.0 KCAS ROC 1060 fpm → T0 6248 N, Vc 29.5 m/s"
+ ],
+ "targets": {
+  "VS1": 64,
+  "VS0": 56.964285714285715,
+  "Vy": 79,
+  "roc": 1060,
+  "glide": {
+   "speed_kt": 82,
+   "ratio": 13
+  }
+ },
+ "check": {
+  "VS1_target": 64,
+  "VS0_target": 57,
+  "stall_clean": {
+   "VSR_eas": 65.6,
+   "Vmin_eas": 62.4
+  },
+  "stall_full": {
+   "VSR_eas": 58.5,
+   "Vmin_eas": 55.9
+  },
+  "climb": {
+   "Vy_kt": 79.8,
+   "ROCmax_fpm": 1069
+  },
+  "glide": {
+   "Vbg_kt": 81.9,
+   "LD": 13
+  },
+  "takeoff": {
+   "groundRoll_m": 455,
+   "dist50ft_m": 752
+  }
+ },
+ "alpha": {
+  "alpha_star": {
+   "UP": 16.9,
+   "LDG": 15.2
+  },
+  "alpha_CLmax": {
+   "UP": 14.1,
+   "LDG": 12.1
+  },
+  "alpha_warn_5kt": {
+   "UP": 10.2,
+   "LDG": 7.24
+  },
+  "alpha_warn_design": {
+   "UP": 9.44,
+   "LDG": 6.21
+  },
+  "CLmax_sim": {
+   "UP": 1.54,
+   "LDG": 1.94
+  }
+ },
+ "gear": [
+  {
+   "b": [
+    1.41,
+    0,
+    1.05
+   ],
+   "k": 97194.04457885303,
+   "c": 7066.621227126513,
+   "stroke": 0.12,
+   "steer": true
+  },
+  {
+   "b": [
+    -0.326,
+    -1.475,
+    1.08
+   ],
+   "k": 168151.65994623656,
+   "c": 13668.73500827484,
+   "stroke": 0.15,
+   "brake": true
+  },
+  {
+   "b": [
+    -0.326,
+    1.475,
+    1.08
+   ],
+   "k": 168151.65994623656,
+   "c": 13668.73500827484,
+   "stroke": 0.15,
+   "brake": true
+  }
+ ],
+ "flapNotches": [
+  0,
+  0.5,
+  1
+ ],
+ "trace_defaults": [
+  {
+   "field": "deUp",
+   "value": 0.27052603405912107,
+   "from": "controls.surfaces.elevator.travel_deg.up",
+   "rule": "deg → rad (de ลบ = ขอบท้ายขึ้น)",
+   "flag": "R1"
+  },
+  {
+   "field": "deDn",
+   "value": 0.22689280275926285,
+   "from": "controls.surfaces.elevator.travel_deg.down",
+   "rule": "deg → rad",
+   "flag": "R1"
+  },
+  {
+   "field": "daMax",
+   "value": 0.3490658503988659,
+   "from": "controls.surfaces.aileron.travel_deg",
+   "rule": "da = ค่าเฉลี่ยของสองข้าง ½(up + down) ให้ตรงนิยาม Clda ต่อ rad ของ da เฉลี่ย",
+   "flag": "R1"
+  },
+  {
+   "field": "drMax",
+   "value": 0.47123889803846897,
+   "from": "controls.surfaces.rudder.travel_deg",
+   "rule": "ซิมจำกัดสมมาตร ±drMax จึงใช้ min(left, right)",
+   "flag": "R1"
+  }
+ ]
+}

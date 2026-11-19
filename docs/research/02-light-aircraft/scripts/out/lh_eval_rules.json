@@ -1,0 +1,537 @@
+{
+ "TH": {
+  "gate_hi_ft": 500,
+  "gate_lo_ft": 300,
+  "spd_lo": -5,
+  "spd_hi_ppl": 10,
+  "spd_hi_cpl": 5,
+  "sink_max_fpm": 1000,
+  "sink_low_fpm": 800,
+  "sink_low_ft": 300,
+  "bank_final_deg": 15,
+  "dots": 1,
+  "dots_hold_s": 5,
+  "slow_hold_s": 3,
+  "fast_hold_s": 5,
+  "stall_margin_kt": 5,
+  "skid_beta_deg": 5,
+  "skid_bank_deg": 10,
+  "skid_below_ft": 1000,
+  "flare_high_ft": 6,
+  "flare_hold_s": 1.5,
+  "late_flare_ft": 5,
+  "late_flare_frac": 0.75,
+  "late_flare_td": 300,
+  "balloon_ft": 3,
+  "bounce_ft": 1,
+  "bounce_s": 0.3,
+  "bounce_big_ft": 5,
+  "hard_fpm": 360,
+  "very_hard_fpm": 600,
+  "crab_td_deg": 5,
+  "drift_td_ms": 1.6,
+  "cl_minor_m": 5,
+  "cl_major_m": 10,
+  "long_ppl_ft": 400,
+  "long_cpl_ft": 200,
+  "float_s": 6,
+  "float_ft": 3,
+  "dir_hdg_deg": 10,
+  "dir_latv_ms": 2,
+  "dir_min_gs": 10,
+  "ail_rollout_gs": 20,
+  "ail_xw_kt": 5,
+  "brake_hi_frac": 0.8,
+  "carb_thr": 0.35,
+  "carb_s": 10,
+  "mixture_rich": 0.9,
+  "mixture_ft": 1000,
+  "trim_de_deg": 3,
+  "trim_s": 10,
+  "trim_below_ft": 1000,
+  "ga_pitch_lead_s": 2,
+  "ga_pitch_deg": 5,
+  "ga_full_thr": 0.9,
+  "ga_flap_s": 3,
+  "ga_flap_ft": 300,
+  "ga_late_ft": 100,
+  "rot_early_kt": 5,
+  "rot_pitch_deg": 3,
+  "vy_lo": -5,
+  "vy_hi": 10,
+  "vy_from_ft": 200,
+  "vy_to_ft": 700,
+  "gear_ft": 500
+ },
+ "RULES": {
+  "unstable_500": {
+   "phase": "final",
+   "sev": "major",
+   "pts": 10,
+   "src": [
+    "LH1",
+    "LH2"
+   ],
+   "th": "ยังไม่ stabilised ที่ 500 ft: ตรวจความเร็ว อัตราร่อน แนว glide path และแฟลปให้ครบก่อนถึงจุดนี้"
+  },
+  "unstable_300": {
+   "phase": "final",
+   "sev": "major",
+   "pts": 10,
+   "src": [
+    "LH1"
+   ],
+   "th": "ต่ำกว่า 300 ft แล้วยังไม่ stabilised ควร go-around ทันที"
+  },
+  "continued_unstable": {
+   "phase": "landing",
+   "sev": "critical",
+   "pts": 30,
+   "src": [
+    "LH1"
+   ],
+   "th": "ลงจอดต่อทั้งที่ approach ไม่ stabilised ต่ำกว่า 300 ft ครั้งหน้าให้ go-around"
+  },
+  "high_on_path": {
+   "phase": "final",
+   "sev": "minor",
+   "pts": 3,
+   "src": [
+    "R1",
+    "LH1"
+   ],
+   "th": "สูงกว่า glide path เกิน 1 dot ลดกำลังเล็กน้อยแล้วรักษาความเร็ว อย่าดันหัวลงแรง"
+  },
+  "low_on_path": {
+   "phase": "final",
+   "sev": "major",
+   "pts": 6,
+   "src": [
+    "R1",
+    "LH1"
+   ],
+   "th": "ต่ำกว่า glide path เกิน 1 dot เพิ่มกำลังพร้อมยกหัวเล็กน้อย อย่าเก็บแฟลป"
+  },
+  "fast": {
+   "phase": "final",
+   "sev": "minor",
+   "pts": 3,
+   "src": [
+    "LH2",
+    "LH3"
+   ],
+   "th": "ความเร็ว approach สูงเกินเกณฑ์ ระวังลอยเลยจุดแตะ"
+  },
+  "slow": {
+   "phase": "final",
+   "sev": "major",
+   "pts": 8,
+   "src": [
+    "LH2",
+    "LH1"
+   ],
+   "th": "ความเร็ว approach ต่ำกว่าเกณฑ์ เพิ่มกำลังทันที"
+  },
+  "near_stall": {
+   "phase": "any",
+   "sev": "critical",
+   "pts": 30,
+   "src": [
+    "LM3",
+    "LH4"
+   ],
+   "th": "ใกล้ stall ที่ความสูงต่ำ ลดมุมปะทะ เพิ่มกำลังเต็ม แล้วไต่"
+  },
+  "sink_high": {
+   "phase": "final",
+   "sev": "major",
+   "pts": 8,
+   "src": [
+    "LH1"
+   ],
+   "th": "อัตราร่อนสูงเกินไป ลดอัตราร่อนก่อนเข้าใกล้พื้น"
+  },
+  "bank_final": {
+   "phase": "final",
+   "sev": "minor",
+   "pts": 3,
+   "src": [
+    "LH1"
+   ],
+   "th": "มุมเอียงบน final เกิน 15° ปรับแนวให้เสร็จเร็วกว่านี้"
+  },
+  "skid_turn": {
+   "phase": "base",
+   "sev": "major",
+   "pts": 8,
+   "src": [
+    "LH1",
+    "LH6"
+   ],
+   "th": "เลี้ยวแบบ cross-control ใกล้พื้น (ball ไม่อยู่กลาง) เสี่ยง stall/spin ใช้ rudder ให้ประสาน"
+  },
+  "stall_warning": {
+   "phase": "any",
+   "sev": "major",
+   "pts": 10,
+   "src": [
+    "LH4",
+    "LH2"
+   ],
+   "th": "สัญญาณเตือน stall ดัง ลดมุมปะทะทันที"
+  },
+  "high_flare": {
+   "phase": "flare",
+   "sev": "major",
+   "pts": 6,
+   "src": [
+    "LH1"
+   ],
+   "th": "flare สูงเกินไป เครื่องลอยอยู่เหนือพื้นแล้วความเร็วลด ระวังตก"
+  },
+  "late_flare": {
+   "phase": "flare",
+   "sev": "major",
+   "pts": 8,
+   "src": [
+    "LH1",
+    "LH5"
+   ],
+   "th": "flare ช้าเกินไปหรือไม่ได้ flare ทำให้กระแทก เริ่มดึงคันที่ 10–20 ft"
+  },
+  "balloon": {
+   "phase": "flare",
+   "sev": "minor",
+   "pts": 4,
+   "src": [
+    "LH1"
+   ],
+   "th": "ดึงคันเร็วเกินไปจนเครื่องลอยขึ้น (balloon) ค้าง attitude และเติมกำลังเล็กน้อย"
+  },
+  "float": {
+   "phase": "flare",
+   "sev": "minor",
+   "pts": 3,
+   "src": [
+    "LH1"
+   ],
+   "th": "ลอยนานเกินไป ความเร็วตอนข้าม threshold สูงเกิน"
+  },
+  "bounce": {
+   "phase": "landing",
+   "sev": "major",
+   "pts": 8,
+   "src": [
+    "LH1"
+   ],
+   "th": "เครื่องเด้งหลังแตะพื้น ถ้าเด้งสูงให้ go-around กำลังเต็ม"
+  },
+  "bounce_big": {
+   "phase": "landing",
+   "sev": "critical",
+   "pts": 20,
+   "src": [
+    "LH1"
+   ],
+   "th": "เด้งสูงเกิน 5 ft ต้อง go-around ไม่ใช่พยายามลงต่อ"
+  },
+  "porpoise": {
+   "phase": "landing",
+   "sev": "critical",
+   "pts": 20,
+   "src": [
+    "LH1"
+   ],
+   "th": "porpoising: ล้อหน้าแตะก่อนแล้วเด้งซ้ำ ตั้ง attitude ลงจอดหรือ go-around"
+  },
+  "nose_first": {
+   "phase": "landing",
+   "sev": "major",
+   "pts": 5,
+   "src": [
+    "LH1",
+    "R1"
+   ],
+   "th": "ล้อหน้าแตะก่อนล้อหลัก ยกหัวให้ถึง attitude ลงจอด"
+  },
+  "hard_landing": {
+   "phase": "landing",
+   "sev": "major",
+   "pts": 0,
+   "src": [
+    "LH1",
+    "R1"
+   ],
+   "th": "แตะพื้นแรง (อัตราจมเกิน 360 fpm) flare ให้ต่อเนื่องจนล้อแตะ"
+  },
+  "very_hard_landing": {
+   "phase": "landing",
+   "sev": "critical",
+   "pts": 0,
+   "src": [
+    "R1"
+   ],
+   "th": "แตะพื้นแรงมาก (เกิน 600 fpm) ต้องตรวจโครงสร้างเครื่อง"
+  },
+  "side_load": {
+   "phase": "landing",
+   "sev": "major",
+   "pts": 5,
+   "src": [
+    "LH1",
+    "LH2"
+   ],
+   "th": "แตะพื้นขณะยังมี crab หรือ drift ใช้ wing-low ให้หัวตรงกับรันเวย์"
+  },
+  "off_centre": {
+   "phase": "landing",
+   "sev": "minor",
+   "pts": 0,
+   "src": [
+    "R1"
+   ],
+   "th": "แตะพื้นห่างเส้นกลางรันเวย์"
+  },
+  "short_landing": {
+   "phase": "landing",
+   "sev": "critical",
+   "pts": 0,
+   "src": [
+    "LH5",
+    "R1"
+   ],
+   "th": "แตะพื้นก่อน threshold"
+  },
+  "long_landing": {
+   "phase": "landing",
+   "sev": "major",
+   "pts": 0,
+   "src": [
+    "LH2",
+    "LH3"
+   ],
+   "th": "แตะพื้นเลยจุดเป้าเกินเกณฑ์สอบ ถ้าลอยนานควร go-around"
+  },
+  "dir_control": {
+   "phase": "rollout",
+   "sev": "major",
+   "pts": 10,
+   "src": [
+    "LH5",
+    "LH1"
+   ],
+   "th": "เสียการควบคุมทิศทางขณะวิ่ง ใช้ rudder ให้ทันและมองไปปลายรันเวย์"
+  },
+  "excursion": {
+   "phase": "rollout",
+   "sev": "critical",
+   "pts": 0,
+   "src": [
+    "R1"
+   ],
+   "th": "ออกนอกรันเวย์"
+  },
+  "aileron_rollout": {
+   "phase": "rollout",
+   "sev": "minor",
+   "pts": 2,
+   "src": [
+    "LH1",
+    "LH15"
+   ],
+   "th": "ขณะวิ่งในลมขวาง ให้หมุนพวงมาลัย/คันไปทางลม"
+  },
+  "brake_fast": {
+   "phase": "rollout",
+   "sev": "minor",
+   "pts": 2,
+   "src": [
+    "LH15",
+    "LH1"
+   ],
+   "th": "เบรกแรงขณะยังเร็ว ให้ล้อรับน้ำหนักก่อน"
+  },
+  "carb_heat": {
+   "phase": "downwind",
+   "sev": "minor",
+   "pts": 3,
+   "src": [
+    "LH13",
+    "LH1"
+   ],
+   "th": "ลดกำลังโดยไม่ดึง carb heat"
+  },
+  "carb_heat_ga": {
+   "phase": "go_around",
+   "sev": "minor",
+   "pts": 3,
+   "src": [
+    "LH1"
+   ],
+   "th": "go-around แล้วยังไม่ดัน carb heat กลับ"
+  },
+  "mixture": {
+   "phase": "final",
+   "sev": "minor",
+   "pts": 3,
+   "src": [
+    "LH13"
+   ],
+   "th": "mixture ยังไม่ rich ระหว่าง approach"
+  },
+  "trim": {
+   "phase": "final",
+   "sev": "minor",
+   "pts": 2,
+   "src": [
+    "LH1",
+    "LH30"
+   ],
+   "th": "ยังถือแรงที่คันนานเกินไป trim ให้แรงหมด"
+  },
+  "gear_up": {
+   "phase": "final",
+   "sev": "critical",
+   "pts": 30,
+   "src": [
+    "LH29"
+   ],
+   "th": "ล้อยังไม่ลงที่ 500 ft"
+  },
+  "ga_late": {
+   "phase": "go_around",
+   "sev": "major",
+   "pts": 6,
+   "src": [
+    "LH1"
+   ],
+   "th": "ตัดสินใจ go-around ช้าเกินไป"
+  },
+  "ga_pitch_first": {
+   "phase": "go_around",
+   "sev": "major",
+   "pts": 6,
+   "src": [
+    "LH1"
+   ],
+   "th": "ยกหัวก่อนเพิ่มกำลัง: เพิ่มกำลังเต็มก่อนแล้วจึงตั้ง attitude"
+  },
+  "ga_flaps_dump": {
+   "phase": "go_around",
+   "sev": "major",
+   "pts": 6,
+   "src": [
+    "LH1"
+   ],
+   "th": "เก็บแฟลปทีเดียวหมดขณะต่ำ เครื่องจะจม ให้เก็บเป็นขั้น"
+  },
+  "ga_no_climb": {
+   "phase": "go_around",
+   "sev": "major",
+   "pts": 6,
+   "src": [
+    "LH1",
+    "LH2"
+   ],
+   "th": "go-around แล้วยังไม่ไต่ภายใน 5 วินาที"
+  },
+  "rotate_early": {
+   "phase": "takeoff",
+   "sev": "minor",
+   "pts": 3,
+   "src": [
+    "LH11"
+   ],
+   "th": "ยกหัวก่อนถึง VR"
+  },
+  "vy_hold": {
+   "phase": "climb",
+   "sev": "minor",
+   "pts": 3,
+   "src": [
+    "LH2"
+   ],
+   "th": "ความเร็วไต่หลุดเกณฑ์ Vy +10/−5 kt"
+  }
+ },
+ "PROFILES": {
+  "c172s": {
+   "Vapp": 65,
+   "Vref": 61,
+   "VS0": 40,
+   "VR": 55,
+   "VY": 74,
+   "VX": 62,
+   "carb": false,
+   "retract": false,
+   "demoXwind": 15,
+   "landFlap": 1,
+   "aim": 314
+  },
+  "c172m": {
+   "Vapp": 65,
+   "Vref": 61,
+   "VS0": 41,
+   "VR": 55,
+   "VY": 73,
+   "VX": 60,
+   "carb": true,
+   "retract": false,
+   "demoXwind": 15,
+   "landFlap": 1,
+   "aim": 314
+  },
+  "c152": {
+   "Vapp": 60,
+   "Vref": 54,
+   "VS0": 35,
+   "VR": 50,
+   "VY": 67,
+   "VX": 55,
+   "carb": true,
+   "retract": false,
+   "demoXwind": 12,
+   "landFlap": 1,
+   "aim": 314
+  },
+  "da40ng": {
+   "Vapp": 74,
+   "Vref": 74,
+   "VS0": 55,
+   "VR": 60,
+   "VY": 72,
+   "VX": 66,
+   "carb": false,
+   "retract": false,
+   "demoXwind": 25,
+   "landFlap": 1,
+   "aim": 314
+  },
+  "da42ng": {
+   "Vapp": 84,
+   "Vref": 84,
+   "VS0": 62,
+   "VR": 76,
+   "VY": 90,
+   "VX": 77,
+   "carb": false,
+   "retract": true,
+   "demoXwind": 25,
+   "landFlap": 1,
+   "aim": 314
+  },
+  "t6a": {
+   "Vapp": 100,
+   "Vref": 100,
+   "VS0": 77,
+   "VR": 85,
+   "VY": 140,
+   "VX": 120,
+   "carb": false,
+   "retract": true,
+   "demoXwind": 25,
+   "landFlap": 1,
+   "aim": 314
+  }
+ }
+}

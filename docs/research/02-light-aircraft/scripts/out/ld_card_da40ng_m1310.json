@@ -1,0 +1,688 @@
+{
+ "type": "da40ng",
+ "ac": {
+  "m": 1310,
+  "Ixx": 2925.29,
+  "Iyy": 2711.13,
+  "Izz": 5180.77,
+  "Ixz": 0,
+  "S": 13.244,
+  "b": 11.63,
+  "c": 1.171,
+  "CL0": 0.34,
+  "CLa": 5.45,
+  "CLq": 8.323,
+  "CLadot": 1.547,
+  "CLde": 0.3559,
+  "CLflap": 0.75,
+  "CD0": 0.04799,
+  "K": 0.08169,
+  "CDflap": 0.035,
+  "CDgear": 0,
+  "CYb": -0.5707,
+  "CYdr": 0.12,
+  "CYr": 0.2109,
+  "Clb": -0.0491,
+  "Clp": -0.5559,
+  "Clr": 0.1637,
+  "Clda": 0.1745,
+  "Cldr": 0.0062,
+  "Cm0": 0.02,
+  "Cma": -1.6,
+  "Cmq": -24.47,
+  "Cmadot": -6.384,
+  "Cmde": -1.468,
+  "Cmflap": -0.1,
+  "Cnb": 0.0546,
+  "Cnp": -0.1795,
+  "Cnr": -0.0932,
+  "Cnda": -0.0084,
+  "Cndr": -0.0452,
+  "aStall": 15.29,
+  "aStallFlap": -4.23,
+  "P": 123500,
+  "eta": 0.9821,
+  "T0": 4050,
+  "idle": 0,
+  "deUp": 0.383972,
+  "deDn": 0.261799,
+  "daMax": 0.349066,
+  "drMax": 0.436332,
+  "gear": [
+   {
+    "b": [
+     1.35,
+     0,
+     0.88
+    ],
+    "k": 84115.4,
+    "c": 3721.91,
+    "stroke": 0.08,
+    "steer": true
+   },
+   {
+    "b": [
+     -0.33,
+     -1.485,
+     0.91
+    ],
+    "k": 86027.1,
+    "c": 3364.5,
+    "stroke": 0.15,
+    "brake": true
+   },
+   {
+    "b": [
+     -0.33,
+     1.485,
+     0.91
+    ],
+    "k": 86027.1,
+    "c": 3364.5,
+    "stroke": 0.15,
+    "brake": true
+   }
+  ],
+  "Vref": 76,
+  "Vapp": 76,
+  "Vs0": 58
+ },
+ "trace": [
+  {
+   "field": "m",
+   "value": 1310,
+   "from": "--mass",
+   "rule": "ตัวเลือก CLI",
+   "flag": ""
+  },
+  {
+   "field": "S",
+   "value": 13.244,
+   "from": "aero.ref.S | airframe.wing.S",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "b",
+   "value": 11.63,
+   "from": "aero.ref.b | airframe.wing.b",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "c",
+   "value": 1.171,
+   "from": "aero.ref.c | airframe.wing.MAC",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "Ixx",
+   "value": 2925.29,
+   "from": "airframe.inertia.Ixx",
+   "rule": "× m/ref_mass = 1.139 (รัศมีไจเรชันคงที่)",
+   "flag": ""
+  },
+  {
+   "field": "Iyy",
+   "value": 2711.13,
+   "from": "airframe.inertia.Iyy",
+   "rule": "× m/ref_mass = 1.139 (รัศมีไจเรชันคงที่)",
+   "flag": ""
+  },
+  {
+   "field": "Izz",
+   "value": 5180.77,
+   "from": "airframe.inertia.Izz",
+   "rule": "× m/ref_mass = 1.139 (รัศมีไจเรชันคงที่)",
+   "flag": ""
+  },
+  {
+   "field": "Ixz",
+   "value": 0,
+   "from": "airframe.inertia.Ixz",
+   "rule": "สเกลเหมือน Ixx",
+   "flag": ""
+  },
+  {
+   "field": "CL0",
+   "value": 0.34,
+   "from": "aero.legacy.CL0",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "CLa",
+   "value": 5.45,
+   "from": "aero.legacy.CLa",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "CLflap",
+   "value": 0.75,
+   "from": "aero.legacy.CLflap",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "CDflap",
+   "value": 0.035,
+   "from": "aero.legacy.CDflap",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "CDgear",
+   "value": 0,
+   "from": "aero.legacy.CDgear",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "Cm0",
+   "value": 0.02,
+   "from": "aero.legacy.Cm0",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "Cma",
+   "value": -1.6,
+   "from": "aero.legacy.Cma",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "Cmflap",
+   "value": -0.1,
+   "from": "aero.legacy.Cmflap",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "CLq",
+   "value": 8.323,
+   "from": "aero.derivatives.CLq.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "CLadot",
+   "value": 1.547,
+   "from": "aero.derivatives.CLadot.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "CLde",
+   "value": 0.3559,
+   "from": "aero.derivatives.CLde.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "CD0",
+   "value": 0.04799,
+   "from": "aero.legacy.CD0",
+   "rule": "ตรง (รูปแบบของซิม K·(CL − 0.15)²)",
+   "flag": ""
+  },
+  {
+   "field": "K",
+   "value": 0.08169,
+   "from": "aero.legacy.K",
+   "rule": "ตรง (รูปแบบของซิม K·(CL − 0.15)²)",
+   "flag": ""
+  },
+  {
+   "field": "CYb",
+   "value": -0.5707,
+   "from": "aero.derivatives.CYb.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "CYdr",
+   "value": 0.12,
+   "from": "aero.derivatives.CYdr.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "CYr",
+   "value": 0.2109,
+   "from": "aero.derivatives.CYr.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Clb",
+   "value": -0.0491,
+   "from": "aero.derivatives.Clb.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Clp",
+   "value": -0.5559,
+   "from": "aero.derivatives.Clp.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Clr",
+   "value": 0.1637,
+   "from": "aero.derivatives.Clr.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Clda",
+   "value": 0.1745,
+   "from": "aero.derivatives.Clda.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Cldr",
+   "value": 0.0062,
+   "from": "aero.derivatives.Cldr.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Cmq",
+   "value": -24.47,
+   "from": "aero.derivatives.Cmq.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Cmadot",
+   "value": -6.384,
+   "from": "aero.derivatives.Cmadot.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Cmde",
+   "value": -1.468,
+   "from": "aero.derivatives.Cmde.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Cnb",
+   "value": 0.0546,
+   "from": "aero.derivatives.Cnb.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Cnp",
+   "value": -0.1795,
+   "from": "aero.derivatives.Cnp.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Cnr",
+   "value": -0.0932,
+   "from": "aero.derivatives.Cnr.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Cnda",
+   "value": -0.0084,
+   "from": "aero.derivatives.Cnda.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "Cndr",
+   "value": -0.0452,
+   "from": "aero.derivatives.Cndr.approach",
+   "rule": "เลือก config \"approach\"",
+   "flag": ""
+  },
+  {
+   "field": "deUp",
+   "value": 0.383972,
+   "from": "controls.surfaces.elevator.travel_deg.up",
+   "rule": "deg → rad (de ลบ = ขอบท้ายขึ้น)",
+   "flag": "R1"
+  },
+  {
+   "field": "deDn",
+   "value": 0.261799,
+   "from": "controls.surfaces.elevator.travel_deg.down",
+   "rule": "deg → rad",
+   "flag": "R1"
+  },
+  {
+   "field": "daMax",
+   "value": 0.349066,
+   "from": "controls.surfaces.aileron.travel_deg",
+   "rule": "da = ค่าเฉลี่ยของสองข้าง ½(up + down) ให้ตรงนิยาม Clda ต่อ rad ของ da เฉลี่ย",
+   "flag": "R1"
+  },
+  {
+   "field": "drMax",
+   "value": 0.436332,
+   "from": "controls.surfaces.rudder.travel_deg",
+   "rule": "ซิมจำกัดสมมาตร ±drMax จึงใช้ min(left, right)",
+   "flag": "R1"
+  },
+  {
+   "field": "aStall",
+   "value": 15.29,
+   "from": "aero.legacy.aStall",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "aStallFlap",
+   "value": -4.23,
+   "from": "aero.legacy.aStallFlap",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "P",
+   "value": 123500,
+   "from": "propulsion.legacy.P",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "eta",
+   "value": 0.9821,
+   "from": "propulsion.legacy.eta",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "T0",
+   "value": 4050,
+   "from": "propulsion.legacy.T0",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "idle",
+   "value": 0,
+   "from": "propulsion.legacy.idle",
+   "rule": "ตรง",
+   "flag": ""
+  },
+  {
+   "field": "gear",
+   "value": [
+    {
+     "b": [
+      1.35,
+      0,
+      0.88
+     ],
+     "k": 84115.4,
+     "c": 3721.91,
+     "stroke": 0.08,
+     "steer": true
+    },
+    {
+     "b": [
+      -0.33,
+      -1.485,
+      0.91
+     ],
+     "k": 86027.1,
+     "c": 3364.5,
+     "stroke": 0.15,
+     "brake": true
+    },
+    {
+     "b": [
+      -0.33,
+      1.485,
+      0.91
+     ],
+     "k": 86027.1,
+     "c": 3364.5,
+     "stroke": 0.15,
+     "brake": true
+    }
+   ],
+   "from": "gear.geometry.*_contact_body_extended",
+   "rule": "N_nose = W·(−x_m)/(x_n − x_m) = 2523 N; k: N/static_deflection/N/static_deflection; c = 2ζ√(k N/g) (damping_ratio)",
+   "flag": ""
+  },
+  {
+   "field": "Vs0",
+   "value": 58,
+   "from": "speeds.VS0_kt",
+   "rule": "KIAS 60 → KCAS ด้วย speeds.ias_cas แล้วปัด",
+   "flag": ""
+  },
+  {
+   "field": "Vref",
+   "value": 76,
+   "from": "speeds.VREF_kt",
+   "rule": "KIAS → KCAS",
+   "flag": ""
+  },
+  {
+   "field": "Vapp",
+   "value": 76,
+   "from": "speeds.VAPP_kt",
+   "rule": "KIAS → KCAS",
+   "flag": ""
+  }
+ ],
+ "res": {
+  "stall": {
+   "UP": {
+    "f": 0,
+    "gear": 1,
+    "CLmax": 1.36271,
+    "V_CLmax_eas": 65.2728,
+    "V_CLmax_cas": 65.2815,
+    "nz": 0.970236,
+    "alpha_deg": 12.5692,
+    "t": 23.7625,
+    "rate": 0.998516,
+    "VSR_eas": 66.2664,
+    "VSR_cas": 66.2752,
+    "Vmin_eas": 63.4094,
+    "de_end_deg": -22,
+    "ias0": 89,
+    "VSR_kias": 67.607,
+    "Vmin_kias": 64.8094
+   },
+   "TO": {
+    "f": 0.6933,
+    "gear": 1,
+    "CLmax": 1.58939,
+    "V_CLmax_eas": 60.2262,
+    "V_CLmax_cas": 60.233,
+    "nz": 0.963412,
+    "alpha_deg": 9.43246,
+    "t": 23.1,
+    "rate": 0.985877,
+    "VSR_eas": 61.3592,
+    "VSR_cas": 61.3661,
+    "Vmin_eas": 58.8247,
+    "de_end_deg": -22,
+    "ias0": 83,
+    "VSR_kias": 62.6392,
+    "Vmin_kias": 60.1247
+   },
+   "LDG": {
+    "f": 1,
+    "gear": 1,
+    "CLmax": 1.69079,
+    "V_CLmax_eas": 58.4572,
+    "V_CLmax_cas": 58.4633,
+    "nz": 0.965552,
+    "alpha_deg": 8.06062,
+    "t": 22.3333,
+    "rate": 0.964604,
+    "VSR_eas": 59.4908,
+    "VSR_cas": 59.497,
+    "Vmin_eas": 57.1704,
+    "de_end_deg": -22,
+    "ias0": 80,
+    "VSR_kias": 61.4035,
+    "Vmin_kias": 59.1704
+   }
+  },
+  "trim": {
+   "Vy_climb": {
+    "ias_kt": 70.8545,
+    "alpha_deg": 9.13994,
+    "theta_deg": 14.2122,
+    "de_deg": -9.1826,
+    "thr": 1,
+    "gamma_deg": 5.07225,
+    "roc_fpm": 635.38
+   },
+   "cruise": {
+    "ias_kt": 110,
+    "h_m": 914.4,
+    "V_kt": 115.003,
+    "alpha_deg": 1.67529,
+    "theta_deg": 1.67529,
+    "de_deg": -1.04533,
+    "thr": 0.818278
+   },
+   "approach": {
+    "ias_kt": 76,
+    "h_m": 300,
+    "V_kt": 77.1159,
+    "alpha_deg": -0.399708,
+    "theta_deg": -3.39971,
+    "de_deg": -2.68675,
+    "thr": 0.471541
+   }
+  },
+  "climb": {
+   "Vy_kt": 79.6466,
+   "ROCmax_fpm": 665.677,
+   "Vy_grid_kt": 80,
+   "ROC_grid_fpm": 665.632,
+   "Vx_kt": 74,
+   "gammaMax_deg": 4.99592,
+   "atVy": {
+    "ias": 80,
+    "V": 41.2201,
+    "alpha": 6.42613,
+    "de": -6.22476,
+    "gamma": 4.70543,
+    "theta": 11.1316,
+    "roc_fpm": 665.632,
+    "LoverD": -12.1491
+   },
+   "edge": false
+  },
+  "glide": {
+   "zeroThrust": {
+    "Vbg_kt": 87.3174,
+    "LD": 9.69964,
+    "Vbg_grid_kt": 87,
+    "LD_grid": 9.69932,
+    "sink_fpm": 944.652,
+    "edge": false
+   },
+   "idle": {
+    "Vbg_kt": 87.3174,
+    "LD": 9.69964,
+    "Vbg_grid_kt": 87,
+    "LD_grid": 9.69932,
+    "sink_fpm": 944.652,
+    "edge": false
+   }
+  },
+  "modes": {
+   "cruise": {
+    "sp": {
+     "wn": 4.72902,
+     "zeta": 0.554552,
+     "T": 1.59664
+    },
+    "ph": {
+     "wn": 0.208991,
+     "zeta": 0.115685,
+     "T": 30.2676
+    },
+    "dr": {
+     "wn": 2.12797,
+     "zeta": 0.210732,
+     "T": 3.0205
+    },
+    "roll_tau": 0.181409,
+    "spiral": {
+     "lam": 0.0216391,
+     "t2": 32.0322,
+     "grows": true
+    },
+    "nAlpha": 11.0201,
+    "CAP": 2.02935
+   },
+   "approach": {
+    "sp": {
+     "wn": 3.28957,
+     "zeta": 0.571543,
+     "T": 2.32768
+    },
+    "ph": {
+     "wn": 0.311334,
+     "zeta": 0.117981,
+     "T": 20.3234
+    },
+    "dr": {
+     "wn": 1.49923,
+     "zeta": 0.205559,
+     "T": 4.2824
+    },
+    "roll_tau": 0.252301,
+    "spiral": {
+     "lam": 0.0113395,
+     "t2": 61.1268,
+     "grows": true
+    },
+    "nAlpha": 5.26136,
+    "CAP": 2.05675
+   }
+  },
+  "takeoff": {
+   "flap": "TO",
+   "VR": 66.9,
+   "groundRoll_m": 396.558,
+   "tLiftoff_s": 18.4917,
+   "V_LOF_kt": 72.7549,
+   "dist50ft_m": 615.622,
+   "V50_kt": 72.5678
+  },
+  "landing": {
+   "asIs": {
+    "ias50_kt": 76.0117,
+    "vtd_kt": 72.0293,
+    "sinkTD_fpm": -138.055,
+    "td_s": 336.096,
+    "air_m": 331.001,
+    "ground_m": 512.188,
+    "total_m": 843.189
+   },
+   "maxBrake": {
+    "ias50_kt": 76.0117,
+    "vtd_kt": 72.0293,
+    "sinkTD_fpm": -138.055,
+    "td_s": 336.096,
+    "air_m": 331.001,
+    "ground_m": 311.394,
+    "total_m": 642.395
+   }
+  }
+ }
+}
