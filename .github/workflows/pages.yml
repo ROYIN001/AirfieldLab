@@ -1,37 +1,46 @@
 name: Deploy to GitHub Pages
 
+# Pull requests into main run the tests and the build without deploying; pushes to main also deploy.
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Physics checks
-        run: node test/geo.test.mjs && node test/runways.test.mjs
+      - name: Tests
+        # quote the glob: a bare `node --test` would also run test/shots.mjs (Playwright), test/harness.mjs and
+        # test/lib/*.mjs (research round 1, docs/research/01-flight-physics/10-validation.md §10.7)
+        run: node --test --test-timeout=300000 "test/**/*.test.mjs"
       - name: Build
         run: node build.mjs
       - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
         with:
           path: dist
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

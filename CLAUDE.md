@@ -14,9 +14,16 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 ## Commands
 - Build: `node build.mjs` → `dist/index.html`, and copies `data/*` into `dist/`.
 - Run: `python3 -m http.server 8080 -d dist`, open http://localhost:8080 (needs HTTP: the page fetches its data).
-- Physics tests (Node ≥ 18, no dependencies): `node test/geo.test.mjs`, `node test/flight.test.mjs`,
-  `node test/runways.test.mjs`, `node test/assist.test.mjs`, `node test/stall.test.mjs`.
-  `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function`, so those three files must stay DOM-free.
+- Tests (Node ≥ 22, no dependencies, `node:test` + `node:assert/strict`): `node --test "test/**/*.test.mjs"`
+  (quote the glob: a bare `node --test` would also run `test/shots.mjs`, `test/harness.mjs` and `test/lib/*.mjs`).
+  `geo` (AIP geometry), `flight` (start trim, parked, autoland per wind), `runways` (autoland on all four ends),
+  `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01), `modes` (trim, linearise and
+  MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `page` (parses the assembled page
+  module and checks the element ids the scripts use). Score floors sit just under the values measured on
+  2026-11-19: a physics change that moves them updates the test in the same PR.
+  `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
+  `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, so those
+  three files must stay DOM-free. `build.mjs` exports `assemble()` for the page test.
 - Screenshots: `test/shots.mjs <set>` (Playwright + Chrome, SwiftShader). Paths inside it point at the original
   cloud workspace (`/home/claude/...`, `/opt/npm-tools`, vendored three.js); adjust before use.
 
@@ -103,7 +110,8 @@ Suggested order, each with a Node test before tuning by feel in the browser:
 
 ## Working in the cloud (Claude Code on the web)
 - The owner works from the cloud so their computer can stay off. Test changes on the GitHub Pages site:
-  every push to `main` runs `.github/workflows/pages.yml` (geo + runway tests, build, deploy).
+  `.github/workflows/pages.yml` runs all tests and the build for pull requests into `main` (a check on the PR,
+  nothing deployed) and for every push to `main`, which then deploys. The job stops after 15 min.
   One-time setup in the repo: Settings → Pages → Source: GitHub Actions.
 - Work on a branch and open a pull request for anything that changes the flight model, so the owner can try it
   before merging.
