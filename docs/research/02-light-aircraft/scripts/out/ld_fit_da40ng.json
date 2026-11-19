@@ -1,0 +1,103 @@
+{
+ "type": "da40ng",
+ "legacy": {
+  "propulsion": {
+   "P": 123500,
+   "eta": 0.9821,
+   "T0": 4050,
+   "idle": 0
+  },
+  "aero": {
+   "CD0": 0.04799,
+   "K": 0.08169,
+   "CL0": 0.34,
+   "CLa": 5.45,
+   "CLflap": 0.75,
+   "CDflap": 0.035,
+   "CDgear": 0,
+   "Cm0": 0.02,
+   "Cma": -1.6,
+   "Cmflap": -0.1,
+   "aStall": 15.29,
+   "aStallFlap": -4.23
+  }
+ },
+ "notes": [
+  "polar from glide 87.5 KCAS E 9.7: CD0s 0.0480 Ks 0.0817; idle 0 (POH glide is at idle, windmilling)",
+  "climb fit (static): target Vy 70.9 KCAS ROC 651 fpm → T0 4050 N, Vc 29.9 m/s",
+  "WARNING eta 0.98 > 0.95: P too low for the sim's thrust law at this ROC"
+ ],
+ "targets": {
+  "VS1": 64.6,
+  "VS0": 58,
+  "Vy": 70.855,
+  "roc": 651,
+  "glide": {
+   "speed_kt": 88,
+   "ratio": 9.7
+  }
+ },
+ "check": {
+  "stall_clean": {
+   "CLmax": 1.3619,
+   "V_CLmax_eas": 63.662,
+   "V_CLmax_cas": 63.67,
+   "nz": 0.92243,
+   "alpha_deg": 12.569,
+   "t": 30.233,
+   "rate": 1.1027,
+   "VSR_eas": 66.285,
+   "VSR_cas": 66.293,
+   "Vmin_eas": 62.958,
+   "de_end_deg": -22,
+   "ias0": 97
+  },
+  "stall_full": {
+   "CLmax": 1.6901,
+   "V_CLmax_eas": 57.227,
+   "V_CLmax_cas": 57.232,
+   "nz": 0.92493,
+   "alpha_deg": 8.0593,
+   "t": 27.646,
+   "rate": 1.077,
+   "VSR_eas": 59.504,
+   "VSR_cas": 59.51,
+   "Vmin_eas": 56.513,
+   "de_end_deg": -22,
+   "ias0": 87
+  },
+  "climb": {
+   "Vy_kt": 80,
+   "ROCmax_fpm": 665.68,
+   "Vx_kt": 80,
+   "gammaMax_deg": 4.7058,
+   "atVy": {
+    "ias": 80,
+    "V": 41.22,
+    "alpha": 6.4261,
+    "de": -6.2247,
+    "gamma": 4.7058,
+    "theta": 11.132,
+    "roc_fpm": 665.68,
+    "LoverD": -12.148
+   },
+   "edge": true
+  },
+  "glide": {
+   "Vbg_kt": 87.318,
+   "LD": 9.6997,
+   "Vbg_grid_kt": 87,
+   "LD_grid": 9.6994,
+   "sink_fpm": 944.65,
+   "edge": false
+  },
+  "takeoff": {
+   "VR": 66.9,
+   "groundRoll_m": 396.56,
+   "tLiftoff_s": 18.492,
+   "V_LOF_kt": 72.756,
+   "dist50ft_m": 615.63,
+   "V50_kt": 72.569
+  }
+ }
+}

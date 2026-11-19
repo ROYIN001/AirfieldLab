@@ -1,0 +1,3593 @@
+{
+ "fits": {
+  "pc9m": {
+   "legacy": {
+    "propulsion": {
+     "P": 708000,
+     "eta": 1.337,
+     "T0": 12014,
+     "idle": 0
+    },
+    "aero": {
+     "CD0": 0.03529,
+     "K": 0.08895,
+     "CL0": 0.25,
+     "CLa": 4.987,
+     "CLflap": 0.55,
+     "CDflap": 0.06,
+     "CDgear": 0.02,
+     "Cm0": 0.045,
+     "Cma": -0.761,
+     "Cmflap": -0.1,
+     "aStall": 17.57,
+     "aStallFlap": -1.83
+    }
+   },
+   "notes": [
+    "polar from glide 116.1 KCAS E 11.3: CD0s 0.0353 Ks 0.0889; idle 0 (POH glide is at idle, windmilling)",
+    "climb fit (static): target Vy 136.0 KCAS ROC 4090 fpm → T0 12014 N, Vc 78.8 m/s",
+    "WARNING eta 1.34 > 0.95: P too low for the sim's thrust law at this ROC"
+   ],
+   "targets": {
+    "VS1": 77,
+    "VS0": 69,
+    "Vy": 136,
+    "roc": 4090,
+    "glide": {
+     "speed_kt": 116.1,
+     "ratio": 11.3
+    }
+   }
+  },
+  "pc7mk2": {
+   "legacy": {
+    "propulsion": {
+     "P": 522000,
+     "eta": 1.2109,
+     "T0": 9805,
+     "idle": 0
+    },
+    "aero": {
+     "CD0": 0.03529,
+     "K": 0.08894,
+     "CL0": 0.25,
+     "CLa": 4.987,
+     "CLflap": 0.55,
+     "CDflap": 0.06,
+     "CDgear": 0.02,
+     "Cm0": 0.045,
+     "Cma": -0.761,
+     "Cmflap": -0.1,
+     "aStall": 17.74,
+     "aStallFlap": -1.65
+    }
+   },
+   "notes": [
+    "polar from glide 113.6 KCAS E 11.3: CD0s 0.0353 Ks 0.0889; idle 0 (POH glide is at idle, windmilling)",
+    "climb fit (static): target Vy 136.0 KCAS ROC 2840 fpm → T0 9805 N, Vc 64.5 m/s",
+    "WARNING eta 1.21 > 0.95: P too low for the sim's thrust law at this ROC"
+   ],
+   "targets": {
+    "VS1": 75,
+    "VS0": 67,
+    "Vy": 136,
+    "roc": 2840,
+    "glide": {
+     "speed_kt": 113.6,
+     "ratio": 11.3
+    }
+   }
+  },
+  "t6a": {
+   "legacy": {
+    "propulsion": {
+     "P": 820300,
+     "eta": 1.0513,
+     "T0": 13347,
+     "idle": 0
+    },
+    "aero": {
+     "CD0": 0.03528,
+     "K": 0.08897,
+     "CL0": 0.25,
+     "CLa": 4.988,
+     "CLflap": 0.55,
+     "CDflap": 0.06,
+     "CDgear": 0.02,
+     "Cm0": 0.045,
+     "Cma": -0.869,
+     "Cmflap": -0.1,
+     "aStall": 18.99,
+     "aStallFlap": -1.88
+    }
+   },
+   "notes": [
+    "polar from glide 130.1 KCAS E 11.3: CD0s 0.0353 Ks 0.0890; idle 0 (POH glide is at idle, windmilling)",
+    "climb fit (static): target Vy 140.0 KCAS ROC 3100 fpm → T0 13347 N, Vc 64.6 m/s",
+    "WARNING eta 1.05 > 0.95: P too low for the sim's thrust law at this ROC"
+   ],
+   "targets": {
+    "VS1": 82,
+    "VS0": 74,
+    "Vy": 140,
+    "roc": 3100,
+    "glide": {
+     "speed_kt": 130.1,
+     "ratio": 11.3
+    }
+   }
+  },
+  "t6c": {
+   "legacy": {
+    "propulsion": {
+     "P": 820300,
+     "eta": 1.0512,
+     "T0": 13347,
+     "idle": 0
+    },
+    "aero": {
+     "CD0": 0.0353,
+     "K": 0.0889,
+     "CL0": 0.25,
+     "CLa": 4.988,
+     "CLflap": 0.55,
+     "CDflap": 0.06,
+     "CDgear": 0.02,
+     "Cm0": 0.045,
+     "Cma": -0.869,
+     "Cmflap": -0.1,
+     "aStall": 18.99,
+     "aStallFlap": -1.88
+    }
+   },
+   "notes": [
+    "polar from glide 134.0 KCAS E 11.3: CD0s 0.0353 Ks 0.0889; idle 0 (POH glide is at idle, windmilling)",
+    "climb fit (static): target Vy 140.0 KCAS ROC 2860 fpm → T0 13347 N, Vc 64.6 m/s",
+    "WARNING eta 1.05 > 0.95: P too low for the sim's thrust law at this ROC"
+   ],
+   "targets": {
+    "VS1": 85.8,
+    "VS0": 77.4,
+    "Vy": 140,
+    "roc": 2860,
+    "glide": {
+     "speed_kt": 134,
+     "ratio": 11.3
+    }
+   }
+  }
+ },
+ "trainer_r2_fit": {
+  "legacy": {
+   "propulsion": {
+    "P": 700000,
+    "eta": 1.2663,
+    "T0": 11500,
+    "idle": 0
+   },
+   "aero": {
+    "CD0": 0.03527,
+    "K": 0.08901,
+    "CL0": 0.25,
+    "CLa": 4.8,
+    "CLflap": 0.55,
+    "CDflap": 0.05,
+    "CDgear": 0.02,
+    "Cm0": 0.045,
+    "Cma": -0.72,
+    "Cmflap": -0.1,
+    "aStall": 18.07,
+    "aStallFlap": -1.94
+   }
+  },
+  "notes": [
+   "polar from glide 113.6 KCAS E 11.3: CD0s 0.0353 Ks 0.0890; idle 0 (POH glide is at idle, windmilling)",
+   "climb fit (static): target Vy 136.0 KCAS ROC 4000 fpm → T0 11500 N, Vc 77.1 m/s",
+   "WARNING eta 1.27 > 0.95: P too low for the sim's thrust law at this ROC"
+  ],
+  "targets": {
+   "VS1": 77.28,
+   "VS0": 69.25,
+   "Vy": 136,
+   "roc": 4000,
+   "glide": {
+    "speed_kt": 113.6,
+    "ratio": 11.3
+   }
+  }
+ },
+ "results": {
+  "pc9m": {
+   "ac": {
+    "m": 2350,
+    "Ixx": 4156,
+    "Iyy": 6901,
+    "Izz": 9713,
+    "Ixz": 0,
+    "S": 16.29,
+    "b": 10.19,
+    "c": 1.65,
+    "CL0": 0.25,
+    "CLa": 4.987,
+    "CLq": 6.1496,
+    "CLadot": 1.6001,
+    "CLde": 0.4185,
+    "CLflap": 0.55,
+    "CD0": 0.03529,
+    "K": 0.08895,
+    "CDflap": 0.06,
+    "CDgear": 0.02,
+    "CYb": -0.6294,
+    "CYdr": 0.1948,
+    "CYr": 0.3561,
+    "Clb": -0.0545,
+    "Clp": -0.4885,
+    "Clr": 0.2032,
+    "Clda": 0.2307,
+    "Cldr": 0.0153,
+    "Cm0": 0.045,
+    "Cma": -0.761,
+    "Cmq": -12.774,
+    "Cmadot": -4.7518,
+    "Cmde": -1.2427,
+    "Cmflap": -0.1,
+    "Cnb": 0.0959,
+    "Cnp": -0.1877,
+    "Cnr": -0.1836,
+    "Cnda": -0.011,
+    "Cndr": -0.0899,
+    "aStall": 17.57,
+    "aStallFlap": -1.83,
+    "P": 708000,
+    "eta": 1.337,
+    "T0": 12014,
+    "idle": 0,
+    "deUp": 0.32289,
+    "deDn": 0.27925,
+    "daMax": 0.27053,
+    "drMax": 0.41888,
+    "Vref": 89,
+    "Vapp": 95,
+    "Vs0": 69
+   },
+   "gear": [
+    {
+     "b": [
+      2.033,
+      0,
+      1.33
+     ],
+     "k": 46058,
+     "c": 4323.16,
+     "stroke": 0.2,
+     "steer": true
+    },
+    {
+     "b": [
+      -0.277,
+      -1.27,
+      1.35
+     ],
+     "k": 135214,
+     "c": 14189.7,
+     "stroke": 0.25,
+     "brake": true
+    },
+    {
+     "b": [
+      -0.277,
+      1.27,
+      1.35
+     ],
+     "k": 135214,
+     "c": 14189.7,
+     "stroke": 0.25,
+     "brake": true
+    }
+   ],
+   "info": {
+    "cruise": {
+     "ias": 200,
+     "h": 914.4
+    },
+    "approach": {
+     "ias": 95,
+     "h": 300,
+     "gammaDeg": -3
+    },
+    "takeoff": {
+     "f": 0.545455,
+     "name": "TO",
+     "VR": 78,
+     "theta": 10
+    },
+    "VS1": 77,
+    "VS0": 69,
+    "Vy": 136,
+    "Vx": 92
+   },
+   "summ": {
+    "VSR_clean_kt": 79,
+    "Vmin_clean_kt": 74.1,
+    "VSR_full_kt": 70.79,
+    "Vmin_full_kt": 66.36,
+    "Vy_SL_kt": 142.2,
+    "ROCmax_SL_fpm": 4126,
+    "glideLD_zeroThrust": 11.3,
+    "Vbg_kt": 115.9,
+    "glideLD_idle": 11.3,
+    "TO_groundRoll_m": 301,
+    "TO_50ft_m": 495,
+    "LDG_50ft_maxBrake_m": 668,
+    "LDG_50ft_asIs_m": 837
+   },
+   "modes": {
+    "approach": {
+     "sp_wn": 2.342,
+     "sp_zeta": 0.5785,
+     "CAP": 1.063,
+     "nAlpha": 5.157,
+     "ph_T_s": 25.55,
+     "ph_zeta": 0.1362,
+     "dr_wn": 1.797,
+     "dr_zeta": 0.1786,
+     "dr_zetaWn": 0.3209,
+     "tauR_s": 0.3386,
+     "spiral_t2_s": 25.74,
+     "spiral_divergent": true,
+     "trim_alpha_deg": 2.175,
+     "trim_theta_deg": -0.8254,
+     "trim_de_deg": -3.867,
+     "trim_thr": 0.2889
+    },
+    "cruise": {
+     "sp_wn": 4.89,
+     "sp_zeta": 0.5583,
+     "CAP": 1.046,
+     "nAlpha": 22.86,
+     "ph_T_s": 55.21,
+     "ph_zeta": 0.1664,
+     "dr_wn": 3.661,
+     "dr_zeta": 0.1643,
+     "dr_zetaWn": 0.6014,
+     "tauR_s": 0.1654,
+     "spiral_t2_s": 50.82,
+     "spiral_divergent": true,
+     "trim_alpha_deg": -0.5646,
+     "trim_theta_deg": -0.5646,
+     "trim_de_deg": 2.421,
+     "trim_thr": 0.5313
+    }
+   },
+   "stall": {
+    "UP": {
+     "f": 0,
+     "gear": 0,
+     "CLmax": 1.39827,
+     "V_CLmax_eas": 76.0254,
+     "V_CLmax_cas": 76.0391,
+     "nz": 0.926024,
+     "alpha_deg": 14.7738,
+     "t": 28.125,
+     "rate": 1.10132,
+     "VSR_eas": 79.0037,
+     "VSR_cas": 79.0179,
+     "Vmin_eas": 74.1025,
+     "de_end_deg": -14.7068,
+     "ias0": 107,
+     "VSR_kias": 79.0179,
+     "Vmin_kias": 74.1025
+    },
+    "TO": {
+     "f": 0.5455,
+     "gear": 1,
+     "CLmax": 1.58481,
+     "V_CLmax_eas": 71.2668,
+     "V_CLmax_cas": 71.2774,
+     "nz": 0.922289,
+     "alpha_deg": 13.617,
+     "t": 26.175,
+     "rate": 1.09774,
+     "VSR_eas": 74.2085,
+     "VSR_cas": 74.2196,
+     "Vmin_eas": 69.5878,
+     "de_end_deg": -17.5681,
+     "ias0": 100,
+     "VSR_kias": 74.2196,
+     "Vmin_kias": 69.5878
+    },
+    "LDG": {
+     "f": 1,
+     "gear": 1,
+     "CLmax": 1.74148,
+     "V_CLmax_eas": 67.7832,
+     "V_CLmax_cas": 67.792,
+     "nz": 0.916807,
+     "alpha_deg": 12.6717,
+     "t": 25.825,
+     "rate": 1.09262,
+     "VSR_eas": 70.7918,
+     "VSR_cas": 70.8011,
+     "Vmin_eas": 66.3607,
+     "de_end_deg": -18.5,
+     "ias0": 96,
+     "VSR_kias": 70.8011,
+     "Vmin_kias": 66.3607
+    }
+   },
+   "climb": {
+    "Vy_kt": 142.191,
+    "ROCmax_fpm": 4125.65,
+    "Vy_grid_kt": 142,
+    "ROC_grid_fpm": 4125.63,
+    "Vx_kt": 88,
+    "gammaMax_deg": 21.2106,
+    "atVy": {
+     "ias": 142,
+     "V": 73.1657,
+     "alpha": 1.74988,
+     "de": 1.00191,
+     "gamma": 16.6455,
+     "theta": 18.3954,
+     "roc_fpm": 4125.63,
+     "LoverD": -3.34473
+    },
+    "edge": false
+   },
+   "glide": {
+    "zeroThrust": {
+     "Vbg_kt": 115.878,
+     "LD": 11.299,
+     "Vbg_grid_kt": 116,
+     "LD_grid": 11.299,
+     "sink_fpm": 1082.71,
+     "edge": false
+    },
+    "idle": {
+     "Vbg_kt": 115.878,
+     "LD": 11.299,
+     "Vbg_grid_kt": 116,
+     "LD_grid": 11.299,
+     "sink_fpm": 1082.71,
+     "edge": false
+    }
+   },
+   "takeoff": {
+    "flap": "TO",
+    "VR": 78,
+    "groundRoll_m": 301.078,
+    "tLiftoff_s": 11.3458,
+    "V_LOF_kt": 95.4939,
+    "dist50ft_m": 494.786,
+    "V50_kt": 108.804
+   },
+   "landing": {
+    "asIs": {
+     "ias50_kt": 88.6137,
+     "vtd_kt": 82.0565,
+     "sinkTD_fpm": -158.418,
+     "td_s": 307.126,
+     "air_m": 332.382,
+     "ground_m": 504.257,
+     "total_m": 836.639
+    },
+    "maxBrake": {
+     "ias50_kt": 88.6137,
+     "vtd_kt": 82.0565,
+     "sinkTD_fpm": -158.418,
+     "td_s": 307.126,
+     "air_m": 332.382,
+     "ground_m": 336.003,
+     "total_m": 668.385
+    }
+   },
+   "alpha": {
+    "alpha_star": {
+     "clean": 17.57,
+     "landing": 15.74
+    },
+    "alpha_CLmax": {
+     "clean": 14.78,
+     "landing": 12.68
+    },
+    "CLmax_sim": {
+     "clean": 1.398,
+     "landing": 1.741
+    },
+    "alpha_warn_5kt": {
+     "clean": 11.34,
+     "landing": 8.261
+    },
+    "alpha_warn_design": {
+     "clean": 10.68,
+     "landing": 7.375
+    }
+   },
+   "excessTW": 0.259,
+   "roll": {
+    "approach": {
+     "pss_dps": 70.2154,
+     "pb2V": 0.127759,
+     "t": 0.727,
+     "tau": 0.338566
+    },
+    "cruise": {
+     "pss_dps": 147.822,
+     "pb2V": 0.127759,
+     "t": 0.566,
+     "tau": 0.165434
+    }
+   },
+   "climbTM": {
+    "Vy_kt": 140.61,
+    "ROCmax_fpm": 4633.9,
+    "Vy_grid_kt": 140,
+    "ROC_grid_fpm": 4633.78,
+    "Vx_kt": 84,
+    "gammaMax_deg": 24.8322,
+    "atVy": {
+     "ias": 140,
+     "V": 72.1352,
+     "alpha": 1.34691,
+     "de": 1.24867,
+     "gamma": 19.0459,
+     "theta": 20.3929,
+     "roc_fpm": 4633.78,
+     "LoverD": -2.89666
+    },
+    "edge": false
+   },
+   "level": null,
+   "gammaAtVx_deg": 21.09,
+   "massSpeeds": {
+    "k": 1.052,
+    "from": {
+     "Vref": 85,
+     "Vapp": 90
+    },
+    "to": {
+     "Vref": 89,
+     "Vapp": 95
+    }
+   }
+  },
+  "pc7mk2": {
+   "ac": {
+    "m": 2250,
+    "Ixx": 3979,
+    "Iyy": 6607,
+    "Izz": 9299,
+    "Ixz": 0,
+    "S": 16.29,
+    "b": 10.19,
+    "c": 1.65,
+    "CL0": 0.25,
+    "CLa": 4.987,
+    "CLq": 6.1496,
+    "CLadot": 1.6001,
+    "CLde": 0.4185,
+    "CLflap": 0.55,
+    "CD0": 0.03529,
+    "K": 0.08894,
+    "CDflap": 0.06,
+    "CDgear": 0.02,
+    "CYb": -0.6294,
+    "CYdr": 0.1948,
+    "CYr": 0.3561,
+    "Clb": -0.0545,
+    "Clp": -0.4885,
+    "Clr": 0.2032,
+    "Clda": 0.2307,
+    "Cldr": 0.0153,
+    "Cm0": 0.045,
+    "Cma": -0.761,
+    "Cmq": -12.774,
+    "Cmadot": -4.7518,
+    "Cmde": -1.2427,
+    "Cmflap": -0.1,
+    "Cnb": 0.0959,
+    "Cnp": -0.1877,
+    "Cnr": -0.1836,
+    "Cnda": -0.011,
+    "Cndr": -0.0899,
+    "aStall": 17.74,
+    "aStallFlap": -1.65,
+    "P": 522000,
+    "eta": 1.211,
+    "T0": 9805,
+    "idle": 0,
+    "deUp": 0.32289,
+    "deDn": 0.27925,
+    "daMax": 0.27053,
+    "drMax": 0.41888,
+    "Vref": 88,
+    "Vapp": 93,
+    "Vs0": 67
+   },
+   "gear": [
+    {
+     "b": [
+      2.033,
+      0,
+      1.33
+     ],
+     "k": 44098.1,
+     "c": 4139.2,
+     "stroke": 0.2,
+     "steer": true
+    },
+    {
+     "b": [
+      -0.277,
+      -1.27,
+      1.35
+     ],
+     "k": 129461,
+     "c": 13585.9,
+     "stroke": 0.25,
+     "brake": true
+    },
+    {
+     "b": [
+      -0.277,
+      1.27,
+      1.35
+     ],
+     "k": 129461,
+     "c": 13585.9,
+     "stroke": 0.25,
+     "brake": true
+    }
+   ],
+   "info": {
+    "cruise": {
+     "ias": 200,
+     "h": 914.4
+    },
+    "approach": {
+     "ias": 92,
+     "h": 300,
+     "gammaDeg": -3
+    },
+    "takeoff": {
+     "f": 0.545455,
+     "name": "TO",
+     "VR": 76,
+     "theta": 10
+    },
+    "VS1": 75,
+    "VS0": 67,
+    "Vy": 136,
+    "Vx": 90
+   },
+   "summ": {
+    "VSR_clean_kt": 76.94,
+    "Vmin_clean_kt": 72.36,
+    "VSR_full_kt": 68.72,
+    "Vmin_full_kt": 64.65,
+    "Vy_SL_kt": 127.2,
+    "ROCmax_SL_fpm": 2869,
+    "glideLD_zeroThrust": 11.3,
+    "Vbg_kt": 113.4,
+    "glideLD_idle": 11.3,
+    "TO_groundRoll_m": 337,
+    "TO_50ft_m": 543,
+    "LDG_50ft_maxBrake_m": 657,
+    "LDG_50ft_asIs_m": 823
+   },
+   "modes": {
+    "approach": {
+     "sp_wn": 2.329,
+     "sp_zeta": 0.5886,
+     "CAP": 1.074,
+     "nAlpha": 5.051,
+     "ph_T_s": 24.88,
+     "ph_zeta": 0.1381,
+     "dr_wn": 1.785,
+     "dr_zeta": 0.1854,
+     "dr_zetaWn": 0.3308,
+     "tauR_s": 0.3359,
+     "spiral_t2_s": 24.33,
+     "spiral_divergent": true,
+     "trim_alpha_deg": 2.412,
+     "trim_theta_deg": -0.588,
+     "trim_de_deg": -4.013,
+     "trim_thr": 0.3556
+    },
+    "cruise": {
+     "sp_wn": 5.019,
+     "sp_zeta": 0.568,
+     "CAP": 1.055,
+     "nAlpha": 23.87,
+     "ph_T_s": 55.58,
+     "ph_zeta": 0.1803,
+     "dr_wn": 3.747,
+     "dr_zeta": 0.1694,
+     "dr_zetaWn": 0.6345,
+     "tauR_s": 0.1587,
+     "spiral_t2_s": 51.49,
+     "spiral_divergent": true,
+     "trim_alpha_deg": -0.6762,
+     "trim_theta_deg": -0.6762,
+     "trim_de_deg": 2.489,
+     "trim_thr": 0.7461
+    }
+   },
+   "stall": {
+    "UP": {
+     "f": 0,
+     "gear": 0,
+     "CLmax": 1.41172,
+     "V_CLmax_eas": 74.4305,
+     "V_CLmax_cas": 74.4433,
+     "nz": 0.935942,
+     "alpha_deg": 14.9352,
+     "t": 27.3125,
+     "rate": 1.08264,
+     "VSR_eas": 76.9354,
+     "VSR_cas": 76.9487,
+     "Vmin_eas": 72.3632,
+     "de_end_deg": -14.6316,
+     "ias0": 104,
+     "VSR_kias": 76.9487,
+     "Vmin_kias": 72.3632
+    },
+    "TO": {
+     "f": 0.5455,
+     "gear": 1,
+     "CLmax": 1.60612,
+     "V_CLmax_eas": 69.6476,
+     "V_CLmax_cas": 69.6576,
+     "nz": 0.932373,
+     "alpha_deg": 13.8737,
+     "t": 25.475,
+     "rate": 1.07369,
+     "VSR_eas": 72.1293,
+     "VSR_cas": 72.1396,
+     "Vmin_eas": 67.8871,
+     "de_end_deg": -17.3932,
+     "ias0": 97,
+     "VSR_kias": 72.1396,
+     "Vmin_kias": 67.8871
+    },
+    "LDG": {
+     "f": 1,
+     "gear": 1,
+     "CLmax": 1.76937,
+     "V_CLmax_eas": 66.1388,
+     "V_CLmax_cas": 66.147,
+     "nz": 0.926255,
+     "alpha_deg": 13.0075,
+     "t": 25.1708,
+     "rate": 1.06716,
+     "VSR_eas": 68.7212,
+     "VSR_cas": 68.7298,
+     "Vmin_eas": 64.6509,
+     "de_end_deg": -18.5,
+     "ias0": 93,
+     "VSR_kias": 68.7298,
+     "Vmin_kias": 64.6509
+    }
+   },
+   "climb": {
+    "Vy_kt": 127.196,
+    "ROCmax_fpm": 2868.69,
+    "Vy_grid_kt": 128,
+    "ROC_grid_fpm": 2868.5,
+    "Vx_kt": 86,
+    "gammaMax_deg": 15.6922,
+    "atVy": {
+     "ias": 128,
+     "V": 65.9522,
+     "alpha": 2.72175,
+     "de": 0.406754,
+     "gamma": 12.7647,
+     "theta": 15.4865,
+     "roc_fpm": 2868.5,
+     "LoverD": -4.41409
+    },
+    "edge": false
+   },
+   "glide": {
+    "zeroThrust": {
+     "Vbg_kt": 113.381,
+     "LD": 11.2995,
+     "Vbg_grid_kt": 113,
+     "LD_grid": 11.2992,
+     "sink_fpm": 1054.69,
+     "edge": false
+    },
+    "idle": {
+     "Vbg_kt": 113.381,
+     "LD": 11.2995,
+     "Vbg_grid_kt": 113,
+     "LD_grid": 11.2992,
+     "sink_fpm": 1054.69,
+     "edge": false
+    }
+   },
+   "takeoff": {
+    "flap": "TO",
+    "VR": 76,
+    "groundRoll_m": 336.713,
+    "tLiftoff_s": 13.3708,
+    "V_LOF_kt": 90.6099,
+    "dist50ft_m": 542.74,
+    "V50_kt": 100.314
+   },
+   "landing": {
+    "asIs": {
+     "ias50_kt": 87.8689,
+     "vtd_kt": 81.2056,
+     "sinkTD_fpm": -152.732,
+     "td_s": 310.575,
+     "air_m": 330.95,
+     "ground_m": 491.557,
+     "total_m": 822.507
+    },
+    "maxBrake": {
+     "ias50_kt": 87.8689,
+     "vtd_kt": 81.2056,
+     "sinkTD_fpm": -152.732,
+     "td_s": 310.575,
+     "air_m": 330.95,
+     "ground_m": 326.285,
+     "total_m": 657.235
+    }
+   },
+   "alpha": {
+    "alpha_star": {
+     "clean": 17.74,
+     "landing": 16.09
+    },
+    "alpha_CLmax": {
+     "clean": 14.94,
+     "landing": 13
+    },
+    "CLmax_sim": {
+     "clean": 1.411,
+     "landing": 1.769
+    },
+    "alpha_warn_5kt": {
+     "clean": 11.43,
+     "landing": 8.468
+    },
+    "alpha_warn_design": {
+     "clean": 10.75,
+     "landing": 7.548
+    }
+   },
+   "excessTW": 0.1727,
+   "roll": {
+    "approach": {
+     "pss_dps": 67.9981,
+     "pb2V": 0.127759,
+     "t": 0.74,
+     "tau": 0.335905
+    },
+    "cruise": {
+     "pss_dps": 147.822,
+     "pb2V": 0.127759,
+     "t": 0.56,
+     "tau": 0.158731
+    }
+   },
+   "climbTM": {
+    "Vy_kt": 125.601,
+    "ROCmax_fpm": 3188.28,
+    "Vy_grid_kt": 126,
+    "ROC_grid_fpm": 3188.23,
+    "Vx_kt": 82,
+    "gammaMax_deg": 18.0746,
+    "atVy": {
+     "ias": 126,
+     "V": 64.9216,
+     "alpha": 2.38156,
+     "de": 0.615079,
+     "gamma": 14.4463,
+     "theta": 16.8279,
+     "roc_fpm": 3188.23,
+     "LoverD": -3.88171
+    },
+    "edge": false
+   },
+   "level": null,
+   "gammaAtVx_deg": 15.6,
+   "massSpeeds": {
+    "k": 1.043,
+    "from": {
+     "Vref": 84,
+     "Vapp": 89
+    },
+    "to": {
+     "Vref": 88,
+     "Vapp": 93
+    }
+   }
+  },
+  "t6a": {
+   "ac": {
+    "m": 2948.3,
+    "Ixx": 5213.9,
+    "Iyy": 8691.9,
+    "Izz": 12210,
+    "Ixz": 0,
+    "S": 16.28,
+    "b": 10.19,
+    "c": 1.65,
+    "CL0": 0.25,
+    "CLa": 4.988,
+    "CLq": 6.3675,
+    "CLadot": 1.6184,
+    "CLde": 0.4193,
+    "CLflap": 0.55,
+    "CD0": 0.03528,
+    "K": 0.08897,
+    "CDflap": 0.06,
+    "CDgear": 0.02,
+    "CYb": -0.628,
+    "CYdr": 0.1951,
+    "CYr": 0.3564,
+    "Clb": -0.0543,
+    "Clp": -0.4889,
+    "Clr": 0.2075,
+    "Clda": 0.2309,
+    "Cldr": 0.0153,
+    "Cm0": 0.045,
+    "Cma": -0.869,
+    "Cmq": -12.973,
+    "Cmadot": -4.8384,
+    "Cmde": -1.2536,
+    "Cmflap": -0.1,
+    "Cnb": 0.0958,
+    "Cnp": -0.1935,
+    "Cnr": -0.1844,
+    "Cnda": -0.011,
+    "Cndr": -0.09,
+    "aStall": 18.99,
+    "aStallFlap": -1.88,
+    "P": 820300,
+    "eta": 1.051,
+    "T0": 13347,
+    "idle": 0,
+    "deUp": 0.31416,
+    "deDn": 0.27925,
+    "daMax": 0.27053,
+    "drMax": 0.41888,
+    "Vref": 97,
+    "Vapp": 107,
+    "Vs0": 74
+   },
+   "gear": [
+    {
+     "b": [
+      2.033,
+      0,
+      1.33
+     ],
+     "k": 57785.2,
+     "c": 5423.91,
+     "stroke": 0.2,
+     "steer": true
+    },
+    {
+     "b": [
+      -0.277,
+      -1.27,
+      1.35
+     ],
+     "k": 169642,
+     "c": 17802.7,
+     "stroke": 0.25,
+     "brake": true
+    },
+    {
+     "b": [
+      -0.277,
+      1.27,
+      1.35
+     ],
+     "k": 169642,
+     "c": 17802.7,
+     "stroke": 0.25,
+     "brake": true
+    }
+   ],
+   "info": {
+    "cruise": {
+     "ias": 200,
+     "h": 914.4
+    },
+    "approach": {
+     "ias": 100,
+     "h": 300,
+     "gammaDeg": -3
+    },
+    "takeoff": {
+     "f": 0.545455,
+     "name": "TO",
+     "VR": 85,
+     "theta": 8.5
+    },
+    "VS1": 82,
+    "VS0": 74,
+    "Vy": 140,
+    "Vx": 100
+   },
+   "summ": {
+    "VSR_clean_kt": 85.45,
+    "Vmin_clean_kt": 79.88,
+    "VSR_full_kt": 77.12,
+    "Vmin_full_kt": 71.85,
+    "Vy_SL_kt": 140.6,
+    "ROCmax_SL_fpm": 3134,
+    "glideLD_zeroThrust": 11.3,
+    "Vbg_kt": 129.8,
+    "glideLD_idle": 11.3,
+    "TO_groundRoll_m": 408,
+    "TO_50ft_m": 688,
+    "LDG_50ft_maxBrake_m": 727,
+    "LDG_50ft_asIs_m": 925
+   },
+   "modes": {
+    "approach": {
+     "sp_wn": 2.269,
+     "sp_zeta": 0.5057,
+     "CAP": 1.131,
+     "nAlpha": 4.552,
+     "ph_T_s": 26.04,
+     "ph_zeta": 0.1373,
+     "dr_wn": 1.686,
+     "dr_zeta": 0.1592,
+     "dr_zetaWn": 0.2684,
+     "tauR_s": 0.4012,
+     "spiral_t2_s": 22.31,
+     "spiral_divergent": true,
+     "trim_alpha_deg": 3.705,
+     "trim_theta_deg": 0.7048,
+     "trim_de_deg": -5.082,
+     "trim_thr": 0.3459
+    },
+    "cruise": {
+     "sp_wn": 4.515,
+     "sp_zeta": 0.4861,
+     "CAP": 1.119,
+     "nAlpha": 18.21,
+     "ph_T_s": 53.33,
+     "ph_zeta": 0.1343,
+     "dr_wn": 3.253,
+     "dr_zeta": 0.1409,
+     "dr_zetaWn": 0.4582,
+     "tauR_s": 0.2055,
+     "spiral_t2_s": 45.6,
+     "spiral_divergent": true,
+     "trim_alpha_deg": 0.1072,
+     "trim_theta_deg": 0.1072,
+     "trim_de_deg": 1.982,
+     "trim_thr": 0.563
+    }
+   },
+   "stall": {
+    "UP": {
+     "f": 0,
+     "gear": 0,
+     "CLmax": 1.50048,
+     "V_CLmax_eas": 81.3127,
+     "V_CLmax_cas": 81.3291,
+     "nz": 0.905487,
+     "alpha_deg": 16.1246,
+     "t": 29.8417,
+     "rate": 1.12887,
+     "VSR_eas": 85.451,
+     "VSR_cas": 85.4683,
+     "Vmin_eas": 79.8837,
+     "de_end_deg": -16.252,
+     "ias0": 115,
+     "VSR_kias": 85.4683,
+     "Vmin_kias": 79.8837
+    },
+    "TO": {
+     "f": 0.5455,
+     "gear": 1,
+     "CLmax": 1.68596,
+     "V_CLmax_eas": 76.1872,
+     "V_CLmax_cas": 76.1999,
+     "nz": 0.893198,
+     "alpha_deg": 14.948,
+     "t": 28.675,
+     "rate": 1.1443,
+     "VSR_eas": 80.6135,
+     "VSR_cas": 80.627,
+     "Vmin_eas": 75.2651,
+     "de_end_deg": -18,
+     "ias0": 109,
+     "VSR_kias": 80.627,
+     "Vmin_kias": 75.2651
+    },
+    "LDG": {
+     "f": 1,
+     "gear": 1,
+     "CLmax": 1.84202,
+     "V_CLmax_eas": 72.9759,
+     "V_CLmax_cas": 72.9867,
+     "nz": 0.895345,
+     "alpha_deg": 13.9818,
+     "t": 27.3333,
+     "rate": 1.13503,
+     "VSR_eas": 77.123,
+     "VSR_cas": 77.1344,
+     "Vmin_eas": 71.8464,
+     "de_end_deg": -18,
+     "ias0": 104,
+     "VSR_kias": 77.1344,
+     "Vmin_kias": 71.8464
+    }
+   },
+   "climb": {
+    "Vy_kt": 140.628,
+    "ROCmax_fpm": 3134.02,
+    "Vy_grid_kt": 140,
+    "ROC_grid_fpm": 3133.92,
+    "Vx_kt": 94,
+    "gammaMax_deg": 15.5715,
+    "atVy": {
+     "ias": 140,
+     "V": 72.1352,
+     "alpha": 3.29642,
+     "de": -0.229628,
+     "gamma": 12.7502,
+     "theta": 16.0466,
+     "roc_fpm": 3133.92,
+     "LoverD": -4.41929
+    },
+    "edge": false
+   },
+   "glide": {
+    "zeroThrust": {
+     "Vbg_kt": 129.848,
+     "LD": 11.3,
+     "Vbg_grid_kt": 130,
+     "LD_grid": 11.3,
+     "sink_fpm": 1213.28,
+     "edge": false
+    },
+    "idle": {
+     "Vbg_kt": 129.848,
+     "LD": 11.3,
+     "Vbg_grid_kt": 130,
+     "LD_grid": 11.3,
+     "sink_fpm": 1213.28,
+     "edge": false
+    }
+   },
+   "takeoff": {
+    "flap": "TO",
+    "VR": 85,
+    "groundRoll_m": 408.175,
+    "tLiftoff_s": 14.4458,
+    "V_LOF_kt": 100.897,
+    "dist50ft_m": 688.401,
+    "V50_kt": 114.661
+   },
+   "landing": {
+    "asIs": {
+     "ias50_kt": 97.2474,
+     "vtd_kt": 89.2506,
+     "sinkTD_fpm": -164.788,
+     "td_s": 282.569,
+     "air_m": 320.145,
+     "ground_m": 604.393,
+     "total_m": 924.538
+    },
+    "maxBrake": {
+     "ias50_kt": 97.2474,
+     "vtd_kt": 89.2506,
+     "sinkTD_fpm": -164.788,
+     "td_s": 282.569,
+     "air_m": 320.145,
+     "ground_m": 407.074,
+     "total_m": 727.219
+    }
+   },
+   "alpha": {
+    "alpha_star": {
+     "clean": 18.99,
+     "landing": 17.11
+    },
+    "alpha_CLmax": {
+     "clean": 16.12,
+     "landing": 13.98
+    },
+    "CLmax_sim": {
+     "clean": 1.501,
+     "landing": 1.842
+    },
+    "alpha_warn_5kt": {
+     "clean": 12.51,
+     "landing": 9.472
+    },
+    "alpha_warn_design": {
+     "clean": 11.85,
+     "landing": 8.595
+    }
+   },
+   "excessTW": 0.1663,
+   "roll": {
+    "approach": {
+     "pss_dps": 73.9145,
+     "pb2V": 0.127765,
+     "t": 0.745,
+     "tau": 0.401171
+    },
+    "cruise": {
+     "pss_dps": 147.829,
+     "pb2V": 0.127765,
+     "t": 0.601,
+     "tau": 0.205476
+    }
+   },
+   "climbTM": {
+    "Vy_kt": 137.583,
+    "ROCmax_fpm": 3723.66,
+    "Vy_grid_kt": 138,
+    "ROC_grid_fpm": 3723.61,
+    "Vx_kt": 88,
+    "gammaMax_deg": 19.6662,
+    "atVy": {
+     "ias": 138,
+     "V": 71.1047,
+     "alpha": 2.5761,
+     "de": 0.269695,
+     "gamma": 15.4281,
+     "theta": 18.0042,
+     "roc_fpm": 3723.61,
+     "LoverD": -3.62353
+    },
+    "edge": false
+   },
+   "level": [
+    {
+     "ias": 150,
+     "thr": 0.2988,
+     "theta_deg": 1.936,
+     "alpha_deg": 1.936,
+     "de_deg": 0.7145
+    },
+    {
+     "ias": 200,
+     "thr": 0.5529,
+     "theta_deg": -0.3131,
+     "alpha_deg": -0.3131,
+     "de_deg": 2.274
+    },
+    {
+     "ias": 250,
+     "thr": 1.007,
+     "theta_deg": -1.356,
+     "alpha_deg": -1.356,
+     "de_deg": 2.996
+    }
+   ],
+   "gammaAtVx_deg": 15.45,
+   "massSpeeds": {
+    "k": 1.07,
+    "from": {
+     "Vref": 91,
+     "Vapp": 100
+    },
+    "to": {
+     "Vref": 97,
+     "Vapp": 107
+    }
+   }
+  },
+  "t6c": {
+   "ac": {
+    "m": 3129.8,
+    "Ixx": 5535,
+    "Iyy": 9227,
+    "Izz": 12961,
+    "Ixz": 0,
+    "S": 16.28,
+    "b": 10.19,
+    "c": 1.65,
+    "CL0": 0.25,
+    "CLa": 4.988,
+    "CLq": 6.3675,
+    "CLadot": 1.6184,
+    "CLde": 0.4193,
+    "CLflap": 0.55,
+    "CD0": 0.0353,
+    "K": 0.0889,
+    "CDflap": 0.06,
+    "CDgear": 0.02,
+    "CYb": -0.628,
+    "CYdr": 0.1951,
+    "CYr": 0.3564,
+    "Clb": -0.0543,
+    "Clp": -0.4889,
+    "Clr": 0.2075,
+    "Clda": 0.2309,
+    "Cldr": 0.0153,
+    "Cm0": 0.045,
+    "Cma": -0.869,
+    "Cmq": -12.973,
+    "Cmadot": -4.8384,
+    "Cmde": -1.2536,
+    "Cmflap": -0.1,
+    "Cnb": 0.0958,
+    "Cnp": -0.1935,
+    "Cnr": -0.1844,
+    "Cnda": -0.011,
+    "Cndr": -0.09,
+    "aStall": 18.99,
+    "aStallFlap": -1.88,
+    "P": 820300,
+    "eta": 1.051,
+    "T0": 13347,
+    "idle": 0,
+    "deUp": 0.31416,
+    "deDn": 0.27925,
+    "daMax": 0.27053,
+    "drMax": 0.41888,
+    "Vref": 101,
+    "Vapp": 110,
+    "Vs0": 77
+   },
+   "gear": [
+    {
+     "b": [
+      2.033,
+      0,
+      1.33
+     ],
+     "k": 61341.2,
+     "c": 5757.7,
+     "stroke": 0.2,
+     "steer": true
+    },
+    {
+     "b": [
+      -0.277,
+      -1.27,
+      1.35
+     ],
+     "k": 180082,
+     "c": 18898.2,
+     "stroke": 0.25,
+     "brake": true
+    },
+    {
+     "b": [
+      -0.277,
+      1.27,
+      1.35
+     ],
+     "k": 180082,
+     "c": 18898.2,
+     "stroke": 0.25,
+     "brake": true
+    }
+   ],
+   "info": {
+    "cruise": {
+     "ias": 200,
+     "h": 914.4
+    },
+    "approach": {
+     "ias": 100,
+     "h": 300,
+     "gammaDeg": -3
+    },
+    "takeoff": {
+     "f": 0.545455,
+     "name": "TO",
+     "VR": 85,
+     "theta": 8.5
+    },
+    "VS1": 85.8,
+    "VS0": 77.4,
+    "Vy": 140,
+    "Vx": 103
+   },
+   "summ": {
+    "VSR_clean_kt": 88.05,
+    "Vmin_clean_kt": 82.61,
+    "VSR_full_kt": 79.46,
+    "Vmin_full_kt": 73.93,
+    "Vy_SL_kt": 142.1,
+    "ROCmax_SL_fpm": 2892,
+    "glideLD_zeroThrust": 11.3,
+    "Vbg_kt": 133.7,
+    "glideLD_idle": 11.3,
+    "TO_groundRoll_m": 436,
+    "TO_50ft_m": 753,
+    "LDG_50ft_maxBrake_m": 760,
+    "LDG_50ft_asIs_m": 979
+   },
+   "modes": {
+    "approach": {
+     "sp_wn": 2.192,
+     "sp_zeta": 0.4939,
+     "CAP": 1.12,
+     "nAlpha": 4.288,
+     "ph_T_s": 25.94,
+     "ph_zeta": 0.1354,
+     "dr_wn": 1.638,
+     "dr_zeta": 0.1563,
+     "dr_zetaWn": 0.256,
+     "tauR_s": 0.426,
+     "spiral_t2_s": 20.8,
+     "spiral_divergent": true,
+     "trim_alpha_deg": 4.496,
+     "trim_theta_deg": 1.496,
+     "trim_de_deg": -5.63,
+     "trim_thr": 0.3656
+    },
+    "cruise": {
+     "sp_wn": 4.363,
+     "sp_zeta": 0.474,
+     "CAP": 1.11,
+     "nAlpha": 17.15,
+     "ph_T_s": 53.06,
+     "ph_zeta": 0.1268,
+     "dr_wn": 3.153,
+     "dr_zeta": 0.1351,
+     "dr_zetaWn": 0.4259,
+     "tauR_s": 0.2175,
+     "spiral_t2_s": 44.68,
+     "spiral_divergent": true,
+     "trim_alpha_deg": 0.3112,
+     "trim_theta_deg": 0.3112,
+     "trim_de_deg": 1.841,
+     "trim_thr": 0.5693
+    }
+   },
+   "stall": {
+    "UP": {
+     "f": 0,
+     "gear": 0,
+     "CLmax": 1.50023,
+     "V_CLmax_eas": 83.3611,
+     "V_CLmax_cas": 83.3787,
+     "nz": 0.896365,
+     "alpha_deg": 16.126,
+     "t": 31.4458,
+     "rate": 1.13334,
+     "VSR_eas": 88.0483,
+     "VSR_cas": 88.0669,
+     "Vmin_eas": 82.6116,
+     "de_end_deg": -16.33,
+     "ias0": 119,
+     "VSR_kias": 88.0669,
+     "Vmin_kias": 82.6116
+    },
+    "TO": {
+     "f": 0.5455,
+     "gear": 1,
+     "CLmax": 1.68582,
+     "V_CLmax_eas": 78.2406,
+     "V_CLmax_cas": 78.2543,
+     "nz": 0.887311,
+     "alpha_deg": 14.9491,
+     "t": 29.3208,
+     "rate": 1.15138,
+     "VSR_eas": 83.0605,
+     "VSR_cas": 83.075,
+     "Vmin_eas": 77.558,
+     "de_end_deg": -18,
+     "ias0": 112,
+     "VSR_kias": 83.075,
+     "Vmin_kias": 77.558
+    },
+    "LDG": {
+     "f": 1,
+     "gear": 1,
+     "CLmax": 1.84184,
+     "V_CLmax_eas": 74.8491,
+     "V_CLmax_cas": 74.8606,
+     "nz": 0.887208,
+     "alpha_deg": 13.9837,
+     "t": 27.9667,
+     "rate": 1.14961,
+     "VSR_eas": 79.4647,
+     "VSR_cas": 79.4769,
+     "Vmin_eas": 73.9269,
+     "de_end_deg": -18,
+     "ias0": 107,
+     "VSR_kias": 79.4769,
+     "Vmin_kias": 73.9269
+    }
+   },
+   "climb": {
+    "Vy_kt": 142.121,
+    "ROCmax_fpm": 2892.19,
+    "Vy_grid_kt": 142,
+    "ROC_grid_fpm": 2892.18,
+    "Vx_kt": 98,
+    "gammaMax_deg": 13.9783,
+    "atVy": {
+     "ias": 142,
+     "V": 73.1657,
+     "alpha": 3.53428,
+     "de": -0.394518,
+     "gamma": 11.5842,
+     "theta": 15.1185,
+     "roc_fpm": 2892.18,
+     "LoverD": -4.87843
+    },
+    "edge": false
+   },
+   "glide": {
+    "zeroThrust": {
+     "Vbg_kt": 133.74,
+     "LD": 11.2995,
+     "Vbg_grid_kt": 134,
+     "LD_grid": 11.2994,
+     "sink_fpm": 1250.68,
+     "edge": false
+    },
+    "idle": {
+     "Vbg_kt": 133.74,
+     "LD": 11.2995,
+     "Vbg_grid_kt": 134,
+     "LD_grid": 11.2994,
+     "sink_fpm": 1250.68,
+     "edge": false
+    }
+   },
+   "takeoff": {
+    "flap": "TO",
+    "VR": 85,
+    "groundRoll_m": 435.63,
+    "tLiftoff_s": 15.4583,
+    "V_LOF_kt": 100.885,
+    "dist50ft_m": 752.972,
+    "V50_kt": 115.167
+   },
+   "landing": {
+    "asIs": {
+     "ias50_kt": 101.546,
+     "vtd_kt": 93.3754,
+     "sinkTD_fpm": -159.627,
+     "td_s": 291.858,
+     "air_m": 324.154,
+     "ground_m": 654.673,
+     "total_m": 978.828
+    },
+    "maxBrake": {
+     "ias50_kt": 101.546,
+     "vtd_kt": 93.3754,
+     "sinkTD_fpm": -159.627,
+     "td_s": 291.858,
+     "air_m": 324.154,
+     "ground_m": 436.081,
+     "total_m": 760.235
+    }
+   },
+   "alpha": {
+    "alpha_star": {
+     "clean": 18.99,
+     "landing": 17.11
+    },
+    "alpha_CLmax": {
+     "clean": 16.12,
+     "landing": 13.98
+    },
+    "CLmax_sim": {
+     "clean": 1.501,
+     "landing": 1.842
+    },
+    "alpha_warn_5kt": {
+     "clean": 12.56,
+     "landing": 9.539
+    },
+    "alpha_warn_design": {
+     "clean": 11.92,
+     "landing": 8.682
+    }
+   },
+   "excessTW": 0.1424,
+   "roll": {
+    "approach": {
+     "pss_dps": 73.9145,
+     "pb2V": 0.127765,
+     "t": 0.761,
+     "tau": 0.425968
+    },
+    "cruise": {
+     "pss_dps": 147.829,
+     "pb2V": 0.127765,
+     "t": 0.611,
+     "tau": 0.217521
+    }
+   },
+   "climbTM": {
+    "Vy_kt": 139.172,
+    "ROCmax_fpm": 3389.12,
+    "Vy_grid_kt": 140,
+    "ROC_grid_fpm": 3388.94,
+    "Vx_kt": 92,
+    "gammaMax_deg": 17.2956,
+    "atVy": {
+     "ias": 140,
+     "V": 72.1352,
+     "alpha": 2.89408,
+     "de": 0.0492706,
+     "gamma": 13.8075,
+     "theta": 16.7016,
+     "roc_fpm": 3388.94,
+     "LoverD": -4.06898
+    },
+    "edge": false
+   },
+   "level": null,
+   "gammaAtVx_deg": 13.9,
+   "massSpeeds": {
+    "k": 1.062,
+    "from": {
+     "Vref": 95,
+     "Vapp": 104
+    },
+    "to": {
+     "Vref": 101,
+     "Vapp": 110
+    }
+   }
+  },
+  "t6a_6300": {
+   "ac": {
+    "m": 2857.6,
+    "Ixx": 5053.5,
+    "Iyy": 8424.4,
+    "Izz": 11834,
+    "Ixz": 0,
+    "S": 16.28,
+    "b": 10.19,
+    "c": 1.65,
+    "CL0": 0.25,
+    "CLa": 4.988,
+    "CLq": 6.3675,
+    "CLadot": 1.6184,
+    "CLde": 0.4193,
+    "CLflap": 0.55,
+    "CD0": 0.03528,
+    "K": 0.08897,
+    "CDflap": 0.06,
+    "CDgear": 0.02,
+    "CYb": -0.628,
+    "CYdr": 0.1951,
+    "CYr": 0.3564,
+    "Clb": -0.0543,
+    "Clp": -0.4889,
+    "Clr": 0.2075,
+    "Clda": 0.2309,
+    "Cldr": 0.0153,
+    "Cm0": 0.045,
+    "Cma": -0.869,
+    "Cmq": -12.973,
+    "Cmadot": -4.8384,
+    "Cmde": -1.2536,
+    "Cmflap": -0.1,
+    "Cnb": 0.0958,
+    "Cnp": -0.1935,
+    "Cnr": -0.1844,
+    "Cnda": -0.011,
+    "Cndr": -0.09,
+    "aStall": 18.99,
+    "aStallFlap": -1.88,
+    "P": 820300,
+    "eta": 1.051,
+    "T0": 13347,
+    "idle": 0,
+    "deUp": 0.31416,
+    "deDn": 0.27925,
+    "daMax": 0.27053,
+    "drMax": 0.41888,
+    "Vref": 96,
+    "Vapp": 105,
+    "Vs0": 74
+   },
+   "gear": [
+    {
+     "b": [
+      2.033,
+      0,
+      1.33
+     ],
+     "k": 56007.1,
+     "c": 5257.02,
+     "stroke": 0.2,
+     "steer": true
+    },
+    {
+     "b": [
+      -0.277,
+      -1.27,
+      1.35
+     ],
+     "k": 164422,
+     "c": 17254.9,
+     "stroke": 0.25,
+     "brake": true
+    },
+    {
+     "b": [
+      -0.277,
+      1.27,
+      1.35
+     ],
+     "k": 164422,
+     "c": 17254.9,
+     "stroke": 0.25,
+     "brake": true
+    }
+   ],
+   "info": {
+    "cruise": {
+     "ias": 200,
+     "h": 914.4
+    },
+    "approach": {
+     "ias": 100,
+     "h": 300,
+     "gammaDeg": -3
+    },
+    "takeoff": {
+     "f": 0.545455,
+     "name": "TO",
+     "VR": 85,
+     "theta": 8.5
+    },
+    "VS1": 82,
+    "VS0": 74,
+    "Vy": 140,
+    "Vx": 100
+   },
+   "summ": {
+    "VSR_clean_kt": 84.13,
+    "Vmin_clean_kt": 78.76,
+    "VSR_full_kt": 75.93,
+    "Vmin_full_kt": 70.82,
+    "Vy_SL_kt": 139.9,
+    "ROCmax_SL_fpm": 3265,
+    "glideLD_zeroThrust": 11.3,
+    "Vbg_kt": 127.8,
+    "glideLD_idle": 11.3,
+    "TO_groundRoll_m": 394,
+    "TO_50ft_m": 659,
+    "LDG_50ft_maxBrake_m": 721,
+    "LDG_50ft_asIs_m": 915
+   },
+   "modes": {
+    "approach": {
+     "sp_wn": 2.31,
+     "sp_zeta": 0.512,
+     "CAP": 1.136,
+     "nAlpha": 4.697,
+     "ph_T_s": 26.1,
+     "ph_zeta": 0.1386,
+     "dr_wn": 1.712,
+     "dr_zeta": 0.1609,
+     "dr_zetaWn": 0.2754,
+     "tauR_s": 0.3888,
+     "spiral_t2_s": 23.15,
+     "spiral_divergent": true,
+     "trim_alpha_deg": 3.308,
+     "trim_theta_deg": 0.3081,
+     "trim_de_deg": -4.807,
+     "trim_thr": 0.3367
+    },
+    "cruise": {
+     "sp_wn": 4.596,
+     "sp_zeta": 0.4925,
+     "CAP": 1.124,
+     "nAlpha": 18.79,
+     "ph_T_s": 53.47,
+     "ph_zeta": 0.1385,
+     "dr_wn": 3.307,
+     "dr_zeta": 0.144,
+     "dr_zetaWn": 0.4762,
+     "tauR_s": 0.1995,
+     "spiral_t2_s": 46.08,
+     "spiral_divergent": true,
+     "trim_alpha_deg": 0.005174,
+     "trim_theta_deg": 0.005174,
+     "trim_de_deg": 2.053,
+     "trim_thr": 0.5602
+    }
+   },
+   "stall": {
+    "UP": {
+     "f": 0,
+     "gear": 0,
+     "CLmax": 1.50043,
+     "V_CLmax_eas": 80.0308,
+     "V_CLmax_cas": 80.0465,
+     "nz": 0.904983,
+     "alpha_deg": 16.1237,
+     "t": 30.1292,
+     "rate": 1.12745,
+     "VSR_eas": 84.1273,
+     "VSR_cas": 84.1438,
+     "Vmin_eas": 78.7632,
+     "de_end_deg": -16.2529,
+     "ias0": 114,
+     "VSR_kias": 84.1438,
+     "Vmin_kias": 78.7632
+    },
+    "TO": {
+     "f": 0.5455,
+     "gear": 1,
+     "CLmax": 1.68613,
+     "V_CLmax_eas": 75.2697,
+     "V_CLmax_cas": 75.282,
+     "nz": 0.899586,
+     "alpha_deg": 14.9494,
+     "t": 27.9417,
+     "rate": 1.13559,
+     "VSR_eas": 79.3595,
+     "VSR_cas": 79.3725,
+     "Vmin_eas": 74.0617,
+     "de_end_deg": -18,
+     "ias0": 107,
+     "VSR_kias": 79.3725,
+     "Vmin_kias": 74.0617
+    },
+    "LDG": {
+     "f": 1,
+     "gear": 1,
+     "CLmax": 1.84198,
+     "V_CLmax_eas": 71.8459,
+     "V_CLmax_cas": 71.8562,
+     "nz": 0.895361,
+     "alpha_deg": 13.9828,
+     "t": 27.4917,
+     "rate": 1.13322,
+     "VSR_eas": 75.9282,
+     "VSR_cas": 75.939,
+     "Vmin_eas": 70.8217,
+     "de_end_deg": -18,
+     "ias0": 103,
+     "VSR_kias": 75.939,
+     "Vmin_kias": 70.8217
+    }
+   },
+   "climb": {
+    "Vy_kt": 139.876,
+    "ROCmax_fpm": 3264.71,
+    "Vy_grid_kt": 140,
+    "ROC_grid_fpm": 3264.7,
+    "Vx_kt": 94,
+    "gammaMax_deg": 16.4292,
+    "atVy": {
+     "ias": 140,
+     "V": 72.1352,
+     "alpha": 3.08545,
+     "de": -0.0833836,
+     "gamma": 13.2919,
+     "theta": 16.3773,
+     "roc_fpm": 3264.7,
+     "LoverD": -4.23299
+    },
+    "edge": false
+   },
+   "glide": {
+    "zeroThrust": {
+     "Vbg_kt": 127.834,
+     "LD": 11.3,
+     "Vbg_grid_kt": 128,
+     "LD_grid": 11.3,
+     "sink_fpm": 1194.61,
+     "edge": false
+    },
+    "idle": {
+     "Vbg_kt": 127.834,
+     "LD": 11.3,
+     "Vbg_grid_kt": 128,
+     "LD_grid": 11.3,
+     "sink_fpm": 1194.61,
+     "edge": false
+    }
+   },
+   "takeoff": {
+    "flap": "TO",
+    "VR": 85,
+    "groundRoll_m": 394.176,
+    "tLiftoff_s": 13.9292,
+    "V_LOF_kt": 100.864,
+    "dist50ft_m": 659.181,
+    "V50_kt": 114.5
+   },
+   "landing": {
+    "asIs": {
+     "ias50_kt": 96.0511,
+     "vtd_kt": 88.4015,
+     "sinkTD_fpm": -157.539,
+     "td_s": 289.125,
+     "air_m": 324.049,
+     "ground_m": 591.375,
+     "total_m": 915.423
+    },
+    "maxBrake": {
+     "ias50_kt": 96.0511,
+     "vtd_kt": 88.4015,
+     "sinkTD_fpm": -157.539,
+     "td_s": 289.125,
+     "air_m": 324.049,
+     "ground_m": 397.357,
+     "total_m": 721.406
+    }
+   },
+   "alpha": {
+    "alpha_star": {
+     "clean": 18.99,
+     "landing": 17.11
+    },
+    "alpha_CLmax": {
+     "clean": 16.12,
+     "landing": 13.98
+    },
+    "CLmax_sim": {
+     "clean": 1.501,
+     "landing": 1.842
+    },
+    "alpha_warn_5kt": {
+     "clean": 12.49,
+     "landing": 9.436
+    },
+    "alpha_warn_design": {
+     "clean": 11.82,
+     "landing": 8.548
+    }
+   },
+   "excessTW": 0.1805,
+   "roll": {
+    "approach": {
+     "pss_dps": 73.9145,
+     "pb2V": 0.127765,
+     "t": 0.737,
+     "tau": 0.388848
+    },
+    "cruise": {
+     "pss_dps": 147.829,
+     "pb2V": 0.127765,
+     "t": 0.596,
+     "tau": 0.199451
+    }
+   },
+   "climbTM": null,
+   "level": null,
+   "gammaAtVx_deg": 16.26,
+   "massSpeeds": {
+    "k": 1.054,
+    "from": {
+     "Vref": 91,
+     "Vapp": 100
+    },
+    "to": {
+     "Vref": 96,
+     "Vapp": 105
+    }
+   }
+  },
+  "trainer_r1": {
+   "ac": {
+    "m": 2250,
+    "Ixx": 2600,
+    "Iyy": 7300,
+    "Izz": 9200,
+    "Ixz": 120,
+    "S": 16.3,
+    "b": 10.2,
+    "c": 1.65,
+    "CL0": 0.25,
+    "CLa": 4.8,
+    "CLq": 7.5,
+    "CLadot": 1.6,
+    "CLde": 0.35,
+    "CLflap": 0.55,
+    "CD0": 0.024,
+    "K": 0.062,
+    "CDflap": 0.05,
+    "CDgear": 0.02,
+    "CYb": -0.6,
+    "CYdr": 0.15,
+    "CYr": 0.2,
+    "Clb": -0.085,
+    "Clp": -0.47,
+    "Clr": 0.11,
+    "Clda": 0.16,
+    "Cldr": 0.012,
+    "Cm0": 0.045,
+    "Cma": -0.72,
+    "Cmq": -12.5,
+    "Cmadot": -4.5,
+    "Cmde": -1.15,
+    "Cmflap": -0.1,
+    "Cnb": 0.075,
+    "Cnp": -0.055,
+    "Cnr": -0.14,
+    "Cnda": -0.01,
+    "Cndr": -0.072,
+    "aStall": 17,
+    "aStallFlap": -2.5,
+    "P": 700000,
+    "eta": 0.8,
+    "T0": 11500,
+    "idle": 0.045,
+    "deUp": 0.38397,
+    "deDn": 0.2618,
+    "daMax": 0.34907,
+    "drMax": 0.43633,
+    "Vref": 88,
+    "Vapp": 95,
+    "Vs0": 71
+   },
+   "gear": [
+    {
+     "b": [
+      2.3,
+      0,
+      1.36
+     ],
+     "k": 52000,
+     "c": 5000,
+     "stroke": 0.22,
+     "steer": true
+    },
+    {
+     "b": [
+      -0.35,
+      -1.55,
+      1.38
+     ],
+     "k": 125000,
+     "c": 12500,
+     "stroke": 0.25,
+     "brake": true
+    },
+    {
+     "b": [
+      -0.35,
+      1.55,
+      1.38
+     ],
+     "k": 125000,
+     "c": 12500,
+     "stroke": 0.25,
+     "brake": true
+    }
+   ],
+   "info": {
+    "cruise": {
+     "ias": 155,
+     "h": 914.4
+    },
+    "approach": {
+     "ias": 95,
+     "h": 300,
+     "gammaDeg": -3
+    },
+    "takeoff": {
+     "f": 0,
+     "name": "UP",
+     "VR": 82,
+     "theta": 10
+    },
+    "VS1": null,
+    "VS0": 71,
+    "Vy": null,
+    "Vx": null
+   },
+   "summ": {
+    "VSR_clean_kt": 79.59,
+    "Vmin_clean_kt": 75.76,
+    "VSR_full_kt": 71.86,
+    "Vmin_full_kt": 68.35,
+    "Vy_SL_kt": 128.8,
+    "ROCmax_SL_fpm": 3225,
+    "glideLD_zeroThrust": 16.46,
+    "Vbg_kt": 114.1,
+    "glideLD_idle": 21.73,
+    "TO_groundRoll_m": 358,
+    "TO_50ft_m": 590,
+    "LDG_50ft_maxBrake_m": 714,
+    "LDG_50ft_asIs_m": 950
+   },
+   "modes": {
+    "approach": {
+     "sp_wn": 2.221,
+     "sp_zeta": 0.5779,
+     "CAP": 0.9507,
+     "nAlpha": 5.187,
+     "ph_T_s": 25.54,
+     "ph_zeta": 0.1151,
+     "dr_wn": 1.611,
+     "dr_zeta": 0.1395,
+     "dr_zetaWn": 0.2247,
+     "tauR_s": 0.218,
+     "spiral_t2_s": 36.17,
+     "spiral_divergent": false,
+     "trim_alpha_deg": 1.73,
+     "trim_theta_deg": -1.27,
+     "trim_de_deg": -3.823,
+     "trim_thr": 0.2442
+    },
+    "cruise": {
+     "sp_wn": 3.593,
+     "sp_zeta": 0.5597,
+     "CAP": 0.9348,
+     "nAlpha": 13.81,
+     "ph_T_s": 42.49,
+     "ph_zeta": 0.07299,
+     "dr_wn": 2.525,
+     "dr_zeta": 0.1449,
+     "dr_zetaWn": 0.3657,
+     "tauR_s": 0.1383,
+     "spiral_t2_s": 86.6,
+     "spiral_divergent": false,
+     "trim_alpha_deg": 1.043,
+     "trim_theta_deg": 1.043,
+     "trim_de_deg": 1.589,
+     "trim_thr": 0.2891
+    }
+   },
+   "stall": {
+    "UP": {
+     "f": 0,
+     "gear": 0,
+     "CLmax": 1.31843,
+     "V_CLmax_eas": 78.9738,
+     "V_CLmax_cas": 78.9902,
+     "nz": 0.984671,
+     "alpha_deg": 14.2309,
+     "t": 27.1667,
+     "rate": 0.994828,
+     "VSR_eas": 79.5862,
+     "VSR_cas": 79.6027,
+     "Vmin_eas": 75.7613,
+     "de_end_deg": -15.1407,
+     "ias0": 106,
+     "VSR_kias": null,
+     "Vmin_kias": null
+    },
+    "LDG": {
+     "f": 1,
+     "gear": 1,
+     "CLmax": 1.6172,
+     "V_CLmax_eas": 69.9866,
+     "V_CLmax_cas": 69.9971,
+     "nz": 0.94855,
+     "alpha_deg": 11.4663,
+     "t": 25.1292,
+     "rate": 1.03519,
+     "VSR_eas": 71.8596,
+     "VSR_cas": 71.8704,
+     "Vmin_eas": 68.3517,
+     "de_end_deg": -21.0775,
+     "ias0": 96,
+     "VSR_kias": null,
+     "Vmin_kias": null
+    }
+   },
+   "climb": {
+    "Vy_kt": 128.809,
+    "ROCmax_fpm": 3224.97,
+    "Vy_grid_kt": 128,
+    "ROC_grid_fpm": 3224.83,
+    "Vx_kt": 88,
+    "gammaMax_deg": 18.4817,
+    "atVy": {
+     "ias": 128,
+     "V": 65.9522,
+     "alpha": 2.78129,
+     "de": 0.499296,
+     "gamma": 14.3825,
+     "theta": 17.1638,
+     "roc_fpm": 3224.83,
+     "LoverD": -3.89968
+    },
+    "edge": false
+   },
+   "glide": {
+    "zeroThrust": {
+     "Vbg_kt": 114.131,
+     "LD": 16.4582,
+     "Vbg_grid_kt": 114,
+     "LD_grid": 16.4581,
+     "sink_fpm": 732.005,
+     "edge": false
+    },
+    "idle": {
+     "Vbg_kt": 110.974,
+     "LD": 21.7301,
+     "Vbg_grid_kt": 111,
+     "LD_grid": 21.7301,
+     "sink_fpm": 540.247,
+     "edge": false
+    }
+   },
+   "takeoff": {
+    "flap": "UP",
+    "VR": 82,
+    "groundRoll_m": 357.776,
+    "tLiftoff_s": 12.6875,
+    "V_LOF_kt": 99.1528,
+    "dist50ft_m": 589.986,
+    "V50_kt": 113.826
+   },
+   "landing": {
+    "asIs": {
+     "ias50_kt": 87.8459,
+     "vtd_kt": 82.5565,
+     "sinkTD_fpm": -133.128,
+     "td_s": 309.142,
+     "air_m": 337.979,
+     "ground_m": 611.593,
+     "total_m": 949.573
+    },
+    "maxBrake": {
+     "ias50_kt": 87.8459,
+     "vtd_kt": 82.5565,
+     "sinkTD_fpm": -133.128,
+     "td_s": 309.142,
+     "air_m": 337.979,
+     "ground_m": 376.085,
+     "total_m": 714.065
+    }
+   },
+   "alpha": {
+    "alpha_star": {
+     "clean": 17,
+     "landing": 14.5
+    },
+    "alpha_CLmax": {
+     "clean": 14.24,
+     "landing": 11.48
+    },
+    "CLmax_sim": {
+     "clean": 1.317,
+     "landing": 1.616
+    },
+    "alpha_warn_5kt": {
+     "clean": 10.94,
+     "landing": 7.316
+    },
+    "alpha_warn_design": {
+     "clean": 10.3,
+     "landing": 6.472
+    }
+   },
+   "excessTW": 0.221,
+   "roll": {
+    "approach": {
+     "pss_dps": 65.2445,
+     "pb2V": 0.118831,
+     "t": 0.668,
+     "tau": 0.218048
+    },
+    "cruise": {
+     "pss_dps": 106.451,
+     "pb2V": 0.118831,
+     "t": 0.702,
+     "tau": 0.13832
+    }
+   },
+   "climbTM": null,
+   "level": null,
+   "gammaAtVx_deg": null,
+   "massSpeeds": null
+  },
+  "trainer_r2": {
+   "ac": {
+    "m": 2250,
+    "Ixx": 3700,
+    "Iyy": 7300,
+    "Izz": 9200,
+    "Ixz": 120,
+    "S": 16.3,
+    "b": 10.2,
+    "c": 1.65,
+    "CL0": 0.25,
+    "CLa": 4.8,
+    "CLq": 7.5,
+    "CLadot": 1.6,
+    "CLde": 0.35,
+    "CLflap": 0.55,
+    "CD0": 0.03527,
+    "K": 0.08901,
+    "CDflap": 0.05,
+    "CDgear": 0.02,
+    "CYb": -0.6,
+    "CYdr": 0.15,
+    "CYr": 0.2,
+    "Clb": -0.085,
+    "Clp": -0.47,
+    "Clr": 0.11,
+    "Clda": 0.21,
+    "Cldr": 0.012,
+    "Cm0": 0.045,
+    "Cma": -0.72,
+    "Cmq": -12.5,
+    "Cmadot": -4.5,
+    "Cmde": -1.15,
+    "Cmflap": -0.1,
+    "Cnb": 0.075,
+    "Cnp": -0.055,
+    "Cnr": -0.14,
+    "Cnda": -0.01,
+    "Cndr": -0.072,
+    "aStall": 18.07,
+    "aStallFlap": -1.94,
+    "P": 700000,
+    "eta": 1.266,
+    "T0": 11500,
+    "idle": 0,
+    "deUp": 0.32289,
+    "deDn": 0.27925,
+    "daMax": 0.27053,
+    "drMax": 0.41888,
+    "Vref": 88,
+    "Vapp": 95,
+    "Vs0": 68
+   },
+   "gear": [
+    {
+     "b": [
+      2.03,
+      0,
+      1.36
+     ],
+     "k": 52000,
+     "c": 5000,
+     "stroke": 0.22,
+     "steer": true
+    },
+    {
+     "b": [
+      -0.28,
+      -1.27,
+      1.38
+     ],
+     "k": 125000,
+     "c": 12500,
+     "stroke": 0.25,
+     "brake": true
+    },
+    {
+     "b": [
+      -0.28,
+      1.27,
+      1.38
+     ],
+     "k": 125000,
+     "c": 12500,
+     "stroke": 0.25,
+     "brake": true
+    }
+   ],
+   "info": {
+    "cruise": {
+     "ias": 155,
+     "h": 914.4
+    },
+    "approach": {
+     "ias": 95,
+     "h": 300,
+     "gammaDeg": -3
+    },
+    "takeoff": {
+     "f": 0,
+     "name": "UP",
+     "VR": 82,
+     "theta": 10
+    },
+    "VS1": null,
+    "VS0": 67.5,
+    "Vy": 136,
+    "Vx": null
+   },
+   "summ": {
+    "VSR_clean_kt": 77.27,
+    "Vmin_clean_kt": 72.52,
+    "VSR_full_kt": 69.25,
+    "Vmin_full_kt": 65.01,
+    "Vy_SL_kt": 139.1,
+    "ROCmax_SL_fpm": 4035,
+    "glideLD_zeroThrust": 11.3,
+    "Vbg_kt": 113.4,
+    "glideLD_idle": 11.3,
+    "TO_groundRoll_m": 332,
+    "TO_50ft_m": 556,
+    "LDG_50ft_maxBrake_m": 669,
+    "LDG_50ft_asIs_m": 838
+   },
+   "modes": {
+    "approach": {
+     "sp_wn": 2.22,
+     "sp_zeta": 0.5801,
+     "CAP": 0.9504,
+     "nAlpha": 5.187,
+     "ph_T_s": 25.56,
+     "ph_zeta": 0.1273,
+     "dr_wn": 1.595,
+     "dr_zeta": 0.1286,
+     "dr_zetaWn": 0.2052,
+     "tauR_s": 0.3042,
+     "spiral_t2_s": 36.1,
+     "spiral_divergent": false,
+     "trim_alpha_deg": 1.72,
+     "trim_theta_deg": -1.28,
+     "trim_de_deg": -3.817,
+     "trim_thr": 0.2707
+    },
+    "cruise": {
+     "sp_wn": 3.594,
+     "sp_zeta": 0.5603,
+     "CAP": 0.9352,
+     "nAlpha": 13.81,
+     "ph_T_s": 42.61,
+     "ph_zeta": 0.1008,
+     "dr_wn": 2.507,
+     "dr_zeta": 0.1367,
+     "dr_zetaWn": 0.3427,
+     "tauR_s": 0.1941,
+     "spiral_t2_s": 86.53,
+     "spiral_divergent": false,
+     "trim_alpha_deg": 1.041,
+     "trim_theta_deg": 1.041,
+     "trim_de_deg": 1.591,
+     "trim_thr": 0.3149
+    }
+   },
+   "stall": {
+    "UP": {
+     "f": 0,
+     "gear": 0,
+     "CLmax": 1.39848,
+     "V_CLmax_eas": 74.1354,
+     "V_CLmax_cas": 74.1481,
+     "nz": 0.920396,
+     "alpha_deg": 15.2478,
+     "t": 28.8208,
+     "rate": 1.10561,
+     "VSR_eas": 77.2749,
+     "VSR_cas": 77.288,
+     "Vmin_eas": 72.5218,
+     "de_end_deg": -14.6335,
+     "ias0": 106,
+     "VSR_kias": null,
+     "Vmin_kias": null
+    },
+    "TO": {
+     "f": 0.5,
+     "gear": 1,
+     "CLmax": 1.56973,
+     "V_CLmax_eas": 70.4335,
+     "V_CLmax_cas": 70.4439,
+     "nz": 0.9325,
+     "alpha_deg": 14.1303,
+     "t": 25.6583,
+     "rate": 1.07437,
+     "VSR_eas": 72.9382,
+     "VSR_cas": 72.9489,
+     "Vmin_eas": 68.6595,
+     "de_end_deg": -17.401,
+     "ias0": 98,
+     "VSR_kias": null,
+     "Vmin_kias": null
+    },
+    "LDG": {
+     "f": 1,
+     "gear": 1,
+     "CLmax": 1.74121,
+     "V_CLmax_eas": 65.9972,
+     "V_CLmax_cas": 66.0055,
+     "nz": 0.908174,
+     "alpha_deg": 13.0311,
+     "t": 27.1,
+     "rate": 1.10711,
+     "VSR_eas": 69.2534,
+     "VSR_cas": 69.262,
+     "Vmin_eas": 65.0133,
+     "de_end_deg": -18.5,
+     "ias0": 96,
+     "VSR_kias": null,
+     "Vmin_kias": null
+    }
+   },
+   "climb": {
+    "Vy_kt": 139.101,
+    "ROCmax_fpm": 4034.6,
+    "Vy_grid_kt": 140,
+    "ROC_grid_fpm": 4034.35,
+    "Vx_kt": 86,
+    "gammaMax_deg": 21.2021,
+    "atVy": {
+     "ias": 140,
+     "V": 72.1352,
+     "alpha": 1.74937,
+     "de": 1.14537,
+     "gamma": 16.5058,
+     "theta": 18.2552,
+     "roc_fpm": 4034.35,
+     "LoverD": -3.37469
+    },
+    "edge": false
+   },
+   "glide": {
+    "zeroThrust": {
+     "Vbg_kt": 113.382,
+     "LD": 11.3001,
+     "Vbg_grid_kt": 113,
+     "LD_grid": 11.2997,
+     "sink_fpm": 1054.65,
+     "edge": false
+    },
+    "idle": {
+     "Vbg_kt": 113.382,
+     "LD": 11.3001,
+     "Vbg_grid_kt": 113,
+     "LD_grid": 11.2997,
+     "sink_fpm": 1054.65,
+     "edge": false
+    }
+   },
+   "takeoff": {
+    "flap": "UP",
+    "VR": 82,
+    "groundRoll_m": 331.988,
+    "tLiftoff_s": 11.8958,
+    "V_LOF_kt": 100.84,
+    "dist50ft_m": 556.035,
+    "V50_kt": 117.703
+   },
+   "landing": {
+    "asIs": {
+     "ias50_kt": 87.5264,
+     "vtd_kt": 81.1289,
+     "sinkTD_fpm": -150.567,
+     "td_s": 302.453,
+     "air_m": 332.292,
+     "ground_m": 505.375,
+     "total_m": 837.668
+    },
+    "maxBrake": {
+     "ias50_kt": 87.5264,
+     "vtd_kt": 81.1289,
+     "sinkTD_fpm": -150.567,
+     "td_s": 302.453,
+     "air_m": 332.292,
+     "ground_m": 336.295,
+     "total_m": 668.587
+    }
+   },
+   "alpha": {
+    "alpha_star": {
+     "clean": 18.07,
+     "landing": 16.13
+    },
+    "alpha_CLmax": {
+     "clean": 15.26,
+     "landing": 13.04
+    },
+    "CLmax_sim": {
+     "clean": 1.399,
+     "landing": 1.741
+    },
+    "alpha_warn_5kt": {
+     "clean": 11.74,
+     "landing": 8.531
+    },
+    "alpha_warn_design": {
+     "clean": 11.05,
+     "landing": 7.595
+    }
+   },
+   "excessTW": 0.2651,
+   "roll": {
+    "approach": {
+     "pss_dps": 66.3659,
+     "pb2V": 0.120873,
+     "t": 0.729,
+     "tau": 0.304204
+    },
+    "cruise": {
+     "pss_dps": 108.281,
+     "pb2V": 0.120873,
+     "t": 0.745,
+     "tau": 0.194106
+    }
+   },
+   "climbTM": null,
+   "level": null,
+   "gammaAtVx_deg": null,
+   "massSpeeds": null
+  }
+ },
+ "class": {
+  "VS1t": 77.28,
+  "VS0t": 69.25,
+  "Vbg2250": 113.6,
+  "CLstar": 0.6473,
+  "pol": {
+   "CL": 0.647263,
+   "CD0": 0.02864,
+   "K": 0.0683613,
+   "e": null
+  }
+ },
+ "fg_derivative_check": {
+  "approach": {
+   "card": {
+    "dr_wn": 1.797,
+    "dr_zeta": 0.1786,
+    "tauR_s": 0.3386,
+    "spiral_t2_s": 25.74,
+    "spiral_divergent": true,
+    "roll_t_s": 0.727,
+    "roll_phi_deg": 30,
+    "pss_dps": 70.22,
+    "Clda": 0.2307,
+    "daMax_deg": 15.5
+   },
+   "fg_all": {
+    "dr_wn": 2.557,
+    "dr_zeta": 0.1186,
+    "tauR_s": 0.3408,
+    "spiral_t2_s": 9.334,
+    "spiral_divergent": true,
+    "roll_t_s": 1.293,
+    "roll_phi_deg": 30,
+    "pss_dps": 31.28,
+    "Clda": 0.0991,
+    "daMax_deg": 15.5
+   },
+   "fg_lateral_card_Clda": {
+    "dr_wn": 2.557,
+    "dr_zeta": 0.1186,
+    "tauR_s": 0.3408,
+    "spiral_t2_s": 9.334,
+    "spiral_divergent": true,
+    "roll_t_s": 0.711,
+    "roll_phi_deg": 30,
+    "pss_dps": 72.82,
+    "Clda": 0.2307,
+    "daMax_deg": 15.5
+   },
+   "card_with_Clda_2xFG": {
+    "dr_wn": 1.797,
+    "dr_zeta": 0.1786,
+    "tauR_s": 0.3386,
+    "spiral_t2_s": 25.74,
+    "spiral_divergent": true,
+    "roll_t_s": 0.805,
+    "roll_phi_deg": 30,
+    "pss_dps": 60.32,
+    "Clda": 0.1982,
+    "daMax_deg": 15.5
+   },
+   "ratio_fg_over_card": {
+    "dr_wn": 1.42,
+    "dr_zeta": 0.664,
+    "tauR": 1.01
+   },
+   "card_derivs": {
+    "CYb": -0.6294,
+    "CYr": 0.3561,
+    "CYdr": 0.1948,
+    "Clb": -0.0545,
+    "Clp": -0.4885,
+    "Clr": 0.2032,
+    "Clda": 0.2307,
+    "Cldr": 0.0153,
+    "Cnb": 0.0959,
+    "Cnp": -0.1877,
+    "Cnr": -0.1836,
+    "Cnda": -0.011,
+    "Cndr": -0.0899
+   },
+   "fg_derivs": {
+    "CYb": -1.3462,
+    "CYr": 0.34,
+    "CYdr": 0.1582,
+    "Clb": -0.1139,
+    "Clp": -0.471,
+    "Clr": 0.2925,
+    "Clda": 0.0991,
+    "Cldr": 0.014,
+    "Cnb": 0.2194,
+    "Cnp": -0.1,
+    "Cnr": -0.1276,
+    "Cnda": -0.003,
+    "Cndr": -0.1089
+   }
+  },
+  "cruise": {
+   "card": {
+    "dr_wn": 3.461,
+    "dr_zeta": 0.1582,
+    "tauR_s": 0.1671,
+    "spiral_t2_s": 118.3,
+    "spiral_divergent": false,
+    "roll_t_s": 0.568,
+    "roll_phi_deg": 60,
+    "pss_dps": 147.9,
+    "Clda": 0.2267,
+    "daMax_deg": 15.5
+   },
+   "fg_all": {
+    "dr_wn": 3.268,
+    "dr_zeta": 0.1838,
+    "tauR_s": 0.1665,
+    "spiral_t2_s": 32.88,
+    "spiral_divergent": false,
+    "roll_t_s": 1.078,
+    "roll_phi_deg": 60,
+    "pss_dps": 65.86,
+    "Clda": 0.0991,
+    "daMax_deg": 15.5
+   },
+   "fg_lateral_card_Clda": {
+    "dr_wn": 3.268,
+    "dr_zeta": 0.1838,
+    "tauR_s": 0.1665,
+    "spiral_t2_s": 32.88,
+    "spiral_divergent": false,
+    "roll_t_s": 0.559,
+    "roll_phi_deg": 60,
+    "pss_dps": 150.7,
+    "Clda": 0.2267,
+    "daMax_deg": 15.5
+   },
+   "card_with_Clda_2xFG": {
+    "dr_wn": 3.461,
+    "dr_zeta": 0.1582,
+    "tauR_s": 0.1671,
+    "spiral_t2_s": 118.3,
+    "spiral_divergent": false,
+    "roll_t_s": 0.628,
+    "roll_phi_deg": 60,
+    "pss_dps": 129.3,
+    "Clda": 0.1982,
+    "daMax_deg": 15.5
+   },
+   "ratio_fg_over_card": {
+    "dr_wn": 0.944,
+    "dr_zeta": 1.16,
+    "tauR": 0.996
+   },
+   "card_derivs": {
+    "CYb": -0.6344,
+    "CYr": 0.359,
+    "CYdr": 0.1974,
+    "Clb": -0.0668,
+    "Clp": -0.4799,
+    "Clr": 0.0857,
+    "Clda": 0.2267,
+    "Cldr": 0.0155,
+    "Cnb": 0.1027,
+    "Cnp": -0.0243,
+    "Cnr": -0.175,
+    "Cnda": -0.0113,
+    "Cndr": -0.091
+   },
+   "fg_derivs": {
+    "CYb": -0.7874,
+    "CYr": 0.34,
+    "CYdr": 0.1937,
+    "Clb": -0.0999,
+    "Clp": -0.471,
+    "Clr": 0.1285,
+    "Clda": 0.0991,
+    "Cldr": 0.0149,
+    "Cnb": 0.0825,
+    "Cnp": -0.0556,
+    "Cnr": -0.211,
+    "Cnda": -0.003,
+    "Cndr": -0.1089
+   }
+  }
+ },
+ "stick_force": {
+  "pc9m": {
+   "p": {
+    "eta": 0.9,
+    "at": 4.06,
+    "tau": 0.636,
+    "lt": 4.9,
+    "deda": 0.42,
+    "Se": 1.1,
+    "ce": 0.3,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005,
+    "Sh": 3
+   },
+   "train": {
+    "mass_kg": 2123.8,
+    "approach": {
+     "ias_kt": 90,
+     "h_m": 300,
+     "de_deg": -3.96,
+     "tab_deg": 6.02,
+     "grad_N_per_kt": 0.617,
+     "Fs_per_g_N": 37.4,
+     "Fs_per_g_lbf": 8.4,
+     "dde_per_g_deg": -9.33,
+     "nAlpha_g_per_rad": 5.121
+    },
+    "cruise": {
+     "ias_kt": 200,
+     "h_m": 914.4,
+     "de_deg": 2.58,
+     "tab_deg": -4.15,
+     "grad_N_per_kt": 0.278,
+     "Fs_per_g_N": 36.8,
+     "Fs_per_g_lbf": 8.27,
+     "dde_per_g_deg": -1.86,
+     "nAlpha_g_per_rad": 25.29
+    },
+    "SM_fixed": 0.153,
+    "SM_free": 0.103,
+    "free_elevator_factor": 0.788
+   },
+   "mtow": {
+    "mass_kg": 2350,
+    "approach": {
+     "ias_kt": 95,
+     "h_m": 300,
+     "de_deg": -3.91,
+     "tab_deg": 5.96,
+     "grad_N_per_kt": 0.647,
+     "Fs_per_g_N": 40.3,
+     "Fs_per_g_lbf": 9.06,
+     "dde_per_g_deg": -9.07,
+     "nAlpha_g_per_rad": 5.157
+    },
+    "cruise": {
+     "ias_kt": 200,
+     "h_m": 914.4,
+     "de_deg": 2.42,
+     "tab_deg": -3.97,
+     "grad_N_per_kt": 0.307,
+     "Fs_per_g_N": 39.8,
+     "Fs_per_g_lbf": 8.94,
+     "dde_per_g_deg": -2.02,
+     "nAlpha_g_per_rad": 22.86
+    },
+    "SM_fixed": 0.153,
+    "SM_free": 0.103,
+    "free_elevator_factor": 0.788
+   },
+   "band": {
+    "controller": "centre_stick",
+    "nL": 7,
+    "W_lb": 5181,
+    "nAlpha_cruise_g_per_rad": 22.86,
+    "mil_L1_centre_stick_lbf_per_g": {
+     "min": 3.5,
+     "max": 10.5
+    },
+    "part23_155_force_lbf": 35,
+    "part23_155_min_lbf_per_g": 5.83,
+    "fs_per_g_lbf": {
+     "min": 5.83,
+     "max": 10.5
+    },
+    "fs_per_g_N": {
+     "min": 25.9,
+     "max": 46.7
+    }
+   },
+   "model_pull_to_nL_lbf": 53.6
+  },
+  "pc7mk2": {
+   "p": {
+    "eta": 0.9,
+    "at": 4.06,
+    "tau": 0.636,
+    "lt": 4.9,
+    "deda": 0.42,
+    "Se": 1.1,
+    "ce": 0.3,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005,
+    "Sh": 3
+   },
+   "train": {
+    "mass_kg": 2068.8,
+    "approach": {
+     "ias_kt": 89,
+     "h_m": 300,
+     "de_deg": -3.93,
+     "tab_deg": 5.99,
+     "grad_N_per_kt": 0.608,
+     "Fs_per_g_N": 36.6,
+     "Fs_per_g_lbf": 8.24,
+     "dde_per_g_deg": -9.35,
+     "nAlpha_g_per_rad": 5.141
+    },
+    "cruise": {
+     "ias_kt": 200,
+     "h_m": 914.4,
+     "de_deg": 2.62,
+     "tab_deg": -4.19,
+     "grad_N_per_kt": 0.27,
+     "Fs_per_g_N": 36.1,
+     "Fs_per_g_lbf": 8.11,
+     "dde_per_g_deg": -1.83,
+     "nAlpha_g_per_rad": 25.96
+    },
+    "SM_fixed": 0.153,
+    "SM_free": 0.103,
+    "free_elevator_factor": 0.788
+   },
+   "mtow": {
+    "mass_kg": 2250,
+    "approach": {
+     "ias_kt": 93,
+     "h_m": 300,
+     "de_deg": -3.91,
+     "tab_deg": 5.96,
+     "grad_N_per_kt": 0.632,
+     "Fs_per_g_N": 39,
+     "Fs_per_g_lbf": 8.77,
+     "dde_per_g_deg": -9.14,
+     "nAlpha_g_per_rad": 5.162
+    },
+    "cruise": {
+     "ias_kt": 200,
+     "h_m": 914.4,
+     "de_deg": 2.49,
+     "tab_deg": -4.05,
+     "grad_N_per_kt": 0.294,
+     "Fs_per_g_N": 38.4,
+     "Fs_per_g_lbf": 8.64,
+     "dde_per_g_deg": -1.95,
+     "nAlpha_g_per_rad": 23.87
+    },
+    "SM_fixed": 0.153,
+    "SM_free": 0.103,
+    "free_elevator_factor": 0.788
+   },
+   "band": {
+    "controller": "centre_stick",
+    "nL": 7,
+    "W_lb": 4960,
+    "nAlpha_cruise_g_per_rad": 23.87,
+    "mil_L1_centre_stick_lbf_per_g": {
+     "min": 3.5,
+     "max": 10.1
+    },
+    "part23_155_force_lbf": 35,
+    "part23_155_min_lbf_per_g": 5.83,
+    "fs_per_g_lbf": {
+     "min": 5.83,
+     "max": 10.1
+    },
+    "fs_per_g_N": {
+     "min": 25.9,
+     "max": 44.7
+    }
+   },
+   "model_pull_to_nL_lbf": 51.8
+  },
+  "t6a": {
+   "p": {
+    "eta": 0.9,
+    "at": 4.06,
+    "tau": 0.636,
+    "lt": 4.9,
+    "deda": 0.421,
+    "Se": 1.1,
+    "ce": 0.3,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005,
+    "Sh": 3
+   },
+   "train": {
+    "mass_kg": 2574.6,
+    "approach": {
+     "ias_kt": 100,
+     "h_m": 300,
+     "de_deg": -3.99,
+     "tab_deg": 6.14,
+     "grad_N_per_kt": 0.809,
+     "Fs_per_g_N": 50.1,
+     "Fs_per_g_lbf": 11.3,
+     "dde_per_g_deg": -9.8,
+     "nAlpha_g_per_rad": 5.214
+    },
+    "cruise": {
+     "ias_kt": 200,
+     "h_m": 914.4,
+     "de_deg": 2.28,
+     "tab_deg": -3.8,
+     "grad_N_per_kt": 0.405,
+     "Fs_per_g_N": 49.5,
+     "Fs_per_g_lbf": 11.1,
+     "dde_per_g_deg": -2.43,
+     "nAlpha_g_per_rad": 20.85
+    },
+    "SM_fixed": 0.174,
+    "SM_free": 0.125,
+    "free_elevator_factor": 0.788
+   },
+   "mtow": {
+    "mass_kg": 2948.3,
+    "approach": {
+     "ias_kt": 107,
+     "h_m": 300,
+     "de_deg": -4,
+     "tab_deg": 6.14,
+     "grad_N_per_kt": 0.866,
+     "Fs_per_g_N": 56,
+     "Fs_per_g_lbf": 12.6,
+     "dde_per_g_deg": -9.59,
+     "nAlpha_g_per_rad": 5.212
+    },
+    "cruise": {
+     "ias_kt": 200,
+     "h_m": 914.4,
+     "de_deg": 1.98,
+     "tab_deg": -3.43,
+     "grad_N_per_kt": 0.463,
+     "Fs_per_g_N": 55.4,
+     "Fs_per_g_lbf": 12.5,
+     "dde_per_g_deg": -2.72,
+     "nAlpha_g_per_rad": 18.21
+    },
+    "SM_fixed": 0.174,
+    "SM_free": 0.125,
+    "free_elevator_factor": 0.788
+   },
+   "band": {
+    "controller": "centre_stick",
+    "nL": 7,
+    "W_lb": 6500,
+    "nAlpha_cruise_g_per_rad": 18.21,
+    "mil_L1_centre_stick_lbf_per_g": {
+     "min": 3.5,
+     "max": 13.2
+    },
+    "part23_155_force_lbf": 35,
+    "part23_155_min_lbf_per_g": 5.83,
+    "fs_per_g_lbf": {
+     "min": 5.83,
+     "max": 13.2
+    },
+    "fs_per_g_N": {
+     "min": 25.9,
+     "max": 58.6
+    }
+   },
+   "model_pull_to_nL_lbf": 75
+  },
+  "t6c": {
+   "p": {
+    "eta": 0.9,
+    "at": 4.06,
+    "tau": 0.636,
+    "lt": 4.9,
+    "deda": 0.421,
+    "Se": 1.1,
+    "ce": 0.3,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005,
+    "Sh": 3
+   },
+   "train": {
+    "mass_kg": 2775.5,
+    "approach": {
+     "ias_kt": 104,
+     "h_m": 300,
+     "de_deg": -3.97,
+     "tab_deg": 6.11,
+     "grad_N_per_kt": 0.839,
+     "Fs_per_g_N": 53.2,
+     "Fs_per_g_lbf": 12,
+     "dde_per_g_deg": -9.64,
+     "nAlpha_g_per_rad": 5.231
+    },
+    "cruise": {
+     "ias_kt": 200,
+     "h_m": 914.4,
+     "de_deg": 2.12,
+     "tab_deg": -3.6,
+     "grad_N_per_kt": 0.436,
+     "Fs_per_g_N": 52.7,
+     "Fs_per_g_lbf": 11.8,
+     "dde_per_g_deg": -2.58,
+     "nAlpha_g_per_rad": 19.34
+    },
+    "SM_fixed": 0.174,
+    "SM_free": 0.125,
+    "free_elevator_factor": 0.788
+   },
+   "mtow": {
+    "mass_kg": 3129.8,
+    "approach": {
+     "ias_kt": 110,
+     "h_m": 300,
+     "de_deg": -4.03,
+     "tab_deg": 6.19,
+     "grad_N_per_kt": 0.895,
+     "Fs_per_g_N": 58.8,
+     "Fs_per_g_lbf": 13.2,
+     "dde_per_g_deg": -9.54,
+     "nAlpha_g_per_rad": 5.189
+    },
+    "cruise": {
+     "ias_kt": 200,
+     "h_m": 914.4,
+     "de_deg": 1.84,
+     "tab_deg": -3.26,
+     "grad_N_per_kt": 0.492,
+     "Fs_per_g_N": 58.3,
+     "Fs_per_g_lbf": 13.1,
+     "dde_per_g_deg": -2.86,
+     "nAlpha_g_per_rad": 17.15
+    },
+    "SM_fixed": 0.174,
+    "SM_free": 0.125,
+    "free_elevator_factor": 0.788
+   },
+   "band": {
+    "controller": "centre_stick",
+    "nL": 7,
+    "W_lb": 6900,
+    "nAlpha_cruise_g_per_rad": 17.15,
+    "mil_L1_centre_stick_lbf_per_g": {
+     "min": 3.5,
+     "max": 14
+    },
+    "part23_155_force_lbf": 35,
+    "part23_155_min_lbf_per_g": 5.83,
+    "fs_per_g_lbf": {
+     "min": 5.83,
+     "max": 14
+    },
+    "fs_per_g_N": {
+     "min": 25.9,
+     "max": 62.2
+    }
+   },
+   "model_pull_to_nL_lbf": 78.6
+  }
+ },
+ "scope_normalised": [
+  "pc9m.interference.slipstream.diskDiameter: aircraft→propeller",
+  "pc9m.propeller.identity.hubPosition: aircraft→propeller",
+  "pc9m.propeller.identity.thrustAxis: aircraft→propeller",
+  "pc9m.propeller.engineInterface.maxShaftPower: engine→propeller",
+  "pc9m.propeller.engineInterface.rpmGoverned: engine→propeller",
+  "pc9m.propeller.engineInterface.rpmTransientLimit: engine→propeller",
+  "pc9m.propeller.engineInterface.gearRatio: engine→propeller",
+  "pc9m.propeller.engineInterface.flightIdleShaftPower: engine→propeller",
+  "pc9m.propeller.inertia.IreflectedEngine: engine→propeller",
+  "pc9m.turboprop.ratings.install_loss_frac: aircraft→engine",
+  "pc9m.turboprop.airframe_coupling.spin: aircraft→engine",
+  "pc9m.turboprop.airframe_coupling.thrust_axis_body: aircraft→engine",
+  "pc9m.gear.layout: aircraft→gear",
+  "pc9m.gear.retract: aircraft→gear",
+  "pc9m.gear.geometry.nose_contact_body_extended: aircraft→gear",
+  "pc9m.gear.geometry.main_contact_body_extended: aircraft→gear",
+  "pc9m.gear.geometry.cg_height_parked: aircraft→gear",
+  "pc9m.gear.brakes.antiskid: aircraft→gear",
+  "pc9m.gear.steering.mode: aircraft→gear",
+  "pc9m.gear.steering.pedal_max: aircraft→gear",
+  "pc9m.gear.steering.caster_max: aircraft→gear",
+  "pc9m.gear.steering.steer_rate: aircraft→gear",
+  "pc9m.gear.steering.shimmy_lag: aircraft→gear",
+  "pc9m.gear.certification.part23_limit_descent: aircraft→gear",
+  "pc9m.gear.certification.part23_wing_lift_ratio: aircraft→gear",
+  "pc9m.gear.certification.part23_min_load_factors: aircraft→gear",
+  "pc9m.gear.certification.part23_reserve_drop_factor: aircraft→gear",
+  "t6a.interference.slipstream.diskDiameter: aircraft→propeller",
+  "t6a.propeller.identity.hubPosition: aircraft→propeller",
+  "t6a.propeller.identity.thrustAxis: aircraft→propeller",
+  "t6a.propeller.engineInterface.maxShaftPower: engine→propeller",
+  "t6a.propeller.engineInterface.rpmGoverned: engine→propeller",
+  "t6a.propeller.engineInterface.rpmTransientLimit: engine→propeller",
+  "t6a.propeller.engineInterface.gearRatio: engine→propeller",
+  "t6a.propeller.engineInterface.flightIdleShaftPower: engine→propeller",
+  "t6a.propeller.inertia.IreflectedEngine: engine→propeller",
+  "t6a.turboprop.ratings.install_loss_frac: aircraft→engine",
+  "t6a.turboprop.airframe_coupling.spin: aircraft→engine",
+  "t6a.turboprop.airframe_coupling.thrust_axis_body: aircraft→engine",
+  "t6a.gear.layout: aircraft→gear",
+  "t6a.gear.retract: aircraft→gear",
+  "t6a.gear.geometry.nose_contact_body_extended: aircraft→gear",
+  "t6a.gear.geometry.main_contact_body_extended: aircraft→gear",
+  "t6a.gear.geometry.cg_height_parked: aircraft→gear",
+  "t6a.gear.brakes.antiskid: aircraft→gear",
+  "t6a.gear.steering.mode: aircraft→gear",
+  "t6a.gear.steering.pedal_max: aircraft→gear",
+  "t6a.gear.steering.caster_max: aircraft→gear",
+  "t6a.gear.steering.steer_rate: aircraft→gear",
+  "t6a.gear.steering.shimmy_lag: aircraft→gear",
+  "t6a.gear.certification.part23_limit_descent: aircraft→gear",
+  "t6a.gear.certification.part23_wing_lift_ratio: aircraft→gear",
+  "t6a.gear.certification.part23_min_load_factors: aircraft→gear",
+  "t6a.gear.certification.part23_reserve_drop_factor: aircraft→gear",
+  "pc7mk2.propeller.engineInterface.maxShaftPower: engine→propeller",
+  "pc7mk2.propeller.engineInterface.rpmGoverned: engine→propeller",
+  "pc7mk2.propeller.engineInterface.rpmTransientLimit: engine→propeller"
+ ],
+ "perf": {
+  "model": "BEM CT/CP of round 1 (HC-D4N/D9512) + clean polar CD0c + K CL² (K from the T-6 glide polar); ค่าประมาณ",
+  "K": 0.068357,
+  "pc9m": {
+   "CD0c": 0.02204,
+   "eta_at_vmax": 0.869,
+   "vmax_point": {
+    "ktas": 276,
+    "h_ft": 2000,
+    "m": 2100,
+    "src": "LP12"
+   },
+   "MTOW": {
+    "m": 2350,
+    "VS1_kcas": 77,
+    "Vx_model_keas": 76.25,
+    "gamma_max_deg": 20.4,
+    "Vx_card_kcas": 92.4,
+    "gamma_at_Vx_card_deg": 19.8,
+    "ROC_at_Vx_card_fpm": 3173,
+    "Vy_keas": 139.3,
+    "ROC_fpm": 3674,
+    "ROC_ms": 18.7,
+    "eta_at_Vy": 0.789,
+    "P_kW": 708
+   },
+   "training_mass": {
+    "m": 2123.8,
+    "VS1_kcas": 73.2,
+    "Vx_model_keas": 70,
+    "gamma_max_deg": 24.3,
+    "Vx_card_kcas": 87.84,
+    "gamma_at_Vx_card_deg": 23.4,
+    "ROC_at_Vx_card_fpm": 3530,
+    "Vy_keas": 138,
+    "ROC_fpm": 4156,
+    "ROC_ms": 21.1,
+    "eta_at_Vy": 0.786,
+    "P_kW": 708
+   },
+   "hot": [
+    {
+     "oat_C": 15,
+     "sigma": 0.9997,
+     "P_kW": 708,
+     "ROC_fpm_MTOW": 3674,
+     "Vy_keas": 139.3,
+     "thrust_ratio_TO": 0.9998,
+     "takeoff_factor": 1.001,
+     "landing_factor": 1
+    },
+    {
+     "oat_C": 31,
+     "sigma": 0.9471,
+     "P_kW": 708,
+     "ROC_fpm_MTOW": 3656,
+     "Vy_keas": 138.8,
+     "thrust_ratio_TO": 0.9679,
+     "takeoff_factor": 1.091,
+     "landing_factor": 1.056
+    },
+    {
+     "oat_C": 35,
+     "sigma": 0.9348,
+     "P_kW": 708,
+     "ROC_fpm_MTOW": 3652,
+     "Vy_keas": 138.5,
+     "thrust_ratio_TO": 0.9605,
+     "takeoff_factor": 1.114,
+     "landing_factor": 1.07
+    }
+   ],
+   "static_thrust_kN": 12.18
+  },
+  "pc7mk2": {
+   "CD0c": 0.02239,
+   "eta_at_vmax": 0.87,
+   "vmax_point": {
+    "ktas": 242,
+    "h_ft": 0,
+    "m": 2100,
+    "src": "LP9"
+   },
+   "MTOW": {
+    "m": 2250,
+    "VS1_kcas": 75,
+    "Vx_model_keas": 75,
+    "gamma_max_deg": 16,
+    "Vx_card_kcas": 90,
+    "gamma_at_Vx_card_deg": 15.4,
+    "ROC_at_Vx_card_fpm": 2420,
+    "Vy_keas": 139.3,
+    "ROC_fpm": 2726,
+    "ROC_ms": 13.8,
+    "eta_at_Vy": 0.829,
+    "P_kW": 522
+   },
+   "training_mass": {
+    "m": 2068.8,
+    "VS1_kcas": 71.92,
+    "Vx_model_keas": 70.5,
+    "gamma_max_deg": 18.6,
+    "Vx_card_kcas": 86.3,
+    "gamma_at_Vx_card_deg": 17.8,
+    "ROC_at_Vx_card_fpm": 2678,
+    "Vy_keas": 138.3,
+    "ROC_fpm": 3036,
+    "ROC_ms": 15.4,
+    "eta_at_Vy": 0.826,
+    "P_kW": 522
+   },
+   "hot": [
+    {
+     "oat_C": 15,
+     "sigma": 0.9997,
+     "P_kW": 522,
+     "ROC_fpm_MTOW": 2726,
+     "Vy_keas": 139.3,
+     "thrust_ratio_TO": 0.9998,
+     "takeoff_factor": 1,
+     "landing_factor": 1
+    },
+    {
+     "oat_C": 31,
+     "sigma": 0.9471,
+     "P_kW": 522,
+     "ROC_fpm_MTOW": 2735,
+     "Vy_keas": 134,
+     "thrust_ratio_TO": 0.9727,
+     "takeoff_factor": 1.085,
+     "landing_factor": 1.056
+    },
+    {
+     "oat_C": 35,
+     "sigma": 0.9348,
+     "P_kW": 522,
+     "ROC_fpm_MTOW": 2734,
+     "Vy_keas": 132,
+     "thrust_ratio_TO": 0.9665,
+     "takeoff_factor": 1.107,
+     "landing_factor": 1.07
+    }
+   ],
+   "static_thrust_kN": 11.55
+  },
+  "t6a": {
+   "CD0c": 0.02619,
+   "eta_at_vmax": 0.873,
+   "vmax_point": {
+    "ktas": 270,
+    "h_ft": 1000,
+    "m": 2721.55,
+    "src": "LB16"
+   },
+   "MTOW": {
+    "m": 2948.4,
+    "VS1_kcas": 83.29,
+    "Vx_model_keas": 89.5,
+    "gamma_max_deg": 15.9,
+    "Vx_card_kcas": 99.95,
+    "gamma_at_Vx_card_deg": 15.7,
+    "ROC_at_Vx_card_fpm": 2743,
+    "Vy_keas": 143.8,
+    "ROC_fpm": 3165,
+    "ROC_ms": 16.1,
+    "eta_at_Vy": 0.785,
+    "P_kW": 820
+   },
+   "training_mass": {
+    "m": 2574.6,
+    "VS1_kcas": 77.83,
+    "Vx_model_keas": 80.75,
+    "gamma_max_deg": 20.1,
+    "Vx_card_kcas": 93.4,
+    "gamma_at_Vx_card_deg": 19.8,
+    "ROC_at_Vx_card_fpm": 3202,
+    "Vy_keas": 141.8,
+    "ROC_fpm": 3771,
+    "ROC_ms": 19.2,
+    "eta_at_Vy": 0.781,
+    "P_kW": 820
+   },
+   "m6300": {
+    "m": 2857.6,
+    "VS1_kcas": 82,
+    "Vx_model_keas": 87.5,
+    "gamma_max_deg": 16.8,
+    "Vx_card_kcas": 98.4,
+    "gamma_at_Vx_card_deg": 16.6,
+    "ROC_at_Vx_card_fpm": 2847,
+    "Vy_keas": 143.3,
+    "ROC_fpm": 3299,
+    "ROC_ms": 16.8,
+    "eta_at_Vy": 0.784,
+    "P_kW": 820
+   },
+   "roc_6500_over_6300": 0.9594,
+   "hot": [
+    {
+     "oat_C": 15,
+     "sigma": 0.9997,
+     "P_kW": 820,
+     "ROC_fpm_MTOW": 3164,
+     "Vy_keas": 143.8,
+     "thrust_ratio_TO": 0.9998,
+     "takeoff_factor": 1.001,
+     "landing_factor": 1
+    },
+    {
+     "oat_C": 31,
+     "sigma": 0.9471,
+     "P_kW": 820,
+     "ROC_fpm_MTOW": 3150,
+     "Vy_keas": 143.3,
+     "thrust_ratio_TO": 0.9705,
+     "takeoff_factor": 1.088,
+     "landing_factor": 1.056
+    },
+    {
+     "oat_C": 35,
+     "sigma": 0.9348,
+     "P_kW": 820,
+     "ROC_fpm_MTOW": 3147,
+     "Vy_keas": 143.3,
+     "thrust_ratio_TO": 0.9638,
+     "takeoff_factor": 1.11,
+     "landing_factor": 1.07
+    }
+   ],
+   "static_thrust_kN": 12.68
+  },
+  "t6c": {
+   "CD0c": 0.02619,
+   "eta_at_vmax": 0.873,
+   "vmax_point": "ใช้ CD0c ของ t6a",
+   "MTOW": {
+    "m": 3129.8,
+    "VS1_kcas": 85.82,
+    "Vx_model_keas": 93.25,
+    "gamma_max_deg": 14.3,
+    "Vx_card_kcas": 103,
+    "gamma_at_Vx_card_deg": 14.1,
+    "ROC_at_Vx_card_fpm": 2549,
+    "Vy_keas": 144.5,
+    "ROC_fpm": 2917,
+    "ROC_ms": 14.8,
+    "eta_at_Vy": 0.787,
+    "P_kW": 820
+   },
+   "training_mass": {
+    "m": 2775.5,
+    "VS1_kcas": 80.81,
+    "Vx_model_keas": 85.5,
+    "gamma_max_deg": 17.7,
+    "Vx_card_kcas": 96.98,
+    "gamma_at_Vx_card_deg": 17.4,
+    "ROC_at_Vx_card_fpm": 2945,
+    "Vy_keas": 142.8,
+    "ROC_fpm": 3427,
+    "ROC_ms": 17.4,
+    "eta_at_Vy": 0.783,
+    "P_kW": 820
+   },
+   "hot": [
+    {
+     "oat_C": 15,
+     "sigma": 0.9997,
+     "P_kW": 820,
+     "ROC_fpm_MTOW": 2917,
+     "Vy_keas": 144.5,
+     "thrust_ratio_TO": 0.9998,
+     "takeoff_factor": 1.001,
+     "landing_factor": 1
+    },
+    {
+     "oat_C": 31,
+     "sigma": 0.9471,
+     "P_kW": 820,
+     "ROC_fpm_MTOW": 2902,
+     "Vy_keas": 144.3,
+     "thrust_ratio_TO": 0.9708,
+     "takeoff_factor": 1.088,
+     "landing_factor": 1.056
+    },
+    {
+     "oat_C": 35,
+     "sigma": 0.9348,
+     "P_kW": 820,
+     "ROC_fpm_MTOW": 2898,
+     "Vy_keas": 144,
+     "thrust_ratio_TO": 0.9641,
+     "takeoff_factor": 1.11,
+     "landing_factor": 1.07
+    }
+   ],
+   "static_thrust_kN": 12.68
+  },
+  "check": {
+   "pc7mk2_ROC_MTOW": {
+    "model": 2726,
+    "public": 2840,
+    "src": "LP9"
+   },
+   "pc9m_ROC_MTOW": {
+    "model": 3674,
+    "public": 4090,
+    "src": "LP12/LP13 (mass not stated)"
+   },
+   "t6a_ROC_6300lb": {
+    "model": 3299,
+    "public": 4000,
+    "src": "LP29 (SL ISA 6,300 lb)"
+   },
+   "t6a_Vy_6300lb": {
+    "model": 143.3,
+    "public": 140,
+    "src": "LP29 (KIAS)"
+   },
+   "pc7mk2_TO_from_t6a": {
+    "thrust_07VLOF_kN": {
+     "t6a": 11.82,
+     "pc7mk2": 8.97
+    },
+    "ground_scale": 0.858,
+    "air_scale": 0.827,
+    "ground_roll_m": 366,
+    "dist50ft_m": 517,
+    "public": 415,
+    "src": "LP29 scaled vs LP9"
+   }
+  }
+ },
+ "vref": {
+  "pc9m": {
+   "VS0_tm": 65.6,
+   "VREF_exact": 85.27,
+   "VREF": 85,
+   "VAPP": 90,
+   "VAPP_at_MTOW": 94.7
+  },
+  "pc7mk2": {
+   "VS0_tm": 64.25,
+   "VREF_exact": 83.52,
+   "VREF": 84,
+   "VAPP": 89,
+   "VAPP_at_MTOW": 92.8
+  },
+  "t6a": {
+   "VS0_tm": 70.24,
+   "VREF_exact": 91.31,
+   "VREF": 91,
+   "VAPP": 100,
+   "VAPP_at_MTOW": 107
+  },
+  "t6c": {
+   "VS0_tm": 72.93,
+   "VREF_exact": 94.81,
+   "VREF": 95,
+   "VAPP_exact": 103.83,
+   "VAPP": 104,
+   "VAPP_at_MTOW": 110.4
+  }
+ }
+}

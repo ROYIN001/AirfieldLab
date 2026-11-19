@@ -1,0 +1,106 @@
+{
+ "type": "c172r",
+ "mode": "vy",
+ "T0_input": 2933,
+ "legacy": {
+  "propulsion": {
+   "P": 119310,
+   "eta": 2.8748,
+   "T0": 857,
+   "idle": 0
+  },
+  "aero": {
+   "CD0": 0.06061,
+   "K": 0.06817,
+   "CL0": 0.25,
+   "CLa": 5.17,
+   "CLflap": 0.321,
+   "CDflap": 0.0193,
+   "CDgear": 0,
+   "Cm0": -0.0206,
+   "Cma": -0.942,
+   "Cmflap": -0.0864,
+   "aStall": 18.3,
+   "aStallFlap": 0.57
+  }
+ },
+ "notes": [
+  "polar from glide 66.0 KCAS E 9.114: CD0s 0.0606 Ks 0.0682; idle 0 (POH glide is at idle, windmilling)",
+  "climb fit (vy): target Vy 78.1 KCAS ROC 720 fpm → T0 857 N, Vc 400.0 m/s",
+  "WARNING eta 2.87 > 0.95: P too low for the sim's thrust law at this ROC"
+ ],
+ "targets": {
+  "VS1": 52,
+  "VS0": 47,
+  "Vy": 78.1,
+  "roc": 720,
+  "glide": {
+   "speed_kt": 65,
+   "ratio": 9.114
+  }
+ },
+ "check": {
+  "stall_clean": {
+   "CLmax": 1.4647,
+   "V_CLmax_eas": 51.882,
+   "V_CLmax_cas": 51.887,
+   "nz": 0.94794,
+   "alpha_deg": 15.488,
+   "t": 25.471,
+   "rate": 1.0254,
+   "VSR_eas": 53.288,
+   "VSR_cas": 53.292,
+   "Vmin_eas": 50.637,
+   "de_end_deg": -20.803,
+   "ias0": 78
+  },
+  "stall_full": {
+   "CLmax": 1.7858,
+   "V_CLmax_eas": 47.067,
+   "V_CLmax_cas": 47.07,
+   "nz": 0.95117,
+   "alpha_deg": 15.837,
+   "t": 24.275,
+   "rate": 0.98591,
+   "VSR_eas": 48.26,
+   "VSR_cas": 48.263,
+   "Vmin_eas": 46.181,
+   "de_end_deg": -22,
+   "ias0": 71
+  },
+  "climb": {
+   "Vy_kt": 64,
+   "ROCmax_fpm": -201.29,
+   "Vx_kt": 65.698,
+   "gammaMax_deg": -1.7669,
+   "atVy": {
+    "ias": 64,
+    "V": 32.976,
+    "alpha": 8.9766,
+    "de": -7.8359,
+    "gamma": -1.777,
+    "theta": 7.1997,
+    "roc_fpm": -201.29,
+    "LoverD": 32.234
+   },
+   "edge": true
+  },
+  "glide": {
+   "Vbg_kt": 65.832,
+   "LD": 9.1134,
+   "Vbg_grid_kt": 66,
+   "LD_grid": 9.1133,
+   "sink_fpm": 762.19,
+   "edge": false
+  },
+  "takeoff": {
+   "VR": 51,
+   "groundRoll_m": 1449.9,
+   "tLiftoff_s": 82.867,
+   "V_LOF_kt": 51.346,
+   "dist50ft_m": null,
+   "V50_kt": null
+  }
+ },
+ "excessTW": -0.052
+}

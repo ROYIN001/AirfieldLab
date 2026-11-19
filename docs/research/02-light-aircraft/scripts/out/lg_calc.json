@@ -1,0 +1,396 @@
+{
+ "geom": {
+  "S": 14.76,
+  "b": 11.4,
+  "AR_calc": 8.805,
+  "AR_afm": 8.8,
+  "MGC": 1.295,
+  "MGC_calc": 1.295,
+  "MAC": 1.339,
+  "L": 8.7
+ },
+ "cg": {
+  "LEMAC_from_fwd": 0.000065,
+  "LEMAC_from_aft": -0.00009,
+  "ref_m": 0.3347,
+  "ref_pct": 25,
+  "pct_with_MGC": {
+   "fwd": 17.1,
+   "aft": 32
+  },
+  "envelope": [
+   [
+    700,
+    0.221,
+    0.415
+   ],
+   [
+    1180,
+    0.221,
+    0.415
+   ]
+  ],
+  "envelope_1230": [
+   [
+    700,
+    0.221,
+    0.415
+   ],
+   [
+    1230,
+    0.221,
+    0.415
+   ]
+  ],
+  "envelope_1290_fwd": 0.261
+ },
+ "weights": {
+  "MTOW": 1180,
+  "MLW": 1180,
+  "MZFW": 1145,
+  "BEW": 860,
+  "fuel_usable_kg": 140,
+  "useful_1180": 320,
+  "training_mass": 1128,
+  "trainFuelL": 150,
+  "fullFuelTwoPilots": 1160
+ },
+ "inertia": {
+  "training": {
+   "m": 1128,
+   "x_cg": 0.265,
+   "cg_pct": 19.8,
+   "z_cg": 0.494,
+   "Ixx": 3262,
+   "Iyy": 2300,
+   "Izz": 5348,
+   "Ixz": 44.6,
+   "radii": {
+    "Rx": 0.298,
+    "Ry": 0.328,
+    "Rz": 0.433
+   }
+  },
+  "mtow": {
+   "m": 1180,
+   "x_cg": 0.28,
+   "cg_pct": 20.9,
+   "z_cg": 0.488,
+   "Ixx": 3440,
+   "Iyy": 2317,
+   "Izz": 5530,
+   "Ixz": 43,
+   "radii": {
+    "Rx": 0.3,
+    "Ry": 0.322,
+    "Rz": 0.431
+   }
+  },
+  "empty": {
+   "m": 860,
+   "x_cg": 0.3,
+   "cg_pct": 22.4,
+   "z_cg": 0.483,
+   "Ixx": 2649,
+   "Iyy": 2236,
+   "Izz": 4739,
+   "Ixz": 17.5,
+   "radii": {
+    "Rx": 0.308,
+    "Ry": 0.371,
+    "Rz": 0.467
+   }
+  },
+  "class_single_prop": {
+   "Ixx": 2421,
+   "Iyy": 2720,
+   "Izz": 4649
+  },
+  "class_twin_C310": {
+   "Ixx": 10850,
+   "Iyy": 1795,
+   "Izz": 12900
+  },
+  "items_training": [
+   {
+    "n": "engine 912 S3 incl. fluids + MT prop + mount/cowl/radiator (each)",
+    "m": 94,
+    "x": -1,
+    "y": 1.65,
+    "z": 0.2,
+    "k": "pt"
+   },
+   {
+    "n": "wing structure incl. flaps/ailerons (each side)",
+    "m": 82,
+    "x": 0.5,
+    "y": [
+     0.65,
+     5.7
+    ],
+    "z": 0,
+    "k": "rodY"
+   },
+   {
+    "n": "main gear + sponson (each, retracted)",
+    "m": 24,
+    "x": 0.75,
+    "y": 0.75,
+    "z": 1.15,
+    "k": "pt"
+   },
+   {
+    "n": "nose gear",
+    "m": 12,
+    "x": -2.15,
+    "y": 0,
+    "z": 1.15,
+    "k": "pt"
+   },
+   {
+    "n": "forward fuselage + cabin structure",
+    "m": 125,
+    "x": [
+     -2.6,
+     1.5
+    ],
+    "y": 0,
+    "z": 0.75,
+    "k": "rodX"
+   },
+   {
+    "n": "tail cone",
+    "m": 40,
+    "x": [
+     1.5,
+     5.6
+    ],
+    "y": 0,
+    "z": 0.55,
+    "k": "rodX"
+   },
+   {
+    "n": "empennage (stabilator + fin)",
+    "m": 35,
+    "x": 5.4,
+    "y": 0,
+    "z": 0.2,
+    "k": "pt"
+   },
+   {
+    "n": "avionics, interior, systems (balance)",
+    "m": 248,
+    "x": 0.369,
+    "y": 0,
+    "z": 0.75,
+    "k": "pt"
+   },
+   {
+    "n": "crew (front seats)",
+    "m": 160,
+    "x": -0.05,
+    "y": 0,
+    "z": 0.85,
+    "k": "pt"
+   },
+   {
+    "n": "rear passengers",
+    "m": 0,
+    "x": 0.85,
+    "y": 0,
+    "z": 0.85,
+    "k": "pt"
+   },
+   {
+    "n": "fuel (each wing)",
+    "m": 54,
+    "x": 0.45,
+    "y": 2.3,
+    "z": 0.05,
+    "k": "pt"
+   }
+  ]
+ },
+ "clmax": {
+  "0": {
+   "vs_kias": 66,
+   "vs_kcas": 65,
+   "CLmax_1g": 1.088,
+   "CLapparent": 1.145,
+   "nz": 0.95,
+   "V1g_kcas": 66.69,
+   "kind": "min",
+   "cgShifted": false
+  },
+  "15": {
+   "vs_kias": 56,
+   "vs_kcas": 56,
+   "CLmax_1g": 1.465,
+   "CLapparent": 1.542,
+   "nz": 0.95,
+   "V1g_kcas": 57.45,
+   "kind": "min",
+   "cgShifted": false
+  },
+  "40": {
+   "vs_kias": 53,
+   "vs_kcas": 54,
+   "CLmax_1g": 1.576,
+   "CLapparent": 1.659,
+   "nz": 0.95,
+   "V1g_kcas": 55.4,
+   "kind": "min",
+   "cgShifted": false
+  },
+  "ft_static_clean": {
+   "CLmax": 1.25,
+   "vs_1g_kcas_1180": 62.2
+  },
+  "check1230": {
+   "TO_kcas": 57.17,
+   "FULL_kcas": 55.13,
+   "afm": {
+    "TO": 57,
+    "FULL": 55
+   }
+  },
+  "bankCheck": [
+   1,
+   1,
+   0.9971,
+   1.006,
+   0.9975
+  ]
+ },
+ "flaps": {
+  "dCLmax": {
+   "15": 0.377,
+   "40": 0.488
+  },
+  "dCL0": {
+   "15": 0.444,
+   "40": 0.574
+  },
+  "ratioNote": "ΔCL0 = ΔCLmax/0.85 (slotted flap, ค่าประมาณ)"
+ },
+ "polar": {
+  "K_ft": 0.04411,
+  "K_icas": 0.04358,
+  "Emax_ft": 13.03,
+  "Emax_icas": 15.46,
+  "CLstar_ft": 0.8702,
+  "Vbg_kcas": 82,
+  "CLbg": 0.7193,
+  "E_aero_at_Vbg": 12.79,
+  "dCDidle": 0.008,
+  "E_idle_at_Vbg": 11.2,
+  "E_range": [
+   10.5,
+   11.9
+  ],
+  "simFromFt": {
+   "CD0": 0.03916,
+   "K": 0.0533,
+   "Emax": 13.03,
+   "CLstar": 0.8702
+  },
+  "fromGlide": {
+   "CD0": 0.03211,
+   "K": 0.06206,
+   "e": 0.583,
+   "sim": {
+    "CD0": 0.03881,
+    "K": 0.07842,
+    "Emax": 11.2,
+    "CLstar": 0.7193
+   }
+  }
+ },
+ "climb": {
+  "enroute_15C": 1105,
+  "enroute_35C": 971.2,
+  "takeoff_15C": 1051,
+  "takeoff_35C": 913.2,
+  "slope_fpm_per_C": -6.68,
+  "brochure_1230": 1036,
+  "flying": 1050,
+  "aopa": 1140
+ },
+ "engine": {
+  "gear_from_rpm": 2.429,
+  "gear_mcp": 2.428,
+  "Q_prop_TO_Nm": 293.9,
+  "Q_eng_TO_Nm": 121,
+  "lapse_VTBD_35C": 0.9634,
+  "lapse_VTBD_35C_gf": 0.9262,
+  "lapse_8000ft": 0.7405,
+  "bsfc_from_icas": 248.2,
+  "bsfc_from_aopa75": 197.7
+ },
+ "prop": {
+  "static": {
+   "beta75": 19.3,
+   "CT": 0.1169,
+   "CP": 0.05326,
+   "T_each_N": 2278,
+   "T_total_N": 4556,
+   "FM": 0.599
+  },
+  "climb80": {
+   "V_kt": 80,
+   "J": 0.612,
+   "beta75": 20.7,
+   "eta": 0.798,
+   "T_N": 1338
+  },
+  "climb80_TO": {
+   "V_kt": 80,
+   "J": 0.581,
+   "beta75": 19.5,
+   "eta": 0.793,
+   "T_N": 1416
+  },
+  "cruise75": {
+   "V_kt": 142,
+   "J": 1.09,
+   "beta75": 26.3,
+   "eta": 0.889,
+   "T_N": 671
+  },
+  "tip_mach_TO": 0.654,
+  "thrustCurve": [
+   {
+    "V_kt": 0,
+    "T_total_N": 4556
+   },
+   {
+    "V_kt": 20,
+    "T_total_N": 4356
+   },
+   {
+    "V_kt": 40,
+    "T_total_N": 3902
+   },
+   {
+    "V_kt": 60,
+    "T_total_N": 3348
+   },
+   {
+    "V_kt": 80,
+    "T_total_N": 2832
+   },
+   {
+    "V_kt": 100,
+    "T_total_N": 2410
+   },
+   {
+    "V_kt": 120,
+    "T_total_N": 2076
+   },
+   {
+    "V_kt": 140,
+    "T_total_N": 1808
+   }
+  ]
+ }
+}

@@ -1,0 +1,894 @@
+{
+ "generated_by": "lb_pc9m_fg.py",
+ "for_topic": "07 (turboprop trainers), type id pc9m",
+ "model": {
+  "repo": "FGMEMBERS/PC-9M",
+  "commit": "8cf7c875d7d4e3d0eaadd28f358c0c422ecb927f",
+  "file": "PC-9M.xml",
+  "licence": "GPL-3.0 (GPLv3 logo in PC9-shared.xml; no COPYING file)",
+  "jsbsim": "1.3.3",
+  "note": "\u0e1c\u0e25\u0e27\u0e31\u0e14\u0e08\u0e32\u0e01\u0e42\u0e21\u0e40\u0e14\u0e25\u0e40\u0e1b\u0e34\u0e14 \u0e44\u0e21\u0e48\u0e43\u0e0a\u0e48\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25\u0e1a\u0e34\u0e19\u0e08\u0e23\u0e34\u0e07; \u0e44\u0e1f\u0e25\u0e4c XML \u0e2d\u0e22\u0e39\u0e48\u0e19\u0e2d\u0e01 repo (lb_fg_fetch.py); \u0e44\u0e21\u0e48\u0e21\u0e35\u0e15\u0e32\u0e23\u0e32\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e02\u0e49\u0e2d\u0e04\u0e27\u0e32\u0e21 XML \u0e43\u0e19\u0e44\u0e1f\u0e25\u0e4c\u0e19\u0e35\u0e49"
+ },
+ "mass": {
+  "lb": 5181.0,
+  "kg": 2350.1,
+  "basis": "\u0e21\u0e27\u0e25 acrobatic 2,350 kg \u0e02\u0e2d\u0e07 PC-9M [LP2]; \u0e16\u0e31\u0e07\u0e40\u0e0a\u0e37\u0e49\u0e2d\u0e40\u0e1e\u0e25\u0e34\u0e07\u0e41\u0e25\u0e30 pointmass \u0e15\u0e32\u0e21\u0e17\u0e35\u0e48 lb_jsb.set_mass \u0e08\u0e31\u0e14"
+ },
+ "engine_in_model": {
+  "active": "PT6A-25 + \u0e43\u0e1a\u0e1e\u0e31\u0e14 3 \u0e43\u0e1a (\u0e0a\u0e38\u0e14\u0e02\u0e2d\u0e07 PC-7); \u0e0a\u0e38\u0e14 PT6A-62 \u0e41\u0e25\u0e30 PT6A-68 \u0e16\u0e39\u0e01 comment \u0e2d\u0e2d\u0e01\u0e17\u0e35\u0e48 commit \u0e19\u0e35\u0e49",
+  "static_full_throttle": {
+   "hp": 513.6,
+   "kW": 383.0,
+   "thrust_lbf": 4255.7,
+   "thrust_N": 18930
+  },
+  "public_rating": "PC-9M PT6A-62 950 shp (708 kW) flat rated [LP2]",
+  "defects": [
+   "\u0e41\u0e23\u0e07\u0e02\u0e31\u0e1a\u0e2a\u0e16\u0e34\u0e15 4,256 lbf (18.9 kN) \u0e40\u0e01\u0e34\u0e19\u0e02\u0e35\u0e14\u0e08\u0e33\u0e01\u0e31\u0e14 actuator disc \u0e02\u0e2d\u0e07\u0e43\u0e1a\u0e1e\u0e31\u0e14 3 \u0e43\u0e1a\u0e17\u0e35\u0e48 514 hp (\u0e23\u0e32\u0e27 2,650 lbf) ",
+   "\u0e1b\u0e23\u0e30\u0e2a\u0e34\u0e17\u0e18\u0e34\u0e20\u0e32\u0e1e\u0e43\u0e1a\u0e1e\u0e31\u0e14\u0e02\u0e13\u0e30\u0e44\u0e15\u0e48 T\u00b7V/P \u2248 1.8 (\u0e40\u0e01\u0e34\u0e19 1 \u0e44\u0e21\u0e48\u0e40\u0e1b\u0e47\u0e19\u0e44\u0e1b\u0e44\u0e14\u0e49\u0e17\u0e32\u0e07\u0e1f\u0e34\u0e2a\u0e34\u0e01\u0e2a\u0e4c) \u0e08\u0e36\u0e07\u0e44\u0e15\u0e48\u0e40\u0e23\u0e47\u0e27\u0e40\u0e01\u0e34\u0e19\u0e08\u0e23\u0e34\u0e07\u0e41\u0e21\u0e49\u0e01\u0e33\u0e25\u0e31\u0e07\u0e15\u0e48\u0e33\u0e01\u0e27\u0e48\u0e32 PC-9M",
+   "thrust-coefficient \u0e04\u0e49\u0e32\u0e07\u0e04\u0e48\u0e32\u0e1a\u0e27\u0e01\u0e40\u0e21\u0e37\u0e48\u0e2d\u0e43\u0e1a\u0e1e\u0e31\u0e14\u0e2b\u0e22\u0e38\u0e14 0 rpm \u0e17\u0e33\u0e43\u0e2b\u0e49 Pitch_propwash \u0e01\u0e14\u0e2b\u0e31\u0e27\u0e41\u0e25\u0e30\u0e01\u0e32\u0e23\u0e23\u0e48\u0e2d\u0e19\u0e15\u0e48\u0e33\u0e01\u0e27\u0e48\u0e32 ~113 KCAS \u0e43\u0e0a\u0e49\u0e44\u0e21\u0e48\u0e44\u0e14\u0e49 (\u0e15\u0e23\u0e30\u0e01\u0e39\u0e25\u0e40\u0e14\u0e35\u0e22\u0e27\u0e01\u0e31\u0e1a pc7 \u0e02\u0e2d\u0e07 JSBSim, 03.2.3 \u0e02\u0e49\u0e2d 5)"
+  ]
+ },
+ "derivatives": {
+  "method": "lb_derivs.py: central finite differences \u0e23\u0e2d\u0e1a\u0e08\u0e38\u0e14 trim 1 g (CL = W/(q\u0304S), Cm = 0) \u0e44\u0e21\u0e48\u0e21\u0e35\u0e01\u0e33\u0e25\u0e31\u0e07 (term \u0e17\u0e35\u0e48\u0e04\u0e39\u0e13 thrust coefficient \u0e16\u0e39\u0e01\u0e2b\u0e31\u0e01\u0e2d\u0e2d\u0e01 \u0e41\u0e25\u0e30 term \u0e17\u0e35\u0e48\u0e43\u0e0a\u0e49 q\u0304 \u0e23\u0e27\u0e21\u0e25\u0e21\u0e43\u0e1a\u0e1e\u0e31\u0e14\u0e1b\u0e23\u0e31\u0e1a\u0e40\u0e1b\u0e47\u0e19 q\u0304 \u0e2d\u0e34\u0e2a\u0e23\u0e30) \u0e42\u0e21\u0e40\u0e21\u0e19\u0e15\u0e4c\u0e23\u0e2d\u0e1a CG \u0e17\u0e35\u0e48\u0e42\u0e2b\u0e25\u0e14 \u0e41\u0e01\u0e19\u0e25\u0e33\u0e15\u0e31\u0e27; \u0e15\u0e48\u0e2d rad; \u0e2d\u0e19\u0e38\u0e1e\u0e31\u0e19\u0e18\u0e4c\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e43\u0e0a\u0e49 c\u0304/2V (q, \u03b1\u0307) \u0e41\u0e25\u0e30 b/2V (p, r); \u0e40\u0e04\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e2b\u0e21\u0e32\u0e22\u0e41\u0e1a\u0e1a AC (+\u03b4e TE \u0e25\u0e07, +\u03b4a \u0e21\u0e49\u0e27\u0e19\u0e02\u0e27\u0e32, +\u03b4r TE \u0e0b\u0e49\u0e32\u0e22)",
+  "surfaces": "\u03b4e \u0e15\u0e48\u0e2d fcs/elevator-pos-rad, \u03b4a \u0e15\u0e48\u0e2d fcs/left-aileron-pos-rad (= \u0e04\u0e23\u0e36\u0e48\u0e07\u0e2b\u0e19\u0e36\u0e48\u0e07\u0e02\u0e2d\u0e07\u0e1c\u0e25\u0e15\u0e48\u0e32\u0e07\u0e0b\u0e49\u0e32\u0e22\u0e02\u0e27\u0e32), \u03b4r \u0e15\u0e48\u0e2d fcs/rudder-pos-rad",
+  "conditions": {
+   "cruise": {
+    "kcas": 200,
+    "h_ft": 5000,
+    "flap": 0,
+    "gear_down": false,
+    "w_lb": 5181.0,
+    "cg_x_in": 201.18,
+    "ktas": 210.4,
+    "alpha_trim_deg": -2.57,
+    "elevator_trim_deg": 1.14,
+    "CL_trim": 0.2192,
+    "CD_trim": 0.0279,
+    "CLalpha": 5.1819,
+    "CDalpha": -0.1242,
+    "Cmalpha": -0.1662,
+    "CLq": 12.4716,
+    "Cmq": -29.0522,
+    "CLadot": 4.0852,
+    "Cmadot": -14.1367,
+    "CYb": -0.7874,
+    "Clb": -0.0999,
+    "Cnb": 0.0825,
+    "CYp": 0.16,
+    "Clp": -0.471,
+    "Cnp": -0.0556,
+    "CYr": 0.34,
+    "Clr": 0.1285,
+    "Cnr": -0.211,
+    "CLde": 0.7886,
+    "Cmde": -1.0573,
+    "CDde": 0.057,
+    "Clda": 0.0991,
+    "Cnda": -0.003,
+    "CYdr": 0.1937,
+    "Cldr": 0.0149,
+    "Cndr": -0.1089,
+    "surface_per_cmd_deg": {
+     "elevator": 17.19,
+     "aileron_left": 20.05,
+     "rudder": 20.05
+    },
+    "propwash_terms": [
+     "aero/force/Lift_propwash (ct)",
+     "aero/force/Drag_induced (qind)",
+     "aero/moment/Roll_differential_propwash (ct)",
+     "aero/moment/Pitch_propwash (ct)",
+     "aero/moment/Pitch_elevator (qind)",
+     "aero/moment/Yaw_rudder (qind)"
+    ],
+    "alphadot_functions": [
+     "aero/force/Lift_alpha_rate",
+     "aero/moment/Pitch_alphadot"
+    ],
+    "thrust_coefficient_static": 0.0383
+   },
+   "approach": {
+    "kcas": 95,
+    "h_ft": 1000,
+    "flap": 50,
+    "gear_down": true,
+    "w_lb": 5181.0,
+    "cg_x_in": 201.18,
+    "ktas": 106.5,
+    "alpha_trim_deg": 0.73,
+    "elevator_trim_deg": 0.09,
+    "CL_trim": 0.9672,
+    "CD_trim": 0.1513,
+    "CLalpha": 5.1159,
+    "CDalpha": 0.6907,
+    "Cmalpha": -1.1589,
+    "CLq": 12.4613,
+    "Cmq": -29.053,
+    "CLadot": 4.0852,
+    "Cmadot": -14.1367,
+    "CYb": -1.3462,
+    "Clb": -0.1139,
+    "Cnb": 0.2194,
+    "CYp": 0.16,
+    "Clp": -0.471,
+    "Cnp": -0.1,
+    "CYr": 0.34,
+    "Clr": 0.2925,
+    "Cnr": -0.1276,
+    "CLde": 0.7873,
+    "Cmde": -1.2803,
+    "CDde": 0.0775,
+    "Clda": 0.0991,
+    "Cnda": -0.003,
+    "CYdr": 0.1582,
+    "Cldr": 0.014,
+    "Cndr": -0.1089,
+    "surface_per_cmd_deg": {
+     "elevator": 18.47,
+     "aileron_left": 20.05,
+     "rudder": 20.05
+    },
+    "propwash_terms": [
+     "aero/force/Lift_propwash (ct)",
+     "aero/force/Drag_induced (qind)",
+     "aero/moment/Roll_differential_propwash (ct)",
+     "aero/moment/Pitch_propwash (ct)",
+     "aero/moment/Pitch_elevator (qind)",
+     "aero/moment/Yaw_rudder (qind)"
+    ],
+    "alphadot_functions": [
+     "aero/force/Lift_alpha_rate",
+     "aero/moment/Pitch_alphadot"
+    ],
+    "thrust_coefficient_static": 0.1542
+   }
+  }
+ },
+ "dsto_marked_constants": {
+  "note": "\u0e04\u0e48\u0e32\u0e04\u0e07\u0e17\u0e35\u0e48\u0e40\u0e14\u0e35\u0e48\u0e22\u0e27\u0e43\u0e19 PC-9M.xml \u0e17\u0e35\u0e48\u0e21\u0e35 comment \"DSTO\" (12 \u0e04\u0e48\u0e32) \u0e2d\u0e49\u0e32\u0e07\u0e40\u0e1b\u0e47\u0e19\u0e02\u0e49\u0e2d\u0e40\u0e17\u0e47\u0e08\u0e08\u0e23\u0e34\u0e07\u0e1e\u0e23\u0e49\u0e2d\u0e21\u0e40\u0e25\u0e02\u0e1a\u0e23\u0e23\u0e17\u0e31\u0e14; \u0e04\u0e48\u0e32\u0e40\u0e2b\u0e25\u0e48\u0e32\u0e19\u0e35\u0e49\u0e40\u0e1b\u0e47\u0e19 \"\u0e2a\u0e48\u0e27\u0e19\u0e2b\u0e19\u0e36\u0e48\u0e07\" \u0e02\u0e2d\u0e07\u0e2a\u0e31\u0e21\u0e1b\u0e23\u0e30\u0e2a\u0e34\u0e17\u0e18\u0e34\u0e4c\u0e23\u0e27\u0e21 (\u0e04\u0e48\u0e32\u0e23\u0e27\u0e21\u0e17\u0e35\u0e48\u0e27\u0e31\u0e14\u0e44\u0e14\u0e49\u0e2d\u0e22\u0e39\u0e48\u0e43\u0e19 derivatives); \u0e15\u0e32\u0e23\u0e32\u0e07\u0e17\u0e35\u0e48\u0e21\u0e35 comment DSTO (6 \u0e15\u0e32\u0e23\u0e32\u0e07) \u0e23\u0e30\u0e1a\u0e38\u0e41\u0e04\u0e48\u0e0a\u0e37\u0e48\u0e2d\u0e41\u0e25\u0e30\u0e15\u0e31\u0e27\u0e41\u0e1b\u0e23; DSTO-TR-0479 = [LP26]",
+  "values": [
+   {
+    "function": "aero/force/Side_beta_gear",
+    "axis": "SIDE",
+    "symbol": "dCYb gear down",
+    "multiplies": [
+     "aero/beta-rad",
+     "gear/gear-pos-norm"
+    ],
+    "xml_line": 568,
+    "value": -0.149
+   },
+   {
+    "function": "aero/force/Side_rudder",
+    "axis": "SIDE",
+    "symbol": "CYdr",
+    "multiplies": [
+     "fcs/rudder-pos-rad"
+    ],
+    "xml_line": 607,
+    "value": 0.1937
+   },
+   {
+    "function": "aero/force/Side_rudder_speedbrake",
+    "axis": "SIDE",
+    "symbol": "dCYdr speedbrake",
+    "multiplies": [
+     "fcs/rudder-pos-rad",
+     "fcs/speedbrake-pos-norm"
+    ],
+    "xml_line": 618,
+    "value": 0.01146
+   },
+   {
+    "function": "aero/force/Delta_Side_rudder_gear",
+    "axis": "SIDE",
+    "symbol": "dCYdr gear down",
+    "multiplies": [
+     "fcs/rudder-pos-rad",
+     "gear/gear-pos-norm"
+    ],
+    "xml_line": 629,
+    "value": -0.035526
+   },
+   {
+    "function": "aero/moment/Roll_beta",
+    "axis": "ROLL",
+    "symbol": "Clb",
+    "multiplies": [
+     "aero/beta-rad"
+    ],
+    "xml_line": 758,
+    "value": -0.0802
+   },
+   {
+    "function": "aero/moment/Roll_damp",
+    "axis": "ROLL",
+    "symbol": "Clp",
+    "multiplies": [
+     "aero/bi2vel",
+     "velocities/p-aero-rad_sec"
+    ],
+    "xml_line": 770,
+    "value": -0.475
+   },
+   {
+    "function": "aero/moment/Roll_yaw_gear",
+    "axis": "ROLL",
+    "symbol": "dClr gear down",
+    "multiplies": [
+     "aero/bi2vel",
+     "velocities/r-aero-rad_sec",
+     "gear/gear-pos-norm"
+    ],
+    "xml_line": 802,
+    "value": 0.014
+   },
+   {
+    "function": "aero/moment/Delta_Yaw_beta_gear",
+    "axis": "YAW",
+    "symbol": "dCnb gear down",
+    "multiplies": [
+     "aero/beta-rad",
+     "gear/gear-pos-norm"
+    ],
+    "xml_line": 985,
+    "value": 0.0464
+   },
+   {
+    "function": "aero/moment/Delta_Yaw_roll_rate_gear",
+    "axis": "YAW",
+    "symbol": "dCnp gear down",
+    "multiplies": [
+     "aero/bi2vel",
+     "velocities/p-rad_sec",
+     "gear/gear-pos-norm"
+    ],
+    "xml_line": 1010,
+    "value": -0.0444
+   },
+   {
+    "function": "aero/moment/Delta_Yaw_roll_rate_speedbrake",
+    "axis": "YAW",
+    "symbol": "dCnp speedbrake",
+    "multiplies": [
+     "aero/bi2vel",
+     "velocities/p-rad_sec",
+     "fcs/speedbrake-pos-norm"
+    ],
+    "xml_line": 1023,
+    "value": -0.0185
+   },
+   {
+    "function": "aero/moment/Delta_Yaw_damp_gear",
+    "axis": "YAW",
+    "symbol": "dCnr gear down",
+    "multiplies": [
+     "aero/bi2vel",
+     "velocities/r-aero-rad_sec",
+     "gear/gear-pos-norm"
+    ],
+    "xml_line": 1055,
+    "value": 0.0014
+   },
+   {
+    "function": "aero/moment/Yaw_rudder",
+    "axis": "YAW",
+    "symbol": "Cndr",
+    "multiplies": [
+     "fcs/rudder-pos-rad"
+    ],
+    "xml_line": 1066,
+    "value": -0.1089
+   }
+  ],
+  "tables": [
+   {
+    "function": "aero/force/Side_beta",
+    "axis": "SIDE",
+    "symbol": "CYb",
+    "multiplies": [
+     "aero/beta-rad"
+    ],
+    "xml_line": 552,
+    "table_of": [
+     "fcs/flap-pos-deg"
+    ],
+    "value": "\u0e15\u0e32\u0e23\u0e32\u0e07 (\u0e44\u0e21\u0e48\u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01)"
+   },
+   {
+    "function": "aero/moment/Roll_yaw",
+    "axis": "ROLL",
+    "symbol": "Clr",
+    "multiplies": [
+     "aero/bi2vel",
+     "velocities/r-aero-rad_sec"
+    ],
+    "xml_line": 785,
+    "table_of": [
+     "fcs/flap-pos-deg"
+    ],
+    "value": "\u0e15\u0e32\u0e23\u0e32\u0e07 (\u0e44\u0e21\u0e48\u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01)"
+   },
+   {
+    "function": "aero/moment/Pitch_alpha",
+    "axis": "PITCH",
+    "symbol": "Cma",
+    "multiplies": [
+     "aero/alpha-rad"
+    ],
+    "xml_line": 861,
+    "table_of": [
+     "fcs/flap-pos-deg"
+    ],
+    "value": "\u0e15\u0e32\u0e23\u0e32\u0e07 (\u0e44\u0e21\u0e48\u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01)"
+   },
+   {
+    "function": "aero/moment/Pitch_elevator",
+    "axis": "PITCH",
+    "symbol": "Cmde",
+    "multiplies": [
+     "fcs/elevator-pos-rad"
+    ],
+    "xml_line": 891,
+    "table_of": [
+     "fcs/flap-pos-deg",
+     "gear/gear-pos-norm"
+    ],
+    "value": "\u0e15\u0e32\u0e23\u0e32\u0e07 (\u0e44\u0e21\u0e48\u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01)"
+   },
+   {
+    "function": "aero/moment/Yaw_beta",
+    "axis": "YAW",
+    "symbol": "Cnb",
+    "multiplies": [
+     "aero/beta-rad"
+    ],
+    "xml_line": 969,
+    "table_of": [
+     "fcs/flap-pos-deg"
+    ],
+    "value": "\u0e15\u0e32\u0e23\u0e32\u0e07 (\u0e44\u0e21\u0e48\u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01)"
+   },
+   {
+    "function": "aero/moment/Yaw_damp",
+    "axis": "YAW",
+    "symbol": "Cnr",
+    "multiplies": [
+     "aero/bi2vel",
+     "velocities/r-aero-rad_sec"
+    ],
+    "xml_line": 1037,
+    "table_of": [
+     "fcs/flap-pos-deg"
+    ],
+    "value": "\u0e15\u0e32\u0e23\u0e32\u0e07 (\u0e44\u0e21\u0e48\u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01)"
+   }
+  ],
+  "readme_check": {
+   "note": "README \u0e02\u0e2d\u0e07 repo \u0e21\u0e35\u0e15\u0e32\u0e23\u0e32\u0e07\u0e17\u0e35\u0e48\u0e1c\u0e39\u0e49\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e16\u0e2d\u0e14\u0e08\u0e32\u0e01 DSTO-TR-0479 (\u0e41\u0e1f\u0e25\u0e1b 0/23/50, gear down, \u0394 gear); \u0e40\u0e17\u0e35\u0e22\u0e1a\u0e2d\u0e31\u0e15\u0e42\u0e19\u0e21\u0e31\u0e15\u0e34\u0e17\u0e35\u0e25\u0e30\u0e04\u0e48\u0e32 (\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e44\u0e14\u0e49\u0e40\u0e17\u0e35\u0e22\u0e1a\u0e01\u0e31\u0e1a\u0e23\u0e32\u0e22\u0e07\u0e32\u0e19\u0e15\u0e49\u0e19\u0e09\u0e1a\u0e31\u0e1a \u0e40\u0e1e\u0e23\u0e32\u0e30\u0e40\u0e1b\u0e34\u0e14\u0e44\u0e1f\u0e25\u0e4c DTIC \u0e44\u0e21\u0e48\u0e44\u0e14\u0e49)",
+   "results": [
+    {
+     "function": "aero/force/Side_beta_gear",
+     "readme_symbol": "CYb",
+     "match": true
+    },
+    {
+     "function": "aero/force/Side_rudder",
+     "readme_symbol": "CYdr",
+     "match": true
+    },
+    {
+     "function": "aero/force/Side_rudder_speedbrake",
+     "readme": "\u0e44\u0e21\u0e48\u0e21\u0e35\u0e04\u0e2d\u0e25\u0e31\u0e21\u0e19\u0e4c\u0e19\u0e35\u0e49\u0e43\u0e19 README (speedbrake)"
+    },
+    {
+     "function": "aero/force/Delta_Side_rudder_gear",
+     "readme_symbol": "CYdr",
+     "match": false,
+     "xml": -0.035526,
+     "readme": 0.0
+    },
+    {
+     "function": "aero/moment/Roll_beta",
+     "readme_symbol": "Clb",
+     "match": true
+    },
+    {
+     "function": "aero/moment/Roll_damp",
+     "readme_symbol": "Clp",
+     "match": true
+    },
+    {
+     "function": "aero/moment/Roll_yaw_gear",
+     "readme_symbol": "Clr",
+     "match": true
+    },
+    {
+     "function": "aero/moment/Delta_Yaw_beta_gear",
+     "readme_symbol": "Cnb",
+     "match": true
+    },
+    {
+     "function": "aero/moment/Delta_Yaw_roll_rate_gear",
+     "readme_symbol": "Cnp",
+     "match": true
+    },
+    {
+     "function": "aero/moment/Delta_Yaw_roll_rate_speedbrake",
+     "readme": "\u0e44\u0e21\u0e48\u0e21\u0e35\u0e04\u0e2d\u0e25\u0e31\u0e21\u0e19\u0e4c\u0e19\u0e35\u0e49\u0e43\u0e19 README (speedbrake)"
+    },
+    {
+     "function": "aero/moment/Delta_Yaw_damp_gear",
+     "readme_symbol": "Cnr",
+     "match": false,
+     "xml": 0.0014,
+     "readme": -0.009
+    },
+    {
+     "function": "aero/moment/Yaw_rudder",
+     "readme_symbol": "Cndr",
+     "match": true
+    },
+    {
+     "function": "aero/force/Side_beta",
+     "readme_symbol": "CYb",
+     "points_checked": 3,
+     "match": true
+    },
+    {
+     "function": "aero/moment/Roll_yaw",
+     "readme_symbol": "Clr",
+     "points_checked": 3,
+     "match": true
+    },
+    {
+     "function": "aero/moment/Pitch_alpha",
+     "readme_symbol": "Cma",
+     "points_checked": 2,
+     "match": true
+    },
+    {
+     "function": "aero/moment/Pitch_elevator",
+     "readme_symbol": "Cmde",
+     "points_checked": 4,
+     "match": true
+    },
+    {
+     "function": "aero/moment/Yaw_beta",
+     "readme_symbol": "Cnb",
+     "points_checked": 3,
+     "match": true
+    },
+    {
+     "function": "aero/moment/Yaw_damp",
+     "readme_symbol": "Cnr",
+     "points_checked": 3,
+     "match": false,
+     "differs": [
+      {
+       "point": "flap 23",
+       "xml": -0.193,
+       "readme": -0.19
+      },
+      {
+       "point": "flap 50",
+       "xml": -0.129,
+       "readme": -0.12
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "performance": {
+  "stall_kcas": {
+   "0": {
+    "vs": 68.24,
+    "flap_deg": 0.0,
+    "alpha_deg": 20.23,
+    "CL": 1.566,
+    "limit": "elevator stop"
+   },
+   "23": {
+    "vs": 64.03,
+    "flap_deg": 23.0,
+    "alpha_deg": 20.14,
+    "CL": 1.818,
+    "limit": "aero (CL break)"
+   },
+   "50": {
+    "vs": 62.92,
+    "flap_deg": 50.0,
+    "alpha_deg": 17.03,
+    "CL": 2.158,
+    "limit": "elevator stop"
+   }
+  },
+  "stall_note": "\u0e25\u0e14 1 kt/s idle 3,000 ft ISA; \u0e41\u0e1f\u0e25\u0e1b 0 \u0e41\u0e25\u0e30 50 \u0e2b\u0e22\u0e38\u0e14\u0e40\u0e1e\u0e23\u0e32\u0e30 elevator \u0e0a\u0e19\u0e2a\u0e15\u0e47\u0e2d\u0e1b \u221220.05\u00b0 \u0e08\u0e36\u0e07\u0e40\u0e1b\u0e47\u0e19\u0e02\u0e2d\u0e1a\u0e25\u0e48\u0e32\u0e07\u0e02\u0e2d\u0e07 VS \u0e17\u0e35\u0e48\u0e42\u0e21\u0e40\u0e14\u0e25\u0e1a\u0e34\u0e19\u0e44\u0e14\u0e49 \u0e44\u0e21\u0e48\u0e43\u0e0a\u0e48 CLmax; \u0e2a\u0e32\u0e18\u0e32\u0e23\u0e13\u0e30 77 / 69 KCAS \u0e17\u0e35\u0e48 2,350 kg [LP2]",
+  "climb": {
+   "vy_kcas": 136.7,
+   "roc_max_fpm": 5458.0,
+   "roc_max_ms": 27.73,
+   "public": "4,090 fpm (20.8 m/s) [LP12, LP13]"
+  },
+  "cruise_full_power": [
+   {
+    "h_ft": 10000,
+    "h_m": 3048,
+    "ktas": 244.1,
+    "kcas": 210.9,
+    "hp": 436.1
+   },
+   {
+    "h_ft": 20000,
+    "h_m": 6096,
+    "ktas": 240.1,
+    "kcas": 177.1,
+    "hp": 313.2
+   }
+  ],
+  "cruise_public": "276 KTAS \u0e17\u0e35\u0e48 2,000 ft, 301 KTAS \u0e17\u0e35\u0e48 20,000 ft [LP12]",
+  "trimmed": [
+   {
+    "name": "cruise",
+    "kcas": 200,
+    "h_ft": 5000,
+    "ktas": 210.4,
+    "alpha_deg": -2.57,
+    "elevator_deg": 1.14,
+    "flap": 0,
+    "gear_down": false
+   },
+   {
+    "name": "approach",
+    "kcas": 95,
+    "h_ft": 1000,
+    "ktas": 106.5,
+    "alpha_deg": 0.73,
+    "elevator_deg": 0.09,
+    "flap": 50,
+    "gear_down": true
+   }
+  ],
+  "glide_best": {
+   "kcas": 155.02,
+   "ratio": 12.73,
+   "note": "\u0e43\u0e1a\u0e1e\u0e31\u0e14\u0e2b\u0e22\u0e38\u0e14 0 rpm \u0e44\u0e21\u0e48 feather; \u0e08\u0e38\u0e14\u0e15\u0e48\u0e33\u0e01\u0e27\u0e48\u0e32 ~113 KCAS \u0e43\u0e0a\u0e49\u0e44\u0e21\u0e48\u0e44\u0e14\u0e49 (defect \u0e02\u0e49\u0e2d 3)"
+  },
+  "takeoff": {
+   "flap_deg": 23,
+   "ground_roll_ft": 712.0,
+   "ground_roll_m": 217,
+   "over50_ft": 1469.0,
+   "over50_m": 448,
+   "note": "\u0e02\u0e36\u0e49\u0e19\u0e01\u0e31\u0e1a\u0e19\u0e31\u0e01\u0e1a\u0e34\u0e19\u0e08\u0e33\u0e25\u0e2d\u0e07 (VR 85 KCAS \u03b8 8\u00b0)"
+  }
+ },
+ "aero_static": {
+  "0": {
+   "CL0": 0.4382,
+   "CLalpha_per_rad": 5.194,
+   "CLmax": 1.977,
+   "alpha_CLmax_deg": 17.5,
+   "CDmin": 0.0239,
+   "Cmalpha_per_rad": -0.423
+  },
+  "23": {
+   "CL0": 0.6498,
+   "CLalpha_per_rad": 5.194,
+   "CLmax": 2.188,
+   "alpha_CLmax_deg": 17.5,
+   "CDmin": 0.0606,
+   "Cmalpha_per_rad": -0.662
+  },
+  "50": {
+   "CL0": 0.8982,
+   "CLalpha_per_rad": 5.194,
+   "CLmax": 2.437,
+   "alpha_CLmax_deg": 17.5,
+   "CDmin": 0.1039,
+   "Cmalpha_per_rad": -0.943
+  }
+ },
+ "use": "\u0e40\u0e17\u0e35\u0e22\u0e1a\u0e01\u0e31\u0e1a\u0e2d\u0e19\u0e38\u0e1e\u0e31\u0e19\u0e18\u0e4c\u0e02\u0e2d\u0e07\u0e1a\u0e31\u0e15\u0e23 pc9m \u0e43\u0e19\u0e2b\u0e31\u0e27\u0e02\u0e49\u0e2d 07 \u0e44\u0e14\u0e49 (\u0e42\u0e21\u0e40\u0e14\u0e25\u0e2d\u0e49\u0e32\u0e07 DSTO-TR-0479 \u0e40\u0e1b\u0e47\u0e19\u0e41\u0e2b\u0e25\u0e48\u0e07) \u0e41\u0e15\u0e48\u0e2b\u0e49\u0e32\u0e21\u0e43\u0e0a\u0e49\u0e2a\u0e21\u0e23\u0e23\u0e16\u0e19\u0e30\u0e02\u0e2d\u0e07\u0e42\u0e21\u0e40\u0e14\u0e25\u0e40\u0e1b\u0e47\u0e19\u0e40\u0e1b\u0e49\u0e32 \u0e40\u0e1e\u0e23\u0e32\u0e30\u0e40\u0e04\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e22\u0e19\u0e15\u0e4c\u0e43\u0e19\u0e42\u0e21\u0e40\u0e14\u0e25\u0e40\u0e1b\u0e47\u0e19 PT6A-25 \u0e41\u0e25\u0e30\u0e43\u0e1a\u0e1e\u0e31\u0e14\u0e43\u0e2b\u0e49\u0e1b\u0e23\u0e30\u0e2a\u0e34\u0e17\u0e18\u0e34\u0e20\u0e32\u0e1e\u0e40\u0e01\u0e34\u0e19 1",
+ "vs_topic07": {
+  "note": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19 = \u0e04\u0e48\u0e32\u0e17\u0e35\u0e48\u0e27\u0e31\u0e14\u0e08\u0e32\u0e01\u0e42\u0e21\u0e40\u0e14\u0e25 FlightGear / \u0e04\u0e48\u0e32\u0e1b\u0e23\u0e30\u0e21\u0e32\u0e13\u0e02\u0e2d\u0e07\u0e1a\u0e31\u0e15\u0e23 pc9m \u0e43\u0e19\u0e2b\u0e31\u0e27\u0e02\u0e49\u0e2d 07 (lm_derivs [LP27]) \u0e2d\u0e48\u0e32\u0e19\u0e08\u0e32\u0e01 07-turboprop-trainers.md \u0e15\u0e2d\u0e19\u0e23\u0e31\u0e19\u0e2a\u0e04\u0e23\u0e34\u0e1b\u0e15\u0e4c; \u0e17\u0e31\u0e49\u0e07\u0e2a\u0e2d\u0e07\u0e40\u0e1b\u0e47\u0e19\u0e41\u0e01\u0e19\u0e25\u0e33\u0e15\u0e31\u0e27 \u0e15\u0e48\u0e2d rad \u0e40\u0e04\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e2b\u0e21\u0e32\u0e22\u0e41\u0e1a\u0e1a AC; CG \u0e15\u0e48\u0e32\u0e07\u0e01\u0e31\u0e19 (07: 25 %MAC) \u0e08\u0e36\u0e07\u0e40\u0e17\u0e35\u0e22\u0e1a Cm\u03b1 \u0e15\u0e23\u0e07 \u0e46 \u0e44\u0e21\u0e48\u0e44\u0e14\u0e49",
+  "rows": [
+   {
+    "name": "CLq",
+    "cond": "cruise",
+    "fg_pc9m": 12.4716,
+    "card_07": 6.2987,
+    "ratio": 1.98
+   },
+   {
+    "name": "CLq",
+    "cond": "approach",
+    "fg_pc9m": 12.4613,
+    "card_07": 6.1496,
+    "ratio": 2.03
+   },
+   {
+    "name": "CLadot",
+    "cond": "cruise",
+    "fg_pc9m": 4.0852,
+    "card_07": 1.6805,
+    "ratio": 2.43
+   },
+   {
+    "name": "CLadot",
+    "cond": "approach",
+    "fg_pc9m": 4.0852,
+    "card_07": 1.6001,
+    "ratio": 2.55
+   },
+   {
+    "name": "CLde",
+    "cond": "cruise",
+    "fg_pc9m": 0.7886,
+    "card_07": 0.428,
+    "ratio": 1.84
+   },
+   {
+    "name": "CLde",
+    "cond": "approach",
+    "fg_pc9m": 0.7873,
+    "card_07": 0.4185,
+    "ratio": 1.88
+   },
+   {
+    "name": "CYb",
+    "cond": "cruise",
+    "fg_pc9m": -0.7874,
+    "card_07": -0.6344,
+    "ratio": 1.24
+   },
+   {
+    "name": "CYb",
+    "cond": "approach",
+    "fg_pc9m": -1.3462,
+    "card_07": -0.6294,
+    "ratio": 2.14
+   },
+   {
+    "name": "CYdr",
+    "cond": "cruise",
+    "fg_pc9m": 0.1937,
+    "card_07": 0.1974,
+    "ratio": 0.98
+   },
+   {
+    "name": "CYdr",
+    "cond": "approach",
+    "fg_pc9m": 0.1582,
+    "card_07": 0.1948,
+    "ratio": 0.81
+   },
+   {
+    "name": "CYr",
+    "cond": "cruise",
+    "fg_pc9m": 0.34,
+    "card_07": 0.359,
+    "ratio": 0.95
+   },
+   {
+    "name": "CYr",
+    "cond": "approach",
+    "fg_pc9m": 0.34,
+    "card_07": 0.3561,
+    "ratio": 0.95
+   },
+   {
+    "name": "Clb",
+    "cond": "cruise",
+    "fg_pc9m": -0.0999,
+    "card_07": -0.0668,
+    "ratio": 1.5
+   },
+   {
+    "name": "Clb",
+    "cond": "approach",
+    "fg_pc9m": -0.1139,
+    "card_07": -0.0545,
+    "ratio": 2.09
+   },
+   {
+    "name": "Clp",
+    "cond": "cruise",
+    "fg_pc9m": -0.471,
+    "card_07": -0.4799,
+    "ratio": 0.98
+   },
+   {
+    "name": "Clp",
+    "cond": "approach",
+    "fg_pc9m": -0.471,
+    "card_07": -0.4885,
+    "ratio": 0.96
+   },
+   {
+    "name": "Clr",
+    "cond": "cruise",
+    "fg_pc9m": 0.1285,
+    "card_07": 0.0857,
+    "ratio": 1.5
+   },
+   {
+    "name": "Clr",
+    "cond": "approach",
+    "fg_pc9m": 0.2925,
+    "card_07": 0.2032,
+    "ratio": 1.44
+   },
+   {
+    "name": "Clda",
+    "cond": "cruise",
+    "fg_pc9m": 0.0991,
+    "card_07": 0.2267,
+    "ratio": 0.44
+   },
+   {
+    "name": "Clda",
+    "cond": "approach",
+    "fg_pc9m": 0.0991,
+    "card_07": 0.2307,
+    "ratio": 0.43
+   },
+   {
+    "name": "Cldr",
+    "cond": "cruise",
+    "fg_pc9m": 0.0149,
+    "card_07": 0.0155,
+    "ratio": 0.96
+   },
+   {
+    "name": "Cldr",
+    "cond": "approach",
+    "fg_pc9m": 0.014,
+    "card_07": 0.0153,
+    "ratio": 0.92
+   },
+   {
+    "name": "Cmq",
+    "cond": "cruise",
+    "fg_pc9m": -29.0522,
+    "card_07": -13.0642,
+    "ratio": 2.22
+   },
+   {
+    "name": "Cmq",
+    "cond": "approach",
+    "fg_pc9m": -29.053,
+    "card_07": -12.7736,
+    "ratio": 2.27
+   },
+   {
+    "name": "Cmadot",
+    "cond": "cruise",
+    "fg_pc9m": -14.1367,
+    "card_07": -4.9905,
+    "ratio": 2.83
+   },
+   {
+    "name": "Cmadot",
+    "cond": "approach",
+    "fg_pc9m": -14.1367,
+    "card_07": -4.7518,
+    "ratio": 2.98
+   },
+   {
+    "name": "Cmde",
+    "cond": "cruise",
+    "fg_pc9m": -1.0573,
+    "card_07": -1.271,
+    "ratio": 0.83
+   },
+   {
+    "name": "Cmde",
+    "cond": "approach",
+    "fg_pc9m": -1.2803,
+    "card_07": -1.2427,
+    "ratio": 1.03
+   },
+   {
+    "name": "Cnb",
+    "cond": "cruise",
+    "fg_pc9m": 0.0825,
+    "card_07": 0.1027,
+    "ratio": 0.8
+   },
+   {
+    "name": "Cnb",
+    "cond": "approach",
+    "fg_pc9m": 0.2194,
+    "card_07": 0.0959,
+    "ratio": 2.29
+   },
+   {
+    "name": "Cnp",
+    "cond": "cruise",
+    "fg_pc9m": -0.0556,
+    "card_07": -0.0243,
+    "ratio": 2.29
+   },
+   {
+    "name": "Cnp",
+    "cond": "approach",
+    "fg_pc9m": -0.1,
+    "card_07": -0.1877,
+    "ratio": 0.53
+   },
+   {
+    "name": "Cnr",
+    "cond": "cruise",
+    "fg_pc9m": -0.211,
+    "card_07": -0.175,
+    "ratio": 1.21
+   },
+   {
+    "name": "Cnr",
+    "cond": "approach",
+    "fg_pc9m": -0.1276,
+    "card_07": -0.1836,
+    "ratio": 0.69
+   },
+   {
+    "name": "Cnda",
+    "cond": "cruise",
+    "fg_pc9m": -0.003,
+    "card_07": -0.0113,
+    "ratio": 0.27
+   },
+   {
+    "name": "Cnda",
+    "cond": "approach",
+    "fg_pc9m": -0.003,
+    "card_07": -0.011,
+    "ratio": 0.27
+   },
+   {
+    "name": "Cndr",
+    "cond": "cruise",
+    "fg_pc9m": -0.1089,
+    "card_07": -0.091,
+    "ratio": 1.2
+   },
+   {
+    "name": "Cndr",
+    "cond": "approach",
+    "fg_pc9m": -0.1089,
+    "card_07": -0.0899,
+    "ratio": 1.21
+   },
+   {
+    "name": "CLalpha",
+    "cond": "cruise",
+    "fg_pc9m": 5.1819,
+    "card_07": 4.987,
+    "ratio": 1.04
+   },
+   {
+    "name": "CLalpha",
+    "cond": "approach",
+    "fg_pc9m": 5.1159,
+    "card_07": 4.987,
+    "ratio": 1.03
+   },
+   {
+    "name": "Cmalpha",
+    "cond": "cruise",
+    "fg_pc9m": -0.1662,
+    "card_07": -0.761,
+    "ratio": 0.22
+   },
+   {
+    "name": "Cmalpha",
+    "cond": "approach",
+    "fg_pc9m": -1.1589,
+    "card_07": -0.761,
+    "ratio": 1.52
+   }
+  ]
+ }
+}

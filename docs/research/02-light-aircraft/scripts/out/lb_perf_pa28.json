@@ -1,0 +1,465 @@
+{
+ "model": "pa28",
+ "jsbsim": "1.3.3",
+ "stall": {
+  "0": {
+   "trim_ok": false,
+   "w_lb": 2449.4,
+   "not_loaded_lb": 0.0,
+   "cg_x_in": 88.42,
+   "v0_kcas": 72,
+   "flap_deg": 0.0,
+   "vs_kcas": 64.26,
+   "alpha_at_vs": 8.24,
+   "elev_at_vs": -27.99,
+   "CL_at_vs": 0.989,
+   "alpha_max": 8.25,
+   "CL_at_alpha_max": 0.989,
+   "hdot_at_vs_fpm": -1160.0,
+   "limit": "elevator stop"
+  },
+  "15": {
+   "trim_ok": false,
+   "w_lb": 2449.3,
+   "not_loaded_lb": 0.0,
+   "cg_x_in": 88.42,
+   "v0_kcas": 72,
+   "flap_deg": 15.0,
+   "vs_kcas": 69.82,
+   "alpha_at_vs": 6.19,
+   "elev_at_vs": -27.99,
+   "CL_at_vs": 0.842,
+   "alpha_max": 6.26,
+   "CL_at_alpha_max": 0.85,
+   "hdot_at_vs_fpm": -1323.0,
+   "limit": "elevator stop"
+  },
+  "25": {
+   "trim_ok": false,
+   "w_lb": 2449.3,
+   "not_loaded_lb": 0.0,
+   "cg_x_in": 88.42,
+   "v0_kcas": 72,
+   "flap_deg": 25.0,
+   "vs_kcas": 75.88,
+   "alpha_at_vs": 5.54,
+   "elev_at_vs": -27.99,
+   "CL_at_vs": 0.724,
+   "alpha_max": 5.66,
+   "CL_at_alpha_max": 0.737,
+   "hdot_at_vs_fpm": -1801.0,
+   "limit": "elevator stop"
+  },
+  "40": {
+   "trim_ok": false,
+   "w_lb": 2449.3,
+   "not_loaded_lb": 0.0,
+   "cg_x_in": 88.42,
+   "v0_kcas": 72,
+   "flap_deg": 40.0,
+   "vs_kcas": 72.76,
+   "alpha_at_vs": 3.88,
+   "elev_at_vs": -27.99,
+   "CL_at_vs": 0.785,
+   "alpha_max": 4.0,
+   "CL_at_alpha_max": 0.798,
+   "hdot_at_vs_fpm": -1581.0,
+   "limit": "elevator stop"
+  }
+ },
+ "dt_s": 0.008333333333333333,
+ "mtow_lb": 2450,
+ "climb": {
+  "points": [
+   {
+    "kcas": 60,
+    "trim_ok": false,
+    "vc": 66.99,
+    "roc_fpm": 298.0,
+    "theta": 10.58,
+    "alpha": 8.09,
+    "rpm": 2700.0,
+    "hp": 178.5,
+    "thrust_lb": 565.5,
+    "w_lb": 2449.5
+   },
+   {
+    "kcas": 65,
+    "trim_ok": false,
+    "vc": 66.99,
+    "roc_fpm": 298.0,
+    "theta": 10.58,
+    "alpha": 8.09,
+    "rpm": 2700.0,
+    "hp": 178.5,
+    "thrust_lb": 565.5,
+    "w_lb": 2449.5
+   },
+   {
+    "kcas": 70,
+    "trim_ok": false,
+    "vc": 69.99,
+    "roc_fpm": 331.0,
+    "theta": 9.5,
+    "alpha": 6.84,
+    "rpm": 2700.0,
+    "hp": 178.7,
+    "thrust_lb": 551.9,
+    "w_lb": 2449.5
+   },
+   {
+    "kcas": 75,
+    "trim_ok": false,
+    "vc": 74.99,
+    "roc_fpm": 374.0,
+    "theta": 7.91,
+    "alpha": 5.09,
+    "rpm": 2700.0,
+    "hp": 179.0,
+    "thrust_lb": 529.6,
+    "w_lb": 2449.5
+   },
+   {
+    "kcas": 80,
+    "trim_ok": false,
+    "vc": 79.99,
+    "roc_fpm": 409.0,
+    "theta": 6.55,
+    "alpha": 3.65,
+    "rpm": 2700.0,
+    "hp": 179.3,
+    "thrust_lb": 510.2,
+    "w_lb": 2449.4
+   },
+   {
+    "kcas": 85,
+    "trim_ok": false,
+    "vc": 85.0,
+    "roc_fpm": 426.0,
+    "theta": 5.28,
+    "alpha": 2.43,
+    "rpm": 2700.0,
+    "hp": 179.6,
+    "thrust_lb": 491.7,
+    "w_lb": 2449.4
+   },
+   {
+    "kcas": 90,
+    "trim_ok": false,
+    "vc": 90.0,
+    "roc_fpm": 423.0,
+    "theta": 4.05,
+    "alpha": 1.38,
+    "rpm": 2700.0,
+    "hp": 180.0,
+    "thrust_lb": 475.4,
+    "w_lb": 2449.4
+   },
+   {
+    "kcas": 95,
+    "trim_ok": false,
+    "vc": 95.0,
+    "roc_fpm": 404.0,
+    "theta": 2.89,
+    "alpha": 0.47,
+    "rpm": 2700.0,
+    "hp": 180.4,
+    "thrust_lb": 460.7,
+    "w_lb": 2449.4
+   },
+   {
+    "kcas": 100,
+    "trim_ok": false,
+    "vc": 100.0,
+    "roc_fpm": 386.0,
+    "theta": 1.87,
+    "alpha": -0.32,
+    "rpm": 2700.0,
+    "hp": 180.8,
+    "thrust_lb": 449.7,
+    "w_lb": 2449.4
+   },
+   {
+    "kcas": 105,
+    "trim_ok": false,
+    "vc": 104.99,
+    "roc_fpm": 334.0,
+    "theta": 0.79,
+    "alpha": -1.03,
+    "rpm": 2700.0,
+    "hp": 181.2,
+    "thrust_lb": 435.8,
+    "w_lb": 2449.4
+   },
+   {
+    "kcas": 110,
+    "trim_ok": false,
+    "vc": 110.0,
+    "roc_fpm": 193.0,
+    "theta": -0.63,
+    "alpha": -1.64,
+    "rpm": 2700.0,
+    "hp": 181.6,
+    "thrust_lb": 419.6,
+    "w_lb": 2449.3
+   },
+   {
+    "kcas": 115,
+    "trim_ok": false,
+    "roc_fpm": null
+   },
+   {
+    "kcas": 120,
+    "trim_ok": false,
+    "roc_fpm": null
+   }
+  ],
+  "vy_kcas": 86.7,
+  "roc_max_fpm": 427.0,
+  "vy_at_sweep_edge": false,
+  "note": "SL ISA (window |h|<150 ft), flaps 0, gear up, full throttle, mixture full rich, prop max rpm"
+ },
+ "glide": {
+  "points": [
+   {
+    "kcas": 60,
+    "vc": 67.24,
+    "ktas": 71.4,
+    "sink_fpm": 1339.0,
+    "ratio": 5.31,
+    "alpha": 8.14,
+    "h_ft": 4066.0,
+    "prop_rpm": 0.0
+   },
+   {
+    "kcas": 65,
+    "vc": 67.23,
+    "ktas": 71.44,
+    "sink_fpm": 1339.0,
+    "ratio": 5.31,
+    "alpha": 8.14,
+    "h_ft": 4110.0,
+    "prop_rpm": 0.0
+   },
+   {
+    "kcas": 70,
+    "vc": 69.93,
+    "ktas": 74.34,
+    "sink_fpm": 1351.0,
+    "ratio": 5.48,
+    "alpha": 6.97,
+    "h_ft": 4136.0,
+    "prop_rpm": 0.0
+   },
+   {
+    "kcas": 75,
+    "vc": 75.15,
+    "ktas": 79.9,
+    "sink_fpm": 1324.0,
+    "ratio": 6.03,
+    "alpha": 5.07,
+    "h_ft": 4146.0,
+    "prop_rpm": 0.0
+   },
+   {
+    "kcas": 80,
+    "vc": 80.08,
+    "ktas": 85.16,
+    "sink_fpm": 1329.0,
+    "ratio": 6.41,
+    "alpha": 3.61,
+    "h_ft": 4163.0,
+    "prop_rpm": 0.0
+   },
+   {
+    "kcas": 85,
+    "vc": 85.05,
+    "ktas": 90.41,
+    "sink_fpm": 1347.0,
+    "ratio": 6.72,
+    "alpha": 2.38,
+    "h_ft": 4142.0,
+    "prop_rpm": 0.0
+   },
+   {
+    "kcas": 90,
+    "vc": 90.03,
+    "ktas": 95.62,
+    "sink_fpm": 1389.0,
+    "ratio": 6.9,
+    "alpha": 1.31,
+    "h_ft": 4087.0,
+    "prop_rpm": 0.0
+   },
+   {
+    "kcas": 95,
+    "vc": 95.01,
+    "ktas": 100.79,
+    "sink_fpm": 1443.0,
+    "ratio": 7.0,
+    "alpha": 0.39,
+    "h_ft": 4006.0,
+    "prop_rpm": 0.0
+   },
+   {
+    "kcas": 100,
+    "vc": 100.01,
+    "ktas": 105.85,
+    "sink_fpm": 1507.0,
+    "ratio": 7.04,
+    "alpha": -0.41,
+    "h_ft": 3862.0,
+    "prop_rpm": 0.0
+   }
+  ],
+  "best_kcas": 100.01,
+  "best_ratio": 7.04,
+  "best_at_sweep_edge": true,
+  "note": "engine off (piston: magnetos off, prop windmills or stops as the model decides; pc7: cutoff + feather; t6: cutoff), flaps 0, gear up, 4,000-5,500 ft ISA, last 40 s of 100 s"
+ },
+ "cruise": [
+  {
+   "h_ft": 8000,
+   "mode": "hp",
+   "target": 135.0,
+   "v0_kcas": 100,
+   "ktas": 74.5,
+   "kcas": 67.1,
+   "h_avg": 6927.0,
+   "hdot_fpm": -155.0,
+   "rpm": 2700.0,
+   "hp": 135.0,
+   "thr": 0.923,
+   "mixture": 0.85,
+   "dv_last60s": -0.2
+  },
+  {
+   "h_ft": 8000,
+   "mode": "full",
+   "target": null,
+   "v0_kcas": 100,
+   "ktas": 75.0,
+   "kcas": 67.1,
+   "h_avg": 7413.0,
+   "hdot_fpm": -85.0,
+   "rpm": 2700.0,
+   "hp": 145.1,
+   "thr": 1.0,
+   "mixture": 0.85,
+   "dv_last60s": -0.13
+  },
+  {
+   "h_ft": 4000,
+   "mode": "hp",
+   "target": 135.0,
+   "v0_kcas": 100,
+   "ktas": 71.0,
+   "kcas": 67.1,
+   "h_avg": 3823.0,
+   "hdot_fpm": -89.0,
+   "rpm": 2700.0,
+   "hp": 135.0,
+   "thr": 0.874,
+   "mixture": 0.975,
+   "dv_last60s": -0.11
+  }
+ ],
+ "static": {
+  "engine_rpm": 2631.0,
+  "prop_rpm": 2631.0,
+  "hp": 173.2,
+  "thrust_lb": 767.8,
+  "vc_kts": 0.0,
+  "note": "SL ISA, brakes on, full throttle, mixture full rich, 10 s after throttle-up"
+ },
+ "takeoff": {
+  "flap_deg": 0,
+  "vr_kcas": 60,
+  "v50_target_kcas": 70,
+  "theta_rot_deg": 8,
+  "ground_roll_ft": null,
+  "over50_ft": null,
+  "t_liftoff_s": null,
+  "v_liftoff_kcas": null,
+  "v_50ft_kcas": null,
+  "note": "SL ISA, JSBSim default friction, zero wind, full throttle against brakes then release; pilot model: elevator neutral to VR, pitch to theta_rot, after lift-off speed hold at v50"
+ },
+ "preq": {
+  "h_ft": 8000,
+  "rows": [
+   {
+    "kcas": 70,
+    "ktas": 78.3,
+    "hp": 116.6,
+    "thr": 1.0,
+    "h": 7245.0,
+    "hdot": -296.0,
+    "alpha": 6.84
+   },
+   {
+    "kcas": 80,
+    "ktas": 89.4,
+    "hp": 116.0,
+    "thr": 1.0,
+    "h": 7274.0,
+    "hdot": -274.0,
+    "alpha": 3.65
+   },
+   {
+    "kcas": 90,
+    "ktas": 100.4,
+    "hp": 118.2,
+    "thr": 1.0,
+    "h": 7235.0,
+    "hdot": -282.0,
+    "alpha": 1.37
+   },
+   {
+    "kcas": 100,
+    "ktas": 111.4,
+    "hp": 122.9,
+    "thr": 1.0,
+    "h": 7131.0,
+    "hdot": -317.0,
+    "alpha": -0.34
+   },
+   {
+    "kcas": 110,
+    "ktas": 121.8,
+    "hp": 131.6,
+    "thr": 1.0,
+    "h": 6817.0,
+    "hdot": -486.0,
+    "alpha": -1.65
+   },
+   {
+    "kcas": 120,
+    "ktas": 131.5,
+    "hp": 142.4,
+    "thr": 1.0,
+    "h": 6117.0,
+    "hdot": -881.0,
+    "alpha": -2.68
+   },
+   {
+    "kcas": 130,
+    "ktas": 140.6,
+    "hp": 154.9,
+    "thr": 1.0,
+    "h": 5260.0,
+    "hdot": -1344.0,
+    "alpha": -3.5
+   },
+   {
+    "kcas": 140,
+    "ktas": 149.1,
+    "hp": 169.6,
+    "thr": 1.0,
+    "h": 4177.0,
+    "hdot": -1922.0,
+    "alpha": -4.17
+   }
+  ],
+  "note": "speed held on pitch, altitude on throttle; thr 1.0 with h below 8000 means the speed cannot be held level"
+ }
+}

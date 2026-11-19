@@ -71,12 +71,20 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   the parameter schema (`schema.md`), the merged JSON (`params-trainer.json`) and the computation scripts are in
   `01-flight-physics/`. Parameters use the leaf format `{v, u, scope, src, conf, est, note}`; scopes `aircraft`,
   `engine`, `propeller`, `gear` are per aircraft type (rounds 2–3 fill them), `environment` and `sim` are shared.
+- Round 2 (light aircraft and trainers) is split the same way in `02-light-aircraft/`. `schema-ext.md` adds
+  per-type cards keyed by type id (`c172s`, `da40ng`, `da42ng`, `pc9m`, `t6a`, ...) with `_inherits` for variants,
+  shared with round 3. `params-light.json` is merged by `scripts/lm_merge.mjs`; `scripts/lm_lib.mjs` `loadType(id)`
+  resolves a card, and `scripts/lm_card.mjs` `buildAC(card)` / `applyAC(M, ac)` load it into the current sim for tests.
+  The card owns `speeds.VREF_kt` / `VAPP_kt`; handling (08) and procedures (09) quote it. After editing any JSON block,
+  `node docs/research/02-light-aircraft/scripts/lm_merge.mjs --coverage --dry --strict` must report 0 warnings.
 - Round 3 (airliners: ATR 72-600, 737-800, A320/A321 ceo and neo, A330-300) follows the same split:
   `03-airliners.md` holds the summary, conflicts and the task list; `03-airliners/` holds 10 topic files, one
   merged parameter file per type (`params-<type>.json`, plus `params-common-airliner.json`), the per-type
   summary `schema.md`, the round-1 schema extension `schema-ext.md` (new categories airframe, speeds, performance,
   propulsion, controls, afcs, ops; `_inherits` for neo and A321 variants) and the scripts in `scripts/`
   (`r3_merge.mjs` rebuilds the JSON from the topic files, `r3_schema.mjs` rebuilds `schema.md`).
+  Round 3 keeps scope by meaning and gives airliner speeds as mass tables or rules, unlike round 2's card rules,
+  so do not run round 2's `lm_merge --strict` on round 3's `params-*.json`.
 - Read the relevant report before changing physics, input or data. Physics code changes wait until the owner
   approves the development plan that follows all five rounds.
 

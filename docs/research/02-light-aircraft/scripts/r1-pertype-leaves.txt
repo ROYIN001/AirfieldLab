@@ -1,0 +1,385 @@
+path | unit | scope | trainer value (round 1, fictional) | note
+aero.ref.S | m2 | aircraft | 16.3 | ค่าฐานของเครื่องฝึกสมมุติ
+aero.ref.b | m | aircraft | 10.2 | AR = 6.38
+aero.ref.c | m | aircraft | 1.65 | MAC; taper 0.6 ให้ MAC 1.63 m สอดคล้องกัน
+aero.static_long.CL0 | - | aircraft | {"clean":0.25,"landing":0.8} | เท่าค่าปัจจุบัน CL0 + CLflap*f เพื่อไม่ให้ autopilot เสียจูน
+aero.static_long.CLalpha | 1/rad | aircraft | 4.8 | นอก ground effect; ต้องคงไว้ (T-A-05)
+aero.static_long.alpha_star | deg | aircraft | {"clean":16.29,"landing":13.73} | จุด X0=0.5 ปรับด้วย bisection ให้ CLmax ตรง Vs1 78.5 kt และ Vs0 71.0 kt (tune_astar.mjs)
+aero.static_long.alpha_star_neg | deg | aircraft | {"clean":13,"landing":9} | stall ด้าน alpha ลบ ใช้เฉพาะ pushover/บินหงาย
+aero.static_long.a1 | 1/rad | aircraft | 22 | ความชันของการแยกตัว; Citation II: เส้นแนวโน้ม a1 = 18.67 + 1.309e-3*h (h เป็น m) ให้ 20.6-23.9 ที่ h 1500-4000
+aero.static_long.CL_sep_at_alpha_star | - | aircraft | {"clean":0.95,"landing":1.1} | ค่าเริ่มของกิ่ง Viterna (กำหนดค่า A); คุมความลึกของการตกของ CL หลัง stall
+aero.static_long.CDmax_90 | - | aircraft | 1.4 | ปีกเดี่ยว 1.11+0.018*AR = 1.225; บวกหางและลำตัวโดยประมาณ
+aero.static_long.dCD_sep | - | aircraft | 0.2 | แรงต้านเพิ่มเมื่อแยกตัวเต็ม; Citation II ระบุได้ราว 0.2 ซึ่งผู้เขียนว่าสอดคล้องกับวรรณกรรม (AT-26 Xavante 0.2,
+aero.static_long.CmX | - | aircraft | -0.12 | pitch break; Citation II ระบุได้ราว -0.12; วรรณกรรมที่ [A11] อ้าง: AT-26 Xavante -0.08
+aero.static_long.Cm0 | - | aircraft | {"clean":0.045,"landing":-0.055} | Cm0 + Cmflap*f จาก AC
+aero.static_long.Cmalpha | 1/rad | aircraft | -0.72 | ช่วงแยกตัวใช้ Cmalpha*sin(alpha) ให้เป็นคาบ
+aero.static_long.CLmax_target | - | aircraft | {"clean":1.355,"landing":1.657} | 1-g, ISA SL, 2250 kg; landing มาจาก Vs0 71 kt ของค่าฐาน
+aero.static_long.alpha_CLmax | deg | aircraft | {"clean":14.56,"landing":11.58} | ผลจากพารามิเตอร์ข้างบน (expected.mjs)
+aero.static_long.table_clean | - | aircraft | {"axes":{"coef":["CL","CD","Cm"],"alpha_deg":[-180,-150,-120,-90,-60,-40,-30,-20,-16,-12,-8,-4,0,4,8,10,12,13,14,15,16,17,18,20,22,25,30,40,… | ตัวอย่างรูปแบบตาราง (static X=X0, gear down) คำนวณจากสูตร; ช่วง -30..30 ควรถี่ 1 deg
+aero.elevator_fade.alpha_t_star | deg | aircraft | 22 | ประสิทธิผล elevator ลดลงเมื่อ alpha สูง ให้ full-aft trim alpha อยู่ราว alpha_CLmax+6 deg
+aero.elevator_fade.a_t | 1/rad | aircraft | 10 | ความชันของ tanh
+aero.elevator_fade.floor | - | aircraft | 0.35 | ประสิทธิผลขั้นต่ำที่ alpha สูงมาก
+aero.separation_dynamics.tau1 | s | aircraft | 0.4 | ระหว่างค่า airfoil 4.24c/V = 0.17 s กับ Citation II 0.625 s
+aero.separation_dynamics.tau2 | s | aircraft | 0.2 | Citation II 0.37-0.54 s ที่ h 1500-4000 m; airfoil ~0.17 s
+aero.large_beta.CY_crossflow | - | aircraft | 0.45 | CY = CYb*sin(b)cos(b) - CY_crossflow*sin(b)|sin(b)|; พื้นที่ข้าง ~7 m2 x CD 1.0 / S
+aero.strip_wing.taper | - | aircraft | 0.6 | cr 2.00 m, ct 1.20 m
+aero.strip_wing.dihedral_eff | deg | aircraft | 4 | ให้ Clb ของปีก -0.079/rad; ส่วนที่เหลือของ -0.085 มาจาก fin
+aero.strip_wing.washout | deg | aircraft | 3 | ปลายปีก stall ช้ากว่าโคน; ลด wing drop และคง aileron
+aero.strip_wing.kp_roll | - | aircraft | 0.661 | ตัวคูณ p*y ใน alpha ท้องถิ่น ให้ Clp(2 deg) = -0.47 (strip ล้วนให้ -0.71)
+aero.strip_wing.tau_aileron | - | aircraft | 0.26 | Delta alpha = tau*da บนแผง 60-100% ครึ่งช่วงปีก ให้ Clda = 0.16
+aero.strip_wing.aileron_span_frac | - | aircraft | [0.6,1] | สัดส่วนครึ่งช่วงปีก
+aero.stall_warning.min_margin | kt | aircraft | 5 | 14 CFR 23.207(c) (ก่อน Amdt 23-64)
+aero.stall_warning.alpha_warn_5kt | deg | aircraft | {"clean":11.41,"landing":7.77} | 1-g ISA SL; คำนวณจาก CL_static
+aero.stall_warning.alpha_warn_design | deg | aircraft | {"clean":10.71,"landing":6.87} | ตั้งที่ margin 7 kt เผื่อ gust
+aero.buffet.vertical_filter | rad/s,- | aircraft | {"w0":75.92,"Q":8.28} | 12.1 Hz ของ Citation II; เครื่องฝึกเบาอาจสูงกว่า
+aero.buffet.lateral_filter | rad/s,-,- | aircraft | {"w0":[36.43,64.71],"Q":[4.19,11.99],"gain_ratio":[2,1]} | 5.8 Hz และ 10.3 Hz
+aero.buffet.rms_full | g | aircraft | {"az":0.05,"ay":0.016} | ที่ X=0; ค่าตั้งของเรา: az 0.05 g, ay = 0.05/sqrt(10) ~ 0.016 g จาก PSD แนวดิ่ง ~10 เท่าแนวข้าง [A11]; ถ้าตีคว
+aero.spin_reference.alpha_spin | deg | aircraft | [43,60] | เครื่อง GA low-wing ของ NASA; flat spin ~60 deg
+aero.spin_reference.turn_rate | deg/s | aircraft | [145,208] | NASA TP-2644
+aero.spin_reference.omega_hat | - | aircraft | [0.24,0.42] | Omega*b/(2V) อนุมานจากอัตราหมุนที่วัดใน TP-2644 (145-208 deg/s, 1,530-1,538 lb, 98.11 ft2, span 24.46 ft) กับ 
+aero.spin_reference.descent_trainer | fpm | aircraft | 9500 | ค่าประมาณ: เส้นทางบินเกือบดิ่ง แรงต้านสมดุลน้ำหนัก V=sqrt(2W/(rho S C_D)); C_D(43-53 deg) 0.78-0.98 -> 47-53 m
+aero.spin_reference.IYMP | - | aircraft | -0.0201 | (Ixx-Iyy)/(m b^2) = -201e-4: fuselage-heavy
+aero.spin_reference.recovery_turns_max | turn | aircraft | 1.5 | acrobatic: 1.5 รอบเพิ่มหลังเริ่มกู้; normal: 1 รอบจาก 1-turn spin
+interference.downwash.deda | - | aircraft | 0.4 | อยู่ระหว่าง 0.36 (ถอยจาก AC) กับ 0.477 (Aeromatic)
+interference.downwash.eps0 | rad | aircraft | 0 | downwash ที่ CL ปีก = 0; ใช้ ε = eps0 + deda·CL_w/CLa_w
+interference.downwash.l_t | m | aircraft | 5.42 | ถอยจาก Cmde/CLde (หัวข้อ 6); โมเดลภาพให้ราว 5.1 m
+interference.downwash.VH | - | aircraft | 0.596 | S_h l_t/(S c), S_h 2.96 m2
+interference.downwash.a_t | 1/rad | aircraft | 3.9 | ความชันแรงยกหางระดับ
+interference.downwash.eta_t | - | aircraft | 0.9 | TR 690 วัด (q/q0)eff ที่หางเมื่อไม่มีใบพัดได้ 0.88–1.01 (Concl. 2)
+interference.downwash.CLadot | 1/(rad·c/2V) | aircraft | 1.67 | 2 eta VH a_t deda; ปัจจุบัน 1.6
+interference.downwash.Cmadot | 1/(rad·c/2V) | aircraft | -5.5 | -CLadot l_t/c; ปัจจุบัน -4.5; JSBSim c172p -7.27
+interference.groundEffect.rMac | m (FRD จาก CG, y ใช้ ±) | aircraft | [0,2.51,0.15] | c/4 ของ MAC จากโมเดลภาพ
+interference.groundEffect.CLa_w | 1/rad | aircraft | 4.4 | 4.8 ลบส่วนหาง
+interference.groundEffect.A | - | aircraft | 6.38 | b^2/S จาก AC
+interference.groundEffect.rEps | - | aircraft | {"a":3.99,"m":0.652} | eps_IGE/eps_OGE = 1 - exp(-a (h/b)^m) fit VLM, RMS 0.010
+interference.groundEffect.tablesCheck | - | aircraft | {"axes":{"hb":[0.05,0.1,0.15,0.2,0.3,0.5,1]},"data":[[0.345,0.513,0.626,0.707,0.813,0.916,0.985],[1.168,1.12,1.089,1.069,1.043,1.019,1.003],… | แถว kD, kL, rEps สำหรับการทดสอบ
+interference.slipstream.diskDiameter | m | propeller | 2.44 | สมมติฐานร่วม (หัวข้อ 3)
+interference.slipstream.hubRadius | m | propeller | 0.25 | รัศมี spinner สำหรับสูตร swirl
+interference.slipstream.hubPos | m (FRD จาก CG) | aircraft | [3.94,0,-0.06] | ตำแหน่งดุมจากโมเดลภาพ
+interference.slipstream.sense | - | propeller | 1 | +1 = ตามเข็มเมื่อมองจากด้านหลัง (PT6A)
+interference.slipstream.kappa | - | aircraft | 0.43 | (1.30-1)/(1.70-1) จาก TR 690 จุดเดียวที่ Tc' 0.139 (อิงพื้นที่ปีก); เครื่องฝึกใช้ที่ Tc' 0.08-0.55 จึงเป็นการ 
+interference.slipstream.immersionH | - | aircraft | {"axes":{"rs_m":[0.3,0.5,0.7,0.8,0.9,1,1.1,1.22]},"data":[0,0.175,0.327,0.397,0.464,0.529,0.591,0.663]} | หางระดับสูงกว่าแนวแรงขับ 0.24 m
+interference.slipstream.immersionV | - | aircraft | {"axes":{"rs_m":[0.3,0.5,0.7,0.8,0.9,1,1.1,1.22]},"data":[0.015,0.161,0.298,0.364,0.427,0.489,0.548,0.616]} | หางดิ่งเริ่มเหนือแนวแรงขับ 0.28 m สูง 1.75 m
+interference.slipstream.kSwirl | - | aircraft | 0.5 | ปรับได้ 0.5–0.8 เทียบ TN D-3726
+interference.slipstream.zSwirl | m | aircraft | 0.55 | แทนการอินทิเกรต คลาด < 2 deg
+interference.slipstream.finArea | m2 | aircraft | 2.06 | รวม rudder จากโมเดลภาพ
+interference.slipstream.finArm | m | aircraft | 5.25 | CG ถึง c/4 เฉลี่ยของหางดิ่ง
+interference.slipstream.finLiftSlope | 1/rad | aircraft | 2.8 | ตรวจ: eta_v Vv a_v = 0.164 /rad; ถ้า tau_r 0.5 ได้ Cndr -0.082 เทียบ AC -0.072 (ต้องใช้ tau_r 0.44)
+interference.slipstream.eta_v | - | aircraft | 0.9 | 
+interference.slipstream.blownSpanFactor | D | aircraft | 0.9 | TR 941 p. 406
+interference.slipstream.blownArea | m2 | aircraft | 2.63 | (0.9 D - ความกว้างลำตัว 1.0 m) x คอร์ด 2.2 m
+interference.slipstream.kBlown | - | aircraft | 0.5 | ผลขอบเจ็ตของปีก ประมาณเท่ากับ kappa
+interference.slipstream.k_deda_power | - | aircraft | 0 | ยังไม่มีตัวเลขที่อ่านได้
+propeller.identity.nBlades | - | propeller | 4 | ใบพัด 4 ใบแบบ Hartzell HC-D4N (TCDS EASA IM.P.133)
+propeller.identity.diameter | m | propeller | 2.44 | เลือกให้อยู่ในช่วง 218.4-243.8 cm ของใบ D9512 ใน TCDS; ค่าเดิมของรอบนี้
+propeller.identity.sense | - | propeller | 1 | +1 = หมุนตามเข็มนาฬิกาเมื่อมองจากด้านหลัง (right-hand, เวกเตอร์ความเร็วเชิงมุมของใบพัด = +x ใน FRD); -1 = กลับ
+propeller.identity.massComplete | kg | propeller | 68.9 | น้ำหนักประมาณสูงสุดของใบพัดทั้งชุด HC-D4N-2/D9512 ตาม TCDS
+propeller.identity.hubPosition | m (FRD จาก CG) | aircraft | [3.94,0,-0.06] | จากตำแหน่งใบพัดในโมเดลสามมิติ src/70-aircraft.js:183 (render y = +0.06 → FRD z = -0.06) โดยสมมติว่าจุดกำเนิดโม
+propeller.identity.thrustAxis | - | aircraft | [1,0,0] | ไม่มี right/down thrust ติดตั้ง (ไม่พบแหล่งสำหรับเครื่องสมมติ)
+propeller.engineInterface.maxShaftPower | kW | engine | 708 | PT6A-62 take-off = max continuous 708 kW, flat rated ถึง 37 °C (TCDS EASA IM.E.078 Issue 02, Note 3); ≈949 shp
+propeller.engineInterface.rpmGoverned | rpm | engine | 2000 | N2 steady limit 2000 rpm (90.7%)
+propeller.engineInterface.rpmTransientLimit | rpm | engine | 2205 | N2 transient 2205 rpm (100%)
+propeller.engineInterface.gearRatio | - | engine | 15.07 | คำนวณจาก TCDS: power turbine 30145 rpm ที่ใบพัด 2000 rpm
+propeller.engineInterface.flightIdleShaftPower | kW | engine | 20 | สมมติฐานสำหรับคำนวณแรงขับที่ flight idle; ให้หัวข้อเครื่องยนต์ยืนยัน
+propeller.bladeGeometry.hubRadiusRatio | r/R | propeller | 0.18 | รัศมี spinner/โคนใบ
+propeller.bladeGeometry.chordOverD | c/D | propeller | {"axes":{"x":[0.18,0.25,0.35,0.45,0.55,0.65,0.75,0.85,0.92,0.97,1]},"data":[0.058,0.064,0.07,0.073,0.074,0.073,0.071,0.066,0.06,0.052,0.04]} | รูปทรงใบสมมติ ให้ activity factor ≈ 100 ต่อใบ, solidity ที่ 0.75R = 0.181
+propeller.bladeGeometry.twistDesignJ | - | propeller | 1.1 | บิดตาม atan(Jd/(πx)) อ้างอิงที่ 0.75R; บิดรวม 41° จาก 0.2R ถึงปลายใบ
+propeller.bladeGeometry.activityFactor | - | propeller | 100 | AF = (1e5/16)∫(c/D)x³dx ต่อใบ
+propeller.section.liftSlope | 1/rad | propeller | 5.78 | 0.92·2π ก่อนแก้ Prandtl-Glauert (จำกัด M ≤ 0.8)
+propeller.section.alpha0 | deg | propeller | -3 | มุมยกศูนย์ของหน้าตัดโค้ง (cambered)
+propeller.section.alphaStallPos | deg | propeller | 14 | ปรับเทียบให้แรงขับสถิตที่ 31 °C ≈ AC.T0; ไวมาก (±1° → ±1.5 kN)
+propeller.section.alphaStallNeg | deg | propeller | -11 | 
+propeller.section.stallBlendM | 1/rad | propeller | 10 | ความชันของ sigmoid ผสม flat plate
+propeller.section.cd0 | - | propeller | 0.0085 | 
+propeller.section.kcd | - | propeller | 0.01 | cd = cd0 + kcd (cl - 0.35)^2
+propeller.section.Mdd | - | propeller | 0.8 | drag rise 20(M-Mcrit)^4, Mcrit = Mdd - (0.1/80)^(1/3)
+propeller.section.stallDelayFactor | - | propeller | 3 | Δcl = 3(c/r)²(cl_lin - cl) แบบ Snel; CCBlade ใช้ Du-Selig ที่โครงสร้างเดียวกัน; สัมประสิทธิ์ 3 ยังไม่ยืนยันจาก
+propeller.tables.CT | - | propeller | {"axes":{"J":[0,0.2,0.4,0.6,0.8,1,1.2,1.4,1.6,1.8,2,2.2,2.4],"beta75_deg":[10,15,20,25,30,35,40,45,50,55,60]},"data":[[0.1312,0.1855,0.229,0… | BEM + Prandtl tip loss (สคริปต์ p3_bem.mjs), ρ=1.225, 2000 rpm; ช่อง J=0/β≥55° อยู่นอกช่วงที่ BEM หาคำตอบได้; 
+propeller.tables.CP | - | propeller | {"axes":{"J":[0,0.2,0.4,0.6,0.8,1,1.2,1.4,1.6,1.8,2,2.2,2.4],"beta75_deg":[10,15,20,25,30,35,40,45,50,55,60]},"data":[[0.0478,0.0823,0.1228,… | C_P = P/(ρn³D⁵) = 2πC_Q
+propeller.tables.CNmu | - | propeller | {"axes":{"J":[0.2,0.4,0.6,0.8,1,1.2],"beta75_deg":[10,15,20,25,30,35,40]},"data":[[0.0246,0.0331,0.0417,0.0364,0.0537,0.0625,0.0738],[0.0306… | dC_N/dμ, C_N = F_inplane/(ρn²D⁴), μ = V_inplane/(nD); BEM แยกมุมแอซิมัท induction คงที่; ไม่รวม sidewash ของ R
+propeller.tables.CMmu | - | propeller | {"axes":{"J":[0.2,0.4,0.6,0.8,1,1.2],"beta75_deg":[10,15,20,25,30,35,40]},"data":[[0.0336,0.0445,0.0512,0.0497,0.0482,0.0412,0.0347],[0.0307… | dC_Mpf/dμ, C_Mpf = M_pfactor/(ρn²D⁵); เครื่องหมายตาม sense
+propeller.inertia.Ip | kg m2 | propeller | 14 | ช่วงที่เป็นไปได้ 10.8 (JSBSim prop_PT6.xml) ถึง 20 (ประมาณจากมวล 68.9 kg ใน TCDS)
+propeller.inertia.IreflectedEngine | kg m2 | engine | 0 | ความเฉื่อยของ power turbine สะท้อนผ่านเกียร์ (×15.07²) ไม่มีข้อมูล; ทดสอบความไวด้วย +5
+propeller.governor.kGov | deg/s per rpm | propeller | 1 | กฎเดียวกับ JSBSim FGPropeller.cpp:345 (Pitch -= dRPM*dt)
+propeller.governor.pitchRateMax | deg/s | propeller | 20 | อนุมานจากเวลา feather 3-10 s ของ FAA (ช่วง ~70° → 7-23 °/s)
+propeller.governor.rpmOverspeed | rpm | propeller | 2100 | FAA: overspeed/pitch lock ที่รอบสูงกว่า 100% เล็กน้อย; ต้องต่ำกว่า transient limit 2205 rpm
+propeller.governor.oilMinRpm | rpm | propeller | 200 | ต่ำกว่านี้ปั๊มน้ำมัน governor ไม่ทำงาน (JSBSim)
+propeller.governor.betaFlightIdle | deg @0.75R | propeller | 10 | low-pitch stop; FAA fig 7-3 10-12°; C208 TCDS แปลงเป็น 0.75R ได้ 8.9-11.4°
+propeller.governor.betaFeather | deg @0.75R | propeller | 81 | C208 TCDS แปลงเป็น 0.75R ได้ 80.8-81.3°; FAA 85-90° (ไม่ระบุสถานี)
+propeller.governor.featherRate | deg/s | propeller | 15 | feather ใน ~5 s (FAA 3-10 s; JSBSim ~5 s)
+propeller.betaReverse.reverseAvailable | - | propeller | false | รุ่น -2 ไม่มี beta feedback และไม่อนุมัติ reverse; ATR ฯลฯ ในรอบหลังต้องตั้ง true
+propeller.betaReverse.betaGroundIdle | deg @0.75R | propeller | 0 | ใช้เมื่อ reverseAvailable เท่านั้น
+propeller.betaReverse.betaReverseMax | deg @0.75R | propeller | -15 | AFH: PT6 ประมาณ -11° (ไม่ระบุสถานี); C208 TCDS แปลงได้ -15.6/-20.7°
+propeller.betaReverse.reverseRpmMax | rpm | engine | 1825 | อ้างอิงเชิงเปรียบเทียบจาก TCDS A37CE Rev. 12 ของ C208 (ตาราง PT6A-114/-114A) max reverse 1825 rpm 1 นาที
+propeller.betaReverse.reverseCTstatic | - | propeller | -0.088 | BEM สถิตแบบ mirrored annuli ที่ β=-15°: T ≈ -3.35 kN ที่ 1825 rpm, 136 kW; ที่ V>0 ทฤษฎีโมเมนตัมใช้ไม่ได้
+propeller.feathered.bladePlanformArea | m2 | propeller | 0.66 | B∫c dr ของรูปทรงใบสมมติ
+propeller.feathered.CDfeathered | - | propeller | 0.06 | แรงต้านใบที่ feather (หยุดหมุน) อิงพื้นที่ใบ: D = q·S_b·C_D
+propeller.checks.staticThrustISA | kN | propeller | 12.36 | ค่าประมาณจาก BEM ที่ 700 kW, 2000 rpm, ρ=1.225, β75≈26.8°, FM≈0.58
+propeller.checks.staticThrustVTBD31C | kN | propeller | 11.55 | ρ=1.160, β75≈28.5°, FM≈0.54; ใกล้ AC.T0 = 11.5 kN
+propeller.checks.momentumIdealStaticISA | kN | propeller | 17.77 | (2ρA)^(1/3)P^(2/3), D=2.44 m, 700 kW
+propeller.checks.peakEfficiency | - | propeller | 0.88 | สูงสุดของตารางที่ β75 30-40°, J 1.3-1.9
+turboprop.ratings.P_rated | W | engine | 700000 | กำลังเพลาที่ flat rate ของเครื่องยนต์สมมุติ ปัดจาก PT6A-62 = 708 kW (take-off = MCP) ตาม TCDS; 700 kW ≈ 939 sh
+turboprop.ratings.T_flat_C | degC | engine | 37 | อุณหภูมิอากาศเข้าสูงสุดที่ยังได้กำลังเต็มที่ระดับน้ำทะเล (ISA+22) ยืมจาก PT6A-62 ที่ flat rate ถึง 37 °C
+turboprop.ratings.rating_basis | - | engine | {"pressure_Pa":101325,"static":true,"bleed":0,"accessory_load":0} | TCDS: พิกัดอิง dry sea level static ICAO standard ไม่มี bleed ไม่มีภาระอุปกรณ์เสริม
+turboprop.ratings.install_loss_frac | - | aircraft | 0 | ยังไม่มีแหล่งตัวเลข ตั้ง 0 ไว้ก่อน; ค่าจริงต้องมาจากข้อมูลเครื่องบินแต่ละแบบในรอบถัดไป
+turboprop.ratings.Np_max_rpm | rpm | engine | 2000 | PT6A-62 N2 2000 rpm (90.7%) ต่อเนื่อง
+turboprop.ratings.Np_transient_rpm | rpm | engine | 2205 | PT6A-62 N2 transient 2205 rpm (100%)
+turboprop.ratings.Q_lim | N m | engine | 3342 | ค่าประมาณ Q = P_rated/omega ที่ 2000 rpm = 2465 lb-ft; TCDS ไม่ระบุแรงบิด (PT6A-62 708 kW จะได้ 3380 N m = 249
+turboprop.ratings.Ng_100pct_rpm | rpm | engine | 37468 | นิยาม 100% Ng ของ PT6A-41/-60 และ -68 series
+turboprop.ratings.Ng_max_pct | % | engine | 104 | 39000 rpm = 104.09% (คำนวณ) ; TCDS -68 เขียน 104%
+turboprop.ratings.ITT_max_C | degC | engine | 800 | PT6A-62 take-off (5 นาที) และ MCP; -52/-60A/-68 = 820, -68B/C/D/T = 860
+turboprop.ratings.ITT_start_C | degC | engine | 1000 | ขีดจำกัดตอนสตาร์ต (TCDS -68 ระบุ 5 วินาที)
+turboprop.ratings.takeoff_time_limit_s | s | engine | 300 | take-off rating จำกัด 5 นาที
+turboprop.steady_map.Ng_GI_pct | % | engine | 52 | ground (low) idle; NAL รายงาน 50-54% Ng สำหรับ PT6A คลาส 1200 shp
+turboprop.steady_map.Ng_FI_pct | % | engine | 68 | flight (high) idle; NAL รายงาน 67-71% Ng
+turboprop.steady_map.Ng0_pct | % | engine | 52 | จุดที่ corrected power เป็นศูนย์ในแผนที่ Pc = P_rated*x^k
+turboprop.steady_map.kMap | - | engine | 2.7 | ค่าประมาณ: fit ตาราง EnginePowerRPM_N1 ของ JSBSim engtm601 ที่ 2000 rpm ได้ k = 2.6-2.9
+turboprop.steady_map.Pc_frac_vs_Ngc | - | engine | {"axes":{"Ngc_pct":[52,60,68,76,84,90,95,100,104]},"data":[0,0.008,0.051,0.154,0.335,0.532,0.743,1,1.241]} | Pc/P_rated ตามแผนที่ x^2.7 (Ngc = Ng/sqrt(theta2))
+turboprop.steady_map.nITT | - | engine | 3 | d ln Pc / d ln ITTc ที่มุม flat rating; ประมาณจากคู่รุ่นใน TCDS ได้ 2.08 (-60A/-62) ถึง 3.63 (-68B/-68)
+turboprop.steady_map.ITTc_vs_Pc | K (corrected, ITT_K/theta2) | engine | {"axes":{"Pc_frac":[0,0.05,0.25,0.5,0.75,0.964,1]},"data":[665,682,751,837,923,997,1009]} | เส้นตรงผ่านจุดมุม (0.964, 997 K) ด้วยความชัน ITTc*/(n Pc*)
+turboprop.dynamics.tauAcc_s | s | engine | 0.6 | ค่าคงที่เวลาเข้าใกล้เป้า Ng ตอนเร่ง; ปรับให้ FI->95% = 3.7-4.0 s
+turboprop.dynamics.rAcc_pct_s | %Ng/s | engine | 10 | อัตราเร่งสูงสุดแบบ FCU schedule; สอดคล้องกับ 64->93.5% Ng ใน 2.5-4.0 s
+turboprop.dynamics.tauDec_s | s | engine | 0.8 | ไม่มีข้อมูลวัด; JSBSim ใช้ decel tau = 2.4 เท่าของ accel
+turboprop.dynamics.rDec_pct_s | %Ng/s | engine | 12 | ไม่มีแหล่ง; ค่าประมาณเพื่อให้ max->FI ลดเหลือ 10% กำลังใน ~2.4 s
+turboprop.dynamics.tauITT_s | s | engine | 1.5 | หน่วงการแสดง ITT; JSBSim ใช้ itt_delay แบบ exponential
+turboprop.dynamics.kITTacc | K per (%Ng/s) | engine | 4 | ITT พุ่งเกินขณะเร่ง (Kong 2000 พบ overshoot เมื่อเพิ่มเชื้อเพลิงเร็ว)
+turboprop.dynamics.cert_accel_FI_to_95pct_max_s | s | engine | 5 | 14 CFR 33.73(b) (Amdt. 33-1): จาก fixed minimum flight idle (หรือ ≤ 15% ถ้าไม่มี) ถึง 95% rated take-off power
+turboprop.airframe_coupling.spin | - | aircraft | 1 | +1 = ใบพัดหมุนตามเข็มนาฬิกาเมื่อมองจากด้านหลัง (สมมติฐานร่วม; TCDS -62 ไม่ระบุ ให้ดู installation manual)
+turboprop.airframe_coupling.thrust_axis_body | - | aircraft | [1,0,0] | แกนเพลาใบพัดในแกน FRD; รอบนี้ถือว่าขนานแกน x และผ่าน CG
+turboprop.airframe_coupling.I_gg | kg m2 | engine | 0.12 | โมเมนต์ความเฉื่อยแกน gas generator จากแบบจำลอง PT6A-65 (ไม่ใช่ค่าวัด) ; H ≈ 471 N m s ที่ 100% Ng
+turboprop.airframe_coupling.gg_rotation_rel_prop | - | engine | -1 | AFH: CT กับ PT หมุนสวนทางกัน; ทิศสัมพัทธ์กับใบพัดหลังผ่านเกียร์ยังไม่ยืนยัน
+turboprop.fuel.psfc | lb/(hp h) | engine | 0.669 | ค่าของ Walter M601 ในไฟล์ JSBSim ใช้เป็นตัวยึดตำแหน่งเท่านั้น ยังไม่ยืนยันสำหรับ PT6A
+turboprop.beta_reverse.beta_range_end_frac | - | engine | 0.64 | ตัวอย่าง JSBSim M601: เมื่อเลือก reverse (Reversed = true) คันโยกช่วงล่าง 64% แรกเป็น beta (กำลัง idle, คันโยก
+turboprop.beta_reverse.reverse_max_power_frac | - | engine | 0.6 | ตัวอย่าง JSBSim M601: กำลังสูงสุดตอน reverse = 60%
+turboprop.beta_reverse.blade_angle_FI_deg | deg | propeller | 11 | NAL: มุมใบที่ flight idle 11 องศา reverse -15 องศา (ให้หัวข้อใบพัดยืนยัน)
+turboprop.derived_vtbd.P_avail_vs_OAT_SL | kW | engine | {"axes":{"OAT_C":[15,25,31,34,37,38,40,45]},"data":[700,700,700,700,700,694,683,655]} | ค่าประมาณจากโมเดลนี้ (n = 3) ที่ VTBD สูง 2.65 m static; ถึง 37 °C แน่นอนจาก TCDS เกินนั้นขึ้นกับ n (38 °C: 69
+turboprop.derived_vtbd.P_avail_static_grid | kW | engine | {"axes":{"alt_ft":[0,2500,5000,7500,10000,15000,20000],"isa_dev_C":[0,10,20,25]},"data":[[700,700,700,683],[700,700,675,649],[700,690,640,61… | ค่าประมาณ static ไม่รวม ram; ram ที่ 160 KTAS เพิ่มราว 1-3%
+turboprop.reference_engines.PT6A-62 | mixed | engine | {"P_kW":708,"flat_C":37,"ITT_C":800,"Np_rpm":2000,"Np_trans_rpm":2205,"Ng_max_rpm":39000,"PT_rpm_at_2000":30145,"dry_kg":206} | EASA TCDS IM.E.078; fuel control hydro-mechanical ล้วน
+turboprop.reference_engines.PT6A-60A | mixed | engine | {"P_kW":783,"flat_C":25,"ITT_C":820,"Np_rpm":1700,"Np_trans_rpm":1870} | ใช้ประกอบการประมาณ nITT เท่านั้น
+turboprop.reference_engines.PT6A-52 | mixed | engine | {"P_kW":634,"flat_C":61,"ITT_C":820,"Np_rpm":2000,"Np_trans_rpm":2205} | ตรวจซ้ำในการทบทวน: TCDS VI.3 ระบุ flat rate ถึง 61 °C (142 °F) ทั้ง take-off และ MCP
+turboprop.reference_engines.PT6A-68 | mixed | engine | {"P_kW":932,"flat_C":42.4,"ITT_C":820,"Np_rpm":2000,"Np_trans_rpm_20s":2200,"Ng_max_pct":104,"jet_N":823} | EASA TCDS IM.E.038; flat rating ระบุเป็น max air inlet temperature ของ MCP
+turboprop.reference_engines.PT6A-68B_C_D_T | mixed | engine | {"P_kW":1194,"flat_C_68B":30.8,"flat_C_68CDT":31.2,"ITT_C":860,"jet_N":1014} | EASA TCDS IM.E.038
+turbofan.engines.CFM56_7B27_class.F00 | N | engine | 121400 | EEDB 8CM066 (CFM56-7B27/3); TCDS E.004 take-off 12143 daN
+turbofan.engines.CFM56_7B27_class.bpr | - | engine | 5.1 | EEDB 8CM066 = 5.1 (รุ่นแรก 3CM034 = 5.0)
+turbofan.engines.CFM56_7B27_class.opr | - | engine | 29 | OPR จาก EEDB
+turbofan.engines.CFM56_7B27_class.ffLTO | kg/s | engine | [1.293,1.031,0.343,0.11] | FF ที่ TO/CO/App/Idle
+turbofan.engines.CFM56_7B27_class.N1_100_rpm | rpm | engine | 5175 | ค่าประมาณ: จาก E.004: 5382 rpm = 104%
+turbofan.engines.CFM56_7B27_class.N2_100_rpm | rpm | engine | 14460 | ค่าประมาณ: จาก E.004: 15183 rpm = 105%
+turbofan.engines.CFM56_7B27_class.N1_GI_pct | %N1 | engine | 20 | ค่าประมาณ: แสดงผล; PW1100G-JM: N1 GI 1750/10047 rpm = 17.4%
+turbofan.engines.CFM56_7B27_class.Tflat_C | degC | engine | 30 | ยังไม่ยืนยัน; E.004 ไม่ระบุอุณหภูมิ
+turbofan.engines.CFM56_7B27_class.kT_perK | 1/K | engine | 0.0075 | ค่าประมาณ: Raymer 0.75%/K ผ่าน Schulz; ช่วง 0.43-0.96%/K มาจากค่าอ้างอิง Eurocontrol ไม่ใช่ค่าวัด (ตัวเลขใน F1
+turbofan.engines.CFM56_7B27_class.N2_GI_pct | %N2 | engine | 59 | ค่าประมาณ: เทียบ PW1100G 55.6%, CFM56-7B icing 58.8%, JSBSim 60%
+turbofan.engines.CFM56_7B27_class.N2_FI_pct | %N2 | engine | 61 | ค่าประมาณ: floor ในอากาศ
+turbofan.engines.CFM56_7B27_class.N2_AI_pct | %N2 | engine | 69 | แฟลปลงจอดหรือล้อลง; AI->95% = 3.0 s; ผลของ high-speed idle ใน F18 ยังไม่ยืนยันซ้ำในการตรวจ
+turbofan.engines.CFM56_7B27_class.idleFrac0 | - | engine | 0.05 | ค่าประมาณ: net idle/F00 static SL; JSBSim 4.36%
+turbofan.engines.CFM56_7B27_class.idleMach0 | - | engine | 0.5 | ค่าประมาณ: Mach ที่ net idle = 0 (พื้น -0.2)
+turbofan.engines.CFM56_7B27_class.thrustExp_k | - | engine | 2 | ค่าประมาณ: F = Fidle + (Frated-Fidle) n^k
+turbofan.engines.CFM56_7B27_class.tau2_s | s | engine | 0.35 | ค่าประมาณ: ปรับให้ตรงตาราง NASA C-MAPSS
+turbofan.engines.CFM56_7B27_class.Racc_pctps | %N2/s | engine | 18 | ค่าประมาณ: FI->95% = 4.6 s (< 5 s)
+turbofan.engines.CFM56_7B27_class.accShape_a | - | engine | 6 | ค่าประมาณ: รูป (1-n)^3 จาก JSBSim
+turbofan.engines.CFM56_7B27_class.Rdec_pctps | %N2/s | engine | 16 | ค่าประมาณ: TO->10% ใน 2.3 s
+turbofan.engines.CFM56_7B27_class.altExp | - | engine | 1 | ค่าประมาณ: อัตราคูณ delta_t^e
+turbofan.engines.CFM56_7B27_class.tauFan_s | s | engine | 0.25 | ค่าประมาณ: lag ของพัดลม
+turbofan.engines.CFM56_7B27_class.revType | - | engine | {"type":"cascade (translating sleeve, fan stream)"} | TCDS E.004 Note 7: Boeing P/N 315A2295; cascade กลับเฉพาะ fan air
+turbofan.engines.CFM56_7B27_class.rev_c0 | - | engine | 0.3 | ค่าประมาณ: ปรับให้ตรงอัตราส่วน LDF
+turbofan.engines.CFM56_7B27_class.rev_c1 | 1/Mach | engine | 1 | ค่าประมาณ: แรงหน่วงมากขึ้นที่ความเร็วสูง
+turbofan.engines.CFM56_7B27_class.rev_uMax | - | engine | 0.7 | ค่าประมาณ: thrust demand ของ max reverse; Mahmood ใช้ 80% power
+turbofan.engines.CFM56_7B27_class.rev_idleFrac | - | engine | 0.1 | ค่าประมาณ: idle reverse ให้แรงน้อยมาก
+turbofan.engines.CFM56_7B27_class.rev_deploy_s | s | engine | 2 | ค่าประมาณ: เวลาเลื่อน sleeve ไม่รวม 1 s ของนักบิน
+turbofan.engines.CFM56_7B27_class.rev_stow_s | s | engine | 2.5 | ค่าประมาณ: ไม่มีแหล่ง
+turbofan.engines.CFM56_5B4_class.inherits | - | engine | {"from":"CFM56_7B27_class"} | ค่าประมาณ: ค่าที่ไม่ได้ระบุใช้ตาม CFM56_7B27_class
+turbofan.engines.CFM56_5B4_class.F00 | N | engine | 120100 | EEDB 8CM055 (CFM56-5B4/3); รุ่นเดิม 2CM014 = 117.9 kN
+turbofan.engines.CFM56_5B4_class.bpr | - | engine | 5.7 | EEDB 8CM055 = 5.7 (2CM014 = 5.9)
+turbofan.engines.CFM56_5B4_class.opr | - | engine | 27.3 | OPR จาก EEDB
+turbofan.engines.CFM56_5B4_class.ffLTO | kg/s | engine | [1.142,0.939,0.316,0.102] | FF ที่ TO/CO/App/Idle
+turbofan.engines.CFM56_5B4_class.N1_100_rpm | rpm | engine | 5000 | ยังไม่ยืนยัน แสดงผลเท่านั้น
+turbofan.engines.CFM56_5B4_class.N2_100_rpm | rpm | engine | 14460 | ยังไม่ยืนยัน; ค่าประมาณโดยสมมติว่าแกน HP เท่ากับ CFM56-7B (E.004: 15183 rpm = 105% จึง 100% ≈ 14460 rpm); ฉบับ
+turbofan.engines.CFM56_5B4_class.N1_GI_pct | %N1 | engine | 20 | ค่าประมาณ: วิธีเดียวกับ 7B27
+turbofan.engines.CFM56_5B4_class.Tflat_C | degC | engine | 30 | ยังไม่ยืนยัน
+turbofan.engines.CFM56_5B4_class.N2_GI_pct | %N2 | engine | 59 | ค่าประมาณ: วิธีเดียวกับ 7B27
+turbofan.engines.CFM56_5B4_class.N2_FI_pct | %N2 | engine | 61 | ค่าประมาณ: วิธีเดียวกับ 7B27
+turbofan.engines.CFM56_5B4_class.N2_AI_pct | %N2 | engine | 69 | วิธีเดียวกับ 7B27; ผลของ high-speed idle ใน F18 ยังไม่ยืนยันซ้ำในการตรวจ
+turbofan.engines.CFM56_5B4_class.idleFrac0 | - | engine | 0.05 | ค่าประมาณ: วิธีเดียวกับ 7B27
+turbofan.engines.CFM56_5B4_class.Rdec_pctps | %N2/s | engine | 16 | ค่าประมาณ: วิธีเดียวกับ 7B27
+turbofan.engines.CFM56_5B4_class.tauFan_s | s | engine | 0.25 | ค่าประมาณ: วิธีเดียวกับ 7B27
+turbofan.engines.CFM56_5B4_class.revType | - | engine | {"type":"pivoting door"} | ตามงานจำลองของ Mahmood 2011 บนเครื่องคล้าย CFM56-5B4 (ไม่ใช่ข้อมูลผู้ผลิต)
+turbofan.engines.LEAP_1A26_class.inherits | - | engine | {"from":"CFM56_7B27_class"} | ค่าประมาณ: ค่าที่ไม่ได้ระบุใช้ตาม CFM56_7B27_class
+turbofan.engines.LEAP_1A26_class.F00 | N | engine | 120600 | EEDB 20CM089 (LEAP-1A26); TCDS E.110 มีค่า 12064 daN ในตาราง
+turbofan.engines.LEAP_1A26_class.bpr | - | engine | 11.1 | EEDB 20CM089 = 11.1
+turbofan.engines.LEAP_1A26_class.opr | - | engine | 33.3 | OPR จาก EEDB
+turbofan.engines.LEAP_1A26_class.ffLTO | kg/s | engine | [0.861,0.71,0.244,0.091] | FF ที่ TO/CO/App/Idle
+turbofan.engines.LEAP_1A26_class.N1_100_rpm | rpm | engine | 3856 | E.110: max 101%
+turbofan.engines.LEAP_1A26_class.N2_100_rpm | rpm | engine | 16645 | E.110: max 116.5%
+turbofan.engines.LEAP_1A26_class.N1_GI_pct | %N1 | engine | 18 | ค่าประมาณ: วิธีเดียวกับ 7B27
+turbofan.engines.LEAP_1A26_class.Tflat_C | degC | engine | 30 | ยังไม่ยืนยัน; PW1127G-JM = 47 C
+turbofan.engines.LEAP_1A26_class.N2_GI_pct | %N2 | engine | 57 | ค่าประมาณ: วิธีเดียวกับ 7B27
+turbofan.engines.LEAP_1A26_class.N2_FI_pct | %N2 | engine | 59 | ค่าประมาณ: วิธีเดียวกับ 7B27
+turbofan.engines.LEAP_1A26_class.N2_AI_pct | %N2 | engine | 68 | วิธีเดียวกับ 7B27; ผลของ high-speed idle ใน F18 ยังไม่ยืนยันซ้ำในการตรวจ
+turbofan.engines.LEAP_1A26_class.idleFrac0 | - | engine | 0.045 | ค่าประมาณ: วิธีเดียวกับ 7B27
+turbofan.engines.LEAP_1A26_class.Rdec_pctps | %N2/s | engine | 15 | ค่าประมาณ: วิธีเดียวกับ 7B27
+turbofan.engines.LEAP_1A26_class.tauFan_s | s | engine | 0.3 | ค่าประมาณ: วิธีเดียวกับ 7B27
+turbofan.engines.LEAP_1A26_class.revType | - | engine | {"type":"cascade (translating sleeve)"} | E.110 Note 5: Aircelle
+turbofan.reverser.cancel_kt | kt | aircraft | 60 | B737 60 kt [F24]; Mahmood 2011 ยกเลิกช่วง 80-60 kt [F25]; ค่า 70 kt ของ Airbus ยังไม่ยืนยัน
+turbofan.reverser.revSpool_target_s | s | engine | 3 | reverse idle -> max reverse ~3 s เป็นตัวอย่างประกอบในงานจำลอง ไม่มีที่มาหรือข้อมูลวัด (ผู้ตรวจเปิด F29 ยืนยันข
+controls.pitch.architecture | - | aircraft | {"kind":"reversible","input":"force"} | เครื่องฝึก: กลไก reversible + trim tab; 737 ใช้ kind feel, A320 ใช้ kind fbw
+controls.pitch.S_e | m2 | aircraft | 1.1 | พื้นที่ elevator หลังบานพับ ประมาณจาก S_h 2.96 m2 ที่ถอยจาก CLde; เทียบ KU-FRL-351: elevator 15.46 ft2 = 1.44 
+controls.pitch.c_e | m | aircraft | 0.3 | คอร์ดเฉลี่ยหลังบานพับ
+controls.pitch.gearing | rad/m | aircraft | 2.4 | คันดึงสุด 160 mm = -22 deg, ดันสุด 109 mm = +15 deg
+controls.pitch.eta_t | - | aircraft | 0.9 | อัตราส่วนความดันพลวัตที่หาง
+controls.pitch.a_t | 1/rad | aircraft | 3.9 | ความชันแรงยกหาง AR ราว 4.5
+controls.pitch.tau_e | - | aircraft | 0.55 | elevator effectiveness; NACA 721 ให้ 0.67 ที่ cf/c 0.40 (ไม่รวมการสูญเสียจริง)
+controls.pitch.l_t | m | aircraft | 5.42 | ถอยจาก -(Cmde/CLde)*cbar ของ AC = 1.15/0.35*1.65
+controls.pitch.deda | - | aircraft | 0.36 | ถอยจาก Cmadot/Cmq ของ AC
+controls.pitch.Ch0 | - | aircraft | 0 | รวม i_t - eps0; ปรับร่วมกับ tab
+controls.pitch.Ch_alpha | 1/rad | aircraft | -0.1146 | -0.0020/deg; plain elevator -0.0025 ถึง -0.003/deg
+controls.pitch.Ch_delta | 1/rad | aircraft | -0.3438 | -0.0060/deg; plain -0.007 ถึง -0.0085/deg ลดด้วย balance
+controls.pitch.Ch_tab | 1/rad | aircraft | -0.2005 | -0.0035/deg ลำดับเดียวกับตัวอย่าง NACA 721 (-0.0032/deg)
+controls.pitch.tab_max | deg | aircraft | 20 | ต้องใช้ +12.9 (71 kt แฟลปลง) ถึง -4.7 (230 kt) เผื่อ CG
+controls.pitch.trim_rate_flaps_down | deg/s | aircraft | 1 | tab; ≈ 5.6 kt/s ของความเร็ว trim ที่ 95 kt, ลดแรง ≈ 0.8 lbf/s
+controls.pitch.trim_rate_flaps_up | deg/s | aircraft | 0.5 | tab; ≈ 11 kt/s ที่ 150 kt, ลดแรง ≈ 1.0 lbf/s
+controls.pitch.breakout | N | aircraft | 4.45 | 1 lbf; เครื่องที่ Bromfield & Gratton ทดสอบวัดได้ 2.2–4.4 N ด้านดึง (C150M 3.3–4.4 N), NASA TN D-779 breakout 
+controls.pitch.friction | N | aircraft | 4.45 | Coulomb; GA วัดได้ถึง ~6 lbf (elevator) จึงเป็นค่าเบา
+controls.pitch.centring_spring | N/rad, Pa | aircraft | {"Kc":60,"qFade":400} | ใช้เฉพาะ qbar ต่ำ ไม่ให้คันห้อยบนพื้น
+controls.pitch.stops | deg | aircraft | {"teu":22,"ted":15} | ค่าเดิม AC.deUp/deDn
+controls.pitch.rate_limit | deg/s | aircraft | 70 | ค่าเดิม; กลไกจริงจำกัดด้วยมือนักบิน
+controls.pitch.derived_check | mixed | aircraft | {"Fs_per_g_N":39.7,"grad_95kt_N_per_kt":0.63,"SM_fixed":0.15,"SM_free":0.099,"free_elevator_factor":0.817} | ผลคำนวณ c6_hinge.mjs สำหรับยืนยันการ implement
+controls.roll.architecture | - | aircraft | {"kind":"reversible","input":"force"} | ATR 72 aileron ก็เป็นแบบนี้ (geared balance tab)
+controls.roll.S_a_each | m2 | aircraft | 0.65 | KU-FRL-351: 0.54–0.65 m2 ต่อข้างในเครื่องเล็ก
+controls.roll.c_a | m | aircraft | 0.25 | 
+controls.roll.gearing | rad/m | aircraft | 3.88 | ±20 deg ต่อ stick ±90 mm
+controls.roll.Ch_delta | 1/rad | aircraft | -0.1719 | -0.0030/deg (Frise/balance) ให้ 24.9 lbf ที่ aileron เต็ม 95 kt แต่ 62 lbf ที่ 150 kt (ρ 1.225, c6_misc.mjs) ด
+controls.roll.Ch_alpha | 1/rad | aircraft | -0.0573 | -0.0010/deg; ผลรวมสองข้างหักล้างกันเมื่อสมมาตร
+controls.roll.tab_max | deg | aircraft | 10 | aileron trim เพื่อแรงบิดเครื่อง (6.4 lbf ที่ 80 kt กำลังเต็ม > 5 lbf)
+controls.roll.trim_rate | deg/s | aircraft | 1 | 
+controls.roll.breakout | N | aircraft | 3 | GA friction aileron > 2 lbf
+controls.roll.stops | deg | aircraft | {"max":20} | ค่าเดิม AC.daMax
+controls.roll.rate_limit | deg/s | aircraft | 80 | ค่าเดิม
+controls.yaw.architecture | - | aircraft | {"kind":"reversible","input":"force"} | 737 rudder เป็น kind feel (feel and centering unit) [C25]
+controls.yaw.S_r | m2 | aircraft | 0.85 | 
+controls.yaw.c_r | m | aircraft | 0.32 | 
+controls.yaw.gearing | rad/m | aircraft | 4.85 | ±25 deg ต่อ pedal ±90 mm
+controls.yaw.Ch_delta | 1/rad | aircraft | -0.3438 | -0.0060/deg; 2.6 lbf/deg ที่ 95 kt
+controls.yaw.Ch_beta | 1/rad | aircraft | -0.1146 | -0.0020/deg ใช้ beta ที่หางดิ่ง
+controls.yaw.slipstream_q_ratio | - | aircraft | [1,2] | ช่วงของ qbar_v/qbar ตอนกำลังเต็ม รอผลหัวข้อ slipstream
+controls.yaw.tab_max | deg | aircraft | 15 | rudder trim สำหรับ P-factor/swirl
+controls.yaw.trim_rate | deg/s | aircraft | 1.5 | 
+controls.yaw.breakout | N | aircraft | 13.3 | 3 lbf อยู่ในช่วง 1–7 lbf ของ MIL-F-8785 Class II-C
+controls.yaw.stops | deg | aircraft | {"max":25} | ค่าเดิม AC.drMax
+controls.yaw.rate_limit | deg/s | aircraft | 60 | ค่าเดิม
+controls.reference_types.b737_rudder_rate | deg/s | aircraft | {"dual":66,"primaryOnly":33} | 737-300 main rudder PCU
+controls.reference_types.b737_rudder_pedal_force_full | N | aircraft | 311 | ≈ 70 lbf ที่ rudder เต็ม; blowdown 14–21 deg
+controls.reference_types.b737_yaw_damper_authority | deg | aircraft | 3 | series yaw damper ไม่ขยับ pedal
+controls.reference_types.b737max_stab_rate_flaps_down | deg/s | aircraft | 0.27 | อัตรา Speed Trim/MCAS แฟลปลง
+controls.reference_types.atr72_aileron | deg, lbf, deg/s | aircraft | {"maxDeflection":14,"wheelForceDesignMax_lbf":60,"apRateMonitor":3.6} | ไม่มีไฮดรอลิก, geared balance tab
+gear.geometry.nose_contact_body_extended | m FRD | aircraft | [2.3,0,1.454] | ล้อหน้าเมื่อยืดสุด; z +0.094 m จาก AC.gear เพื่อให้ CG จอดสูง 1.30 m เท่าเดิม
+gear.geometry.main_contact_body_extended | m FRD | aircraft | [[-0.35,-1.55,1.506],[-0.35,1.55,1.506]] | z +0.126 m จาก AC.gear
+gear.geometry.cg_height_parked | m | aircraft | 1.3 | ใช้ตรวจ turnover
+gear.strut_main.stroke | m | gear | 0.25 | drop 10 fps, L = 2/3: ใช้ 88%, n_g 2.38 (strutStep ฉบับแก้; ฉบับแรก 2.32)
+gear.strut_main.p_static | psi | gear | 300 | 2.07 MPa; A = W_st/p_static
+gear.strut_main.piston_area | m2 | gear | 0.00463 | bore 77 mm
+gear.strut_main.ratio_static_to_extended | - | gear | 2.5 | พรีโหลด 0.4 W_st
+gear.strut_main.ratio_compressed_to_extended | - | gear | 8 | V_ext/V_comp; จุดจอด ~69% ของ stroke
+gear.strut_main.polytropic_n_dynamic | - | gear | 1.12 | NACA 1154
+gear.strut_main.polytropic_n_static | - | gear | 1 | ค่าประมาณ: การยุบช้าใกล้ isothermal (ฟิสิกส์ทั่วไป ไม่ได้มาจาก G8)
+gear.strut_main.Kh_compression | N/(m/s)^2 | gear | 4000 | ρA_h^3/(2(C_d A_n)^2) ปรับให้ n_g ต่ำสุดที่ ≤ 88% stroke
+gear.strut_main.Kr_rebound | N/(m/s)^2 | gear | 48000 | 12 เท่าของ K_h
+gear.strut_main.c_linear | N s/m | gear | 2000 | ทำให้ ṡ เรียบรอบจุดสมดุล
+gear.strut_main.seal_friction_ratio | - | gear | 0 | NACA 1154 ตั้งเป็นศูนย์; เปิดได้ 0.02-0.05
+gear.strut_nose.stroke | m | gear | 0.2 | drop 10 fps: n_g 3.05 ที่ 89% (strutStep ฉบับแก้)
+gear.strut_nose.p_static | psi | gear | 300 | bore 42 mm
+gear.strut_nose.piston_area | m2 | gear | 0.00141 | 
+gear.strut_nose.ratio_static_to_extended | - | gear | 2.5 | 
+gear.strut_nose.ratio_compressed_to_extended | - | gear | 8 | 
+gear.strut_nose.Kh_compression | N/(m/s)^2 | gear | 1600 | 
+gear.strut_nose.Kr_rebound | N/(m/s)^2 | gear | 19000 | 
+gear.strut_nose.c_linear | N s/m | gear | 1000 | 
+gear.tyre_main.size | - | gear | {"size":"6.50-8","type":"III","ply":8} | โหลดสถิต 2,150 lb = 68% ของพิกัด
+gear.tyre_main.rated_load | N | gear | 14012 | 3,150 lb
+gear.tyre_main.rated_pressure | psi | gear | 75 | 
+gear.tyre_main.operating_pressure | psi | gear | 60 | ลดตามสัดส่วนโหลดแล้วปัดขึ้น; V_P = 70 kt
+gear.tyre_main.outside_diameter | m | gear | 0.495 | 19.5 in
+gear.tyre_main.section_width | m | gear | 0.168 | 6.6 in
+gear.tyre_main.k_vertical | N/m | gear | 320000 | TN 4110 eq.24 ได้ ~315 kN/m (OCR ไม่ชัด)
+gear.tyre_main.c_vertical | N s/m | gear | 3500 | ζ ≈ 0.1
+gear.tyre_main.cornering_stiffness_coef | 1/rad | gear | 3.2 | TN 4110 eq.82: 119 lb/deg ที่ 9.5 kN; JSBSim 7.7/rad
+gear.tyre_main.relaxation_length | m | gear | 0.3 | ค่าประมาณ; TN 4110 eq.43 ให้ 0.35 m (c = 0.55, การอ่านที่น่าจะถูก) หรือ 0.24 m (c = 5.5)
+gear.tyre_main.k_longitudinal | N/m | gear | 246000 | TN 4110 eq.52: 1.2 p d
+gear.tyre_main.mu_peak_dry | - | gear | 0.8 | TN D-8455: 0.78 (ค่าทำนายสำหรับยางเย็น 40x14 ที่ 140 psi ไม่ใช่ค่าวัดตรง); JSBSim c172p static_friction 0.8
+gear.tyre_main.mu_skid_ratio_dry | - | gear | 0.75 | 
+gear.tyre_main.mu_skid_ratio_wet | - | gear | 0.5 | reverted rubber (เชิงคุณภาพ)
+gear.tyre_main.rolling_radius | m | gear | 0.235 | r - δ/3
+gear.tyre_main.wheel_inertia | kg m2 | gear | 0.33 | ยาง+ล้อ+จาน ~13 kg
+gear.tyre_nose.size | - | gear | {"size":"5.00-5","type":"III","ply":6} | โหลดสถิต 655 lb
+gear.tyre_nose.rated_load | N | gear | 5716 | 1,285 lb
+gear.tyre_nose.rated_pressure | psi | gear | 50 | 
+gear.tyre_nose.operating_pressure | psi | gear | 45 | V_P 60 kt
+gear.tyre_nose.outside_diameter | m | gear | 0.354 | 13.9 in (เฉลี่ย 14.2/13.65)
+gear.tyre_nose.k_vertical | N/m | gear | 160000 | สเกลตามขนาด
+gear.tyre_nose.c_vertical | N s/m | gear | 1200 | 
+gear.tyre_nose.cornering_stiffness_coef | 1/rad | gear | 3.2 | 
+gear.tyre_nose.relaxation_length | m | gear | 0.22 | 
+gear.brakes.force_limit_ratio | - | gear | 0.6 | F_b,max/W_st ต่อข้าง (T_max ≈ 1,350 N m); ล็อกบนแห้งไม่ได้ ล็อกได้บนเปียก > 36 kt
+gear.brakes.pressure_rise_rate | 1/s | gear | 2.5 | เท่าโค้ดเดิม
+gear.brakes.antiskid | bool | aircraft | 0 | เครื่องฝึก 0, airliner 1
+gear.brakes.antiskid_efficiency | - | aircraft | {"on_off":0.3,"quasi_modulating":0.5,"fully_modulating":0.8} | 25.109(c)(2); ตรงกับตัวคูณ 0.375/0.625 ของ AC 25-32
+gear.brakes.antiskid_efficiency_measured | - | aircraft | {"dry":0.94,"wet":0.8} | ระบบ slip-ratio control ของ NASA; wet = ผิวชื้นและน้ำท่วม (ช่วง 0.47-0.94), dry ช่วง 0.79-1.00
+gear.brakes.antiskid_slip_setpoint | - | aircraft | 0.15 | 0.13-0.18, 10-12 Hz
+gear.brakes.heat_sink_mass | kg | gear | 6 | เหล็กต่อเบรก; หยุดเต็มแรงจาก 80 kt ร้อนขึ้น ~275 K
+gear.brakes.heat_sink_cool_tau | s | gear | 900 | 
+gear.brakes.fade_start_temp | degC | gear | 400 | 
+gear.brakes.fade_full_temp | degC | gear | 700 | 
+gear.steering.mode | - | aircraft | {"type":"pedal_linked","caster_with_diff_brake":true} | แป้น + caster เมื่อเบรกแยกข้าง
+gear.steering.pedal_max | deg | aircraft | 12 | c172p 10°; R = 12.5 m
+gear.steering.caster_max | deg | aircraft | 45 | 
+gear.steering.steer_rate | deg/s | aircraft | 60 | ปัจจุบัน 50
+gear.steering.shimmy_lag | s | aircraft | 0.05 | แทน shimmy damper
+gear.certification.part23_limit_descent | fps | aircraft | {"formula":"V = 4.4 (W/S)^0.25 fps, 7..10 fps","trainer_fps":10,"trainer_mps":3.048} | 23.473(d) ฉบับ 2016
+gear.certification.part23_wing_lift_ratio | - | aircraft | 0.667 | 
+gear.certification.part23_min_load_factors | g | aircraft | {"inertia":2.67,"ground_reaction":2} | 
+gear.certification.part23_reserve_drop_factor | x drop height | aircraft | 1.44 | ความเร็ว x1.2
+gear.certification.part25_limit_descent | fps | aircraft | {"design_landing_weight_fps":10,"design_takeoff_weight_fps":6,"reserve_fps":12} | lift ≤ W
+gear.certification.part25_friction_cap | - | aircraft | 0.8 | 25.473(e)
+wind.discreteGust.cfr25_341_Fg | - | aircraft | {"Fgz":"1 - Zmo/250000","Fgm":"sqrt(R2*tan(pi*R1/4))","Fg":"0.5*(Fgz+Fgm)"} | ต้องใช้ MLW/MTOW, MZFW/MTOW และ Zmo ของแต่ละแบบ (รอบถัดไปสำหรับ A320/737)
+wind.fFactor.trainerExcessTW | - | aircraft | 0.218 | ค่าประมาณจากโมเดลปัจจุบัน: (Tmax-D)/W ที่ 95 kt แฟลปเต็ม ล้อลง ISA+16
+wind.wake.b0_over_b | - | aircraft | 0.7854 | π/4 สำหรับการกระจายแรงยกแบบวงรี
+wind.wake.rc_over_b | - | aircraft | {"default":0.035,"min":0.02,"max":0.06} | รัศมีแกนวน; 0.035 b ตามตัวอย่าง NASA
+wind.wake.leaders | kg, m, kt, m2/s, m/s | aircraft | {"A320ceo":{"mass_kg":64500,"span_m":35.8,"Vapp_kt":137,"Gamma0_m2ps":283.4,"w0_mps":1.604},"B737_800W":{"mass_kg":66361,"span_m":35.79,"Vap… | มวล = MLW, ρ = 1.1262 kg/m³ (1000 ft, 31°C); Vapp ของ A320 เป็นค่าประมาณ
+wind.wake.trainerRollControl | - | aircraft | {"Clda":0.16,"daMax_deg":20,"ClMax":0.0559,"ratio1_Gamma_m2ps":56.5} | ค่าประมาณ: strip theory, ปีกเรียว 0.6, CLα 4.8/rad, 95 kt, อยู่กลางแกนวน
+numerics.contact.frictionModel | - | gear | {"name":"bristle-exponential","longitudinal":"brake only + tanh rolling","lateral":"bristle"} | ต้นแบบ B: หยุดการไหลตอนจอดได้ เสถียรถึง Δt = 1/30 s
+numerics.contact.bristleZ0 | m | gear | 0.005 | ใช้ค่าเริ่มต้น _fric_spring ของ YASim มาเป็นค่าของเครื่องฝึกเรา
+numerics.contact.bristleTau | s | gear | 0.02 | ค่าประมาณ: ให้ μNτ/z0 = 4μN s/m เท่าความชัน tanh ตามแนวล้อเดิม (μN/0.25); ด้านข้างชันกว่า tanh เดิม (μN/0.35) 
+numerics.contact.tanhV0Longitudinal | m/s | gear | 0.25 | ค่าเดิม ใช้ต่อเฉพาะแรงต้านการหมุน
+numerics.contact.tanhV0Lateral | m/s | gear | 0.35 | ค่าเดิม แทนด้วย bristle ด้านข้าง
+numerics.contact.yasimStopSpeedReference | m/s | gear | 0.1 | ค่าอ้างอิง: ramp แรงเสียดทานของ YASim แบบไม่มี stiction
+numerics.contact.currentFrictionTimeConstants | - | gear | {"longBraked_ms":51.8,"lateral_ms":54.9,"longFree_s":1.16,"fastestCoupled_ms":16.6} | วัดหรือคำนวณจากโมเดลปัจจุบัน ที่โหลดสถิตย์ 3193/9436/9436 N
+numerics.contact.currentGearModes | - | gear | {"heave_Hz":1.84,"heave_zeta":0.575,"rollOnMains_Hz":2.42,"rollOnMains_zeta":0.76,"noseStrut_Hz":2.01,"mainStrut_Hz":1.81,"mainBottomed_Hz":… | จาก k, c และมวลบนล้อ ตรวจกับ Jacobian แล้ว
+validation.classification.hqClassCategory | - | aircraft | {"class":"I","approachLanding":"C","cruiseClimb":"B","takeoff":"C"} | เครื่องฝึกเบาเครื่องยนต์เดียวจัดเป็น Class I (small, light airplanes); ช่วงลงจอดเป็น Category C; ถ้าต่อไปทำผาด
+validation.procedures.v50MinFactor_singleEngine | × VS1 | aircraft | 1.2 | ความเร็วที่ 50 ft ของเครื่องยนต์เดียวไม่ต่ำกว่า 1.2 VS1 (Part 23 เดิม)
+validation.typicalModes.c172x_jsbsim_100kcas_3000ft | rad/s, -, s | aircraft | {"sp_wn":6.5,"sp_zeta":0.68,"ph_T_s":32,"ph_zeta":0.13,"dr_wn":2.25,"dr_zeta":0.16,"tauR_s":0.2,"spiral_tau_s":46} | คำนวณจากโมเดลเปิด JSBSim c172x ไม่ใช่ข้อมูลบินจริง; spiral เสถียร
+validation.typicalModes.c172x_jsbsim_65kcas_flaps30 | rad/s, -, s | aircraft | {"sp_wn":4.38,"sp_zeta":0.67,"ph_T_s":19.7,"ph_zeta":0.12,"dr_wn":1.54,"dr_zeta":0.16,"tauR_s":0.3,"spiral_tau_s":64} | โมเดลเปิด; 1000 ft
+validation.typicalModes.b737_jsbsim_140kcas_landing | rad/s, -, s | aircraft | {"sp_wn":1.05,"sp_zeta":0.54,"ph_T_s":37.2,"ph_zeta":0.066,"dr_wn":1.09,"dr_zeta":0.24,"tauR_s":0.98,"spiral_tau_s":14.5} | โมเดลทั่วไปของ JSBSim ไม่ได้ผ่าน validation; 1500 ft gear down flaps เต็ม
+validation.typicalModes.b747_M08_40000ft | rad/s, - | aircraft | {"sp_wn":0.962,"sp_zeta":0.387,"ph_wn":0.0673,"ph_zeta":0.0489} | เอกสารสอน MIT OCW (ทุติยภูมิ): ตัวเลขโหมดจาก Lecture 7, สภาวะ M 0.8 / 40,000 ft จาก Lecture 9 ซึ่งระบุข้อมูลจา
+validation.typicalModes.gaFlightTest_dutchRoll | s | aircraft | {"T_s":[2,4],"t_half_max_s":2} | เครื่อง GA ที่ดีที่สุดในการทดสอบของ NASA 1966
+validation.currentModel.approach95 | rad/s, -, s | aircraft | {"sp_wn":2.221,"sp_zeta":0.578,"CAP":0.951,"nAlpha":5.19,"ph_T_s":25.5,"ph_zeta":0.115,"dr_wn":1.611,"dr_zeta":0.139,"dr_zetaWn":0.225,"tauR… | IAS 95 kt flaps 1 gear down 300 m γ −3°; α̇ แบบ quasi-steady
+validation.currentModel.cruise155 | rad/s, -, s | aircraft | {"sp_wn":3.593,"sp_zeta":0.56,"CAP":0.935,"nAlpha":13.81,"ph_T_s":42.5,"ph_zeta":0.073,"dr_wn":2.525,"dr_zeta":0.145,"dr_zetaWn":0.366,"tauR… | IAS 155 kt clean 3000 ft ระดับ
+validation.currentModel.performance | kt, fpm, -, m | aircraft | {"VSR_flaps1_kt":71.9,"VCLmax_flaps1_kt":70,"VSR_clean_kt":79.6,"Vy_SL_kt":128,"ROCmax_SL_fpm":3225,"glideLD_zeroThrust":16.5,"glideLD_idle"… | 2250 kg ISA ลมสงบ; ตัวเลข regression ไม่ใช่ค่าจริง
+input.keyboard.interim_trim_rate_elevator | deg/s | aircraft | 0.5 | ของ trimDe ก่อนมี tab (หัวข้อ 6)
+input.keyboard.flap_notches | สัดส่วน AC.flaps | aircraft | [0,0.5,1] | UP/T-O/LDG
+otherSims.jsbsim.gearSideForcePacejkaDefaults | - | gear | {"B_stiffness":0.06,"C_shape":2.8,"D_peak":"static_friction","E_curvature":1.03} | ค่าเริ่มต้นของ magic formula ใน FGLGear (มุมไถลเป็นองศา)
+otherSims.jsbsim.c172xTrimCruise100kcas3000ft | kt, deg, -, rpm, lb, ft | aircraft | {"vc_kts":100,"alpha_deg":0.796,"elevator_pos_deg":5.14,"pitchTrimCmd":0.2186,"throttle":0.769,"rpm":2359,"weight_lb":2480,"dh_10s_ft":0.068… | ผลรันโมเดลเปิด c172x (GPL) ไม่ใช่ข้อมูลบินจริง elevator บวก = ขอบท้ายลง; ค่าหลังแก้ลำดับ IC (ตั้ง lat/long ก่อ
+otherSims.jsbsim.c172xTrimApproach65kcas1000ftFlap30 | kt, deg, -, rpm, fpm | aircraft | {"vc_kts":65,"vtrue_kts":65.96,"alpha_deg":2.213,"theta_deg":-0.787,"elevator_pos_deg":2.036,"pitchTrimCmd":0.0835,"throttle":0.507,"rpm":15… | gamma -3 deg; ค่าหลังแก้ลำดับ IC (s12rev/rev_c172x_fixed.py); ใช้ตรวจว่าสภาพแวดล้อม oracle ติดตั้งถูก ไม่ใช่ข้
+otherSims.yasim.propEtaC | - | propeller | 0.85 | ประสิทธิภาพสูงสุดคงที่ของโมเดลใบพัด YASim
+otherSims.yasim.propLambdaPeak | - | propeller | 0.6687 | 5^(-1/4) อัตราส่วน J/J0 ที่ประสิทธิภาพสูงสุด
+otherSims.yasim.gearStaticFrictionDefault | - | gear | 0.8 | sfric ค่าเริ่มต้น
+otherSims.yasim.gearDynamicFrictionDefault | - | gear | 0.7 | dfric ค่าเริ่มต้น
+otherSims.xplane.maxElementsPerSide | - | aircraft | 10 | ต่อปีกหรือ stabilizer ต่อข้าง ("Ten elements per side per wing or stabilizer is the maximum")
+otherSims.xplane.tireRollingCoeffGuidance | - | gear | {"airlinerFighter":0.008,"generalAviation":0.016,"piper":0.04} | คำแนะนำของผู้พัฒนา X-Plane 12 ("about 0.040 for the piper") ไม่ใช่ค่าวัด
+otherSims.msfs.stallDefStartRatio | - | aircraft | 0.9 | สัดส่วนของ stall AoA ที่กระแสเริ่มแยก
+otherSims.msfs.stallDefEndRatio | - | aircraft | 1.1 | แยกสมบูรณ์
+otherSims.msfs.stallDefCurvePower | - | aircraft | 0.8 | เลขชี้กำลังของเส้นการแยก
+otherSims.msfs.stallTipAddIncidence | deg | aircraft | 2 | เพิ่ม stall AoA ที่ปลายปีก
+otherSims.msfs.elevatorTrimModel | deg | aircraft | {"mode":"additive to elevator deflection","limits":["elevator_trim_limit","elevator_trim_up_limit","elevator_trim_down_limit"],"scaling":"el… | MSFS 2020 [AIRPLANE_GEOMETRY] trim บวกเข้ามุม elevator และลดตาม qbar ได้
+otherSims.msfs.gearSpringExponentDefault | - | gear | 16 | เลขชี้กำลังสปริงไม่เชิงเส้นของ contact point (ค่าสุดท้ายในรายการ point.N) สปริงและ damping คำนวณอัตโนมัติจาก s
+otherSims.geofs.airfoilPartFields | - | aircraft | ["area | liftFactor+dragFactor","stallIncidence","zeroLiftIncidence","span","chord","aspectRatio","efficiencyFactor","forceDirection"] | จาก typings ชุมชน ไม่ใช่เอกสารทางการ
+otherSims.geofs.enginePartThrust | - | engine | {"unit":"N","model":"constant static thrust x throttle","altitudeLapse":"linear to zeroThrustAltitude"} | ลดเชิงเส้นตามความสูงถึง zeroThrustAltitude
+otherSims.airfieldlab.trimKind | - | aircraft | {"options":["tab","ths"],"trainer":"tab"} | tab = ตำแหน่งพักของคันเลื่อน; ths = มุมหางเปลี่ยน โมเมนต์บวกเพิ่ม elevator ยังมีระยะครบ
