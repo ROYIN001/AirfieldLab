@@ -1,6 +1,6 @@
 // Dynamic modes of the current model, locked before any physics change (owner's research round 1,
-// docs/research/01-flight-physics/10-validation.md §10.9, tests T-V-01 … T-V-06). MIL-F-8785C Class I Level 1
-// limits; regression bands (±5 %) on the values measured in the research so an unintended change shows up.
+// docs/research/01-flight-physics/10-validation.md §10.9, tests T-V-01 … T-V-06): MIL-F-8785C Class I Level 1
+// limits, then a regression lock on every mode value at both conditions so an unintended change shows up.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { M } from './harness.mjs';
@@ -56,6 +56,22 @@ test('T-V-06: spiral stable, or doubling time ≥ 12 s, at approach and cruise',
   for (const [name, c] of [['approach', app], ['cruise', cru]]) {
     const s = c.m.spiral;
     assert.ok(s.re <= 0 || s.t2 >= 12, `${name}: λs ${fmt(s.re, 4)} 1/s`);
+  }
+});
+
+// Regression lock (research §10.7, second tier): every mode value at both conditions, as measured on 2026-11-19 (the
+// same numbers as the research's §10.1 table). ±5 % on frequencies, damping ratios, CAP and τR; the spiral root keeps
+// its sign and stays within ±25 %. An intended physics change updates REF in the same PR.
+const REF = {
+  approach: { wsp: 2.2207, zsp: 0.5779, cap: 0.9507, wph: 0.2477, zph: 0.1151, wdr: 1.6114, zdr: 0.1395, tauR: 0.2180, ls: -0.01916 },
+  cruise: { wsp: 3.5929, zsp: 0.5597, cap: 0.9348, wph: 0.1483, zph: 0.0730, wdr: 2.5246, zdr: 0.1449, tauR: 0.1383, ls: -0.00800 },
+};
+test('regression lock: every mode value within ±5 % (spiral ±25 %, same sign) of the measured reference', () => {
+  for (const [name, c] of [['approach', app], ['cruise', cru]]) {
+    const m = c.m, r = REF[name];
+    const got = { wsp: m.sp.wn, zsp: m.sp.zeta, cap: m.cap, wph: m.ph.wn, zph: m.ph.zeta, wdr: m.dr.wn, zdr: m.dr.zeta, tauR: m.roll.tau };
+    for (const [k, v] of Object.entries(got)) assert.ok(Math.abs(v / r[k] - 1) <= 0.05, `${name} ${k}: ${fmt(v, 4)} vs ${r[k]} (±5 %)`);
+    assert.ok(Math.sign(m.spiral.re) === Math.sign(r.ls) && Math.abs(m.spiral.re / r.ls - 1) <= 0.25, `${name} spiral λ ${fmt(m.spiral.re, 5)} vs ${r.ls} (±25 %)`);
   }
 });
 

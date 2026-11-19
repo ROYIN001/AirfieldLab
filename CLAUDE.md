@@ -19,8 +19,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `geo` (AIP geometry), `flight` (start trim, parked, autoland per wind), `runways` (autoland on all four ends),
   `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01), `modes` (trim, linearise and
   MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `page` (parses the assembled page
-  module and checks the element ids the scripts use). Score floors sit just under the values measured on
-  2026-11-19: a physics change that moves them updates the test in the same PR.
+  module and checks the element ids the scripts use). Autoland score floors sit just under the values measured on
+  2026-11-19 (the assist robot's floor is a loose 50); touchdown points and every mode value have regression bands.
+  A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, so those
   three files must stay DOM-free. `build.mjs` exports `assemble()` for the page test.
@@ -60,7 +61,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   auto-throttle) and DIRECT (surface deflections + auto-trim).
 - Evaluator: stabilised gates at 500 and 200 ft, callouts, touchdown score (sink 40, position 25, centre line 15,
   speed 10, attitude 10). Touchdown window 300–600 m is "perfect".
-- Verified: autoland on 21R, 21L, 03L, 03R in calm and 15 kt gusty crosswind, scores 94–100.
+- Verified (`test/runways.test.mjs`, seed 5): autoland on 21R, 21L, 03L, 03R in calm scores 100/100/100/93 and in
+  15 kt gusty crosswind 88/88/90/78 (other turbulence seeds give 74–94 in the crosswind).
 
 ## Controls (current)
 - Keyboard: W/S or ↑/↓ pitch, A/D or ←/→ roll, Q/E rudder, Shift/Ctrl throttle, B brake, C camera, T take control,

@@ -36,6 +36,7 @@ for (const [key, sc] of Object.entries(SCENARIOS)) {
     assert.ok(!f.crashed && td && td.onRunway, `crashed ${f.crashed}, touchdown ${td ? td.s.toFixed(0) + ' m' : 'none'}`);
     assert.ok(f.ev.done && f.ev.stopS <= FIELD.rwyLen, `stopped ${f.ev.stopS != null ? f.ev.stopS.toFixed(0) + ' m' : 'no'}`);
     assert.deepEqual(f.ev.events.map((e) => e.k), []);
+    assert.deepEqual(Object.keys(f.ev.gates).sort(), ['g200', 'g500']);
     assert.ok(Object.values(f.ev.gates).every((g) => g.ok), `gates ${JSON.stringify(f.ev.gates)}`);
     assert.ok(maxLoc < 0.1, `localiser ${maxLoc.toFixed(2)} dots above 20 m`);
     assert.ok(s.total >= FLOOR[key], `score ${s.total}`);

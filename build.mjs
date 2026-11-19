@@ -1,5 +1,4 @@
 import fs from 'fs';
-import path from 'path';
 import { fileURLToPath } from 'url';
 
 // Joins every src/NN-*.js (in name order) into the /*__APP__*/ marker of src/template.html.
@@ -13,7 +12,9 @@ export function assemble() {
 }
 
 // node build.mjs → dist/index.html plus the data files (importing this module only assembles)
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+// (real paths: Node resolves symlinks for the main module, process.argv[1] keeps them)
+const isMain = (() => { try { return !!process.argv[1] && fs.realpathSync(process.argv[1]) === fs.realpathSync(fileURLToPath(import.meta.url)); } catch (e) { return false; } })();
+if (isMain) {
   const { html, files } = assemble();
   fs.mkdirSync(new URL('./dist/', import.meta.url), { recursive: true });
   fs.writeFileSync(new URL('./dist/index.html', import.meta.url), html);

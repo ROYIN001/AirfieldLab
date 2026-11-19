@@ -1,7 +1,8 @@
-// A robot pilot that follows the flight director through the pilot laws, like a player on a phone or keyboard:
-// ASSIST (attitude command, auto-rudder, auto-throttle) and DIRECT (raw controls), calm and 15 kt gusty crosswind.
-// On the runway the DIRECT robot steers with the pedals (before this it held the sideslip rudder law on the ground
-// and ran off the side in the crosswind). Then the autopilot's touchdown attitude.
+// A robot pilot that follows the flight director through the pilot laws: ASSIST (attitude command, auto-rudder,
+// auto-throttle; what a phone player gets) and DIRECT (raw controls, with rudder pedals as on a keyboard or gamepad;
+// the touch controls have no rudder), calm and 15 kt gusty crosswind. On the runway the DIRECT robot steers with the
+// pedals (before this it held the sideslip rudder law on the ground and ran off the side in the crosswind). The score
+// floor here is a loose 50 (the robot is not a good pilot; measured 64–81). Then the autopilot's touchdown attitude.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { M } from './harness.mjs';
@@ -44,7 +45,7 @@ for (const [key, sc] of Object.entries({ calm: SCENARIOS.calm, xl: SCENARIOS.xl 
     const info = `touchdown ${td ? td.s.toFixed(0) + ' m, ' + td.tl.toFixed(1) + ' m off the centre line, ' + td.vsFpm.toFixed(0) + ' fpm' : 'none'}, stop ${f.ev.stopS != null ? f.ev.stopS.toFixed(0) + ' m' : 'none'}, score ${s && s.total}, max bank ${(maxPhi * RAD).toFixed(1)}°, events ${JSON.stringify(f.ev.events.map((e) => e.k))}`;
     assert.ok(!f.crashed && td && td.onRunway, info);
     assert.ok(f.ev.done && f.ev.stopS <= FIELD.rwyLen, info);   // the excursion event is lateral only
-    assert.ok(!f.ev.events.some((e) => e.k === 'excursion' || e.k === 'skid'), info);
+    assert.deepEqual(f.ev.events.map((e) => e.k), [], info);   // no stall, wing-tip strike, excursion or crash
     assert.ok(maxPhi < 25 * DEG && s.total >= 50, info);
   });
 }
