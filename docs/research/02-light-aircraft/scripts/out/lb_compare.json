@@ -7,22 +7,22 @@
    "qty": "VS1 flaps up, power off",
    "unit": "KCAS",
    "model_value": 54.5,
-   "published": 51,
-   "error_pct": 6.8,
-   "verdict": "ใกล้ (5–15%)",
-   "src": "LB9 Fig 5-3, LB10",
-   "note": "POH aft CG 51, fwd CG 52 KCAS"
+   "published": 52,
+   "error_pct": 4.8,
+   "verdict": "ตรง (≤5%)",
+   "src": "LB9 Fig 5-3",
+   "note": "POH CG หน้าสุด 52 KCAS (ฐานเดียวกับบัตร 10-c172r); CG หลังสุด 51 = หน้า spec [LB10]"
   },
   {
    "model": "c172p",
    "qty": "VS flaps 10",
    "unit": "KCAS",
    "model_value": 51.1,
-   "published": 48,
-   "error_pct": 6.4,
-   "verdict": "ใกล้ (5–15%)",
+   "published": 49,
+   "error_pct": 4.2,
+   "verdict": "ตรง (≤5%)",
    "src": "LB9 Fig 5-3",
-   "note": "POH aft CG 48, fwd CG 49"
+   "note": "POH CG หน้าสุด 49; CG หลังสุด 48"
   },
   {
    "model": "c172p",
@@ -33,7 +33,7 @@
    "error_pct": 6,
    "verdict": "ใกล้ (5–15%)",
    "src": "LB9 Fig 5-3, LB10",
-   "note": ""
+   "note": "POH CG หน้าและหลังเท่ากัน 46"
   },
   {
    "model": "c172p",
@@ -139,22 +139,22 @@
    "qty": "VS1 flaps up, power off",
    "unit": "KCAS",
    "model_value": 42.7,
-   "published": 51,
-   "error_pct": -16.2,
+   "published": 52,
+   "error_pct": -17.8,
    "verdict": "ไม่ตรง (>15%)",
-   "src": "LB9 Fig 5-3, LB10",
-   "note": "POH aft CG 51, fwd CG 52 KCAS"
+   "src": "LB9 Fig 5-3",
+   "note": "POH CG หน้าสุด 52 KCAS (ฐานเดียวกับบัตร 10-c172r); CG หลังสุด 51 = หน้า spec [LB10]"
   },
   {
    "model": "c172x",
    "qty": "VS flaps 10",
    "unit": "KCAS",
    "model_value": 41.3,
-   "published": 48,
-   "error_pct": -13.9,
-   "verdict": "ใกล้ (5–15%)",
+   "published": 49,
+   "error_pct": -15.7,
+   "verdict": "ไม่ตรง (>15%)",
    "src": "LB9 Fig 5-3",
-   "note": "POH aft CG 48, fwd CG 49"
+   "note": "POH CG หน้าสุด 49; CG หลังสุด 48"
   },
   {
    "model": "c172x",
@@ -165,7 +165,7 @@
    "error_pct": -10.5,
    "verdict": "ใกล้ (5–15%)",
    "src": "LB9 Fig 5-3, LB10",
-   "note": ""
+   "note": "POH CG หน้าและหลังเท่ากัน 46"
   },
   {
    "model": "c172x",
@@ -271,11 +271,11 @@
    "qty": "VS1 flaps up, power off",
    "unit": "KCAS",
    "model_value": 54.1,
-   "published": 51,
-   "error_pct": 6.1,
-   "verdict": "ใกล้ (5–15%)",
-   "src": "LB11",
-   "note": ""
+   "published": 52,
+   "error_pct": 4.1,
+   "verdict": "ตรง (≤5%)",
+   "src": "LE3 Fig 5-3",
+   "note": "CG หน้าสุด 52 KCAS ตามบัตร 10-c172r; หน้า spec [LB11] 51 = CG หลังสุด"
   },
   {
    "model": "c172r",
@@ -285,8 +285,8 @@
    "published": 47,
    "error_pct": 3.4,
    "verdict": "ตรง (≤5%)",
-   "src": "LB11",
-   "note": ""
+   "src": "LE3 Fig 5-3, LB11",
+   "note": "CG หน้าและหลังเท่ากัน 47"
   },
   {
    "model": "c172r",
@@ -491,21 +491,392 @@
    "qty": "ROC max SL",
    "unit": "fpm",
    "model_value": 4344,
+   "published": 3100,
+   "error_pct": 40.1,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LP23",
+   "note": "climb rate ในคู่มือ ATC ของ Navy (ไม่ระบุน้ำหนักและความเร็ว; บัตร 07 conf ต่ำ); โมเดลเป็น jet thrust"
+  },
+  {
+   "model": "fg_c152",
+   "qty": "VS1 flaps up, power off",
+   "unit": "KCAS",
+   "model_value": 54.1,
+   "published": 48,
+   "error_pct": 12.7,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LF1 Fig 5-3",
+   "note": "POH CG หน้าสุด 1,670 lb (CG หลังสุด 46)"
+  },
+  {
+   "model": "fg_c152",
+   "qty": "VS flaps 10",
+   "unit": "KCAS",
+   "model_value": 51.5,
+   "published": 46,
+   "error_pct": 11.9,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LF1 Fig 5-3",
+   "note": "CG หน้าสุด (หลังสุด 43)"
+  },
+  {
+   "model": "fg_c152",
+   "qty": "VS0 flaps 30",
+   "unit": "KCAS",
+   "model_value": 47.3,
+   "published": 43,
+   "error_pct": 10.1,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LF1 Fig 5-3",
+   "note": "CG หน้าสุด (หลังสุด 41)"
+  },
+  {
+   "model": "fg_c152",
+   "qty": "Vy SL",
+   "unit": "KCAS",
+   "model_value": 95.4,
+   "published": 66.3,
+   "error_pct": 43.9,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LF1 Fig 5-5, Fig 5-1",
+   "note": "POH 67 KIAS → 66.3 KCAS; ใบพัดของโมเดลหมุนเกิน redline 2,550 rpm (2805 rpm ที่ 95 KCAS)"
+  },
+  {
+   "model": "fg_c152",
+   "qty": "ROC max SL ISA",
+   "unit": "fpm",
+   "model_value": 942,
+   "published": 715,
+   "error_pct": 31.7,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LF1",
+   "note": "1,670 lb SL ISA"
+  },
+  {
+   "model": "fg_c152",
+   "qty": "best glide speed",
+   "unit": "KCAS",
+   "model_value": 75,
+   "published": 60,
+   "error_pct": 25,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LF1 p3-3",
+   "note": "POH 60 KIAS ≈ 60 KCAS; ใบพัดของโมเดลหยุด 0 rpm"
+  },
+  {
+   "model": "fg_c152",
+   "qty": "glide ratio (max)",
+   "unit": "-",
+   "model_value": 12.71,
+   "published": 9.11,
+   "error_pct": 39.5,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LF6",
+   "note": "กฎหัวแม่มือ FAA 1.5 NM ต่อ 1,000 ft"
+  },
+  {
+   "model": "fg_c152",
+   "qty": "KTAS at 75% (82.5 hp), 8,000 ft",
+   "unit": "KTAS",
+   "model_value": 132.3,
+   "published": 107,
+   "error_pct": 23.6,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LF1",
+   "note": "interpolate ระหว่าง 2,500 rpm (54.5 hp) และคันเร่งสุด (100.6 hp) ของโมเดล"
+  },
+  {
+   "model": "fg_c152",
+   "qty": "ground roll, flaps 10, SL",
+   "unit": "ft",
+   "model_value": 1519,
+   "published": 725,
+   "error_pct": 109.5,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LF1",
+   "note": "model lift-off 61.3 KCAS (VR 45 ของนักบินจำลองยกล้อไม่ขึ้นจนถึง ~61 KCAS)"
+  },
+  {
+   "model": "fg_c152",
+   "qty": "over 50 ft, flaps 10, SL",
+   "unit": "ft",
+   "model_value": 2062,
+   "published": 1340,
+   "error_pct": 53.9,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LF1",
+   "note": ""
+  },
+  {
+   "model": "fg_c152",
+   "qty": "static full-throttle power",
+   "unit": "hp",
+   "model_value": 98.7,
+   "published": 110,
+   "error_pct": -10.3,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LF2 (rating)",
+   "note": "2441 rpm; rating 110 hp ที่ 2,550 rpm"
+  },
+  {
+   "model": "fg_da40ng",
+   "qty": "VS1 flaps UP, 1,310 kg",
+   "unit": "KCAS",
+   "model_value": 49.3,
+   "published": 64.6,
+   "error_pct": -23.7,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LD3",
+   "note": "66 KIAS → 64.6 KCAS (ตาราง IAS→CAS ของบัตร 05); model limit: elevator stop ที่ α 35.87°"
+  },
+  {
+   "model": "fg_da40ng",
+   "qty": "VS flaps T/O (model 15°)",
+   "unit": "KCAS",
+   "model_value": 47.1,
+   "published": 60.7,
+   "error_pct": -22.4,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LD3",
+   "note": "62 KIAS → 60.7 KCAS"
+  },
+  {
+   "model": "fg_da40ng",
+   "qty": "VS0 flaps LDG (model 30°)",
+   "unit": "KCAS",
+   "model_value": 45.3,
+   "published": 58,
+   "error_pct": -21.9,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LD3",
+   "note": "60 KIAS → 58 KCAS"
+  },
+  {
+   "model": "fg_da40ng",
+   "qty": "Vy SL",
+   "unit": "KCAS",
+   "model_value": 85.3,
+   "published": 70.9,
+   "error_pct": 20.4,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LD3",
+   "note": "72 KIAS → 70.9 KCAS (AFM ใช้แฟลป T/O; โมเดลวัดแฟลป 0)"
+  },
+  {
+   "model": "fg_da40ng",
+   "qty": "ROC max SL ISA",
+   "unit": "fpm",
+   "model_value": 646,
+   "published": 651,
+   "error_pct": -0.8,
+   "verdict": "ตรง (≤5%)",
+   "src": "LD4",
+   "note": "MTOM ISA MSL (เว็บผู้ผลิต \"approximate\")"
+  },
+  {
+   "model": "fg_da40ng",
+   "qty": "best glide speed",
+   "unit": "KCAS",
+   "model_value": 80,
+   "published": 87.5,
+   "error_pct": -8.6,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LD3",
+   "note": "88 KIAS → 87.5 KCAS; ใบพัดของโมเดลหยุด 0 rpm"
+  },
+  {
+   "model": "fg_da40ng",
+   "qty": "glide ratio (max)",
+   "unit": "-",
+   "model_value": 13.46,
+   "published": 9.7,
+   "error_pct": 38.8,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LD3",
+   "note": "ใบพัดหมุนฟรี มีครอบล้อ; มวลไม่ระบุ"
+  },
+  {
+   "model": "fg_da40ng",
+   "qty": "KTAS full power, 16,000 ft",
+   "unit": "KTAS",
+   "model_value": 154.4,
+   "published": 154,
+   "error_pct": 0.3,
+   "verdict": "ตรง (≤5%)",
+   "src": "LD4",
+   "note": "อ้างอิง load 92 %; โมเดลคันเร่งสุดได้ 144.6 hp"
+  },
+  {
+   "model": "fg_da40ng",
+   "qty": "KTAS at 60% (100.8 hp), 14,000 ft",
+   "unit": "KTAS",
+   "model_value": 112.5,
+   "published": 124,
+   "error_pct": -9.3,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LD4",
+   "note": ""
+  },
+  {
+   "model": "fg_da40ng",
+   "qty": "ground roll, flaps T/O, SL",
+   "unit": "ft",
+   "model_value": 1771,
+   "published": 1302,
+   "error_pct": 36,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LD4",
+   "note": "model lift-off 67.7 KCAS"
+  },
+  {
+   "model": "fg_da40ng",
+   "qty": "over 50 ft, flaps T/O, SL",
+   "unit": "ft",
+   "model_value": 3174,
+   "published": 1935,
+   "error_pct": 64,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LD4",
+   "note": ""
+  },
+  {
+   "model": "fg_da40ng",
+   "qty": "static full-throttle power",
+   "unit": "hp",
+   "model_value": 164.3,
+   "published": 165.6,
+   "error_pct": -0.8,
+   "verdict": "ตรง (≤5%)",
+   "src": "LD10, LD2 (rating)",
+   "note": "2300 rpm ใบพัด; rating 123.5 kW ที่ 2,300 rpm"
+  },
+  {
+   "model": "fg_pc9m",
+   "qty": "VS1 flaps up, 2,350 kg",
+   "unit": "KCAS",
+   "model_value": 68.2,
+   "published": 77,
+   "error_pct": -11.4,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LP2",
+   "note": "model limit: elevator stop"
+  },
+  {
+   "model": "fg_pc9m",
+   "qty": "VS0 flaps LDG, 2,350 kg",
+   "unit": "KCAS",
+   "model_value": 62.9,
+   "published": 69,
+   "error_pct": -8.8,
+   "verdict": "ใกล้ (5–15%)",
+   "src": "LP2",
+   "note": "model limit: elevator stop"
+  },
+  {
+   "model": "fg_pc9m",
+   "qty": "Vy SL",
+   "unit": "KCAS",
+   "model_value": 136.7,
    "published": null,
    "error_pct": null,
    "verdict": "เทียบไม่ได้",
    "src": "-",
-   "note": "no public figure found"
+   "note": "ไม่มีค่าสาธารณะ (บัตร 07 ประมาณ 125 KCAS, est)"
+  },
+  {
+   "model": "fg_pc9m",
+   "qty": "ROC max SL",
+   "unit": "fpm",
+   "model_value": 5458,
+   "published": 4090,
+   "error_pct": 33.4,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LP12, LP13",
+   "note": "ไม่ระบุน้ำหนัก; โมเดลใช้ PT6A-25 และใบพัด η > 1"
+  },
+  {
+   "model": "fg_pc9m",
+   "qty": "max level speed at 20,000 ft",
+   "unit": "KTAS",
+   "model_value": 240.1,
+   "published": 301,
+   "error_pct": -20.2,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LP12",
+   "note": "โมเดลคันเร่งสุด 313.2 hp"
+  },
+  {
+   "model": "fg_pc9m",
+   "qty": "static full-throttle power",
+   "unit": "hp",
+   "model_value": 513.6,
+   "published": 950,
+   "error_pct": -45.9,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LP2 (rating)",
+   "note": "โมเดลใช้ PT6A-25 (550 shp ของ PC-7); PC-9M ใช้ PT6A-62 950 shp"
+  },
+  {
+   "model": "fg_t6",
+   "qty": "VS1 flaps up",
+   "unit": "KCAS",
+   "model_value": 87.4,
+   "published": null,
+   "error_pct": null,
+   "verdict": "เทียบไม่ได้",
+   "src": "-",
+   "note": "ไม่มีค่าสาธารณะ (บัตร 07 ประมาณ 82.9 KCAS ที่ 6,000 lb, est); โมเดลใส่ได้ 5564 lb"
+  },
+  {
+   "model": "fg_t6",
+   "qty": "ROC max SL",
+   "unit": "fpm",
+   "model_value": 8521,
+   "published": 3100,
+   "error_pct": 174.9,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LP23",
+   "note": "ไม่ระบุน้ำหนัก; โมเดลเป็น jet thrust (PT6A-68 + direct) ที่ 5,564 lb"
+  },
+  {
+   "model": "fg_t6",
+   "qty": "max level speed at 1,000 ft",
+   "unit": "KTAS",
+   "model_value": 324.4,
+   "published": 270,
+   "error_pct": 20.1,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LB16",
+   "note": "Navy 270 kt ที่ 1,000 ft"
+  },
+  {
+   "model": "fg_t6",
+   "qty": "takeoff distance, SL",
+   "unit": "ft",
+   "model_value": 2102,
+   "published": 1775,
+   "error_pct": 18.4,
+   "verdict": "ไม่ตรง (>15%)",
+   "src": "LP22",
+   "note": "แหล่งไม่ระบุนิยาม (ถึง 50 ft หรือไม่) และน้ำหนัก; เทียบกับระยะถึง 50 ft ของโมเดล"
   }
  ],
  "implied_cl": [
   {
-   "type": "C172P POH",
+   "type": "C172P POH (CG หลังสุด)",
    "w_lb": 2400,
    "s_ft2": 174,
    "cfg": "flaps 0",
    "vs_kcas": 51,
    "cl": 1.566
+  },
+  {
+   "type": "C172P POH (CG หน้าสุด)",
+   "w_lb": 2400,
+   "s_ft2": 174,
+   "cfg": "flaps 0",
+   "vs_kcas": 52,
+   "cl": 1.507
   },
   {
    "type": "C172P POH",

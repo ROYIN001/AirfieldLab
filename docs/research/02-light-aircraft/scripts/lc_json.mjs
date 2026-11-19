@@ -9,7 +9,8 @@ import { compute, POH } from './lc_calc.mjs';
 import { estimate } from './lm_derivs.mjs';
 import { PROPS } from './lm_prop.mjs';
 import { G0, RHO0, KT, FT, HP, LB } from './lm_polar.mjs';
-import { isMainModule } from './lm_lib.mjs';
+import { isMainModule, r1ParamsCandidates } from './lm_lib.mjs';
+import { normaliseScopes, readOut, testsLeaf, stickForceBand } from './lc_cardfix.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const TOPIC = path.join(HERE, '..', '04-c172s.md');
@@ -17,9 +18,11 @@ const IN = 0.0254, DEG = Math.PI / 180;
 const r = (x, d = 4) => (typeof x === 'number' ? +x.toFixed(d) : x);
 const C = compute();
 
-// round-1 trainer parameters (defaults for leaves with no type-specific data; always est + note)
-const R1P = [new URL('../../01-flight-physics/params-trainer.json', import.meta.url).pathname, path.join(HERE, '..', '..', '..', 'round1', 'assembled', '01-flight-physics', 'params-trainer.json')]
-  .find(p => fs.existsSync(p));
+// round-1 trainer parameters (defaults for leaves with no type-specific data; always est + note).
+// Gap 26 (19 Nov 2026): repo layout first (../../01-flight-physics/params-trainer.json relative to scripts/, as
+// lm_lib.r1ParamsCandidates gives it), then $AIRFIELDLAB_R1_PARAMS, then the /home/user/r1 worktree as a fallback.
+const R1P = r1ParamsCandidates().find(p => fs.existsSync(p));
+if (!R1P) console.warn('lc_json: round-1 params-trainer.json not found; leaves that copy round-1 values will be empty');
 const R1 = R1P ? JSON.parse(fs.readFileSync(R1P, 'utf8')) : {};
 const r1v = p => p.split('.').reduce((a, k) => (a ? a[k] : undefined), R1)?.v;
 
@@ -29,6 +32,37 @@ const LEG = fs.existsSync(LEGP) ? JSON.parse(fs.readFileSync(LEGP, 'utf8')) : nu
 
 const L = (v, u, src, conf, est, note, scope = 'aircraft') => ({ v, u, scope, src, conf, est, note });
 const H = 'สูง', M = 'กลาง', LO = 'ต่ำ';
+
+// Gap 17 and 18 (19 Nov 2026): validation.reference_modes (CR-2337 flight test of the Cessna 177B, the closest public
+// measured modes; the card's derivatives already are the TM-80163 C172 set, so they are no independent reference) and
+// validation.stick_force_targets (requirement band from the card's n/α; the sim has no stick-force model). Both read
+// scripts/out/lc_tests.json, so run lc_tests.mjs first.
+function refModesLeaves() {
+  const LT = readOut('lc_tests.json'), RM = LT?.raw?.extra?.refModes;
+  if (!RM) { console.warn('lc_json: out/lc_tests.json has no refModes; run lc_tests.mjs first'); return {}; }
+  const q = (x, n = 3) => (x == null ? null : +(+x).toPrecision(n));
+  const osc = m => (m && m.wn ? { wn_rad_s: q(m.wn), zeta: q(m.zeta), T_s: q(m.T) } : null);
+  const rollM = (rr, m) => ({ pmax_dps: q(rr.pmax_dps), t30_s: q(rr.t30_s), pb2V: q(rr.pb2V), beta30_deg: q(rr.beta30_deg), tauR_s: q(m.roll_tau) });
+  const spi = m => (m.spiral ? { lam_1_s: q(m.spiral.lam), t_half_or_double_s: q(m.spiral.t2), divergent: m.spiral.grows } : null);
+  const out = {
+    reference_modes: L({
+      conditions: { lo: '80 mph CAS = 69.5 KCAS (35.8 m/s), 4,000 ft (1,219 m) ISA, แฟลป 0', hi: '120 mph CAS = 104.3 KCAS (53.7 m/s), 4,100 ft (1,250 m) ISA, แฟลป 0', mass_kg: q(RM.mass_kg, 5), mass_lb: 2460 },
+      phugoid: { ref_LC11_C177B: { flap0: { T_s: [17.6, 19.0], zeta: [0.047, 0.061] }, flap30: { T_s: [18.5, 19.4], zeta: [0.044, 0.045] } },
+        model: { flap0: osc(RM.card_lo.ph), flap30: osc(RM.card_lo_f30.ph) }, test: 'T-LC-32' },
+      dutch_roll: { ref_LC11_C177B: { lo: { wn_rad_s: 1.6, zeta_min: 0.5 }, hi: { wn_rad_s: 2.1, zeta_min: 0.4 } },
+        model: { lo: osc(RM.card_lo.dr), hi: osc(RM.card_hi.dr) }, jsbsim_c172x_R1V15: { wn_rad_s: 2.25, zeta: 0.16, note: 'แบบจำลอง ไม่ใช่การบิน' }, test: 'T-LC-33' },
+      roll: { input: 'aileron เต็มเร็วที่สุด rudder ค้าง', ref_LC11_C177B: { lo: { pmax_dps: [33.2, 35.9], t30_s: [1.02, 1.41], pb2V: [0.0828, 0.0896], beta30_deg: [8.5, 11] }, hi: { pmax_dps: [53.8, 54.7], t30_s: [0.70, 0.74], pb2V: [0.0894, 0.098], beta30_deg: [3, 3.5] } },
+        model: { lo: rollM(RM.roll_card_lo, RM.card_lo), hi: rollM(RM.roll_card_hi, RM.card_hi) }, test: 'T-LC-34' },
+      short_period: { ref: null, ref_note: 'ไม่พบโหมดตามยาวที่วัดจาก C172 หรือ C177B ที่เปิดเผย', model: { lo: osc(RM.card_lo.sp), hi: osc(RM.card_hi.sp) }, jsbsim_c172x_R1V15: { wn_rad_s: 6.5, zeta: 0.68, at: '100 KCAS', note: 'แบบจำลอง ไม่ใช่การบิน' } },
+      spiral: { ref: null, ref_note: 'ไม่พบค่าที่วัดที่เปิดเผย (KU-M-407-7 บันทึกการบินยาวสำหรับ spiral แต่ตารางเป็นภาพไมโครฟิชอ่านไม่ได้)', model: { lo: spi(RM.card_lo), hi: spi(RM.card_hi) } },
+    }, 's, rad/s, -, deg/s, deg', ['LC11', 'LC13', 'LM5', 'R1:V15', 'LC0'], LO, true,
+      'ค่าประมาณ: ค่าอ้างอิงวัดจากการบินทดสอบ Cessna 177B Cardinal (NASA CR-2337 Table IV, V และข้อความหน้า 26) ซึ่งเป็นเครื่อง Cessna ปีกสูงสี่ที่นั่งคนละแบบกับ C172 (ปีกไม่มีค้ำ stabilator ทั้งชิ้น) ใช้แทนเพราะไม่พบโหมดที่วัดจาก C172 ที่เปิดเผย; อนุพันธ์ของบัตรนี้คือชุดที่ NASA TM-80163 หาจากการบินของ C172 (KU-M-407-7 ยืนยันว่าเป็น C172) จึงไม่ใช่ค่าอ้างอิงอิสระ; ค่า model คำนวณด้วย lm_card ที่มวล 1,115.8 kg (linearise สำหรับ phugoid, Dutch roll, short period, spiral และจำลองเวลาจริง 240 Hz สำหรับการม้วน) ใน scripts/lc_tests.mjs; CR-2337 บอกเองว่า Dutch roll หน่วงสูงจนสกัดตัวเลขได้ไม่แม่น'),
+  };
+  const nA = LT?.raw?.modes?.cruise?.nAlpha;
+  if (nA) out.stick_force_targets = L(stickForceBand({ nAlpha: nA, nL: 3.8, W_lb: 2550 }), 'lbf/g, N/g, g/rad, lbf, lbf/kt, N/kt', ['R1:C12', 'LM3', 'LC14', 'LC1', 'LC0'], LO, true,
+    `ค่าประมาณ: ไม่ใช่ค่าที่วัดจาก C172 แต่เป็นแถบเป้าหมายจากเกณฑ์ MIL-F-8785C Level 1 แบบ wheel (สูตรของ controls.requirements.mil8785c_fs_per_g_wheel_L1 รอบที่ 1) ด้วย n/α ${q(nA)} g/rad ของบัตรที่ cruise 110 KCAS MTOW และ nL 3.8 (normal category) และพื้นขั้นต่ำจาก 14 CFR 23.155 (แรงถึง limit load ≥ W/100 = 25.5 lbf); แรงต่อ kt ขั้นต่ำ 1 lbf ต่อ 6 kt ยืมจาก 14 CFR 25.173(c) เพราะ Part 23 ไม่มีตัวเลข; ซิมวันนี้ไม่มีแบบจำลองแรงที่คันบังคับ จึงทดสอบไม่ได้ (T-LC-35)`);
+  return out;
+}
 
 export function build() {
   const g = C.geom, m = g.MTOW_kg, S = g.S_m2, b = g.b_m, c = g.MAC_m;
@@ -100,7 +134,7 @@ export function build() {
   const card = {
     // ───────────── airframe ─────────────
     airframe: {
-      identity: L({ manufacturer: 'Cessna Aircraft Company (Textron Aviation จาก s/n 172S11615)', model: '172S', variant: 'Skyhawk SP (รวม NAV III G1000 / G1000 NXi)', engine: 'Lycoming IO-360-L2A 180 hp @ 2,700 rpm', propeller: 'McCauley 1A170E/JHA7660 fixed pitch 2 ใบ 75–76 in', seats: 4, category: 'normal / utility (spin อนุญาตเฉพาะ utility)', tc_ref: 'FAA TCDS 3A12 Section XII; EASA TCDS IM.A.051 Section 2' }, '-', ['LC6', 'LC3', 'LC1'], H, false, 'ทะเบียนไทย: C172S 34 ใน 44 ลำ C172 ของ ATO (LS1); FNPT ของ BATC เป็น "C172S Glass Cockpit" จึงน่าจะมี G1000 ในฝูง (ค่าประมาณ ทะเบียนไม่บอก avionics)'),
+      identity: L({ manufacturer: 'Cessna Aircraft Company (Textron Aviation จาก s/n 172S11615)', model: '172S', variant: 'Skyhawk SP (รวม NAV III G1000 / G1000 NXi)', engine: 'Lycoming IO-360-L2A 180 hp @ 2,700 rpm', propeller: 'McCauley 1A170E/JHA7660 fixed pitch 2 ใบ 75–76 in', seats: 4, category: 'normal / utility (spin อนุญาตเฉพาะ utility)', tc_ref: 'FAA TCDS 3A12 Section XII; EASA TCDS IM.A.051 Section 2' }, '-', ['LC6', 'LC3', 'LC1'], H, false, 'ทะเบียนไทย: C172S 34 ใน 44 ลำ C172 ของ ATO (LS1); FNPT ของ BATC เป็น "C172S Glass Cockpit" จึงน่าจะมี G1000 ในฝูง (อนุมาน: ทะเบียนไม่บอก avionics)'),
       weights: {
         MTOW: L(g.MTOW_kg, 'kg', ['LC6', 'LC3'], H, false, '2,550 lb normal; utility 2,200 lb (997.9 kg)'),
         MLW: L(g.MTOW_kg, 'kg', ['LC6', 'LC1'], H, false, 'เท่ากับ MTOW 2,550 lb (POH p2-7)'),
@@ -108,7 +142,9 @@ export function build() {
         BEW_typical: L(g.BEW_kg, 'kg', ['LC1'], M, false, 'standard empty weight 1,663 lb ของ Information Manual (p1-7) ไม่ใช่ของลำใดลำหนึ่ง; เครื่องที่มี G1000 และอุปกรณ์เสริมมักหนักกว่า'),
         max_fuel_usable: L(g.fuel_usable_kg, 'kg', ['LC6', 'LC1', 'LM4'], H, false, '53 US gal = 200.6 L ใช้ได้ (รวม 56 gal) × avgas 6 lb/gal (PHAK)'),
         useful_load: L(g.useful_kg, 'kg', ['LC1'], H, false, '895 lb (normal), 545 lb (utility)'),
-        training_mass: L(C.training.total_kg, 'kg', ['LC0', 'LC1'], LO, true, `ค่าประมาณ: BEW 754.3 kg + ครู 85 kg + ศิษย์ 75 kg + เชื้อเพลิง 35 gal (95.3 kg) = ${C.training.total_kg} kg; การเทียบ POH ใช้ --mass ${g.MTOW_kg}`),
+        // D3 (19 Nov 2026): object {kg, empty_kg, crew_kg, fuel_kg, fuel_l}; empty_kg = BEW_typical
+        training_mass: L({ kg: C.training.total_kg, empty_kg: C.training.BEW_kg, crew_kg: C.training.crew_kg, fuel_kg: C.training.fuel_kg, fuel_l: r(35 * 3.785411784, 1) }, 'kg (fuel_l: L)', ['LC0', 'LC1'], LO, true,
+          `ค่าประมาณ: empty_kg = BEW_typical ${C.training.BEW_kg} kg (POH p1-7) + ครู 85 kg + ศิษย์ 75 kg + เชื้อเพลิง 35 US gal (132.5 L, 95.3 kg ที่ 6 lb/gal) = ${C.training.total_kg} kg (2,226 lb); การเทียบ POH ใช้ --mass ${g.MTOW_kg}`),
       },
       cg: {
         datum: L('lower portion of front face of firewall', '-', ['LC6', 'LC1'], H, false, 'ระยะ m DAT บวกไปทางท้าย'),
@@ -306,9 +342,9 @@ export function build() {
       VX_kt: L(62, 'kt IAS', ['LC1'], H, false, 'SL; 67 KIAS ที่ 10,000 ft (p4-5)'),
       VY_kt: L(74, 'kt IAS', ['LC1', 'LC2'], H, false, 'SL; 72 KIAS ที่ 10,000 ft (p4-5; Fig 5-6 74→72)'),
       VR_kt: L(51, 'kt IAS', ['LC2'], M, false, 'ความเร็วล้อพ้นพื้นของ short field takeoff แฟลป 10 (Fig 5-5 p5-14); ความเร็วที่ 50 ft 56 KIAS; normal takeoff (แฟลป 0–10°) ยกล้อหน้าราว 55 KIAS แล้วไต่ 70–80 KIAS (POH p4-15 อ่านจาก OCR ที่เห็นทั้ง 50 และ 55)'),
-      VAPP_kt: L(65, 'kt IAS', ['LC1'], M, false, 'normal approach แฟลป 30 60–70 KIAS ใช้กลางช่วง; แฟลปขึ้น 65–75'),
+      VAPP_kt: L(65, 'kt IAS', ['LC1'], M, false, 'D1 (บัตรเป็นเจ้าของ; 08 ops.final และ 09 Vapp อ้างค่านี้): normal approach แฟลป 30 60–70 KIAS (POH p4-5) ใช้กลางช่วง 65 KIAS ≈ 67 KCAS (34.5 m/s); POH บอกว่าความเร็วในหัวข้อ 4 อิงน้ำหนักสูงสุด 2,550 lb และใช้ได้กับทุกน้ำหนักที่ต่ำกว่า จึงเป็นค่าเดียวกันที่ training_mass 1,009.6 kg; VAPP ≥ VREF 61 KIAS; แฟลปขึ้น 65–75 KIAS'),
       VAPP_short_kt: L(61, 'kt IAS', ['LC1', 'LC2'], H, false, 'short field แฟลป 30 (p4-5, Fig 5-11 ที่ 50 ft)'),
-      VREF_kt: L(61, 'kt IAS', ['LC2'], M, false, 'POH ไม่ใช้คำว่า VREF; ใช้ความเร็วที่ 50 ft ของ short field landing 61 KIAS = 63.9 KCAS ≈ 1.33 VS0 (48 KCAS)'),
+      VREF_kt: L(61, 'kt IAS', ['LC2', 'LC1'], M, false, 'D1: POH ไม่ใช้คำว่า VREF; ใช้ความเร็วที่ 50 ft ของ short field landing 61 KIAS = 63.9 KCAS (32.9 m/s) ≈ 1.33 VS0 (48 KCAS) ที่ 2,550 lb (Fig 5-11, p4-5) และใช้ค่าเดียวกันที่ training_mass 1,009.6 kg ตามที่ POH ให้ใช้กับทุกน้ำหนักที่ต่ำกว่า; ข้อมูลประกอบ: 1.3 VS0 ที่ 1,009.6 kg (VS0 × √(m/MTOW)) = 58.3 KCAS'),
       VG_kt: L(68, 'kt IAS', ['LC1'], H, false, 'maximum glide 2,550 lb (p3-3); POH ไม่ให้ตารางตามมวล'),
       VA_kt: L({ '2550': 105, '2200': 98, '1900': 90 }, 'kt IAS', ['LC1', 'LC6'], H, false, 'lb → KIAS (KCAS 102/95/88)'),
       VNO_kt: L(129, 'kt IAS', ['LC6', 'LC1'], H, false, '126 KCAS'),
@@ -317,7 +353,7 @@ export function build() {
       ias_cas: L(POH.iasCas, 'KIAS → KCAS', ['LC2'], M, false, 'Fig 5-1 normal static source, power for level flight (p5-9); อ่านจาก OCR การจับคู่บางช่องอนุมาน; ต่ำกว่า 40/50 KIAS ไม่มีข้อมูล'),
       stall_table: L({ cg_fwd: POH.stall.fwd, cg_aft: POH.stall.aft, bank_deg: [0, 30, 45, 60], cell: '[KIAS, KCAS]' }, 'kt', ['LC2'], H, false, `Fig 5-3 2,550 lb power off; ตรวจแล้วทุกช่องตรง V0/√cos φ ภายใน ${C.stallTableCheck.maxDev_kt} kt; KIAS เป็นค่าโดยประมาณตาม POH`),
       stall_warning_margin_kt: L(5, 'kt', ['LM3'], M, false, '14 CFR 23.207(c) (ถึง Amdt 23-50): เตือนก่อน stall อย่างน้อย 5 kt จนถึง stall; กฎไม่กำหนดขีดบน'),
-      stall_altitude_loss_ft: L(230, 'ft', ['LC2'], H, false, 'Fig 5-3 note: อาจเสียความสูงถึง 230 ft'),
+      stall_altitude_loss_ft: L(230, 'ft', ['LC2'], H, false, 'Fig 5-3 note: อาจเสียความสูงถึง 230 ft (70 m) ระหว่าง stall และการแก้'),
       crosswind_demonstrated_kt: L(15, 'kt', ['LC1'], H, false, 'takeoff หรือ landing (p4-5); ไม่ใช่ขีดจำกัด'),
       icao_approach_category: L('A', '-', ['LC12', 'LC0'], H, false, '1.3 VS0 = 1.3 × 48 = 62 KCAS < 91 kt = Category A ตามนิยาม 14 CFR 97.3 (VREF หรือ 1.3 VSO ที่ MLW); ICAO PANS-OPS ใช้ขอบ 91 kt เดียวกัน'),
     },
@@ -369,7 +405,7 @@ export function build() {
       },
       fixed: {
         pitch_in: L(60, 'in', ['LM22', 'LC6'], M, false, 'จากรหัส 7660 = 76 in × 60 in (แบบแผนชื่อรุ่นของ McCauley)', 'propeller'),
-        beta75_deg: L(18.52, 'deg', ['LM0'], M, false, 'atan(60/(0.75π·76))', 'propeller'),
+        beta75_deg: L(18.52, 'deg', ['LM0'], M, true, 'ค่าประมาณ: atan(60/(0.75π·76)) โดยสมมติว่า pitch 60 in ของรุ่นใบวัดที่ 75 % ของรัศมี และใบบิดแบบ helical (รูปใบจริงไม่เปิดเผย; ใช้ใน BEM ของ lm_prop)', 'propeller'),
         static_rpm_range: L([2300, 2400], 'rpm', ['LC6', 'LC1'], H, false, 'คันเร่งเต็ม อยู่กับที่', 'propeller'),
       },
       engineInterface: {
@@ -379,7 +415,7 @@ export function build() {
       bladeGeometry: {
         hubRadiusRatio: L(P0.xh, 'r/R', ['LM0'], LO, true, 'lm_prop', 'propeller'),
         chordOverD: L({ axes: { x: xs }, data: cD }, 'c/D', ['LM0'], LO, true, `รูปใบ GA ของ lm_prop × ${cs} (ปรับให้รอบสถิต 2,350 rpm)`, 'propeller'),
-        twistDesignJ: L(r(60 / 76, 3), '-', ['LM0'], M, false, 'pitch เรขาคณิตคงที่ = helical ที่ J = p/D', 'propeller'),
+        twistDesignJ: L(r(60 / 76, 3), '-', ['LM0'], M, true, 'ค่าประมาณ: สมมติใบบิดแบบ helical ที่ pitch เรขาคณิตคงที่ ได้ J ออกแบบ = p/D = 60/76 (รูปใบจริงไม่เปิดเผย; ใช้ใน BEM ของ lm_prop)', 'propeller'),
         activityFactor: L(90, '-', ['LM0'], LO, true, 'ค่าประมาณ: AF ของรูปใบ GA ใน lm_prop (ไม่มีข้อมูล McCauley)', 'propeller'),
       },
       section: {
@@ -415,7 +451,7 @@ export function build() {
     controls: {
       architecture: L({ pitch: 'reversible (cable)', roll: 'reversible (cable, Frise ailerons)', yaw: 'reversible (cable) + nose-wheel steering bungee', trim: 'tab' }, '-', ['LC2', 'LC6'], M, false, 'POH Section 7 Fig 7-1; elevator trim tab ล้อมือ (NAV III GFC 700 มี electric trim)'),
       surfaces: {
-        elevator: L({ travel_deg: { up: 28, down: 23 }, rate_dps: 70, actuator_tau_s: 0 }, 'deg, deg/s, s', ['LC6', 'LC3'], H, false, 'TCDS up 28° +1/−0, down 23° +1/−0; rate เป็นค่าประมาณของรอบที่ 1 (มือคน)'),
+        elevator: L({ travel_deg: { up: 28, down: 23 }, rate_dps: 70, actuator_tau_s: 0 }, 'deg, deg/s, s', ['LC6', 'LC3'], H, false, 'travel_deg อ่านตรงจาก TCDS (up 28° +1/−0, down 23° +1/−0) ไม่ใช่ค่าประมาณ; rate_dps 70 เป็นค่าสมมติของรอบที่ 1 สำหรับมือคน (ค่าเดียวกับ controls.pitch.rate_limit ที่ติด est); actuator_tau_s 0 เพราะต่อด้วยสลิงตรง'),
         aileron: L({ travel_deg: { up: 20, down: 15 }, rate_dps: 80, actuator_tau_s: 0 }, 'deg, deg/s, s', ['LC6'], H, false, 'up 20° ±1, down 15° ±1 (differential) ⇒ daMax 17.5°'),
         rudder: L({ travel_deg: { left: 17.73, right: 17.73 }, rate_dps: 60, actuator_tau_s: 0 }, 'deg, deg/s, s', ['LC3', 'LC6'], H, false, '17°44′ ±1° วัดตั้งฉากกับ hinge; 16°10′ ±1° วัดขนาน WL (ทั้ง FAA 3A12 และ EASA IM.A.051 ให้สองค่านี้)'),
         flap: L({ travel_deg: { up: 0, down: 30 }, rate_dps: 3.3, actuator_tau_s: 0 }, 'deg, deg/s, s', ['LC6', 'LC2'], M, true, 'TCDS 0–30° +0/−2; detent 10/20/30; rate ค่าประมาณ'),
@@ -578,9 +614,16 @@ export function build() {
       },
       stall_test: L({ '0': 70, '10': 66, '20': 64, '30': 63 }, 'kt EAS', ['LC0'], M, false, 'ความเร็วเริ่มของการทดสอบ stall 1 kt/s (≈1.3 V_SR)'),
       takeoff_test: L({ flap: '10', VR_kt: 52, theta_deg: 12 }, '-, kt CAS, deg', ['LC2', 'LC0'], M, true, 'short field: lift-off 51 KIAS ≈ 57.6 KCAS ตามตาราง (ค่าสอบเทียบใช้กับการบินระดับ) ใช้ VR 52 KCAS θ 12° ค่าประมาณ (θ 8° ทำให้ล้อพ้นพื้นที่ 67 kt)'),
+      ...refModesLeaves(),
     },
   };
+  // gap 16 (19 Nov 2026): performance.tests = the rows of the T-LC table (04.11), from scripts/out/lc_tests.json
+  const LT = readOut('lc_tests.json');
+  if (LT) card.performance.tests = testsLeaf(LT.tests, { src: ['LC0', 'LC1', 'LC2', 'LC3', 'LC6', 'LC11', 'R1:V10'],
+    note: 'แถวเดียวกับตาราง T-LC ในหัวข้อ 04.11 สร้างโดย lc_json.mjs จาก scripts/out/lc_tests.json (รัน lc_tests.mjs ก่อน); ค่าคาดหวังมาจาก POH/TCDS/MIL-F-8785C/ฟิสิกส์ตามช่อง origin; tolerance ที่ผู้เขียนตั้งเองบอกไว้ในช่อง tolerance ของแถวนั้น; current_model คือผลของบัตรในฟิสิกส์วันนี้ (null ใน pass = ไม่ตัดสิน)' });
   labelEstimates(card);
+  // D4 (19 Nov 2026): scope by category (gear → gear, piston → engine, propeller → propeller, interference.slipstream → propeller)
+  normaliseScopes(card);
   return card;
 }
 

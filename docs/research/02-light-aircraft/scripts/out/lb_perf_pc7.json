@@ -438,5 +438,137 @@
   "v_liftoff_kcas": 95.0,
   "v_50ft_kcas": 103.1,
   "note": "SL ISA, JSBSim default friction, zero wind, full throttle against brakes then release; pilot model: elevator neutral to VR, pitch to theta_rot, after lift-off speed hold at v50"
+ },
+ "preq": {
+  "h_ft": 8000,
+  "rows": [
+   {
+    "kcas": 110,
+    "ktas": 124.0,
+    "hp": 272.0,
+    "thr": 0.839,
+    "h": 8000.0,
+    "hdot": 13.0,
+    "alpha": 4.91
+   },
+   {
+    "kcas": 120,
+    "ktas": 135.2,
+    "hp": 268.3,
+    "thr": 0.802,
+    "h": 8002.0,
+    "hdot": 51.0,
+    "alpha": 3.37
+   },
+   {
+    "kcas": 130,
+    "ktas": 146.4,
+    "hp": 272.5,
+    "thr": 0.79,
+    "h": 8003.0,
+    "hdot": 80.0,
+    "alpha": 2.18
+   },
+   {
+    "kcas": 140,
+    "ktas": 157.2,
+    "hp": 293.7,
+    "thr": 0.84,
+    "h": 8002.0,
+    "hdot": -92.0,
+    "alpha": 1.28
+   },
+   {
+    "kcas": 150,
+    "ktas": 169.2,
+    "hp": 337.5,
+    "thr": 0.883,
+    "h": 7995.0,
+    "hdot": -55.0,
+    "alpha": 0.6
+   },
+   {
+    "kcas": 160,
+    "ktas": 179.5,
+    "hp": 296.9,
+    "thr": 0.832,
+    "h": 8031.0,
+    "hdot": -379.0,
+    "alpha": -0.07
+   },
+   {
+    "kcas": 170,
+    "ktas": 190.9,
+    "hp": 447.9,
+    "thr": 1.0,
+    "h": 7893.0,
+    "hdot": 153.0,
+    "alpha": -0.63
+   },
+   {
+    "kcas": 180,
+    "ktas": 200.9,
+    "hp": 457.2,
+    "thr": 1.0,
+    "h": 7510.0,
+    "hdot": -150.0,
+    "alpha": -1.09
+   },
+   {
+    "kcas": 190,
+    "ktas": 210.2,
+    "hp": 469.5,
+    "thr": 1.0,
+    "h": 6931.0,
+    "hdot": -463.0,
+    "alpha": -1.47
+   },
+   {
+    "kcas": 200,
+    "ktas": 219.1,
+    "hp": 483.2,
+    "thr": 1.0,
+    "h": 6286.0,
+    "hdot": -806.0,
+    "alpha": -1.8
+   },
+   {
+    "kcas": 210,
+    "ktas": 227.6,
+    "hp": 494.3,
+    "thr": 1.0,
+    "h": 5573.0,
+    "hdot": -1196.0,
+    "alpha": -2.08
+   },
+   {
+    "kcas": 220,
+    "ktas": 235.6,
+    "hp": 506.9,
+    "thr": 1.0,
+    "h": 4758.0,
+    "hdot": -1623.0,
+    "alpha": -2.33
+   },
+   {
+    "kcas": 230,
+    "ktas": 243.1,
+    "hp": 521.8,
+    "thr": 1.0,
+    "h": 3860.0,
+    "hdot": -2102.0,
+    "alpha": -2.54
+   },
+   {
+    "kcas": 240,
+    "ktas": 250.2,
+    "hp": 539.2,
+    "thr": 1.0,
+    "h": 2892.0,
+    "hdot": -2604.0,
+    "alpha": -2.73
+   }
+  ],
+  "note": "speed held on pitch, altitude on throttle; thr 1.0 with h below 8000 means the speed cannot be held level"
  }
 }

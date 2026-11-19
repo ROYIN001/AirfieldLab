@@ -2,7 +2,8 @@
 // lg_pipeline.mjs — rebuild every p2006t output in order (12-p2006t.md, code LG). Run from the repo root:
 //   node <this folder>/lg_pipeline.mjs
 // Steps: lg_calc → lg_json (no derivs/legacy) → lg_iter (tail fit) → lg_json → lm_derivs → lg_json → lm_legacy_fit (fresh) → lg_json
-//        → lm_card --json → lg_iter --modes → lg_json → lm_card --json (final) → lg_json → lm_merge --type p2006t --coverage --dry → lg_tests
+//        → lg_card --json → lg_iter --modes → lg_json → lg_card --json (training mass, 1,180 kg, 1,230 kg) → lg_tune → lg_json → lg_tests
+//        → lg_json → lm_merge --type p2006t --coverage --dry → lg_json (the travel patch step was removed 19 Nov 2026, D2)
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -31,8 +32,8 @@ node(['lg_json.mjs']);
 node(['lg_card.mjs', '--json'], 'lg_card.json');
 node(['lg_card.mjs', '--json', '--mass', '1180'], 'lg_card_1180.json');
 node(['lg_card.mjs', '--json', '--mass', '1230'], 'lg_card_1230.json');
-node(['lm_card.mjs', 'p2006t', '--json', '--mass', '1180', '--quick'], 'lg_card_unpatched_quick.json');
 node(['lg_tune.mjs']);
+node(['lg_json.mjs']);   // validation.stick_force_targets needs lg_card_1180.json; lg_tests reads it from the card (T-LG-25)
 node(['lg_tests.mjs']);
 node(['lg_json.mjs']);
 console.log(node(['lm_merge.mjs', '--type', 'p2006t', '--coverage', '--dry']).split('\n').slice(-12).join('\n'));

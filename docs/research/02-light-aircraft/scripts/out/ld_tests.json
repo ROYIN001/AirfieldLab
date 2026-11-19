@@ -1,7 +1,8 @@
 {
  "date": "2026-11-19",
- "nPass": 30,
- "nFail": 7,
+ "nPass": 31,
+ "nFail": 10,
+ "nNA": 3,
  "hot": {
   "factorTurbo": 1.093598898679556,
   "factorNA": 1.150673106488445,
@@ -87,7 +88,10 @@
    "unit": "",
    "src": "[LD2 p.1-5] ให้ 10.223",
    "cur": 10.213,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-02",
@@ -98,7 +102,10 @@
    "unit": "%MAC",
    "src": "[LD1 p.29][LD2 p.2-18]; ld_geom.mjs",
    "cur": "CG อ้างอิงของบัตร 20.6 %MAC อยู่ในช่วง",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-03",
@@ -109,40 +116,52 @@
    "unit": "KIAS",
    "src": "[LD3] ตารางให้ 58 KIAS",
    "cur": 58,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-04",
    "cond": "1,310 kg, S 13.244 m², VS 66/62/60 KIAS → 64.6/60.7/58.0 KCAS (ld_iascas) ถือเป็นความเร็วต่ำสุด (n_z 0.95)",
-   "qty": "CLmax 1 g UP / TO / LDG",
+   "qty": "CLmax 1 g UP / T/O / LDG",
    "exp": "1.362 / 1.543 / 1.69",
    "tol": 0.03,
    "unit": "",
    "src": "lm_polar.clmaxFromStall [LM2]; [LD3][LD4]",
    "cur": "1.363 / 1.589 / 1.691",
-   "pass": false
+   "pass": false,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-05",
    "cond": "ซิม: da40ng 1,310 kg, CG อ้างอิง, 3,000 ft ISA, idle, แฟลป UP, ลด 1 kt/s",
    "qty": "Vmin (KEAS ≈ KCAS)",
    "exp": 64.6,
-   "tol": 3,
+   "tol": 5,
    "unit": "KCAS",
-   "src": "[LD3] แปลงด้วย ld_iascas; ±3 kt ตาม Part 60 [R1:V2]",
+   "src": "[LD3] แปลงด้วย ld_iascas; ±3 kt ตาม Part 60 [R1:V2] + ±2 kt ความไม่แน่นอนของ IAS–CAS และ CLmax แฟลป UP (gap 12, §05.3)",
    "cur": 63.4,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-06",
-   "cond": "ซิม: da40ng 1,310 kg, CG อ้างอิง, 3,000 ft ISA, idle, แฟลป TO, ลด 1 kt/s",
+   "cond": "ซิม: da40ng 1,310 kg, CG อ้างอิง, 3,000 ft ISA, idle, แฟลป T/O, ลด 1 kt/s",
    "qty": "Vmin (KEAS ≈ KCAS)",
    "exp": 60.7,
    "tol": 3,
    "unit": "KCAS",
    "src": "[LD3] แปลงด้วย ld_iascas; ±3 kt ตาม Part 60 [R1:V2]",
    "cur": 58.8,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-07",
@@ -153,7 +172,10 @@
    "unit": "KCAS",
    "src": "[LD3] แปลงด้วย ld_iascas; Diamond ระบุ 58 KCAS [LD4]; ±3 kt ตาม Part 60 [R1:V2]",
    "cur": 57.2,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-08",
@@ -164,7 +186,10 @@
    "unit": "fpm",
    "src": "[LD4] 3.3 m/s; Part 60 [R1:V2]",
    "cur": 666,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-09",
@@ -175,7 +200,10 @@
    "unit": "KCAS",
    "src": "Vy 72 KIAS แฟลป T/O [LD3] (ซิมไต่แฟลป UP — ต่างโครงแบบ)",
    "cur": 79.6,
-   "pass": false
+   "pass": false,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-10",
@@ -186,7 +214,10 @@
    "unit": "KCAS / -",
    "src": "[LD2 p.3-4][LD3]",
    "cur": "87.3 / 9.7",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-11",
@@ -197,7 +228,10 @@
    "unit": "m",
    "src": "[LD4]; Part 60 [R1:V2]; หมายเหตุ: T0 ของซิมถูกปรับให้ตรงข้อนี้ (§05.9)",
    "cur": 397,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-12",
@@ -208,18 +242,24 @@
    "unit": "m",
    "src": "[LD4]",
    "cur": 616,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-13",
-   "cond": "ซิม: autoland da40ng 1,310 kg (MLW จริง 1,280), ลมสงบ, 15 °C, แฟลป LDG, VREF 76 KCAS, เบรกเต็ม",
+   "cond": "ซิม: autoland da40ng 1,310 kg (MLW จริง 1,280), ลมสงบ, 15 °C, แฟลป LDG, VREF 77 KIAS = 76 KCAS (speeds.approach_table แถว 1,280 kg, ld_tools card), เบรกเต็ม",
    "qty": "ระยะจาก 50 ft ถึงหยุด",
    "exp": 650,
    "tol": "±10 % หรือ ±61 m (ค่าเล็ก = ±61 m)",
    "unit": "m",
    "src": "[LD4]; Part 60 1.e [R1:V2]",
    "cur": 642,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-14",
@@ -230,7 +270,10 @@
    "unit": "m",
    "src": "[LD4]",
    "cur": 311,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-15",
@@ -241,7 +284,10 @@
    "unit": "m",
    "src": "σ 0.935; สเกลจาก [LD4]; ค่าประมาณ ไม่มีตาราง AFM บท 5",
    "cur": 428,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-16",
@@ -252,7 +298,10 @@
    "unit": "",
    "src": "MIL-F-8785C Class I [R1:V7, R1:V10]",
    "cur": "0.572 / 0.555",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-17",
@@ -263,7 +312,10 @@
    "unit": "1/s²",
    "src": "MIL-F-8785C §3.2.2.1.1 [R1:V7][R1:V9]; ฉบับแรกใช้ 0.15 / 0.28 (0.28 เป็นของ Cat A)",
    "cur": "2.06 / 2.03",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-18",
@@ -274,7 +326,10 @@
    "unit": "- / s",
    "src": "MIL-F-8785C [R1:V10]",
    "cur": "0.116 / 30.3",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-19",
@@ -285,7 +340,10 @@
    "unit": "- / rad/s",
    "src": "MIL-F-8785C Table 3 Class I Cat C [R1:V10]",
    "cur": "0.206 / 0.308 / 1.5",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-20",
@@ -296,7 +354,10 @@
    "unit": "s",
    "src": "MIL-F-8785C Table 5 [R1:V10]",
    "cur": "0.252 / 0.181",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-21",
@@ -307,7 +368,10 @@
    "unit": "s",
    "src": "MIL-F-8785C Table 6 [R1:V10]",
    "cur": "61.1 / 32",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-22",
@@ -318,7 +382,10 @@
    "unit": "KCAS",
    "src": "[LD8][LD6 p.5-8]; ld_iascas.mjs (ตรวจอิสระ)",
    "cur": 55.9,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-23",
@@ -329,7 +396,10 @@
    "unit": "-",
    "src": "14 CFR 23.53 ก่อน Amdt 64 [LD12]; [LD3]",
    "cur": "AFM 1.182; ซิม 1.183",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-24",
@@ -340,7 +410,10 @@
    "unit": "fps",
    "src": "14 CFR 23.473(d) ก่อน Amdt 64 [LD12]",
    "cur": "ค่าในบัตร 9.33",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-25",
@@ -351,7 +424,10 @@
    "unit": "kN",
    "src": "ทฤษฎีโมเมนตัม; lm_prop [LM0]",
    "cur": "BEM 3.45 kN (FM 0.623); T0 ซิม 4.05 kN (FM เทียบเท่า 0.79)",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-26",
@@ -362,18 +438,24 @@
    "unit": "-",
    "src": "[LD4]",
    "cur": 0.801,
-   "pass": false
+   "pass": false,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-27",
    "cond": "ซิม: da40_180 1,200 kg, 3,000 ft ISA, idle, ลด 1 kt/s",
    "qty": "Vmin UP / LDG",
    "exp": "56.7 / 55.7",
-   "tol": 3,
+   "tol": "±5 / ±3",
    "unit": "KCAS",
-   "src": "[LD6 p.5-8][LD4] แปลงด้วยตารางรุ่นเดิม",
+   "src": "[LD6 p.5-8][LD4] แปลงด้วยตารางรุ่นเดิม; UP ±5 kt = Part 60 ±3 kt + ±2 kt ความไม่แน่นอนของ IAS–CAS (ตาราง IAS–CAS ของ AFM รุ่นเดิมอ่านไม่ได้, gap 12)",
    "cur": "55.9 / 55",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40_180"
+   ]
   },
   {
    "id": "T-LD-28",
@@ -384,7 +466,10 @@
    "unit": "fpm / -",
    "src": "[LD4][LD6 p.3-28]",
    "cur": "799 / 8.8",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40_180"
+   ]
   },
   {
    "id": "T-LD-29",
@@ -395,7 +480,10 @@
    "unit": "m",
    "src": "[LD4] (XLT)",
    "cur": "310 / 510",
-   "pass": false
+   "pass": false,
+   "ids": [
+    "da40_180"
+   ]
   },
   {
    "id": "T-LD-30",
@@ -406,18 +494,24 @@
    "unit": "KTAS",
    "src": "[LD4] max cruise MSL",
    "cur": 113.9,
-   "pass": false
+   "pass": false,
+   "ids": [
+    "da40_180"
+   ]
   },
   {
    "id": "T-LD-31",
    "cond": "ซิม: da40d 1,150 kg 3,000 ft idle / SL คันเร่งสุด",
    "qty": "Vmin UP / ROC สูงสุด",
    "exp": "55.9 / 550 (ค่าประมาณ)",
-   "tol": "±3 kt / ±100 fpm",
+   "tol": "±5 kt / ±100 fpm",
    "unit": "KCAS / fpm",
-   "src": "[LD8][LD14]",
+   "src": "[LD8][LD14]; Vmin ±5 kt = Part 60 ±3 kt + ±2 kt ความไม่แน่นอนของ IAS–CAS (gap 12)",
    "cur": "55.3 / 565",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40d"
+   ]
   },
   {
    "id": "T-LD-32",
@@ -428,7 +522,10 @@
    "unit": "m",
    "src": "[LD8]",
    "cur": 577,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40d"
+   ]
   },
   {
    "id": "T-LD-33",
@@ -439,7 +536,10 @@
    "unit": "m",
    "src": "[LD8] สเกลด้วย σ; ค่าประมาณ",
    "cur": 613,
-   "pass": false
+   "pass": false,
+   "ids": [
+    "da40d"
+   ]
   },
   {
    "id": "T-LD-34",
@@ -450,7 +550,10 @@
    "unit": "KTAS",
    "src": "[LD14] (ต่ำ)",
    "cur": 103,
-   "pass": false
+   "pass": false,
+   "ids": [
+    "da40d"
+   ]
   },
   {
    "id": "T-LD-35",
@@ -461,7 +564,10 @@
    "unit": "-",
    "src": "[LD13] โพสต์ 20: DA40 NG −12.5° 88 kt −1,300 fpm (ไม่ใช่จุด DA 40 TDI 73 kt ที่ใช้ปรับ CDflap)",
    "cur": "6.24 / 6.71",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-36",
@@ -472,7 +578,10 @@
    "unit": "deg",
    "src": "[LD13] โพสต์ 17/20: DA40 NG −2.5° 88 kt −900 to −950 fpm",
    "cur": -2.6,
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng"
+   ]
   },
   {
    "id": "T-LD-37",
@@ -483,7 +592,118 @@
    "unit": "-",
    "src": "[LD1 p.5, 7, 13–14, 27, 29]",
    "cur": "da40ng: D 1.9/1.9 m, elev 21/17 vs 21/17, rud 24/26 vs 24/26; da40_180: D 1.8/1.8 m, elev 18/16 vs 18/16, rud 29/31 vs 29/31; da40d: D 1.87/1.87 m, elev 23/15 vs 23/15, rud 29/31 vs 29/31",
-   "pass": true
+   "pass": true,
+   "ids": [
+    "da40ng",
+    "da40_180",
+    "da40d"
+   ]
+  },
+  {
+   "id": "T-LD-38",
+   "cond": "ซิม: da40ng 1,310 kg (MTOM), SL ISA, คันเร่งสุด, แฟลป UP, กวาด IAS ทีละ 0.25 kt จาก 1.03 VS1 (ld_vx.mjs)",
+   "qty": "Vx (ความเร็วที่มุมไต่สูงสุด)",
+   "exp": 76.9,
+   "tol": 4,
+   "unit": "KCAS",
+   "src": "ค่าประมาณ: k·VS1 = 1.19 × 64.6 KCAS (= 78 KIAS); k เฉลี่ยจาก POH C172S/C172R/C152 [LC1][LE2][LF1]; AFM ไม่ให้ Vx [LD17]; ความเร็วไต่แฟลป T/O ของ AFM 72 KIAS = 71.1 KCAS เทียบ k·VS(T/O) 72.2 KCAS; ±4 kt = ช่วง k (±1 kt) + ความไม่แน่นอนของ VS1 (gap 12)",
+   "cur": "69.5 (γmax 5.08°)",
+   "pass": false,
+   "ids": [
+    "da40ng"
+   ]
+  },
+  {
+   "id": "T-LD-39",
+   "cond": "ซิม: da40_180 1,200 kg (MTOM), SL ISA, คันเร่งสุด, แฟลป UP, กวาด IAS ทีละ 0.25 kt จาก 1.03 VS1 (ld_vx.mjs)",
+   "qty": "Vx (ความเร็วที่มุมไต่สูงสุด)",
+   "exp": 67.5,
+   "tol": 4,
+   "unit": "KCAS",
+   "src": "ค่าประมาณ: k·VS1 = 1.19 × 56.7 KCAS (= 67 KIAS); k เฉลี่ยจาก POH C172S/C172R/C152 [LC1][LE2][LF1]; AFM ไม่ให้ Vx [LD17]; ความเร็วไต่แฟลป T/O ของ AFM 67 KIAS = 68.3 KCAS เทียบ k·VS(T/O) 66.9 KCAS; ±4 kt = ช่วง k (±1 kt) + ความไม่แน่นอนของ VS1 (gap 12)",
+   "cur": "60 (γmax 6.95°)",
+   "pass": false,
+   "ids": [
+    "da40_180"
+   ]
+  },
+  {
+   "id": "T-LD-40",
+   "cond": "ซิม: da40d 1,150 kg (MTOM), SL ISA, คันเร่งสุด, แฟลป UP, กวาด IAS ทีละ 0.25 kt จาก 1.03 VS1 (ld_vx.mjs)",
+   "qty": "Vx (ความเร็วที่มุมไต่สูงสุด)",
+   "exp": 66.5,
+   "tol": 4,
+   "unit": "KCAS",
+   "src": "ค่าประมาณ: k·VS1 = 1.19 × 55.9 KCAS (= 66 KIAS); k เฉลี่ยจาก POH C172S/C172R/C152 [LC1][LE2][LF1]; AFM ไม่ให้ Vx [LD17]; ความเร็วไต่แฟลป T/O ของ AFM 66 KIAS = 67.4 KCAS เทียบ k·VS(T/O) 65.7 KCAS; ±4 kt = ช่วง k (±1 kt) + ความไม่แน่นอนของ VS1 (gap 12)",
+   "cur": "59.5 (γmax 5.06°)",
+   "pass": false,
+   "ids": [
+    "da40d"
+   ]
+  },
+  {
+   "id": "T-LD-41",
+   "cond": "stall ปีกระดับ idle ลด 1 kt/s แฟลป UP ที่ training_mass (NG 1,150 / 180 1,050 / D 1,060 kg) แล้วแก้ตามวิธีมาตรฐาน: ลดมุมปะทะ คันเร่งเต็ม ปีกระดับ ดึงกลับสู่การไต่",
+   "qty": "ความสูงที่เสียจากเริ่ม stall ถึงอัตราจมเป็นศูนย์ (da40ng / da40_180 / da40d)",
+   "exp": "240 / 180 / 190",
+   "tol": "±35 % (ช่วง c ของคลาส)",
+   "unit": "ft",
+   "src": "ค่าประมาณ Δh = c·VS1² (KCAS), c เฉลี่ย 0.0646 จาก C172S 230 ft [LC2], C152 160 ft [LF1], P2006T 180 ft [LG5] (ช่วง 0.0426–0.0819); AFM ที่อ่านได้ไม่ระบุ",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีลำดับแก้ stall อัตโนมัติและ evaluator ไม่วัดความสูงที่เสีย)",
+   "pass": null,
+   "ids": [
+    "da40ng",
+    "da40_180",
+    "da40d"
+   ]
+  },
+  {
+   "id": "T-LD-42",
+   "cond": "บัตรที่ merge แล้วของ 3 id: speeds.VREF_kt / VAPP_kt, speeds.approach_table (แถว LDG), airframe.weights.training_mass",
+   "qty": "VAPP = approach_table ที่ training_mass; VAPP ≥ VREF; empty + crew + fuel = kg",
+   "exp": "เป็นจริงทุก id",
+   "tol": "±0.5 kt / ±2 kg",
+   "unit": "kt IAS, kg",
+   "src": "D1, D3 (critic-r2); [LD3][LD6 p.4A-34][LD8]",
+   "cur": "da40ng: 1150 kg → ตาราง 74 KIAS, VREF 74 / VAPP 74; 903 + 170 + 77 = 1150 kg; da40_180: 1050 kg → ตาราง 65.2 KIAS, VREF 65 / VAPP 65; 792 + 170 + 88 = 1050 kg; da40d: 1060 kg → ตาราง 65.6 KIAS, VREF 66 / VAPP 66; 830 + 170 + 60 = 1060 kg",
+   "pass": true,
+   "ids": [
+    "da40ng",
+    "da40_180",
+    "da40d"
+   ]
+  },
+  {
+   "id": "T-LD-43",
+   "cond": "เครื่องที่ MTOM (NG 1,310 / 180 1,200 / D 1,150 kg), CG อ้างอิง, cruise trim (NG 110, รุ่นเดิม 100 KCAS) 3,000 ft, ดึงถึง limit load factor 3.8 g (normal category)",
+   "qty": "แรงดึงคันต่อ g (Fs/g) da40ng / da40_180 / da40d",
+   "exp": "≥ 33 / ≥ 30 / ≥ 29",
+   "tol": "ขั้นต่ำตามข้อกำหนด (ไม่มี tolerance)",
+   "unit": "N/g",
+   "src": "14 CFR 23.155(a)(2) ก่อน Amdt 64 [LD12]: แรงดึงถึง n limit ≥ max(W/140 lb, 15 lb) = 20.6 / 18.9 / 18.1 lbf; หาร (n − 1) = 2.8; ค่าประมาณจากโมเดล hinge รอบที่ 1 กับพารามิเตอร์บัตร (controls.pitch.*) = 21.1 / 19.2 / 18.6 N/g ต่ำกว่าเกณฑ์ (ค่า Chδ/gearing ของรอบที่ 1 ต่ำไปสำหรับ DA40)",
+   "cur": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีโมเดลแรงที่คัน: DIRECT สั่งมุม elevator ตรง)",
+   "pass": null,
+   "ids": [
+    "da40ng",
+    "da40_180",
+    "da40d"
+   ]
+  },
+  {
+   "id": "T-LD-44",
+   "cond": "เครื่องที่ training_mass, trim ด้วย tab ที่ VAPP แฟลป LDG 300 m และที่ cruise 3,000 ft แล้วเปลี่ยนความเร็ว ±1 kt (tab คงที่)",
+   "qty": "ความชันแรงคันต่อความเร็ว approach / cruise (ดึงเมื่อช้าลง = บวก)",
+   "exp": "0.401 / 0.266; 0.396 / 0.262; 0.394 / 0.264",
+   "tol": "±50 % (ค่าประมาณ) และต้อง > 0",
+   "unit": "N/kt",
+   "src": "ค่าประมาณจากโมเดล hinge รอบที่ 1 กับพารามิเตอร์บัตร (ld_stickforce.mjs); 14 CFR 23.173(a) ต้องดึงเมื่อช้ากว่าความเร็ว trim [LD12]; เครื่องฝึกรอบที่ 1 0.63 N/kt ที่ 95 kt [R1:V10]",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีโมเดลแรงที่คัน)",
+   "pass": null,
+   "ids": [
+    "da40ng",
+    "da40_180",
+    "da40d"
+   ]
   }
  ]
 }

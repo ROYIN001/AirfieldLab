@@ -350,28 +350,28 @@
   {
    "field": "deUp",
    "value": 0.383972,
-   "from": "controls.surfaces.elevator.travel_deg.up",
+   "from": "controls.surfaces.elevator.v.travel_deg.up",
    "rule": "deg → rad (de ลบ = ขอบท้ายขึ้น)",
    "flag": ""
   },
   {
    "field": "deDn",
    "value": 0.261799,
-   "from": "controls.surfaces.elevator.travel_deg.down",
+   "from": "controls.surfaces.elevator.v.travel_deg.down",
    "rule": "deg → rad",
    "flag": ""
   },
   {
    "field": "daMax",
    "value": 0.349066,
-   "from": "controls.surfaces.aileron.travel_deg",
+   "from": "controls.surfaces.aileron.v.travel_deg",
    "rule": "da = ค่าเฉลี่ยของสองข้าง ½(up + down) ให้ตรงนิยาม Clda ต่อ rad ของ da เฉลี่ย",
    "flag": ""
   },
   {
    "field": "drMax",
    "value": 0.436332,
-   "from": "controls.surfaces.rudder.travel_deg",
+   "from": "controls.surfaces.rudder.v.travel_deg",
    "rule": "ซิมจำกัดสมมาตร ±drMax จึงใช้ min(left, right)",
    "flag": ""
   },

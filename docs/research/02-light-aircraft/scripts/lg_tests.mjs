@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // lg_tests.mjs — T-LG test cases for the Tecnam P2006T card (12-p2006t.md §12.11): expected values from the AFM/TCDS or physics
-// (computed here), tolerance, origin, and the current-model result from lm_card numerics with the control-travel workaround
-// (lg_card.mjs). Writes scripts/out/lg_tests.json and scripts/out/lg_tests.md. Exit code 0 always (failures are findings).
+// (computed here), tolerance, origin, and the current-model result from lm_card numerics (lg_card.mjs; control travel from the
+// card since the D2 fix of 19 Nov 2026). Flap detents are named UP / T/O / FULL (D6). Writes scripts/out/lg_tests.json and
+// scripts/out/lg_tests.md. Exit code 0 always (failures are findings).
 // Run from the repo root: node <this folder>/lg_tests.mjs
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,20 +24,20 @@ export async function tests() {
     T.push({ id, cond, qty, expected: r(expected), tol: kind === 'rel' ? `±${Math.round(tol * 100)} %` : `±${tol}`, origin, current: cur == null ? 'ไม่รองรับในซิมวันนี้' : r(cur), current_note: curNote, pass });
   };
   // stall (POH stall speed = minimum speed of a 1 kt/s entry → compare Vmin KIAS)
-  add('T-LG-01', 'stall แฟลป 0 ล้อขึ้น idle 1 kt/s 1,180 kg 3,000 ft', 'Vmin KIAS', 66, 2, 'AFM p2-7 green arc (VS1) [LG2]', st['0'].Vmin_kias);
-  add('T-LG-02', 'stall แฟลป T/O (15°) ล้อลง idle 1 kt/s 1,180 kg 3,000 ft', 'Vmin KIAS', 56, 2, 'AFM p5-5 [LG4]', st['15'].Vmin_kias);
-  add('T-LG-03', 'stall แฟลป FULL (40°) ล้อลง idle 1 kt/s 1,180 kg 3,000 ft', 'Vmin KIAS', 53, 2, 'AFM p5-5 [LG4]', st['40'].Vmin_kias);
-  add('T-LG-04', 'stall แฟลป FULL ล้อลง idle 1 kt/s 1,230 kg 3,000 ft', 'Vmin KCAS', 55, 2, 'AFM p W5-5 (1,230 kg) [LG4]; โบรชัวร์ 55 KCAS [LG6]', B.res.stall['40'].Vmin_eas);
+  add('T-LG-01', 'stall แฟลป UP (0°) ล้อขึ้น idle 1 kt/s 1,180 kg 3,000 ft', 'Vmin KIAS', 66, 2, 'AFM p2-7 green arc (VS1) [LG2]', st['UP'].Vmin_kias);
+  add('T-LG-02', 'stall แฟลป T/O (15°) ล้อลง idle 1 kt/s 1,180 kg 3,000 ft', 'Vmin KIAS', 56, 2, 'AFM p5-5 [LG4]', st['T/O'].Vmin_kias);
+  add('T-LG-03', 'stall แฟลป FULL (40°) ล้อลง idle 1 kt/s 1,180 kg 3,000 ft', 'Vmin KIAS', 53, 2, 'AFM p5-5 [LG4]', st['FULL'].Vmin_kias);
+  add('T-LG-04', 'stall แฟลป FULL ล้อลง idle 1 kt/s 1,230 kg 3,000 ft', 'Vmin KCAS', 55, 2, 'AFM p W5-5 (1,230 kg) [LG4]; โบรชัวร์ 55 KCAS [LG6]', B.res.stall['FULL'].Vmin_eas);
   // physics checks of the stall table
   const bank = [0, 15, 30, 45, 60].map(p => 54 / Math.sqrt(Math.cos(p * Math.PI / 180)));
   add('T-LG-05', 'ตาราง stall แฟลป FULL 1,180 kg มุมเอียง 60°: V_S(φ) = V_S0/√cos φ (ฟิสิกส์ n = 1/cos φ)', 'KCAS', bank[4], 1.5, 'ฟิสิกส์; AFM ให้ 76 KCAS [LG4]', F.stall.FULL[4][1], 'abs', '= ค่า AFM (ตรวจตาราง AFM กับฟิสิกส์ ไม่ใช่ผลซิม)');
   const clT = clmaxFromStall({ mass: F.MTOW, S: F.S, vs_kcas: 54, kind: 'min' }).CLmax_1g;
-  add('T-LG-06', 'CLmax 1 g แฟลป FULL จาก 54 KCAS 1,180 kg nz 0.95 (lm_polar)', 'CLmax', clT, 0.01, 'ฟิสิกส์ + วิธีหัวข้อ 01 §01.5', st['40'].CLmax);
+  add('T-LG-06', 'CLmax 1 g แฟลป FULL จาก 54 KCAS 1,180 kg nz 0.95 (lm_polar)', 'CLmax', clT, 0.01, 'ฟิสิกส์ + วิธีหัวข้อ 01 §01.5', st['FULL'].CLmax);
   // climb, glide
   add('T-LG-07', 'climb SL ISA เต็มกำลังสองเครื่อง (2 × 73.5 kW) clean ล้อขึ้น 1,180 kg', 'Vy KCAS', 79, 3, 'AFM S4-7: VY 80 KIAS [LG3]', A.res.climb.Vy_kt);
   add('T-LG-08', 'เหมือน T-LG-07', 'ROC max fpm', C.climb.enroute_15C, 80, 'ตาราง en-route ROC (ประมาณที่ 15 °C) [LG4]; โบรชัวร์ 1,036 ที่ 1,230 kg', A.res.climb.ROCmax_fpm);
   add('T-LG-09', 'ร่อน idle ใบพัดหมุน 3,000 ft clean ล้อขึ้น 1,180 kg', 'L/D', C.polar.E_idle_at_Vbg, 0.6, 'ค่าประมาณจาก polar ทดสอบบิน + แรงต้านใบพัด [LG7][LG0]', A.res.glide.idle.LD);
-  add('T-LG-10', 'เหมือน T-LG-09', 'V best glide KCAS', 82, 3, 'AFM S3-56: best glide = VY 83 KIAS [LG3]', A.res.glide.idle.Vbg_kt);
+  add('T-LG-10', 'เหมือน T-LG-09', 'V best glide KCAS', 82, 3, 'AFM S3-56: best glide 83 KIAS (บท 3 เรียกว่า VY; บัตรใช้ VY 80 จาก S4-7) [LG3]', A.res.glide.idle.Vbg_kt);
   // trim physics: cruise α from CL (training mass 1,128 kg, 110 KCAS, 3,000 ft) using the card's legacy CL0/CLa and CLde·de
   const ac = Tm.ac, tc = Tm.res.trim.cruise, rho3 = 1.121, V3 = 110 * KT / Math.sqrt(rho3 / RHO0);
   const CLc = ac.m * G0 / (0.5 * rho3 * V3 * V3 * ac.S), aExp = (CLc - ac.CL0 - ac.CLde * tc.de_deg * Math.PI / 180) / ac.CLa * 180 / Math.PI;
@@ -58,6 +59,12 @@ export async function tests() {
   add('T-LG-22', 'วันร้อน VTBD 9 ft 35 °C คันเร่งเต็ม (ind_friction f 0.10)', 'P/P_rated', C.engine.lapse_VTBD_35C, 0.01, 'หัวข้อ 01 §01.6.1', null);
   add('T-LG-23', 'climb SL 35 °C เต็มกำลัง 1,180 kg', 'ROC fpm', C.climb.enroute_35C, 100, 'ตาราง en-route ต่อเส้นตรงจาก 0/25 °C [LG4] (ค่าประมาณ)', null);
   add('T-LG-24', 'OEI: เครื่องซ้ายดับ feather 1,180 kg SL ISA ที่ VYSE 80 KIAS', 'ROC fpm', F.fly.rocOEI, 60, 'Flying 2011 [LG9]; ทดสอบ winglet 300 fpm ที่ 800 ft [LG7]', null);
+  // added 19 Nov 2026 (completeness review gaps 18 and 20): stick force per g (requirement band) and stall height loss (AFM)
+  { const sb = val(card, 'validation.stick_force_targets'), lo = sb?.fs_per_g_lbf?.min, hi = sb?.fs_per_g_lbf?.max;
+    T.push({ id: 'T-LG-25', cond: `cruise 110 KCAS 3,000 ft MTOW 1,180 kg ดึงคันใน turn หรือ pull-up (n/α ${sb?.nAlpha_cruise_g_per_rad ?? '–'} g/rad)`, qty: 'แรงที่ wheel ต่อ g (lbf/g)',
+      expected: lo != null ? `${lo}–${hi} (${sb.fs_per_g_N.min}–${sb.fs_per_g_N.max} N/g)` : '–', tol: 'ช่วงปิด ส่วนเผื่อ 0',
+      origin: 'MIL-F-8785C Level 1 wheel [R1:C12] + 14 CFR 23.155 W/100 [LM3] (แถบเป้าหมายค่าประมาณ ไม่ใช่ค่าวัด)', current: 'ไม่รองรับในซิมวันนี้', current_note: '(ไม่มีแบบจำลองแรงที่คัน)', pass: null }); }
+  add('T-LG-26', 'stall แฟลป UP ปีกระดับ สองเครื่อง idle แล้วฟื้นตามวิธีมาตรฐาน (ลดมุมปะทะ เพิ่มกำลัง) 1,180 kg', 'ความสูงที่เสีย ft', F.stallAltLoss_ft, 30, 'AFM p5-5: สูงสุด 180 ft (55 m) [LG5]', null);
   return { tests: T, summary: { n: T.length, pass: T.filter(t => t.pass === true).length, fail: T.filter(t => t.pass === false).length, na: T.filter(t => t.pass == null).length },
     runs: { m1180: { stall: A.res.stall, climb: A.res.climb, glide: A.res.glide, takeoff: A.res.takeoff, landing: A.res.landing, trim: A.res.trim, modes: A.res.modes },
       m1230: { stall: B.res.stall, takeoff: B.res.takeoff, landing: B.res.landing, climb: B.res.climb }, training: { m: Tm.ac.m, trim: Tm.res.trim, modes: Tm.res.modes, takeoff: Tm.res.takeoff, landing: Tm.res.landing } } };

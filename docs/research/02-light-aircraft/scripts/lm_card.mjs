@@ -18,7 +18,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { HERE, loadType, val, leaf, isObj, isMainModule } from './lm_lib.mjs';
+import { HERE, loadType, val, leaf, isObj, isMainModule, trainingMass, iasCas } from './lm_lib.mjs';
 import { clmaxFromStall, toSimPolar } from './lm_polar.mjs';
 import { inertiaFromRadii, RADII } from './lm_inertia.mjs';
 
@@ -101,25 +101,9 @@ export function flapMap(dets, mode = 'lift') {
   return dets.map(x => ({ ...x, f: dets.length === 1 ? 0 : useLift ? x.dCL0 / full.dCL0 : (full.deg > 0 ? x.deg / full.deg : 0), mode: useLift ? 'lift' : 'deflection' }));
 }
 
-/** IAS -> CAS (kt) for a detent name, from speeds.ias_cas; identity when absent. Returns {f, inv, has}. */
-export function iasCas(card, detName) {
-  const t = val(card, 'speeds.ias_cas');
-  const lin = (xs, ys, x) => { let i = 0; while (i < xs.length - 2 && x > xs[i + 1]) i++; const t2 = (x - xs[i]) / (xs[i + 1] - xs[i]); return ys[i] + t2 * (ys[i + 1] - ys[i]); };
-  let pairs = null;
-  if (isObj(t) && t.axes && Array.isArray(t.data)) {
-    const fl = (t.axes.flap || t.axes.flaps || []).map(String), ki = t.axes.KIAS || t.axes.kias || t.axes.ias;
-    let j = fl.indexOf(String(detName)); if (j < 0) j = 0;
-    const row = Array.isArray(t.data[0]) ? t.data[j] : t.data;
-    pairs = ki.map((k, i) => [k, row[i]]);
-  } else if (isObj(t)) {
-    const keys = Object.keys(t); const k = keys.includes(String(detName)) ? String(detName) : keys[0];
-    if (Array.isArray(t[k])) pairs = t[k];
-  }
-  if (!pairs || pairs.length < 2) return { has: false, f: x => x, inv: x => x };
-  pairs = pairs.slice().sort((a, b) => a[0] - b[0]);
-  const xs = pairs.map(p => p[0]), ys = pairs.map(p => p[1]);
-  return { has: true, f: x => lin(xs, ys, x), inv: y => lin(ys, xs, y) };
-}
+/** IAS -> CAS (kt) for a detent name, from speeds.ias_cas; identity when absent. Returns {f, inv, has}.
+ *  Moved to lm_lib.mjs on 19 Nov 2026 (lm_lib.validate needs it); re-exported here so existing imports keep working. */
+export { iasCas };
 
 function speedCAS(card, p, detName) {
   const l = leaf(card, p); if (!l || typeof l.v !== 'number') return null;
@@ -159,11 +143,11 @@ export function buildAC(card, opts = {}) {
   const ac = {};
   const cfgOrder = [opts.config, 'approach', 'landing', 'cruise', 'clean'];
 
-  // mass and inertia
-  const tm = val(card, 'airframe.weights.training_mass'), mtow = val(card, 'airframe.weights.MTOW');
-  const tmv = typeof tm === 'number' ? tm : isObj(tm) ? (tm.kg ?? tm.mass_kg ?? tm.total) : undefined;
+  // mass and inertia (training_mass: number or the D3 object {kg, empty_kg, crew_kg, fuel_kg}, lm_lib.trainingMass)
+  const tm = trainingMass(card), mtow = val(card, 'airframe.weights.MTOW');
+  const tmv = tm?.kg;
   if (opts.mass) ac.m = T('m', +opts.mass, '--mass', 'ตัวเลือก CLI');
-  else if (typeof tmv === 'number') ac.m = T('m', tmv, 'airframe.weights.training_mass', 'ตรง');
+  else if (typeof tmv === 'number') ac.m = T('m', tmv, 'airframe.weights.training_mass' + (tm.form === 'object' ? '.kg' : ''), 'ตรง');
   else if (typeof mtow === 'number') ac.m = T('m', mtow, 'airframe.weights.MTOW', 'ไม่มี training_mass ใช้ MTOW', 'default');
   else ac.m = T('m', AC_R1.m, 'AC_R1', 'ไม่มีข้อมูลมวล', 'R1');
 
@@ -241,15 +225,16 @@ export function buildAC(card, opts = {}) {
       T('K', ac.K = sp.K, 'aero.derivatives.CD0 + K', 'Ks = 1/(2E(CL* − 0.15))', 'converted'); }
   }
 
-  // control travel (needed before the stall-centre solve)
-  const trv = s => val(card, `controls.surfaces.${s}.travel_deg`);
-  const el = trv('elevator'), ai = trv('aileron'), ru = trv('rudder');
-  ac.deUp = T('deUp', isObj(el) && el.up != null ? el.up * DEG : AC_R1.deUp, 'controls.surfaces.elevator.travel_deg.up', 'deg → rad (de ลบ = ขอบท้ายขึ้น)', isObj(el) ? '' : 'R1');
-  ac.deDn = T('deDn', isObj(el) && el.down != null ? el.down * DEG : AC_R1.deDn, 'controls.surfaces.elevator.travel_deg.down', 'deg → rad', isObj(el) ? '' : 'R1');
-  ac.daMax = T('daMax', isObj(ai) && ai.up != null && ai.down != null ? 0.5 * (ai.up + ai.down) * DEG : isObj(ai) && (ai.up ?? ai.down) != null ? (ai.up ?? ai.down) * DEG : AC_R1.daMax,
-    'controls.surfaces.aileron.travel_deg', 'da = ค่าเฉลี่ยของสองข้าง ½(up + down) ให้ตรงนิยาม Clda ต่อ rad ของ da เฉลี่ย', isObj(ai) ? '' : 'R1');
-  ac.drMax = T('drMax', isObj(ru) && (ru.left ?? ru.right) != null ? Math.min(ru.left ?? ru.right, ru.right ?? ru.left) * DEG : AC_R1.drMax,
-    'controls.surfaces.rudder.travel_deg', 'ซิมจำกัดสมมาตร ±drMax จึงใช้ min(left, right)', isObj(ru) ? '' : 'R1');
+  // control travel (needed before the stall-centre solve). Review 19 Nov 2026 (gap 2, decision D2): the cards keep the leaf at
+  // controls.surfaces.<s> with the angles in v.travel_deg (schema-ext-r2 §5); the old leaf path controls.surfaces.<s>.travel_deg
+  // is still read as a fallback. Before this fix only the old path was read, so every card silently flew with the R1 travel.
+  const el = travelOf(card, 'elevator'), ai = travelOf(card, 'aileron'), ru = travelOf(card, 'rudder');
+  ac.deUp = T('deUp', el?.up != null ? el.up * DEG : AC_R1.deUp, el ? el.from + '.up' : 'AC_R1', 'deg → rad (de ลบ = ขอบท้ายขึ้น)', el?.up != null ? '' : 'R1');
+  ac.deDn = T('deDn', el?.down != null ? el.down * DEG : AC_R1.deDn, el ? el.from + '.down' : 'AC_R1', 'deg → rad', el?.down != null ? '' : 'R1');
+  ac.daMax = T('daMax', ai && ai.up != null && ai.down != null ? 0.5 * (ai.up + ai.down) * DEG : ai && (ai.up ?? ai.down) != null ? (ai.up ?? ai.down) * DEG : AC_R1.daMax,
+    ai ? ai.from : 'AC_R1', 'da = ค่าเฉลี่ยของสองข้าง ½(up + down) ให้ตรงนิยาม Clda ต่อ rad ของ da เฉลี่ย', ai && (ai.up ?? ai.down) != null ? '' : 'R1');
+  ac.drMax = T('drMax', ru && (ru.left ?? ru.right) != null ? Math.min(ru.left ?? ru.right, ru.right ?? ru.left) * DEG : AC_R1.drMax,
+    ru ? ru.from : 'AC_R1', 'ซิมจำกัดสมมาตร ±drMax จึงใช้ min(left, right)', ru && (ru.left ?? ru.right) != null ? '' : 'R1');
 
   // stall: blend centre from CLmax targets when aero.legacy lacks it
   const clmaxT = det => {
@@ -308,6 +293,24 @@ export function buildAC(card, opts = {}) {
 
   const out = {}; for (const k of AC_FIELDS) out[k] = ac[k];
   return out;
+}
+
+/**
+ * Control-surface travel in degrees: {up, down} (elevator, aileron, flap) or {left, right} (rudder), plus `from` (the path read).
+ * D2 (19 Nov 2026): leaf controls.surfaces.<s> with v.travel_deg first; the old leaf path controls.surfaces.<s>.travel_deg as a
+ * fallback. A plain number means a symmetric travel (±n). Returns null when the card has neither.
+ */
+export function travelOf(card, s) {
+  const sym = (n, from) => ({ up: n, down: n, left: n, right: n, from });
+  const v = val(card, `controls.surfaces.${s}`);
+  if (isObj(v) && v.travel_deg != null) {
+    if (typeof v.travel_deg === 'number') return sym(v.travel_deg, `controls.surfaces.${s}.v.travel_deg`);
+    if (isObj(v.travel_deg)) return { ...v.travel_deg, from: `controls.surfaces.${s}.v.travel_deg` };
+  }
+  const o = val(card, `controls.surfaces.${s}.travel_deg`);
+  if (typeof o === 'number') return sym(o, `controls.surfaces.${s}.travel_deg (path เดิม)`);
+  if (isObj(o)) return { ...o, from: `controls.surfaces.${s}.travel_deg (path เดิม)` };
+  return null;
 }
 
 function guessClass(card) {

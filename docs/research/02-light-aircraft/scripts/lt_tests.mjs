@@ -1,20 +1,20 @@
 #!/usr/bin/env node
-// lt_tests.mjs — DA42 test cases T-LT-01…29 (06-da42.md §06.11): expected values from the sources (or from a stated
+// lt_tests.mjs — DA42 test cases T-LT-01…33 (06-da42.md §06.11): expected values from the sources (or from a stated
 // calculation, ค่าประมาณ), tolerance, and the result of the CURRENT simulator with the card (lm_card) or, for OEI, the
 // current simulator plus the test-only wrapper of lt_oei.mjs.  Run from the repo root after lt_run.mjs card and lt_oei.mjs:
 //   node scripts/lt_tests.mjs     -> scripts/out/lt_tests.json, scripts/out/lt_tests.md (table pasted into the report)
 //   (T-LT-29 needs scripts/out/lt_review.json from lt_review.mjs, added by the reviewer)
 import fs from 'node:fs';
 import { loadType } from './lm_lib.mjs';
-import { loadSim, buildAC, applyAC, AC_R1, trim, iasCas } from './lm_card.mjs';
+import { loadSim, buildAC, applyAC, trim, iasCas } from './lm_card.mjs';
 const D2R = Math.PI / 180, KT = 0.514444, FT = 0.3048, G0 = 9.80665;
 const rd = f => JSON.parse(fs.readFileSync(new URL('./out/' + f, import.meta.url), 'utf8'));
 const r = (x, n = 4) => (x == null || !isFinite(x) ? null : +(+x).toPrecision(n));
 const card = { ng: rd('lt_card_da42ng.json').res, tdi: rd('lt_card_da42_tae125.json').res, vi: rd('lt_card_da42_vi.json').res };
 const oei = rd('lt_oei.json');
 const M = await loadSim();
-Object.assign(AC_R1, { deUp: 15.5 * D2R, deDn: 13 * D2R, daMax: 20 * D2R, drMax: 27 * D2R });   // lm_card travel-path workaround
-const ngCard = structuredClone(loadType('da42ng')); ngCard.aero.legacy.v.Cma = -1.10;
+// control travel comes from the card (lm_card D2 fix); aero.legacy.Cma is the card value (−0.535, flight test [LT15])
+const ngCard = structuredClone(loadType('da42ng'));
 
 // extra sim runs: hot-day take-off (ISA+20 = 35 °C at VTBD, elevation 9 ft ≈ SL) and cruise speed at 92 % power
 function takeoffISA(isaDev, { f = 0, VR = 76, theta = 9 } = {}) {   // same procedure as lm_card.takeoffTest, plus isaDev
@@ -90,9 +90,42 @@ add('T-LT-27', 'ตาราง ias_cas ของบัตร NG แฟลป UP
 // from lt_review.mjs, which recomputes the static VMCA from the card values with its own solver
 { let rv = null; try { rv = rd('lt_review.json'); } catch { rv = null; }
   if (rv) { const v = rv.vmca.aft_cg_1510; add('T-LT-29', 'VMCA: มวลต่ำสุดในการบิน 1,510 kg CG หลังสุด 2.480 m DAT, เครื่องซ้ายดับ windmill, ขวา MAX, เอียง 5°, rudder ขวา 29°, แฟลป UP ล้อขึ้น', 'V_MCA (KCAS / KIAS ผ่านตาราง ias_cas)', 75, 5, 'LT1 (75 KEAS), LT2 (76 KIAS), LT17 p.12-28 (มวลเบาและ CG หลังทำให้ VMC สูงขึ้น)', `static ${p(v.kcas)} KCAS = ${p(v.kias)} KIAS (ที่ 1,900 kg CG อ้างอิง ${p(rv.vmca.ref_cg_1900.kcas)} KCAS)`, within(v.kcas, 75, 5), 'คำนวณซ้ำโดยผู้ตรวจจากค่าในบัตร (lt_review.mjs); ซิมปัจจุบันไม่มี OEI'); } }
-const pass = T.filter(t => t.pass).length;
+// ── added 19 Nov 2026 (completeness review gaps 18, 20, 22) ──
+// T-LT-30: short-period frequency at the approach trim of lm_card (84 KIAS, 300 m ISA, flap LDG, gear down, 1,900 kg) with the
+// card's Cmα −0.535 (flight-test midpoint [LT15]). Expected value: classical 2-DOF short-period approximation from the same
+// AC values (Nelson ch.4): Zα' = −q̄S(CLα + CD)/(mV), Mα = q̄ScCmα/Iyy, Mq = q̄Sc²Cmq/(2V·Iyy), Mα̇ = q̄Sc²Cmα̇/(2V·Iyy),
+// ωn² = Zα'·Mq − Mα, ζ = −(Zα' + Mq + Mα̇)/(2ωn). Current model: the linearised mode of the sim (lm_card modes.approach.sp).
+let spA = null;
+{ const ac = buildAC(ngCard, { mass: 1900 }), rs = applyAC(M, ac), A = M.AC, ap = rd('lt_card_da42ng.json').res.trim.approach;
+  const h = ap.h_m ?? 300, rho = 1.225 * (1 - 2.25577e-5 * h) ** 4.25588, V = ap.V_kt * KT, q = 0.5 * rho * V * V, S = A.S, c = A.c, m = A.m;
+  const CL = m * G0 / (q * S), CD = A.CD0 + A.CDflap + A.CDgear + A.K * CL * CL;
+  const Za = -q * S * (A.CLa + CD) / (m * V), Ma = q * S * c * A.Cma / A.Iyy, Mq = q * S * c * c * A.Cmq / (2 * V * A.Iyy), Mad = q * S * c * c * A.Cmadot / (2 * V * A.Iyy);
+  const wn = Math.sqrt(Za * Mq - Ma), zeta = -(Za + Mq + Mad) / (2 * wn);
+  spA = { wn: r(wn, 4), zeta: r(zeta, 3), Cma: A.Cma, Cmq: r(A.Cmq, 4), Cmadot: r(A.Cmadot, 4), Iyy: r(A.Iyy, 4), V_tas_kt: r(ap.V_kt, 4), rho: r(rho, 4) };
+  rs(); }
+{ const sp = card.ng.modes.approach.sp;
+  add('T-LT-30', 'NG 1,900 kg, approach 84 KIAS ที่ 300 m ISA แฟลป LDG ล้อลง เส้นร่อน 3° (trim ของ lm_card), Cmα ของบัตร −0.535 [LT15]', 'ความถี่ธรรมชาติ short period ωn (rad/s)',
+    spA.wn, r(0.10 * spA.wn, 2), `ประมาณ 2-DOF จากค่าในบัตร (Nelson; Cmq ${spA.Cmq}, Cmα̇ ${spA.Cmadot}, Iyy ${spA.Iyy} kg m², ζ ${spA.zeta}) ค่าประมาณ`,
+    `${p(sp.wn, 3)} (ζ ${p(sp.zeta, 3)})`, within(sp.wn, spA.wn, 0.10 * spA.wn), 'ตรวจว่าโหมดของซิมตรงกับ Cmα บินทดสอบที่ใส่ในบัตร; DA42 ไม่มีโหมดที่วัดและเผยแพร่ (validation.reference_modes)'); }
+// T-LT-31: stick force per g (requirement band of validation.stick_force_targets); the sim has no stick-force model
+{ let sb = null; try { sb = loadType('da42ng').validation?.stick_force_targets?.v; } catch { sb = null; }
+  const lo = sb?.fs_per_g_lbf?.min ?? 10.7, hi = sb?.fs_per_g_lbf?.max ?? 20;
+  add('T-LT-31', `NG 1,900 kg cruise 135 KIAS 6,000 ft ดึงคันใน turn หรือ pull-up (n/α ${sb?.nAlpha_cruise_g_per_rad ?? '14.2'} g/rad)`, 'แรงที่ stick ต่อ g (lbf/g)', `${lo}–${hi} (${sb?.fs_per_g_N?.min ?? 48}–${sb?.fs_per_g_N?.max ?? 89} N/g)`, 0,
+    'MIL-F-8785C Level 1 centre stick [R1:C12] + 14 CFR 23.155 W/140 [LM3] (แถบเป้าหมายค่าประมาณ ไม่ใช่ค่าวัด)', 'ไม่รองรับในซิมวันนี้ (ไม่มีแบบจำลองแรงที่คัน)', null, 'ส่วนเผื่อ 0: ผ่านเมื่ออยู่ในช่วงปิด'); }
+// T-LT-32: OEI service ceiling of the DA42-VI — the sim has no OEI and no density term in thrust; the analytic model of
+// lt_oei_ceiling.mjs (k_η calibrated to 210 fpm of the NG) gives the value at the mass where the brochure figure is consistent
+{ let c = null; try { c = rd('lt_oei_ceiling.json'); } catch { c = null; }
+  const row = m => c?.vi_ceiling_by_mass_isa?.find(x => x.mass_kg === m);
+  add('T-LT-32', 'DA42-VI เครื่องซ้ายดับ feather ขวา MCP 114 kW แฟลป UP ล้อขึ้น ISA มวล 1,900 kg (มวลที่ 16,000 ft สอดคล้องกับ 210 fpm ของ NG, §06.4.1)', 'เพดาน OEI ที่ ROC 50 fpm (ft)', 16000, 1500, 'LT6 p.19 (มวลไม่ระบุ) + LT10 (210 fpm)',
+    `ไม่รองรับในซิมวันนี้ (แบบจำลองวิเคราะห์ lt_oei_ceiling: ${row(1900)?.['isa+0_ft'] ?? '—'} ft ที่ 1,900 kg, ${row(1999)?.['isa+0_ft'] ?? '—'} ft ที่ 1,999 kg)`, null, 'ต้องมีเครื่องยนต์หลายตัวและแรงขับตามความหนาแน่น (§06.14 P1, P2)'); }
+// T-LT-33: height lost in a stall and recovery (class value of speeds.stall_altitude_loss_ft); lm_card has no recovery pilot
+{ let l = null; try { l = loadType('da42ng').speeds?.stall_altitude_loss_ft; } catch { l = null; }
+  add('T-LT-33', 'NG มวลฝึก 1,752 kg แฟลป UP ปีกระดับ สองเครื่อง idle, ฟื้นจาก stall ตามวิธีมาตรฐาน (ลดมุมปะทะ เพิ่มกำลัง)', 'ความสูงที่เสีย (ft)', l?.v ?? 280, 100,
+    'ค่าคลาส ค่าประมาณ (C172S/C152/P2006T ÷ VS1², §06.6.5) ช่วงสัมประสิทธิ์ 180–350 ft', 'ไม่รองรับในซิมวันนี้ (ไม่มีนักบินอัตโนมัติสำหรับการฟื้นจาก stall)', null); }
+
+const sup = T.filter(t => t.pass !== null), pass = sup.filter(t => t.pass).length, unsupported = T.length - sup.length;
 const md = ['| รหัส | เงื่อนไข | ปริมาณที่วัด | ผลคาดหวัง ± tolerance | ที่มา | โมเดลปัจจุบัน |', '|---|---|---|---|---|---|',
-  ...T.map(t => `| ${t.id} | ${t.cond} | ${t.qty} | ${t.tol ? `${t.exp} ± ${t.tol}` : t.exp} | ${t.src} | ${t.cur} ${t.pass ? '(ผ่าน)' : '(ไม่ผ่าน)'}${t.note ? ' — ' + t.note : ''} |`)].join('\n');
-fs.writeFileSync(new URL('./out/lt_tests.json', import.meta.url), JSON.stringify({ n: T.length, pass, tests: T, extra: { toISA, toHot, cruise } }, null, 1));
+  ...T.map(t => `| ${t.id} | ${t.cond} | ${t.qty} | ${t.tol ? `${t.exp} ± ${t.tol}` : t.exp} | ${t.src} | ${t.cur}${t.pass === null ? '' : t.pass ? ' (ผ่าน)' : ' (ไม่ผ่าน)'}${t.note ? ' — ' + t.note : ''} |`)].join('\n');
+fs.writeFileSync(new URL('./out/lt_tests.json', import.meta.url), JSON.stringify({ n: T.length, pass, supported: sup.length, unsupported, tests: T, extra: { toISA, toHot, cruise, spA } }, null, 1));
 fs.writeFileSync(new URL('./out/lt_tests.md', import.meta.url), md + '\n');
-console.log(md); console.log(`\n${pass}/${T.length} pass`);
+console.log(md); console.log(`\n${pass}/${sup.length} pass (${unsupported} ไม่รองรับในซิมวันนี้, รวม ${T.length})`);

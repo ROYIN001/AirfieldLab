@@ -17,10 +17,10 @@
    "CDflap": 0.045,
    "CDgear": 0.012,
    "Cm0": -0.02,
-   "Cma": -1.1,
+   "Cma": -0.535,
    "Cmflap": -0.06,
-   "aStall": 16.92,
-   "aStallFlap": -1.76
+   "aStall": 16.56,
+   "aStallFlap": -1.7
   }
  },
  "notes": [
@@ -42,40 +42,40 @@
   "VS0_target": 57,
   "stall_clean": {
    "VSR_eas": 65.6,
-   "Vmin_eas": 62.4
+   "Vmin_eas": 62.3
   },
   "stall_full": {
-   "VSR_eas": 58.5,
-   "Vmin_eas": 55.9
+   "VSR_eas": 58.4,
+   "Vmin_eas": 55.7
   },
   "climb": {
    "Vy_kt": 79.8,
-   "ROCmax_fpm": 1069
+   "ROCmax_fpm": 1070
   },
   "glide": {
    "Vbg_kt": 81.9,
    "LD": 13
   },
   "takeoff": {
-   "groundRoll_m": 455,
-   "dist50ft_m": 752
+   "groundRoll_m": 449,
+   "dist50ft_m": 715
   }
  },
  "alpha": {
   "alpha_star": {
-   "UP": 16.9,
-   "LDG": 15.2
+   "UP": 16.6,
+   "LDG": 14.9
   },
   "alpha_CLmax": {
-   "UP": 14.1,
-   "LDG": 12.1
+   "UP": 13.8,
+   "LDG": 11.8
   },
   "alpha_warn_5kt": {
    "UP": 10.2,
    "LDG": 7.24
   },
   "alpha_warn_design": {
-   "UP": 9.44,
+   "UP": 9.43,
    "LDG": 6.21
   },
   "CLmax_sim": {
@@ -123,34 +123,5 @@
   0.5,
   1
  ],
- "trace_defaults": [
-  {
-   "field": "deUp",
-   "value": 0.27052603405912107,
-   "from": "controls.surfaces.elevator.travel_deg.up",
-   "rule": "deg → rad (de ลบ = ขอบท้ายขึ้น)",
-   "flag": "R1"
-  },
-  {
-   "field": "deDn",
-   "value": 0.22689280275926285,
-   "from": "controls.surfaces.elevator.travel_deg.down",
-   "rule": "deg → rad",
-   "flag": "R1"
-  },
-  {
-   "field": "daMax",
-   "value": 0.3490658503988659,
-   "from": "controls.surfaces.aileron.travel_deg",
-   "rule": "da = ค่าเฉลี่ยของสองข้าง ½(up + down) ให้ตรงนิยาม Clda ต่อ rad ของ da เฉลี่ย",
-   "flag": "R1"
-  },
-  {
-   "field": "drMax",
-   "value": 0.47123889803846897,
-   "from": "controls.surfaces.rudder.travel_deg",
-   "rule": "ซิมจำกัดสมมาตร ±drMax จึงใช้ min(left, right)",
-   "flag": "R1"
-  }
- ]
+ "trace_defaults": []
 }

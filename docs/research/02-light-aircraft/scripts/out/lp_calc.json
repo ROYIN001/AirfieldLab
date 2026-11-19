@@ -24,6 +24,13 @@
    ]
   ],
   "fuel_kg": 417.5,
+  "tm": {
+   "kg": 2123.8,
+   "empty_kg": 1725,
+   "crew_kg": 190,
+   "fuel_kg": 208.8,
+   "fuel_l": 259
+  },
   "training_mass": 2123.8,
   "I": {
    "Ixx": 4155.63,
@@ -127,18 +134,33 @@
   ],
   "datum_check_m": 2.9997,
   "fuel_kg": 499,
+  "tm": {
+   "kg": 2574.6,
+   "empty_kg": 2135.1,
+   "crew_kg": 190,
+   "fuel_kg": 249.5,
+   "fuel_l": 312
+  },
   "training_mass": 2574.6,
   "I": {
    "Ixx": 5213.73,
    "Iyy": 8692.4,
    "Izz": 12209.8
   },
-  "VS1": 86.3,
-  "VS0": 77.3,
-  "VS0_6000": 74.3,
+  "VS1_pub": 82,
+  "VS0_pub": 74,
+  "m_pub": 2857.6,
+  "VS1": 83.3,
+  "VS0": 75.2,
+  "VS0_6000": 72.2,
+  "pc9mCL_check": {
+   "VS1_6300": 84.9,
+   "VS0_6300": 76.1,
+   "note": "PC-9 M CL at 6,300 lb (old estimate) vs AOPA 82/74 KIAS"
+  },
   "onspeed": {
-   "MTOW": 100.5,
-   "at6000": 96.6,
+   "MTOW": 97.8,
+   "at6000": 93.9,
    "note": "on-speed AOA = 1.3 Vs [LP21]"
   },
   "glideLD": {
@@ -162,13 +184,27 @@
   }
  },
  "pc7mk2": {
+  "tm": {
+   "kg": 2068.8,
+   "empty_kg": 1670,
+   "crew_kg": 190,
+   "fuel_kg": 208.8,
+   "fuel_l": 259
+  },
   "training_mass": 2068.8,
   "glideV": 113.6
  },
  "t6c": {
+  "tm": {
+   "kg": 2775.5,
+   "empty_kg": 2336,
+   "crew_kg": 190,
+   "fuel_kg": 249.5,
+   "fuel_l": 312
+  },
   "training_mass": 2775.5,
-  "VS1": 88.9,
-  "VS0": 79.7
+  "VS1": 85.8,
+  "VS0": 77.4
  },
  "radii": {
   "Rx": 0.261,
@@ -235,6 +271,16 @@
    "CLapp": 1.8622,
    "CLmax_1g": 1.7691,
    "V1g": 68.74
+  },
+  "t6a_UP": {
+   "CLapp": 1.5793,
+   "CLmax_1g": 1.5003,
+   "V1g": 84.13
+  },
+  "t6a_LDG": {
+   "CLapp": 1.9392,
+   "CLmax_1g": 1.8423,
+   "V1g": 75.92
   }
  },
  "cruise": {
@@ -290,8 +336,39 @@
  "icao": {
   "pc9m": 89.7,
   "pc7mk2": 87.1,
-  "t6a": 100.5,
-  "t6c": 103.6
+  "t6a": 97.8,
+  "t6c": 100.6
+ },
+ "vref": {
+  "pc9m": {
+   "VS0_tm": 65.6,
+   "VREF_exact": 85.27,
+   "VREF": 85,
+   "VAPP": 90,
+   "VAPP_at_MTOW": 94.7
+  },
+  "pc7mk2": {
+   "VS0_tm": 64.25,
+   "VREF_exact": 83.52,
+   "VREF": 84,
+   "VAPP": 89,
+   "VAPP_at_MTOW": 92.8
+  },
+  "t6a": {
+   "VS0_tm": 70.24,
+   "VREF_exact": 91.31,
+   "VREF": 91,
+   "VAPP": 100,
+   "VAPP_at_MTOW": 107
+  },
+  "t6c": {
+   "VS0_tm": 72.93,
+   "VREF_exact": 94.81,
+   "VREF": 95,
+   "VAPP_exact": 103.83,
+   "VAPP": 104,
+   "VAPP_at_MTOW": 110.4
+  }
  },
  "loading": {
   "r1_trainer": {

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// 19 Nov 2026 (D6): detent names follow the AFM (UP / T/O / LDG); earlier outputs used 'TO'.
 // ld_review.mjs — reviewer's checks for 05-da40.md (round-2 review, 2026-11-18). Node >= 18, no dependencies.
 // 1) Idle glides of the da40ng card in today's sim (via lm_card buildAC/applyAC + trimThr, no code change) at the
 //    speeds and flap settings that DA40 NG pilots report in [LD13] post 17/20 (mass not reported: full fuel + one
@@ -13,7 +14,7 @@ const KT = 0.514444, FPM = 0.3048 / 60, FT = 0.3048;
 const M = await loadSim();
 const card = loadType('da40ng');
 // [LD13] DA40 NG points (post 17 clean; post 20 at 0 % load): [label, detent, KIAS, pitch deg, Vz fpm]
-const PTS = [['clean idle', 'UP', 88, -2.5, -900], ['T/O idle', 'TO', 88, -7.5, -900], ['T/O idle', 'TO', 84, -6.0, -600],
+const PTS = [['clean idle', 'UP', 88, -2.5, -900], ['T/O idle', 'T/O', 88, -7.5, -900], ['T/O idle', 'T/O', 84, -6.0, -600],
   ['LDG idle', 'LDG', 88, -12.5, -1300], ['LDG idle', 'LDG', 84, -6.5, -500], ['LDG idle (TDI video)', 'LDG', 73, -6.5, -1050]];
 const out = { note: 'sim = da40ng card in AirfieldLab physics at commit cabf0f0 (lm_card), h 1,000 ft ISA, thr 0', rows: [] };
 for (const mass of [1100, 1310]) {

@@ -1,0 +1,94 @@
+{
+ "note": "ค่าประมาณ (point mass, polar ของ lt_polar + ΔCD feather 0.0014 + trim 0.002, η ของ BEM × k_η, กำลังคงที่ถึง 16,000 ft แล้วลด ∝ σ^1.1, ไม่ใช่ซิม)",
+ "kEta_cal_210fpm": 0.8268,
+ "vi_ceiling_by_mass_isa": [
+  {
+   "mass_kg": 1999,
+   "isa-10_ft": 11420,
+   "isa+0_ft": 10200,
+   "isa+10_ft": 9050,
+   "isa+20_ft": 7930,
+   "abs_isa_ft": 16100,
+   "SL_MAX_fpm": 167
+  },
+  {
+   "mass_kg": 1900,
+   "isa-10_ft": 16450,
+   "isa+0_ft": 16170,
+   "isa+10_ft": 15620,
+   "isa+20_ft": 14520,
+   "abs_isa_ft": 17530,
+   "SL_MAX_fpm": 214
+  },
+  {
+   "mass_kg": 1800,
+   "isa-10_ft": 17970,
+   "isa+0_ft": 17690,
+   "isa+10_ft": 17420,
+   "isa+20_ft": 17170,
+   "abs_isa_ft": 19030,
+   "SL_MAX_fpm": 266
+  },
+  {
+   "mass_kg": 1700,
+   "isa-10_ft": 19570,
+   "isa+0_ft": 19270,
+   "isa+10_ft": 19000,
+   "isa+20_ft": 18740,
+   "abs_isa_ft": 20600,
+   "SL_MAX_fpm": 321
+  },
+  {
+   "mass_kg": 1600,
+   "isa-10_ft": 21240,
+   "isa+0_ft": 20930,
+   "isa+10_ft": 20640,
+   "isa+20_ft": 20370,
+   "abs_isa_ft": 22250,
+   "SL_MAX_fpm": 382
+  },
+  {
+   "mass_kg": 1500,
+   "isa-10_ft": 23000,
+   "isa+0_ft": 22680,
+   "isa+10_ft": 22380,
+   "isa+20_ft": 22090,
+   "abs_isa_ft": 23980,
+   "SL_MAX_fpm": 449
+  }
+ ],
+ "needed_for_16000ft": {
+  "mass_for_16000ft_kg": 1911,
+  "cd0_for_16000ft_at_1999kg": 0.02541,
+  "cd0_reduction_pct": 19.5,
+  "kEta_for_16000ft_at_1999kg": 0.8766,
+  "VI_SL_OEI_fpm_implied_by_16000ft": 214,
+  "VI_SL_OEI_fpm_implied_drag_route": 210,
+  "NG_SL_OEI_fpm_uncalibrated": 380,
+  "VI_ceiling_uncalibrated_1999_ft": 18770
+ },
+ "ng": {
+  "ng_1900_ft": 16100,
+  "ng_1752_ft": 18370,
+  "ng_1752_SL_MAX_fpm": 287,
+  "ng_1900_SL_MAX_isa20_fpm": 200
+ },
+ "aeo": {
+  "kEta_cal_1180fpm": 0.8816,
+  "ng_1900": {
+   "isa_fpm": 1180,
+   "isa20_fpm": 1178,
+   "isa10_fpm": 1179
+  },
+  "ng_1752": {
+   "isa_fpm": 1332,
+   "isa20_fpm": 1333
+  },
+  "vi_1999_check": {
+   "isa_fpm": 1098,
+   "published_fpm": 1114,
+   "isa20_fpm": 1094
+  },
+  "ng_1900_oei_isa20_fpm": 200
+ }
+}

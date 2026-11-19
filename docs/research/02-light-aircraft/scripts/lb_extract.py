@@ -1,6 +1,10 @@
 # lb_extract.py - summarise JSBSim 1.3.3 bundled light-aircraft/trainer models (header, metrics, mass, propulsion,
 # FCS ranges, aero function names with their constants and table sizes). Reads the XML installed with the jsbsim
 # wheel; writes a numeric summary only (no XML is copied). Run: python3 -I scripts/lb_extract.py
+# D7 (2026-11-19): the output out/lb_extract.json holds constants and table shapes read from LGPL/GPL XML, so it is
+# NOT in the repo (integration deletes it and adds it to .gitignore). Run this script locally when you need it; no other
+# lb_* script needs it any more, and lb_jsb.load_extract() stops with "run lb_extract.py first; the file is not in the
+# repo because it holds values read from LGPL/GPL XML" if a helper asks for it while it is absent.
 import jsbsim, os, json, re, sys, xml.etree.ElementTree as ET
 ROOT = jsbsim.get_default_root_dir()
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'out', 'lb_extract.json')

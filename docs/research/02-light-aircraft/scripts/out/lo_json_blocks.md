@@ -29,7 +29,7 @@
     ],
     "conf": "สูง",
     "est": false,
-    "note": "ความเร็ว แฟลป และกำลังแต่ละขาจาก SOP ของโรงเรียน [LO17][LO18] และ Vy/Vapp จาก POH [LC1] (§09.1.3)"
+    "note": "ความเร็ว แฟลป และกำลังแต่ละขาจาก SOP ของโรงเรียน [LO17][LO18] และ Vy/Vapp จาก POH [LC1] (§09.1.3); final = speeds.VAPP_kt ของบัตร 04 (D1)"
    },
    "stabilised": {
     "v": {
@@ -61,7 +61,7 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "Vapp = ความเร็ว final ของแบบตามแหล่งใน §09.1.3; รายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอ; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร c172s (ไฟล์ 04) 65 kt IAS ที่ airframe.weights.training_mass 1009.6 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
@@ -141,7 +141,7 @@
     ],
     "conf": "สูง",
     "est": false,
-    "note": "ลำดับและความเร็วจาก POH (balked landing) และ SOP โรงเรียน [LC1][LO17] สอดคล้องกับ AFH [LO4 p9-11]"
+    "note": "ลำดับและความเร็วจาก POH (balked landing) และ SOP โรงเรียน [LC1][LO17] สอดคล้องกับ AFH [LO4 p9-11]; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -253,7 +253,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
@@ -277,12 +277,13 @@
     "scope": "aircraft",
     "src": [
      "LO20",
+     "LE2",
      "LO4",
      "LO36"
     ],
-    "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "conf": "กลาง",
+    "est": false,
+    "note": "Vapp = speeds.VAPP_kt ของบัตร c172r (ไฟล์ 10) 65 kt IAS ที่ airframe.weights.training_mass 998.7 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
@@ -345,7 +346,7 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "ลำดับและความเร็วจาก POH balked landing [LO20 Sec 4] สอดคล้องกับ AFH [LO4 p9-11]"
+    "note": "ลำดับและความเร็วจาก POH balked landing [LO20 Sec 4] สอดคล้องกับ AFH [LO4 p9-11]; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -454,7 +455,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
@@ -478,12 +479,13 @@
     "scope": "aircraft",
     "src": [
      "LO19",
+     "LF1",
      "LO4",
      "LO36"
     ],
-    "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "conf": "กลาง",
+    "est": false,
+    "note": "Vapp = speeds.VAPP_kt ของบัตร c152 (ไฟล์ 11) 60 kt IAS ที่ airframe.weights.training_mass 717.47 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
@@ -546,7 +548,7 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "ลำดับและความเร็วจาก POH balked landing [LO19 p4-3, 4-9] สอดคล้องกับ AFH [LO4 p9-11]"
+    "note": "ลำดับและความเร็วจาก POH balked landing [LO19 p4-3, 4-9] สอดคล้องกับ AFH [LO4 p9-11]; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -655,11 +657,12 @@
     "scope": "aircraft",
     "src": [
      "LO21",
-     "LO22"
+     "LO22",
+     "LN4"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
@@ -684,12 +687,14 @@
     "src": [
      "LO21",
      "LO22",
+     "LN4",
+     "LN2",
      "LO4",
      "LO36"
     ],
-    "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "conf": "กลาง",
+    "est": false,
+    "note": "Vapp = speeds.VAPP_kt ของบัตร pa28_161 (ไฟล์ 13) 70 kt IAS ที่ airframe.weights.training_mass 930 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
@@ -708,7 +713,8 @@
     "scope": "aircraft",
     "src": [
      "LO21",
-     "LO22"
+     "LO22",
+     "LN4"
     ],
     "conf": "กลาง",
     "est": false,
@@ -729,7 +735,8 @@
     "scope": "aircraft",
     "src": [
      "LO21",
-     "LO22"
+     "LO22",
+     "LN4"
     ],
     "conf": "กลาง",
     "est": false,
@@ -756,11 +763,12 @@
     "src": [
      "LO21",
      "LO22",
+     "LN4",
      "LO4"
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "ลำดับและความเร็วจาก checklist โรงเรียน [LO22] (บท 4 ของ POH ในสำเนาที่เปิดได้ขาด) สอดคล้องกับ AFH [LO4 p9-11]"
+    "note": "ลำดับและความเร็วจาก checklist โรงเรียน [LO22] (บท 4 ของ POH ในสำเนาที่เปิดได้ขาด) สอดคล้องกับ AFH [LO4 p9-11]; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -838,6 +846,7 @@
     "src": [
      "LO21",
      "LO22",
+     "LN4",
      "LO0"
     ],
     "conf": "กลาง",
@@ -859,10 +868,10 @@
      "downwind": 95,
      "abeam": 78,
      "base": 78,
-     "final": 76,
+     "final": 74,
      "flapsAt": {
-      "abeam": "TO",
-      "base": "TO",
+      "abeam": "T/O",
+      "base": "T/O",
       "final": "LDG"
      }
     },
@@ -874,18 +883,18 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
-     "Vapp": 76,
+     "Vapp": 74,
      "window_kt": [
       -5,
       10
      ],
      "landingFlaps": [
       "LDG",
-      "TO"
+      "T/O"
      ],
      "gearDown": false,
      "gates": [
@@ -902,14 +911,14 @@
      "LO4",
      "LO36"
     ],
-    "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "conf": "กลาง",
+    "est": false,
+    "note": "Vapp = speeds.VAPP_kt ของบัตร da40ng (ไฟล์ 05) 74 kt IAS ที่ airframe.weights.training_mass 1150 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
      "takeoff": {
-      "flaps": "TO",
+      "flaps": "T/O",
       "VR": {
        "940": 56,
        "1000": 58,
@@ -967,7 +976,7 @@
     "v": {
      "speed": 72,
      "flapsSeq": [
-      "TO",
+      "T/O",
       "UP"
      ],
      "steps": [
@@ -986,7 +995,7 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "ลำดับและความเร็วจาก ความเร็ว go-around ต่ำสุดแฟลป T/O จาก checklist ของ Diamond [LD3] สอดคล้องกับ AFH [LO4 p9-11]"
+    "note": "ลำดับและความเร็วจาก ความเร็ว go-around ต่ำสุดแฟลป T/O จาก checklist ของ Diamond [LD3] สอดคล้องกับ AFH [LO4 p9-11]; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -1095,7 +1104,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
@@ -1125,8 +1134,8 @@
      "LO36"
     ],
     "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "est": false,
+    "note": "Vapp = speeds.VAPP_kt ของบัตร da42ng (ไฟล์ 06) 84 kt IAS ที่ airframe.weights.training_mass 1752 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
@@ -1197,7 +1206,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 90 KIAS จาก Vy/VY ของแหล่งแบบนั้น"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 90 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -1297,11 +1306,11 @@
      "climb": 67,
      "downwind": 95,
      "abeam": 80,
-     "base": 78,
-     "final": 73,
+     "base": 75,
+     "final": 65,
      "flapsAt": {
-      "abeam": "TO",
-      "base": "TO",
+      "abeam": "T/O",
+      "base": "T/O",
       "final": "LDG"
      }
     },
@@ -1315,18 +1324,18 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
-     "Vapp": 73,
+     "Vapp": 65,
      "window_kt": [
       -5,
       10
      ],
      "landingFlaps": [
       "LDG",
-      "TO"
+      "T/O"
      ],
      "gearDown": false,
      "gates": [
@@ -1345,14 +1354,14 @@
      "LO4",
      "LO36"
     ],
-    "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "conf": "กลาง",
+    "est": false,
+    "note": "Vapp = speeds.VAPP_kt ของบัตร da40_180 (ไฟล์ 05) 65 kt IAS ที่ airframe.weights.training_mass 1050 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
      "landing": {
-      "Vapp": 73,
+      "Vapp": 65,
       "note": "ไม่มีขั้นตอน short field ในแหล่งที่อ่านได้"
      }
     },
@@ -1366,7 +1375,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ใช้ความเร็ว final ของ §09.1.3 (POH/AFM หรือ 1.3 VS0 ตาม §09.1.5) เพราะไม่มีขั้นตอน short field เฉพาะแบบ"
+    "note": "ค่าประมาณ: ใช้ Vapp ของบัตร (D1) เพราะไม่มีขั้นตอน short field เฉพาะแบบในแหล่งที่อ่านได้"
    },
    "soft_field": {
     "v": {
@@ -1391,7 +1400,7 @@
     "v": {
      "speed": 67,
      "flapsSeq": [
-      "TO",
+      "T/O",
       "UP"
      ],
      "steps": [
@@ -1412,7 +1421,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 67 KIAS จาก Vy/VY ของแหล่งแบบนั้น"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 67 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -1515,10 +1524,10 @@
      "downwind": 90,
      "abeam": 78,
      "base": 76,
-     "final": 71,
+     "final": 66,
      "flapsAt": {
-      "abeam": "TO",
-      "base": "TO",
+      "abeam": "T/O",
+      "base": "T/O",
       "final": "LDG"
      }
     },
@@ -1530,18 +1539,18 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
-     "Vapp": 71,
+     "Vapp": 66,
      "window_kt": [
       -5,
       10
      ],
      "landingFlaps": [
       "LDG",
-      "TO"
+      "T/O"
      ],
      "gearDown": false,
      "gates": [
@@ -1558,14 +1567,14 @@
      "LO4",
      "LO36"
     ],
-    "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "conf": "กลาง",
+    "est": false,
+    "note": "Vapp = speeds.VAPP_kt ของบัตร da40d (ไฟล์ 05) 66 kt IAS ที่ airframe.weights.training_mass 1060 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
      "landing": {
-      "Vapp": 71,
+      "Vapp": 66,
       "note": "ไม่มีขั้นตอน short field ในแหล่งที่อ่านได้"
      }
     },
@@ -1577,7 +1586,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ใช้ความเร็ว final ของ §09.1.3 (POH/AFM หรือ 1.3 VS0 ตาม §09.1.5) เพราะไม่มีขั้นตอน short field เฉพาะแบบ"
+    "note": "ค่าประมาณ: ใช้ Vapp ของบัตร (D1) เพราะไม่มีขั้นตอน short field เฉพาะแบบในแหล่งที่อ่านได้"
    },
    "soft_field": {
     "v": {
@@ -1600,7 +1609,7 @@
     "v": {
      "speed": 66,
      "flapsSeq": [
-      "TO",
+      "T/O",
       "UP"
      ],
      "steps": [
@@ -1619,7 +1628,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 66 KIAS จาก Vy/VY ของแหล่งแบบนั้น"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 66 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -1727,7 +1736,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
@@ -1757,8 +1766,8 @@
      "LO36"
     ],
     "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "est": false,
+    "note": "Vapp = speeds.VAPP_kt ของบัตร da42_tae125 (ไฟล์ 06) 82 kt IAS ที่ airframe.weights.training_mass 1600 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
@@ -1826,7 +1835,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 79 KIAS จาก Vy/VY ของแหล่งแบบนั้น"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 79 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -1948,11 +1957,12 @@
     "scope": "aircraft",
     "src": [
      "LO23",
-     "LO24"
+     "LO24",
+     "LN5"
     ],
     "conf": "ต่ำ",
     "est": false,
-    "note": "ความเร็ว แฟลป และกำลังแต่ละขาจาก flashcard ของโรงเรียน [LO24] (ตติยภูมิ ไม่ใช่ POH) ความเชื่อมั่นต่ำ"
+    "note": "ความเร็ว แฟลป และกำลังแต่ละขาจาก flashcard ของโรงเรียน [LO24] (ตติยภูมิ ไม่ใช่ POH) ความเชื่อมั่นต่ำ; final 80 = speeds.VAPP_kt ของบัตร 13 [LN5] (D1)"
    },
    "stabilised": {
     "v": {
@@ -1977,12 +1987,13 @@
     "src": [
      "LO23",
      "LO24",
+     "LN5",
      "LO4",
      "LO36"
     ],
-    "conf": "กลาง",
+    "conf": "ต่ำ",
     "est": false,
-    "note": "Vapp = ความเร็ว final ของแบบตามแหล่งใน §09.1.3; รายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอ; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร be76 (ไฟล์ 13) 80 kt IAS ที่ airframe.weights.training_mass 1420 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
@@ -2000,7 +2011,8 @@
     "scope": "aircraft",
     "src": [
      "LO23",
-     "LO24"
+     "LO24",
+     "LN5"
     ],
     "conf": "ต่ำ",
     "est": false,
@@ -2016,6 +2028,7 @@
     "src": [
      "LO23",
      "LO24",
+     "LN5",
      "LO5",
      "LO6"
     ],
@@ -2027,7 +2040,7 @@
     "v": {
      "speed": 85,
      "flapsSeq": [
-      "UP"
+      "0"
      ],
      "steps": [
       "full power",
@@ -2041,11 +2054,12 @@
     "src": [
      "LO23",
      "LO24",
+     "LN5",
      "LO4"
     ],
     "conf": "ต่ำ",
     "est": false,
-    "note": "ลำดับและความเร็วจาก flashcard ของโรงเรียน [LO24] (ตติยภูมิ) สอดคล้องกับ AFH [LO4 p9-11]"
+    "note": "ลำดับและความเร็วจาก flashcard ของโรงเรียน [LO24] (ตติยภูมิ) สอดคล้องกับ AFH [LO4 p9-11]; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -2130,6 +2144,7 @@
     "src": [
      "LO23",
      "LO24",
+     "LN5",
      "LO0"
     ],
     "conf": "กลาง",
@@ -2147,14 +2162,14 @@
   "procedures": {
    "pattern": {
     "v": {
-     "climb": 83,
+     "climb": 80,
      "downwind": 100,
      "abeam": 90,
      "base": 80,
      "final": 70,
      "flapsAt": {
-      "abeam": "TO",
-      "base": "TO",
+      "abeam": "T/O",
+      "base": "T/O",
       "final": "FULL"
      }
     },
@@ -2162,11 +2177,12 @@
     "scope": "aircraft",
     "src": [
      "LO26",
-     "LO27"
+     "LO27",
+     "LG3"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
@@ -2177,7 +2193,7 @@
      ],
      "landingFlaps": [
       "FULL",
-      "TO"
+      "T/O"
      ],
      "gearDown": true,
      "gates": [
@@ -2191,12 +2207,13 @@
     "src": [
      "LO26",
      "LO27",
+     "LG3",
      "LO4",
      "LO36"
     ],
-    "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "conf": "กลาง",
+    "est": false,
+    "note": "Vapp = speeds.VAPP_kt ของบัตร p2006t (ไฟล์ 12) 70 kt IAS ที่ airframe.weights.training_mass 1128 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
@@ -2212,11 +2229,12 @@
     "scope": "aircraft",
     "src": [
      "LO26",
-     "LO27"
+     "LO27",
+     "LG3"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ใช้ความเร็ว final ของ §09.1.3 (POH/AFM หรือ 1.3 VS0 ตาม §09.1.5) เพราะไม่มีขั้นตอน short field เฉพาะแบบ"
+    "note": "ค่าประมาณ: ใช้ Vapp ของบัตร (D1) เพราะไม่มีขั้นตอน short field เฉพาะแบบในแหล่งที่อ่านได้"
    },
    "soft_field": {
     "v": {
@@ -2228,6 +2246,7 @@
     "src": [
      "LO26",
      "LO27",
+     "LG3",
      "LO5",
      "LO6"
     ],
@@ -2237,15 +2256,15 @@
    },
    "go_around": {
     "v": {
-     "speed": 83,
+     "speed": 80,
      "flapsSeq": [
-      "TO",
+      "T/O",
       "UP"
      ],
      "steps": [
       "full power",
       "flaps T/O",
-      "pitch Vy 83",
+      "pitch Vy 80",
       "positive rate: gear up",
       "flaps UP"
      ]
@@ -2255,11 +2274,12 @@
     "src": [
      "LO26",
      "LO27",
+     "LG3",
      "LO4"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 83 KIAS จาก Vy/VY ของแหล่งแบบนั้น"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 80 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -2351,6 +2371,7 @@
     "src": [
      "LO26",
      "LO27",
+     "LG3",
      "LO0"
     ],
     "conf": "กลาง",
@@ -2372,11 +2393,11 @@
      "downwind": 75,
      "abeam": 65,
      "base": 60,
-     "final": 50,
+     "final": 52,
      "flapsAt": {
       "abeam": "TO",
       "base": "TO",
-      "final": "LAND"
+      "final": "LDG"
      }
     },
     "u": "kt IAS",
@@ -2384,21 +2405,22 @@
     "src": [
      "LO28",
      "LO29",
-     "LO30"
+     "LO30",
+     "LN0"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
-     "Vapp": 50,
+     "Vapp": 52,
      "window_kt": [
       -5,
       10
      ],
      "landingFlaps": [
-      "LAND",
+      "LDG",
       "TO"
      ],
      "gearDown": false,
@@ -2414,17 +2436,19 @@
      "LO28",
      "LO29",
      "LO30",
+     "LN0",
+     "LM25",
      "LO4",
      "LO36"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร p2002jf (ไฟล์ 13) 52 kt CAS ที่ airframe.weights.training_mass 573.2 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
      "landing": {
-      "Vapp": 50,
+      "Vapp": 52,
       "note": "ไม่มีขั้นตอน short field ในแหล่งที่อ่านได้"
      }
     },
@@ -2433,11 +2457,12 @@
     "src": [
      "LO28",
      "LO29",
-     "LO30"
+     "LO30",
+     "LN0"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ใช้ความเร็ว final ของ §09.1.3 (POH/AFM หรือ 1.3 VS0 ตาม §09.1.5) เพราะไม่มีขั้นตอน short field เฉพาะแบบ"
+    "note": "ค่าประมาณ: ใช้ Vapp ของบัตร (D1) เพราะไม่มีขั้นตอน short field เฉพาะแบบในแหล่งที่อ่านได้"
    },
    "soft_field": {
     "v": {
@@ -2450,6 +2475,7 @@
      "LO28",
      "LO29",
      "LO30",
+     "LN0",
      "LO5",
      "LO6"
     ],
@@ -2477,11 +2503,12 @@
      "LO28",
      "LO29",
      "LO30",
+     "LN0",
      "LO4"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 60 KIAS จาก Vy/VY ของแหล่งแบบนั้น"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 60 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -2558,6 +2585,7 @@
      "LO28",
      "LO29",
      "LO30",
+     "LN0",
      "LO0"
     ],
     "conf": "กลาง",
@@ -2579,7 +2607,7 @@
      "downwind": 110,
      "abeam": 100,
      "base": 90,
-     "final": 75,
+     "final": 74,
      "flapsAt": {
       "abeam": "17",
       "base": "30",
@@ -2591,16 +2619,17 @@
     "src": [
      "LO31",
      "LO32",
+     "LN0",
      "LO37",
      "LO7"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
-     "Vapp": 75,
+     "Vapp": 74,
      "window_kt": [
       -5,
       10
@@ -2621,19 +2650,21 @@
     "src": [
      "LO31",
      "LO32",
+     "LN0",
      "LO37",
      "LO7",
+     "LM25",
      "LO4",
      "LO36"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร p68c (ไฟล์ 13) 74 kt CAS ที่ airframe.weights.training_mass 1796 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
      "landing": {
-      "Vapp": 75,
+      "Vapp": 74,
       "note": "ไม่มีขั้นตอน short field ในแหล่งที่อ่านได้"
      }
     },
@@ -2642,12 +2673,13 @@
     "src": [
      "LO31",
      "LO32",
+     "LN0",
      "LO37",
      "LO7"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ใช้ความเร็ว final ของ §09.1.3 (POH/AFM หรือ 1.3 VS0 ตาม §09.1.5) เพราะไม่มีขั้นตอน short field เฉพาะแบบ"
+    "note": "ค่าประมาณ: ใช้ Vapp ของบัตร (D1) เพราะไม่มีขั้นตอน short field เฉพาะแบบในแหล่งที่อ่านได้"
    },
    "soft_field": {
     "v": {
@@ -2659,6 +2691,7 @@
     "src": [
      "LO31",
      "LO32",
+     "LN0",
      "LO37",
      "LO7",
      "LO5",
@@ -2687,13 +2720,14 @@
     "src": [
      "LO31",
      "LO32",
+     "LN0",
      "LO37",
      "LO7",
      "LO4"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -2769,6 +2803,7 @@
     "src": [
      "LO31",
      "LO32",
+     "LN0",
      "LO37",
      "LO7",
      "LO0"
@@ -2788,11 +2823,11 @@
   "procedures": {
    "pattern": {
     "v": {
-     "climb": 90,
+     "climb": 89,
      "downwind": 100,
      "abeam": 90,
      "base": 80,
-     "final": 70,
+     "final": 75,
      "flapsAt": {
       "abeam": "10",
       "base": "20",
@@ -2802,15 +2837,17 @@
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
-     "LO33"
+     "LO33",
+     "LN20",
+     "LN18"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
-     "Vapp": 70,
+     "Vapp": 75,
      "window_kt": [
       -5,
       10
@@ -2830,28 +2867,33 @@
     "scope": "aircraft",
     "src": [
      "LO33",
+     "LN20",
+     "LN18",
      "LO4",
      "LO36"
     ],
-    "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "conf": "กลาง",
+    "est": false,
+    "note": "Vapp = speeds.VAPP_kt ของบัตร t206h (ไฟล์ 13) 75 kt IAS ที่ airframe.weights.training_mass 1354 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
      "landing": {
-      "Vapp": 70,
-      "note": "ไม่มีขั้นตอน short field ในแหล่งที่อ่านได้"
+      "flaps": "FULL",
+      "Vapp": 67,
+      "note": "short field approach แฟลป FULL 67 KIAS = speeds.VREF_kt ของบัตร 13 (POH Sec 4 ผ่าน LN20)"
      }
     },
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
-     "LO33"
+     "LO33",
+     "LN20",
+     "LN18"
     ],
     "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: ใช้ความเร็ว final ของ §09.1.3 (POH/AFM หรือ 1.3 VS0 ตาม §09.1.5) เพราะไม่มีขั้นตอน short field เฉพาะแบบ"
+    "est": false,
+    "note": "ตัวเลขจาก POH/AFM, checklist หรือ SOP ตามแหล่งของแบบ (§09.4.2)"
    },
    "soft_field": {
     "v": {
@@ -2862,6 +2904,8 @@
     "scope": "aircraft",
     "src": [
      "LO33",
+     "LN20",
+     "LN18",
      "LO5",
      "LO6"
     ],
@@ -2875,7 +2919,7 @@
      "flapsSeq": [
       "20",
       "10",
-      "0"
+      "UP"
      ],
      "steps": [
       "full power (MAP ไม่เกินค่าจำกัด)",
@@ -2888,11 +2932,13 @@
     "scope": "aircraft",
     "src": [
      "LO33",
+     "LN20",
+     "LN18",
      "LO4"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -2972,6 +3018,8 @@
     "scope": "aircraft",
     "src": [
      "LO33",
+     "LN20",
+     "LN18",
      "LO0"
     ],
     "conf": "กลาง",
@@ -2997,17 +3045,18 @@
      "flapsAt": {
       "abeam": "TO",
       "base": "TO",
-      "final": "FULL"
+      "final": "LDG"
      }
     },
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
-     "LO34"
+     "LO34",
+     "LN0"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
@@ -3017,7 +3066,7 @@
       10
      ],
      "landingFlaps": [
-      "FULL",
+      "LDG",
       "TO"
      ],
      "gearDown": false,
@@ -3031,12 +3080,14 @@
     "scope": "aircraft",
     "src": [
      "LO34",
+     "LN0",
+     "LM25",
      "LO4",
      "LO36"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร ct4 (ไฟล์ 13) 60 kt CAS ที่ airframe.weights.training_mass 1038 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
@@ -3048,11 +3099,12 @@
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
-     "LO34"
+     "LO34",
+     "LN0"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ใช้ความเร็ว final ของ §09.1.3 (POH/AFM หรือ 1.3 VS0 ตาม §09.1.5) เพราะไม่มีขั้นตอน short field เฉพาะแบบ"
+    "note": "ค่าประมาณ: ใช้ Vapp ของบัตร (D1) เพราะไม่มีขั้นตอน short field เฉพาะแบบในแหล่งที่อ่านได้"
    },
    "soft_field": {
     "v": {
@@ -3063,6 +3115,7 @@
     "scope": "aircraft",
     "src": [
      "LO34",
+     "LN0",
      "LO5",
      "LO6"
     ],
@@ -3088,11 +3141,12 @@
     "scope": "aircraft",
     "src": [
      "LO34",
+     "LN0",
      "LO4"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -3163,6 +3217,7 @@
     "scope": "aircraft",
     "src": [
      "LO34",
+     "LN0",
      "LO0"
     ],
     "conf": "กลาง",
@@ -3180,11 +3235,11 @@
   "procedures": {
    "pattern": {
     "v": {
-     "climb": 120,
+     "climb": 136,
      "downwind": 140,
      "abeam": 120,
      "base": 110,
-     "final": 92,
+     "final": 89,
      "flapsAt": {
       "abeam": "TO",
       "base": "LDG",
@@ -3196,15 +3251,16 @@
     "src": [
      "LP1",
      "LP20",
+     "LP27",
      "LO4"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
-     "Vapp": 92,
+     "Vapp": 89,
      "window_kt": [
       -5,
       10
@@ -3225,17 +3281,18 @@
     "src": [
      "LP1",
      "LP20",
+     "LP27",
      "LO4",
      "LO36"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร pc7mk2 (ไฟล์ 07) 89 kt CAS ที่ airframe.weights.training_mass 2068.8 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และ speeds.ias_cas ของบัตรเป็นตาราง identity (ค่าประมาณ ไม่มีข้อมูล PEC สาธารณะ) จึงใช้เป็น KIAS ≈ KCAS; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
      "landing": {
-      "Vapp": 92,
+      "Vapp": 89,
       "note": "ไม่มีขั้นตอน short field ในแหล่งที่อ่านได้"
      }
     },
@@ -3244,11 +3301,12 @@
     "src": [
      "LP1",
      "LP20",
+     "LP27",
      "LO4"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ใช้ความเร็ว final ของ §09.1.3 (POH/AFM หรือ 1.3 VS0 ตาม §09.1.5) เพราะไม่มีขั้นตอน short field เฉพาะแบบ"
+    "note": "ค่าประมาณ: ใช้ Vapp ของบัตร (D1) เพราะไม่มีขั้นตอน short field เฉพาะแบบในแหล่งที่อ่านได้"
    },
    "soft_field": {
     "v": {
@@ -3260,6 +3318,7 @@
     "src": [
      "LP1",
      "LP20",
+     "LP27",
      "LO4",
      "LO5",
      "LO6"
@@ -3287,11 +3346,12 @@
     "src": [
      "LP1",
      "LP20",
+     "LP27",
      "LO4"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -3364,6 +3424,7 @@
     "src": [
      "LP1",
      "LP20",
+     "LP27",
      "LO4",
      "LO0"
     ],
@@ -3382,11 +3443,11 @@
   "procedures": {
    "pattern": {
     "v": {
-     "climb": 125,
+     "climb": 136,
      "downwind": 150,
      "abeam": 125,
      "base": 115,
-     "final": 95,
+     "final": 90,
      "flapsAt": {
       "abeam": "TO",
       "base": "LDG",
@@ -3398,15 +3459,16 @@
     "src": [
      "LP2",
      "LP20",
+     "LP27",
      "LO4"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
-     "Vapp": 95,
+     "Vapp": 90,
      "window_kt": [
       -5,
       10
@@ -3427,17 +3489,18 @@
     "src": [
      "LP2",
      "LP20",
+     "LP27",
      "LO4",
      "LO36"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร pc9m (ไฟล์ 07) 90 kt CAS ที่ airframe.weights.training_mass 2123.8 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และ speeds.ias_cas ของบัตรเป็นตาราง identity (ค่าประมาณ ไม่มีข้อมูล PEC สาธารณะ) จึงใช้เป็น KIAS ≈ KCAS; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
      "landing": {
-      "Vapp": 95,
+      "Vapp": 90,
       "note": "ไม่มีขั้นตอน short field ในแหล่งที่อ่านได้"
      }
     },
@@ -3446,11 +3509,12 @@
     "src": [
      "LP2",
      "LP20",
+     "LP27",
      "LO4"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ใช้ความเร็ว final ของ §09.1.3 (POH/AFM หรือ 1.3 VS0 ตาม §09.1.5) เพราะไม่มีขั้นตอน short field เฉพาะแบบ"
+    "note": "ค่าประมาณ: ใช้ Vapp ของบัตร (D1) เพราะไม่มีขั้นตอน short field เฉพาะแบบในแหล่งที่อ่านได้"
    },
    "soft_field": {
     "v": {
@@ -3462,6 +3526,7 @@
     "src": [
      "LP2",
      "LP20",
+     "LP27",
      "LO4",
      "LO5",
      "LO6"
@@ -3489,11 +3554,12 @@
     "src": [
      "LP2",
      "LP20",
+     "LP27",
      "LO4"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -3566,6 +3632,7 @@
     "src": [
      "LP2",
      "LP20",
+     "LP27",
      "LO4",
      "LO0"
     ],
@@ -3584,7 +3651,7 @@
   "procedures": {
    "pattern": {
     "v": {
-     "climb": 125,
+     "climb": 136,
      "downwind": 140,
      "abeam": 120,
      "base": 110,
@@ -3604,7 +3671,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: final = AC.Vapp 95 ของซิม (src/20-flight.js:117), climb = VY 125 ของ trainer_r2 (หัวข้อ 07), ขาอื่นตาม §09.1.5 เทียบ pc9m; แฟลป TO = AC.flaps 0.5, LDG = 1.0"
+    "note": "ค่าประมาณ: final = AC.Vapp 95 ของซิม (src/20-flight.js:117) = speeds.VAPP_kt ของบัตร 07 (D1), climb = VY 136 KCAS ของ trainer_r2 (หัวข้อ 07, เดิม 125), ขาอื่นตาม §09.1.5 เทียบ pc9m; แฟลป TO = AC.flaps 0.5, LDG = 1.0; KIAS ≈ KCAS"
    },
    "stabilised": {
     "v": {
@@ -3630,11 +3697,12 @@
      "LP27",
      "LO0",
      "LO4",
+     "R1:V19",
      "LO36"
     ],
-    "conf": "ต่ำ",
+    "conf": "กลาง",
     "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร trainer_r2 (ไฟล์ 07) 95 kt CAS ที่ airframe.weights.training_mass 2250 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
@@ -3652,7 +3720,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ใช้ความเร็ว final ของ §09.1.3 (POH/AFM หรือ 1.3 VS0 ตาม §09.1.5) เพราะไม่มีขั้นตอน short field เฉพาะแบบ"
+    "note": "ค่าประมาณ: ใช้ Vapp ของบัตร (D1) เพราะไม่มีขั้นตอน short field เฉพาะแบบในแหล่งที่อ่านได้"
    },
    "soft_field": {
     "v": {
@@ -3695,7 +3763,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -3810,7 +3878,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (final = ความเร็ว approach ของ POH/AFM หรือ 1.3 VS0 ปัดเป็นเลขลงท้าย 0/5 ที่ใกล้ที่สุด; base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
    },
    "stabilised": {
     "v": {
@@ -3837,12 +3905,14 @@
      "LP15",
      "LP20",
      "LP17",
+     "LP29",
+     "LP23",
      "LO4",
      "LO36"
     ],
-    "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: Vapp = ความเร็ว final ของ §09.1.3 (วิธี §09.1.5) และรายการแฟลปลงจอดที่ยอมรับเป็นข้อเสนอของผู้เขียน; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "conf": "กลาง",
+    "est": false,
+    "note": "Vapp = speeds.VAPP_kt ของบัตร t6a (ไฟล์ 07) 100 kt IAS ที่ airframe.weights.training_mass 2574.6 kg ตามข้อตัดสิน D1; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
    },
    "short_field": {
     "v": {
@@ -3905,7 +3975,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ไม่มีความเร็วเฉพาะแบบ; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
    },
    "checklist_summary": {
     "v": {
@@ -3998,6 +4068,72 @@
 
 ```json
 {
+ "t6c": {
+  "procedures": {
+   "pattern": {
+    "v": {
+     "climb": 140,
+     "downwind": 150,
+     "abeam": 125,
+     "base": 115,
+     "final": 104,
+     "flapsAt": {
+      "abeam": "TO",
+      "base": "LDG",
+      "final": "LDG"
+     }
+    },
+    "u": "kt IAS",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LP20",
+     "LP29"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: final = speeds.VAPP_kt 104 KIAS ของบัตร t6c (หัวข้อ 07, D1), climb = VY 140 KIAS [LP29], downwind 150 เท่า t6a [LP20], abeam 125 และ base 115 = ขั้นต่ำของ T-6A 120/110 KIAS [LP20] × √(2775.5/2574.6) = 1.038 ปัดเป็นเลขลงท้าย 0/5; leaf อื่นของ procedures รับจาก t6a"
+   },
+   "stabilised": {
+    "v": {
+     "Vapp": 104,
+     "window_kt": [
+      -5,
+      10
+     ],
+     "landingFlaps": [
+      "LDG",
+      "TO",
+      "UP"
+     ],
+     "gearDown": true,
+     "gates": [
+      "imc",
+      "vmc_straight_in",
+      "vfr_circuit"
+     ]
+    },
+    "u": "kt IAS",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LP20",
+     "LP29",
+     "LP31",
+     "LO4",
+     "LO36"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "Vapp = speeds.VAPP_kt ของบัตร t6c (ไฟล์ 07) 104 kt IAS ที่ airframe.weights.training_mass 2775.5 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+   }
+  }
+ }
+}
+```
+
+```json
+{
  "common_light": {
   "procedures": {
    "pattern_geometry": {
@@ -4046,11 +4182,13 @@
     "src": [
      "LO1",
      "LO2",
-     "LO13"
+     "LO13",
+     "LO39",
+     "LS20"
     ],
     "conf": "สูง",
     "est": false,
-    "note": "FAA: AIM 4-3-3 และ AC 90-66C App A (เฮลิคอปเตอร์ 500 ft: AC 90-66C 12.1.4 และ App A ข้อ 4); VTBD = join height ของ 03R/21L ใน AD 2.20 ข้อ 4.2.2 (AIRAC 2022-08-11 และ 2024-02-22 ตรงกัน); ค่าเทอร์โบพร็อปของซิมย้ายไป pattern_geometry"
+    "note": "FAA: AIM 4-3-3 และ AC 90-66C App A (เฮลิคอปเตอร์ 500 ft: AC 90-66C 12.1.4 และ App A ข้อ 4); VTBD = ความสูงเข้าวงจรของ 03R/21L ใน AD 2.20 ข้อ 4.2.2 และความสูงวงจรตามหมายเหตุ Traffic Patterns and Altitude ใน AD 2.22 ข้อ 8.6.2 (light 800, conventional 1000, jet 1500, helicopter 500 ft) ข้อความเหมือนกันใน AIRAC 14 MAY, 9 JUL และ 29 OCT 2026 [LO39][LS20] (lo_aip_check.mjs, 19 พ.ย. 2026) และตรงกับ AIRAC 2022-08-11 และ 2024-02-22 [LO13]; ค่าเทอร์โบพร็อปของซิมอยู่ที่ pattern_geometry"
    },
    "stabilised_gates": {
     "v": {
@@ -4150,26 +4288,87 @@
      "atz": {
       "radius_NM": 5,
       "top_ftAGL": 2000,
-      "class": "C"
+      "class": "C",
+      "language": "English, Thai"
      },
      "freq_MHz": {
       "TWR": 118.1,
-      "GND": 121.9,
+      "GND": [
+       121.9,
+       122.5
+      ],
       "DEL": 127.7,
-      "ATIS": 126.4
+      "ATIS_arrival": 126.4,
+      "ATIS_departure": 118.55,
+      "APP_DonMueang": 119.4
      },
      "speedLimit_kt": 250,
+     "vfrDay": {
+      "groundVis_km": 5,
+      "ceiling_ft": 1500
+     },
+     "svfr_groundVis_m": 1500,
+     "vfrNight": "ATC may authorize; treated as special VFR",
+     "items_AIRAC_2026": {
+      "circuit": "AD 2.20 4.1-4.2.3",
+      "vacate21L_holdShort21R": "AD 2.20 6.3 (TWY S)",
+      "clearanceToLand": "AD 2.20 7.3",
+      "speed250": "AD 2.22 4.1.2",
+      "vfrMinima": "AD 2.22 8.1-8.4",
+      "patternHeights": "AD 2.22 8.6.2 note"
+     },
      "rwy03R_21L": "normally military, civil possible",
      "sim_03L_21R": "fictional west circuit (03L left, 21R right)"
     },
     "u": "-",
     "scope": "environment",
     "src": [
-     "LO13"
+     "LO13",
+     "LO39",
+     "LS20"
     ],
-    "conf": "กลาง",
+    "conf": "สูง",
     "est": false,
-    "note": "AIP AD 2 VTBD: AD 2.20 ข้อ 4.1–4.2.3 และ 5.1 ตรงกันใน AIRAC 2022-08-11 และ 2024-02-22 (ผู้ตรวจทานเปิดอ่าน 2026-11-19); AD 2.17–2.18 จาก AIRAC 2022 และ ATIS 126.4 ตรงกับ AIRAC 2026-07-09; AIRAC ปัจจุบัน 29 OCT 2026 (AMDT 11/26) เปิดผ่านเครื่องมือไม่ถึง AD 2.20 จึงต้องตรวจก่อนใช้; วงจรของ 03L/21R เป็นข้อเสนอสมมติ"
+    "note": "AIP AD 2 VTBD AIRAC 14 MAY, 9 JUL และ 29 OCT 2026 (ฉบับที่มีผล ณ 19 พ.ย. 2026) อ่านเต็มหน้าด้วย lo_aip_check.mjs: ทุกค่าเหมือนกันทั้งสามฉบับ (T-LO-33) และตรงกับการตรวจของหัวข้อ 02 [LS20] และรอบที่ 5 (5d-aip-update.md ตาราง U3); เลขข้อของ AIRAC 2022 [LO13] ต่างไป (คำเตือนแท็กซี่ 7.3 เป็น 6.3, clearance 8.3 เป็น 7.3, 250 kt จาก AD 2.20 5.1 เป็น AD 2.22 4.1.2); ATIS ขาออก 118.55 และ Don Mueang Approach 119.4 เพิ่มใหม่; วงจรของ 03L/21R เป็นข้อเสนอสมมติ"
+   },
+   "vtbd_vfr_light": {
+    "v": {
+     "routes": "AD 2.22 8.5.2 VFR entry/exit for light aircraft (charts in AD 2.24)",
+     "designedBelow_kt": 130,
+     "above130": "ATC may allow the routes or assign paths/altitudes",
+     "daylightOnly": true,
+     "radioAndTransponder": "required",
+     "reportingPoints": 26,
+     "routeAlt_ft": [
+      1000,
+      4500
+     ],
+     "nearFieldAlt_ft": 1000,
+     "adherence": "recommended paths and altitudes, not mandatory; ATC may assign others",
+     "trainingArea": {
+      "designator": {
+       "AIRAC 2026-05-14": "VT D72",
+       "AIRAC 2026-07-09": "VT D72",
+       "AIRAC 2026-10-29": "VT D6A / VT D6B"
+      },
+      "contact": "Don Mueang Approach 119.4 MHz",
+      "out": "via BANG BUA THONG at or below 1000 ft",
+      "back": "report LAT LUM KAEO at or below 1000 ft, then PATHUMTHANI, 5 NM WEST, then downwind 21L/R or 03R/L",
+      "limits": "surface to 5000 ft ALT (ENR 5.1)"
+     },
+     "radioFailureVFR": "enter downwind with the traffic flow at type height, low approach between the runways at 500 ft rocking wings, re-enter downwind, watch light signals",
+     "coordinates": "not collected (task 09.11)"
+    },
+    "u": "-",
+    "scope": "environment",
+    "src": [
+     "LO39",
+     "LS20",
+     "LS37"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ข้อเท็จจริงจาก AIP AD 2.22 ข้อ 8.5.1, 8.5.2, 8.6.2 และ 9.2 ที่ตรวจใน AIRAC 14 MAY, 9 JUL และ 29 OCT 2026 ด้วย lo_aip_check.mjs (T-LO-34) และหัวข้อ 02 (T-LS-12) [LS20]; พื้นที่ฝึกตาม ENR 5.1 [LS37] แสดงแบบทั่วไปเท่านั้น; ชื่อจุดรายงานเป็นชื่อสถานที่ตาม AIP ไม่เก็บชื่อจุดสังเกต พิกัดจุดรายงานยังไม่ได้เก็บ (งานใน §09.11)"
    },
    "wake_turbulence": {
     "v": {

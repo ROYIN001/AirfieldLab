@@ -1,0 +1,281 @@
+{
+ "method": "round-1 §6 reversible elevator model with card leaves (ค่าประมาณ)",
+ "ids": {
+  "da40ng": {
+   "p": {
+    "eta": 0.95,
+    "at": 4.11,
+    "tau": 0.54,
+    "lt": 4.78,
+    "deda": 0.287,
+    "Se": 0.665,
+    "ce": 0.196,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "train": {
+    "mass": 1150,
+    "approach": {
+     "ias_kt": 73,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": -0.63,
+     "de_deg": -2.43,
+     "tab_deg": 4.43,
+     "grad_N_per_kt": 0.401,
+     "grad_lbf_per_kt": 0.09,
+     "Fs_per_g_N": 19.4,
+     "Fs_per_g_lbf": 4.36,
+     "dde_per_g_deg": -16.29,
+     "stick_per_g_mm": 118.4
+    },
+    "cruise": {
+     "ias_kt": 110,
+     "flaps": 0,
+     "h_m": 914.4000000000001,
+     "alpha_deg": 1.47,
+     "de_deg": -0.82,
+     "tab_deg": 0.8,
+     "grad_N_per_kt": 0.266,
+     "grad_lbf_per_kt": 0.06,
+     "Fs_per_g_N": 19.1,
+     "Fs_per_g_lbf": 4.29,
+     "dde_per_g_deg": -7.51,
+     "stick_per_g_mm": 54.6
+    },
+    "SM_fixed": 0.294,
+    "SM_free": 0.227,
+    "free_elevator_factor": 0.82
+   },
+   "mtom": {
+    "mass": 1310,
+    "approach": {
+     "ias_kt": 73,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 0.96,
+     "de_deg": -4.17,
+     "tab_deg": 6.76,
+     "grad_N_per_kt": 0.457,
+     "grad_lbf_per_kt": 0.103,
+     "Fs_per_g_N": 21.4,
+     "Fs_per_g_lbf": 4.81,
+     "dde_per_g_deg": -18.03,
+     "stick_per_g_mm": 131.1
+    },
+    "cruise": {
+     "ias_kt": 110,
+     "flaps": 0,
+     "h_m": 914.4000000000001,
+     "alpha_deg": 2.21,
+     "de_deg": -1.63,
+     "tab_deg": 1.9,
+     "grad_N_per_kt": 0.303,
+     "grad_lbf_per_kt": 0.068,
+     "Fs_per_g_N": 21.1,
+     "Fs_per_g_lbf": 4.75,
+     "dde_per_g_deg": -8.33,
+     "stick_per_g_mm": 60.6
+    },
+    "SM_fixed": 0.294,
+    "SM_free": 0.227,
+    "free_elevator_factor": 0.82
+   },
+   "cfr23_155": {
+    "W_lb": 2888,
+    "nL": 3.8,
+    "required_lbf": 20.6,
+    "required_per_g_lbf": 7.37,
+    "model_lbf": 13.3,
+    "ok": false
+   }
+  },
+  "da40_180": {
+   "p": {
+    "eta": 0.95,
+    "at": 4.11,
+    "tau": 0.54,
+    "lt": 4.78,
+    "deda": 0.287,
+    "Se": 0.665,
+    "ce": 0.196,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "train": {
+    "mass": 1050,
+    "approach": {
+     "ias_kt": 66,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 0.43,
+     "de_deg": -3.59,
+     "tab_deg": 5.98,
+     "grad_N_per_kt": 0.396,
+     "grad_lbf_per_kt": 0.089,
+     "Fs_per_g_N": 17.6,
+     "Fs_per_g_lbf": 3.95,
+     "dde_per_g_deg": -18.09,
+     "stick_per_g_mm": 131.5
+    },
+    "cruise": {
+     "ias_kt": 100,
+     "flaps": 0,
+     "h_m": 914.4000000000001,
+     "alpha_deg": 1.9,
+     "de_deg": -1.29,
+     "tab_deg": 1.44,
+     "grad_N_per_kt": 0.262,
+     "grad_lbf_per_kt": 0.059,
+     "Fs_per_g_N": 17.3,
+     "Fs_per_g_lbf": 3.89,
+     "dde_per_g_deg": -8.25,
+     "stick_per_g_mm": 60
+    },
+    "SM_fixed": 0.294,
+    "SM_free": 0.226,
+    "free_elevator_factor": 0.82
+   },
+   "mtom": {
+    "mass": 1200,
+    "approach": {
+     "ias_kt": 66,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 2.22,
+     "de_deg": -5.54,
+     "tab_deg": 8.6,
+     "grad_N_per_kt": 0.453,
+     "grad_lbf_per_kt": 0.102,
+     "Fs_per_g_N": 19.4,
+     "Fs_per_g_lbf": 4.37,
+     "dde_per_g_deg": -20.04,
+     "stick_per_g_mm": 145.8
+    },
+    "cruise": {
+     "ias_kt": 100,
+     "flaps": 0,
+     "h_m": 914.4000000000001,
+     "alpha_deg": 2.73,
+     "de_deg": -2.19,
+     "tab_deg": 2.65,
+     "grad_N_per_kt": 0.299,
+     "grad_lbf_per_kt": 0.067,
+     "Fs_per_g_N": 19.2,
+     "Fs_per_g_lbf": 4.31,
+     "dde_per_g_deg": -9.15,
+     "stick_per_g_mm": 66.5
+    },
+    "SM_fixed": 0.294,
+    "SM_free": 0.226,
+    "free_elevator_factor": 0.82
+   },
+   "cfr23_155": {
+    "W_lb": 2646,
+    "nL": 3.8,
+    "required_lbf": 18.9,
+    "required_per_g_lbf": 6.75,
+    "model_lbf": 12.1,
+    "ok": false
+   }
+  },
+  "da40d": {
+   "p": {
+    "eta": 0.95,
+    "at": 4.11,
+    "tau": 0.54,
+    "lt": 4.78,
+    "deda": 0.287,
+    "Se": 0.665,
+    "ce": 0.196,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "train": {
+    "mass": 1060,
+    "approach": {
+     "ias_kt": 67,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 0.17,
+     "de_deg": -3.31,
+     "tab_deg": 5.61,
+     "grad_N_per_kt": 0.394,
+     "grad_lbf_per_kt": 0.089,
+     "Fs_per_g_N": 17.7,
+     "Fs_per_g_lbf": 3.98,
+     "dde_per_g_deg": -17.68,
+     "stick_per_g_mm": 128.6
+    },
+    "cruise": {
+     "ias_kt": 100,
+     "flaps": 0,
+     "h_m": 914.4000000000001,
+     "alpha_deg": 1.95,
+     "de_deg": -1.35,
+     "tab_deg": 1.52,
+     "grad_N_per_kt": 0.264,
+     "grad_lbf_per_kt": 0.059,
+     "Fs_per_g_N": 17.4,
+     "Fs_per_g_lbf": 3.92,
+     "dde_per_g_deg": -8.31,
+     "stick_per_g_mm": 60.4
+    },
+    "SM_fixed": 0.294,
+    "SM_free": 0.226,
+    "free_elevator_factor": 0.82
+   },
+   "mtom": {
+    "mass": 1150,
+    "approach": {
+     "ias_kt": 67,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 1.22,
+     "de_deg": -4.45,
+     "tab_deg": 7.13,
+     "grad_N_per_kt": 0.428,
+     "grad_lbf_per_kt": 0.096,
+     "Fs_per_g_N": 18.8,
+     "Fs_per_g_lbf": 4.23,
+     "dde_per_g_deg": -18.82,
+     "stick_per_g_mm": 136.8
+    },
+    "cruise": {
+     "ias_kt": 100,
+     "flaps": 0,
+     "h_m": 914.4000000000001,
+     "alpha_deg": 2.45,
+     "de_deg": -1.89,
+     "tab_deg": 2.24,
+     "grad_N_per_kt": 0.287,
+     "grad_lbf_per_kt": 0.064,
+     "Fs_per_g_N": 18.6,
+     "Fs_per_g_lbf": 4.17,
+     "dde_per_g_deg": -8.85,
+     "stick_per_g_mm": 64.4
+    },
+    "SM_fixed": 0.294,
+    "SM_free": 0.226,
+    "free_elevator_factor": 0.82
+   },
+   "cfr23_155": {
+    "W_lb": 2535,
+    "nL": 3.8,
+    "required_lbf": 18.1,
+    "required_per_g_lbf": 6.47,
+    "model_lbf": 11.7,
+    "ok": false
+   }
+  }
+ }
+}

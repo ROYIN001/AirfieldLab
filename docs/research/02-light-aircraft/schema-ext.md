@@ -5,7 +5,9 @@
 1. schema ของรอบที่ 1: [`../01-flight-physics/schema.md`](../01-flight-physics/schema.md) (หลัก) และรายการ leaf รายแบบ 384 ตัวใน `scripts/r1-pertype-leaves.txt` (และรายการ path ใน `scripts/r1-pertype-paths.json`)
 2. schema ส่วนขยายของรอบที่ 3 (เครื่องบินโดยสาร): [`../03-airliners/schema-ext.md`](../03-airliners/schema-ext.md) (มีใน repo เมื่อ pull request ของรอบที่ 3 merge แล้ว)
 
-รอบที่ 2 ใช้โครงเดียวกับรอบที่ 3 ทุกอย่าง (leaf, บล็อก JSON ที่มีคีย์บนสุดคีย์เดียว, หมวด `airframe`, `aero.derivatives`, `aero.flaps.detents`, `speeds`, `performance`, `propulsion`, `controls.*`, `ops`, `validation.*`) เพื่อให้ทั้งสองรอบป้อนรูปแบบ `data/aircraft/<id>.json` เดียวกันได้ ข้อ 1–4 ด้านล่างสรุปส่วนที่ใช้ร่วม ข้อ 5 เป็นส่วนที่รอบที่ 2 เพิ่ม ถ้าขัดกันให้ยึดไฟล์นี้แล้วบันทึกไว้ในหัวข้อ "ความขัดแย้ง"
+รอบที่ 2 ใช้โครงเดียวกับรอบที่ 3 ทุกอย่าง (leaf, บล็อก JSON ที่มีคีย์บนสุดคีย์เดียว, หมวด `airframe`, `aero.derivatives`, `aero.flaps.detents`, `speeds`, `performance`, `propulsion`, `controls.*`, `ops`, `validation.*`) เพื่อให้ทั้งสองรอบป้อนรูปแบบ `data/aircraft/<id>.json` เดียวกันได้ ข้อ 1–4 ด้านล่างสรุปส่วนที่ใช้ร่วม ข้อ 5 เป็นส่วนที่รอบที่ 2 เพิ่ม ข้อ 6 คือการตรวจความสอดคล้องที่ `lm_merge` ทำ ถ้าขัดกันให้ยึดไฟล์นี้แล้วบันทึกไว้ในหัวข้อ "ความขัดแย้ง"
+
+**อัปเดต 19 พ.ย. 2026** (ตามการตรวจความครบถ้วนและข้อตัดสิน D1–D6 ของผู้ประสานงาน): ความเร็วอ้างอิงของบัตร (D1, ข้อ 4 และ `speeds`), ระยะเคลื่อนพื้นบังคับ (D2, `controls`), รูปแบบ `training_mass` (D3, `airframe`), scope ตามหมวด (D4, ข้อ 1), ไฟล์ 13 และ `_na ["*"]` (D5, ข้อ 2–4), ชื่อ detent (D6, `aero`), ฐาน resolve `trainer_r1` (ข้อ 2) และการตรวจใหม่ (ข้อ 6) กฎที่เปลี่ยนมีคำว่า "อัปเดต 19 พ.ย. 2026" กำกับ
 
 ## 1. leaf
 
@@ -13,18 +15,22 @@
 - `v` ตัวเลข สตริง อาร์เรย์ อ็อบเจกต์ตาม config (เช่น `{"0":…, "10":…, "30":…}` ตามองศาแฟลป) หรือตาราง `{"axes":{…},"data":[…]}`
 - `u` หน่วยเป็นสตริง (SI เป็นหลัก: `m`, `kg`, `N`, `W`, `s`, `rad`, `deg`, `1/rad`, `kg m2`; ค่าไร้หน่วย `-`) ความเร็วในหมวด `speeds` ใช้ `kt IAS` หรือ `kt CAS` (ต้องระบุว่าอันไหน) และหน่วยการบินอื่นใส่ใน `note`
 - `scope` `aircraft` | `engine` | `propeller` | `gear` (ค่ารายแบบ) · `environment` | `sim` (ค่าร่วม)
+  - **อัปเดต 19 พ.ย. 2026 (D4)** scope ตามหมวดแรกของ path: `gear.*` → `gear`; `piston.*`, `turboprop.*`, `turbofan.*`, `engine.*` → `engine`; `propeller.*` → `propeller`; `airframe`, `aero`, `speeds`, `performance`, `controls`, `ops`, `procedures`, `validation`, `otherSims` → `aircraft`; หมวดอื่นของรอบที่ 1 (`interference.*`, `wind.*`, `input.*`) ใช้ scope เดียวกับ path นั้นในรอบที่ 1; `common_light` ใช้ `environment` หรือ `sim` เท่านั้น (`lm_merge` ตรวจ ข้อ 6)
 - `src` อาร์เรย์รหัสแหล่งในไฟล์หัวข้อของตัวเอง เช่น `["LC7"]` อ้างข้ามหัวข้อได้ เช่น `["LM3"]` หรือรอบที่ 1 `["R1:A11"]` ห้ามว่าง (ยกเว้น `_na`, `_inherits`)
 - `conf` `สูง` (อ่านตรงจากเอกสารปฐมภูมิหรือคำนวณจากนิยาม) · `กลาง` (แหล่งทุติยภูมิหรือต้องตีความ) · `ต่ำ` (ประมาณจากหลักการหรือยังไม่ยืนยัน)
 - `est` `true` = **ค่าประมาณ** ต้องบอกวิธีได้มาใน `note` หรือเนื้อหา
+  - **อัปเดต 19 พ.ย. 2026** `est: true` ต้องมีคำว่า "ค่าประมาณ" (อย่างน้อย "ประมาณ") ใน `note` และ `conf` เป็น `กลาง` หรือ `ต่ำ` ไม่ใช่ `สูง`; `est: false` ห้ามเขียนว่า "ค่าประมาณ" ใน `note` (ยกเว้นวลีปฏิเสธ เช่น "ไม่ใช่ค่าประมาณ") ค่าที่ได้จากการ fit หรือการคำนวณของโครงการเอง (เช่นรูปทรงใบพัดจาก BEM) เป็น `est: true` (`lm_merge` ตรวจ ข้อ 6)
 - `note` หมายเหตุภาษาไทยสั้น ๆ (หน่วยการบิน, เงื่อนไข เช่น มวล CG แฟลป, เลขหน้าในเอกสาร)
 
 ## 2. บล็อก JSON ในไฟล์หัวข้อ
 
 - บล็อก ```json ที่เป็นข้อมูลต้องมี **คีย์บนสุดคีย์เดียว** เป็นรหัสแบบเครื่องบิน (ข้อ 3) หรือ `common_light` บล็อกตัวอย่างที่ไม่ใช่ข้อมูลให้ใช้ ```js หรือมีคีย์บนสุดมากกว่าหนึ่งคีย์
 - แบ่งเป็นหลายบล็อกได้ (เช่นบล็อกละหมวด) สคริปต์รวมจะ deep-merge ตามรหัสแบบ ถ้า path เดียวกันมาจากสองที่จะถูกแจ้งเป็นความขัดแย้ง จึงต้องเขียนเฉพาะ path ที่หัวข้อของตัวเองเป็นเจ้าของ (ข้อ 4)
-- ตรวจด้วย `node docs/research/02-light-aircraft/scripts/lm_merge.mjs --type <id> --coverage --dry` (แจ้ง ERRORS, CONFLICTS และ path ของรอบที่ 1 ที่ยังไม่เติมและไม่อยู่ใน `_na`) ต้องไม่มี ERRORS/CONFLICTS ในบล็อกของตัวเองก่อนส่งงาน
+- ตรวจด้วย `node docs/research/02-light-aircraft/scripts/lm_merge.mjs --type <id> --coverage --dry` (แจ้ง ERRORS, CONFLICTS และ path ของรอบที่ 1 ที่ยังไม่เติมและไม่อยู่ใน `_na`) ต้องไม่มี ERRORS/CONFLICTS ในบล็อกของตัวเองก่อนส่งงาน **อัปเดต 19 พ.ย. 2026**: คำสั่งเดียวกันพิมพ์การตรวจความสอดคล้อง (ข้อ 6) เป็น WARN ต่อ id พร้อมไฟล์:บรรทัด ควรแก้ WARN ของบล็อกตัวเองด้วย; `--strict` นับ WARN เป็น ERROR (exit 1) และจะเปิดใน CI เมื่อทุกบัตรแก้ครบ
 - รุ่นย่อย: `"_inherits": {"v":"da40ng","u":"-","scope":"aircraft","src":[],"conf":"สูง","est":false,"note":"…"}` แล้วใส่เฉพาะค่าที่ต่าง
+  - **อัปเดต 19 พ.ย. 2026** `_inherits` อ้าง**ฐาน resolve** ได้โดยไม่ต้องมีบล็อกในไฟล์หัวข้อ: `trainer_r1` = fixture `02-light-aircraft/scripts/lm_fixture_trainer_r1.json` (`AC` ของซิมวันนี้) รวมกับ leaf ต่อแบบของรอบที่ 1 จาก `01-flight-physics/params-trainer.json` (ยกเว้น `turbofan.*`, `controls.reference_types.*`) ฐานไม่ถูกคัดลอกลง `params-light.json` ไฟล์นั้นบอกที่มาใน `_meta.bases` (01-methods §01.2.5); coverage ของ id ที่สืบทอดคิดบนบัตรที่ resolve แล้ว
 - path ของรอบที่ 1 ที่ไม่ใช้กับแบบนั้น: leaf `_na` ระดับบนของแบบ `v` = อาร์เรย์ path (ใช้ `หมวด.*` ได้) และ `note` บอกเหตุผล เช่น `["turbofan.*", "turboprop.*", "gear.strut_main.*"]` สำหรับเครื่องลูกสูบที่ใช้ขาสปริง
+  - **อัปเดต 19 พ.ย. 2026 (D5)** `v` = `["*"]` (หรือมี `"*"` ในอาร์เรย์) แปลว่าทุก path ต่อแบบของรอบที่ 1 ที่ไม่ได้กรอกตั้งใจไม่ใส่ ใช้กับ id ที่ไม่มีบัตรข้อมูล เช่น `pa28_180` ที่มีแค่ข้อมูลโมเดลเปิดของหัวข้อ 03 `note` ต้องบอกเหตุผล coverage ของ id นั้นจะขาด 0 และ `lm_merge` ไม่ตรวจความเร็ว (ข้อ 6) ของ id นั้น
 
 ## 3. รหัสแบบเครื่องบิน (type id)
 
@@ -36,8 +42,10 @@
 | `da42ng` | Diamond DA42 NG (2× AE300) | แบบหลักของ DA42 (เลือกรุ่นที่โรงเรียนไทยใช้จริงถ้าหัวข้อ 02 พบว่าต่าง) |
 | `da42_vi`, `da42_tae125` | รุ่นย่อย DA42 | `_inherits: da42ng` ถ้าจำเป็น |
 | `pc7mk2`, `pc9m`, `t6a`, `t6c` | เครื่องฝึกใบพัดเทอร์โบคลาสอ้างอิง | ค่าที่เปิดเผยสาธารณะเท่านั้น |
-| `trainer_r2` | ข้อเสนอของรอบที่ 2 สำหรับเครื่องฝึกสมมติของ AirfieldLab | ใส่เฉพาะ leaf ที่เสนอให้เปลี่ยนจากรอบที่ 1 (บอก path และค่าเดิมใน `note`) |
-| อื่น ๆ | แบบที่โรงเรียนการบินไทยใช้ เช่น `c152`, `p2008jc`, `p2006t`, `sr20`, `pa28_161`, `pa44_180` | ตั้งชื่อรูปแบบนี้ (ตัวเล็ก ตัวเลข `_`) |
+| `trainer_r2` | ข้อเสนอของรอบที่ 2 สำหรับเครื่องฝึกสมมติของ AirfieldLab | ใส่เฉพาะ leaf ที่เสนอให้เปลี่ยนจากรอบที่ 1 (บอก path และค่าเดิมใน `note`); `_inherits: trainer_r1` resolve กับฐานของข้อ 2 (อัปเดต 19 พ.ย. 2026) |
+| `pa28_161`, `be76`, `p2002jf`, `p68c`, `t206h`, `ct4` | แบบที่โรงเรียนหรือผู้ใช้ในไทยใช้ บัตรย่อระดับ TCDS ในไฟล์ 13 (LN) | อัปเดต 19 พ.ย. 2026 (D5); `ct4` ใช้แหล่งสาธารณะและการอธิบายแบบทั่วไปตามกติกาข้อมูลทหาร |
+| `pa28_180` | ข้อมูลโมเดลเปิดเท่านั้น (หัวข้อ 03) ไม่มีบัตร | อัปเดต 19 พ.ย. 2026 (D5): `_na ["*"]` |
+| อื่น ๆ | แบบที่โรงเรียนการบินไทยใช้ เช่น `c152`, `p2008jc`, `p2006t`, `sr20`, `pa44_180` | ตั้งชื่อรูปแบบนี้ (ตัวเล็ก ตัวเลข `_`) |
 | `common_light` | ค่าที่ใช้ร่วมกันทุกแบบในรอบนี้ (scope `environment`/`sim`) | |
 
 ## 4. เจ้าของ path (หัวข้อไหนเขียนอะไร)
@@ -46,7 +54,7 @@
 |---|---|---|
 | `01-methods.md` | LM | `common_light.methods.*` (ค่าคงที่ของวิธีประมาณ เช่นตาราง radius of gyration) |
 | `02-thai-schools.md` | LS | `common_light.thai_fleet.*` (โรงเรียน/ผู้ใช้ แบบ และจำนวนเครื่อง) |
-| `03-open-models.md` | LB | `<id>.otherSims.*` และ `<id>.validation.openModels.*` ของทุกแบบที่มีโมเดลเปิด |
+| `03-open-models.md` | LB | `<id>.otherSims.*` และ `<id>.validation.openModels.*` ของทุกแบบที่มีโมเดลเปิด และ `pa28_180._na` = `["*"]` (อัปเดต 19 พ.ย. 2026, D5) |
 | `04-c172s.md` | LC | `c172s` ทุกหมวด ยกเว้น `ops`, `procedures`, `otherSims`, `validation.openModels` |
 | `05-da40.md` | LD | `da40ng` และรุ่นย่อย DA40 (ข้อยกเว้นเดียวกัน) |
 | `06-da42.md` | LT | `da42ng` และรุ่นย่อย DA42 (ข้อยกเว้นเดียวกัน) |
@@ -54,6 +62,9 @@
 | `08-handling.md` | LH | `<id>.ops.*` ของทุกแบบ, `common_light.ops.*`, `common_light.evaluator.*` |
 | `09-procedures.md` | LO | `<id>.procedures.*` ของทุกแบบ, `common_light.procedures.*` |
 | `10-…md`, `11-…md`, `12-…md` | LE, LF, LG | บัตรข้อมูลแบบย่อของแบบที่โรงเรียนไทยใช้ (ข้อยกเว้นเดียวกับบัตรหลัก) |
+| `13-other-trainers.md` | LN | `pa28_161`, `be76`, `p2002jf`, `p68c`, `t206h`, `ct4` ทุกหมวดของบัตร รวม `speeds.*` (ข้อยกเว้นเดียวกับบัตรหลัก) — อัปเดต 19 พ.ย. 2026 (D5) |
+
+**อัปเดต 19 พ.ย. 2026 (D1) ความเร็วอ้างอิง**: เจ้าของบัตรตามตารางนี้เป็นเจ้าของ `speeds.VREF_kt` และ `speeds.VAPP_kt` ที่ `airframe.weights.training_mass` (สำหรับ `pa28_161`, `be76`, `p2002jf`, `p68c`, `t206h`, `ct4` คือไฟล์ 13) หัวข้อ 08 (`ops.attitude_power.final.v.ias_kt`) และ 09 (`procedures.stabilised.v.Vapp`) **อ้างค่าของบัตร** ต่างได้ไม่เกิน 0.5 kt ถ้าหัวข้อ 08/09 ใช้ค่าที่แก้ตามมวลอื่น ต้องเขียน "แก้มวล" (หรือ "mass-corrected") พร้อมมวลและวิธีใน `note` ของ leaf นั้น
 
 รหัสแหล่งอ้างอิงและกรณีทดสอบใช้รหัสสองตัวอักษรในตาราง เช่น แหล่ง [LC12] และกรณีทดสอบ T-LC-07 (ไม่ซ้ำกับรอบที่ 1 ที่ใช้ตัวเดียว A, U, P, E, F, C, G, W, N, V, I, S และรอบที่ 3 ที่ใช้ R, B, L, H, D, J, Y, Z, O, K) สคริปต์ใช้คำนำหน้าตัวเล็ก เช่น `scripts/lc_*.mjs`
 
@@ -68,6 +79,7 @@
 - `airframe.identity` — leaf เดียว `v` = `{manufacturer, model, variant, engine, propeller, seats, category (normal/utility/aerobatic), tc_ref}`
 - `airframe.weights.{MTOW, MLW, MRW, BEW_typical, max_fuel_usable, useful_load}` — kg (MLW ใส่เมื่อ POH กำหนดต่างจาก MTOW; น้ำหนักเปล่าให้บอกว่าเป็นค่าตัวอย่างของเครื่องลำไหนหรือค่าโบรชัวร์)
 - `airframe.weights.training_mass` — มวลที่เสนอให้ซิมใช้เป็นค่าเริ่มต้น (ครูฝึก + ศิษย์ + เชื้อเพลิงตามที่ระบุ) พร้อมวิธีคิด
+  - **อัปเดต 19 พ.ย. 2026 (D3)** `v` = `{"kg", "empty_kg", "crew_kg", "fuel_kg"}` (เพิ่ม `"fuel_l"` ได้) `u` = `kg`; `kg` = `empty_kg + crew_kg + fuel_kg` (±2 kg); `empty_kg` เท่ากับ `airframe.weights.BEW_typical` หรือ `note` อธิบายความต่างโดยอ้างคำว่า `BEW_typical` ตัวอย่าง `{"kg": 1000, "empty_kg": 760, "crew_kg": 170, "fuel_kg": 70, "fuel_l": 97}` (ตัวเลขสมมติเพื่อแสดงรูปแบบ) เครื่องมือของหัวข้อ 01 ยังอ่านตัวเลขเดียวและคีย์แบบเก่า `{kg, BEW, crew, fuel}` ได้ (`trainingMassKg`) แต่ `lm_merge` เตือน
 - `airframe.cg.{datum, LEMAC, MAC, envelope, ref}` — `envelope` เป็นตาราง/รูปหลายเหลี่ยม `[[mass_kg, fwd_m, aft_m], …]` หน่วย `kg, m DAT` และ %MAC ใน `note`; `ref` = CG อ้างอิงของตำแหน่ง FRD และ inertia (m DAT และ %MAC)
 - `airframe.inertia.{Ixx, Iyy, Izz, Ixz, ref_mass, radii, method}` — kg m2 แกนตัวเครื่องที่ CG อ้างอิง; `radii` = `{Rx, Ry, Rz}` แบบไร้มิติของ Roskam (Ixx = m (b Rx / 2)², Iyy = m (L Ry / 2)², Izz = m ((b+L)/2 · Rz / 2)²) ตามรอบที่ 3
 - `airframe.wing.{S, b, MAC, AR, taper, sweep_c4_deg, dihedral_deg, incidence_deg, twist_deg, airfoil}`
@@ -81,6 +93,7 @@
 - **เครื่องหมาย (ตาม `AC` ปัจจุบัน ต้องแปลงค่าจากเอกสารให้ตรงก่อนใส่)**: α บวกเมื่อเชิดหัว; `de` บวก = ขอบท้าย elevator ลง (ก้มหัว) ⇒ `Cmde < 0`, `CLde > 0`; `da` บวก = สั่งม้วนขวา ⇒ `Clda > 0` และ adverse yaw `Cnda < 0`; `dr` บวก = ขอบท้าย rudder ไปซ้าย ⇒ `CYdr > 0`, `Cndr < 0`, `Cldr > 0`; `Cnb > 0` (เสถียร), `Clb < 0` (dihedral effect)
 - `aero.static_long.*` — path ของรอบที่ 1 (`CL0`, `CLalpha`, `CLmax_target`, `alpha_CLmax`, `Cm0`, `Cmalpha`, …) ค่าตามแฟลปใช้ชื่อ detent จริง เช่น C172S `{"0":…, "10":…, "20":…, "30":…}` (องศา) DA40 `{"UP":…, "TO":…, "LDG":…}`
 - `aero.flaps.detents` — `[{name, flap_deg, VFE_kt, dCL0, dCD0, dCm0, CLmax}]`; `aero.flaps.transition_time_s`
+  - **อัปเดต 19 พ.ย. 2026 (D6)** `name` ใช้ชื่อตำแหน่งแฟลปตาม AFM/POH ของแบบนั้นตามตัวอักษร (เจ้าของบัตรตรวจกับ AFM; P2006T ให้หัวข้อ 12 ตัดสิน) และทุกที่ที่อ้างแฟลปใช้ชื่อเดียวกันนี้: คีย์ตามแฟลปใน `aero.static_long.*` และ `speeds.VFE`, `validation.stall_test`, หัวข้อ 08 `ops.attitude_power.*.v.flap`, หัวข้อ 09 `procedures.stabilised.v.landingFlaps`, `procedures.pattern.v.flapsAt.*`, `procedures.{short_field, soft_field}.v.{takeoff, landing}.flaps`, `procedures.go_around.v.flapsSeq` (`lm_merge` ตรวจ ข้อ 6)
 - `aero.gear_drag.dCD0` (ล้อพับได้) ; `aero.legacy` — ค่าที่ทำให้แบบนี้บินได้กับโค้ดวันนี้ทันที: `{CL0, CLa, CLflap, CDflap, CDgear, Cm0, Cma, Cmflap, aStall, aStallFlap}` (นิยามตาม `AC`; `AC.flaps` 0–1 เป็นสัดส่วนของแฟลปสุด) — หัวข้อ 01 กำหนดวิธีแปลง
 
 ### `speeds` (บัตรรายแบบ; `u` = `kt IAS` หรือ `kt CAS`)
@@ -88,6 +101,7 @@
 - `speeds.VFE` — `{"<detent>": kt}`
 - เครื่องสองเครื่องยนต์: `speeds.{VMCA_kt, VYSE_kt, VXSE_kt, VSSE_kt}`
 - `speeds.ias_cas` — ตาราง KIAS → KCAS ตามแฟลปจาก POH/AFM (ซิมต้องใช้ CAS ในฟิสิกส์ IAS ใช้แสดงผลและเทียบเกณฑ์)
+- **อัปเดต 19 พ.ย. 2026 (D1) ความเร็วอ้างอิงของบัตร**: ทุกบัตรต้องมี `speeds.VREF_kt` และ `speeds.VAPP_kt` เป็นตัวเลข ที่ `training_mass` และแฟลปลงจอด (`u` บอก `kt IAS` หรือ `kt CAS`; ถ้าสองค่าต่างหน่วย ให้มี `speeds.ias_cas` ของ detent ลงจอดเพื่อแปลง) ต้องได้ VAPP ≥ VREF เมื่อเทียบใน KCAS ค่าที่ POH ให้ที่ MTOW ให้แก้ด้วย $V \propto \sqrt{m}$ แล้วบอกใน `note` ค่าคู่นี้เป็นค่ากลางที่หัวข้อ 08 และ 09 อ้าง (ข้อ 4)
 - `speeds.stall_table` — ความเร็ว stall ตามมุมเอียง แฟลป และ CG จาก POH/AFM, `speeds.stall_warning_margin_kt`, `speeds.stall_altitude_loss_ft`
 - `speeds.crosswind_demonstrated_kt`, `speeds.icao_approach_category`
 
@@ -114,6 +128,7 @@
 ### `controls` (บัตรรายแบบ)
 - `controls.architecture` — `{"pitch":"reversible", "roll":…, "yaw":…, "trim":"tab"|"ths"|"spring"}` ตามรอบที่ 3
 - `controls.surfaces.<elevator|aileron|rudder|flap|trim_tab>` — `{travel_deg:{up,down} หรือ {left,right}, rate_dps, actuator_tau_s}` (ระยะเคลื่อนจาก TCDS/AMM เป็นหลัก)
+  - **อัปเดต 19 พ.ย. 2026 (D2)** รูปแบบมาตรฐานคือ leaf เดียวต่อพื้นบังคับที่ `controls.surfaces.<s>` และ `travel_deg` อยู่ใน `v` เช่น `"elevator": {"v": {"travel_deg": {"up": 28, "down": 23}}, "u": "deg", …}`; `travel_deg` เป็นตัวเลขเดียวได้ (ถือว่าสมมาตร) `lm_card.buildAC` อ่านรูปแบบนี้ก่อน แล้วจึงอ่าน path เดิม `controls.surfaces.<s>.travel_deg` เป็นทางสำรอง บัตรไม่ต้องใส่ทางเลี่ยงในสคริปต์อีก (01-methods §01.2.3)
 - `controls.trim.*` — ชนิด (manual wheel, electric), ช่วงมุม, อัตรา
 - path ของรอบที่ 1 `controls.pitch/roll/yaw.*` (hinge moment, gearing, breakout, ...) สำหรับระบบ reversible
 
@@ -144,3 +159,18 @@
 - `interference.*`, `wind.*` (per-type), `input.*` (per-type) — path ของรอบที่ 1
 - `otherSims.*` — หัวข้อ 03 เจ้าของ
 - `_na`, `_inherits` — ข้อ 2
+
+## 6. การตรวจความสอดคล้องของ `lm_merge` (เพิ่ม 19 พ.ย. 2026)
+
+`lm_merge.mjs` (ผ่าน `lm_lib.validate()`) ตรวจ 8 ข้อหลังรวมบล็อก รายงานเป็น WARN ค่าเริ่มต้น พร้อมตารางสรุปต่อ id และไฟล์:บรรทัดที่ต้องแก้; `--strict` นับ WARN เป็น ERROR (exit 1); `--checks` พิมพ์ทุกข้อ; `--json-checks <file>` เขียนผลเป็น JSON รายละเอียดและผลรันล่าสุดอยู่ใน 01-methods §01.2.4
+
+| ชื่อ | กฎ | ข้อตัดสิน |
+|---|---|---|
+| `scope` | scope ตามหมวดของข้อ 1 | D4 |
+| `est` | `est: true` ต้องมี "ประมาณ" ใน note; `est: false` ห้ามมี "ค่าประมาณ" (ยกเว้นวลีปฏิเสธ) | กติกาของเจ้าของโครงการ (ค่าประมาณต้องติดป้าย), ข้อ 1 |
+| `est_conf` | `est: true` ห้ามใช้ `conf: "สูง"` | ข้อ 1 |
+| `training_mass` | รูปแบบ `{kg, empty_kg, crew_kg, fuel_kg}`; ผลรวมตรง ±2 kg; `empty_kg` = `BEW_typical` ±1 kg หรือ note อธิบาย | D3 |
+| `speeds` | บัตรที่ resolve แล้วมี `speeds.VREF_kt` และ `speeds.VAPP_kt` (ข้ามเมื่อ `_na ["*"]`) | D1, D5 |
+| `vapp_vref` | VAPP ≥ VREF ใน KCAS | D1 |
+| `xfile_vapp` | 08 `ops.attitude_power.final.v.ias_kt` และ 09 `procedures.stabilised.v.Vapp` = `speeds.VAPP_kt` ±0.5 kt เว้นแต่ note บอก "แก้มวล"/"mass-corrected" (ลดเป็น info) | D1 |
+| `detent` | ชื่อแฟลปใน 08/09 อยู่ใน `aero.flaps.detents[].name` | D6 |

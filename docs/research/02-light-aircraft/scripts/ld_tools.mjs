@@ -3,9 +3,13 @@
 //   node scripts/ld_tools.mjs derivs     -> out/ld_derivs.json   (lm_derivs da40ng --json; ค่าประมาณจากรูปทรง §01.3)
 //   node scripts/ld_tools.mjs inertia    -> out/ld_inertia.json  (Roskam radii single_prop §01.4, training mass and MTOW)
 //   node scripts/ld_tools.mjs fit <id> [--mode static|vy] -> out/ld_fit_<id>.json (lm_legacy_fit --json §01.8)
-//   node scripts/ld_tools.mjs card <id> [extra lm_card args] -> out/ld_card_<id>.json (lm_card --json)
-// Workaround noted in 05-da40.md §05.12: lm_inertia CLI reads airframe.weights.training_mass only as a number, our leaf
-// is {kg,…} (lm_card accepts both), so inertia is computed here with the library function and an explicit mass.
+//   node scripts/ld_tools.mjs card <id> [--mass kg] -> out/ld_card_<id>[_m<kg>].json  (lm_card library run, same JSON as
+//                                lm_card --json: {type, ac, trace, res})
+// card (19 Nov 2026, D1): speeds.VREF_kt / VAPP_kt of the card hold the values at airframe.weights.training_mass. When
+//   --mass differs from training_mass, Vref/Vapp of the run come from speeds.approach_table (row LDG, linear in mass,
+//   held at the last row above its range, e.g. NG 1,310 kg → 1,280 kg row = MLW) converted to KCAS with speeds.ias_cas,
+//   plus the card's VAPP − VREF; the trace gets a row 'Vref/Vapp (ld_tools)'. Travel comes from the card (D2, lm_card).
+// inertia uses the library function with explicit masses (training mass and MTOM of each airframe).
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { inertiaFromRadii, RADII } from './lm_inertia.mjs';
@@ -22,5 +26,25 @@ else if (cmd === 'inertia') {
   }
   save('ld_inertia.json', o);
 } else if (cmd === 'fit') save(`ld_fit_${id}.json`, run('lm_legacy_fit.mjs', [id, '--json', ...rest]));
-else if (cmd === 'card') save(`ld_card_${id}${rest.includes('--mass') ? '_m' + rest[rest.indexOf('--mass') + 1] : ''}.json`, run('lm_card.mjs', [id, '--json', ...rest]));
+else if (cmd === 'card') {
+  const { loadType, val, isObj, iasCas, trainingMassKg } = await import('./lm_lib.mjs');
+  const { loadSim, buildAC, applyAC, cardInfo, runCard } = await import('./lm_card.mjs');
+  const mass = rest.includes('--mass') ? +rest[rest.indexOf('--mass') + 1] : null;
+  const card = loadType(id), trace = [];
+  const ac = buildAC(card, { mass, trace });
+  const tm = trainingMassKg(card), at = val(card, 'speeds.approach_table');
+  if (mass && Math.abs(mass - tm) > 0.5 && isObj(at) && Array.isArray(at.axes?.mass_kg)) {
+    const xs = at.axes.mass_kg, fl = (at.axes.flap || ['LDG']).map(String), j = Math.max(0, fl.indexOf('LDG') >= 0 ? fl.indexOf('LDG') : fl.length - 1);
+    const row = Array.isArray(at.data[0]) ? at.data[j] : at.data, m = Math.min(Math.max(mass, xs[0]), xs.at(-1));
+    let i = 0; while (i < xs.length - 2 && m > xs[i + 1]) i++;
+    const kias = row[i] + (row[i + 1] - row[i]) * (m - xs[i]) / (xs[i + 1] - xs[i]);
+    const dv = (val(card, 'speeds.VAPP_kt') ?? 0) - (val(card, 'speeds.VREF_kt') ?? 0);
+    const kcas = iasCas(card, fl[j] ?? 'LDG').f(kias);
+    ac.Vref = Math.round(kcas); ac.Vapp = Math.round(kcas + dv);
+    trace.push({ field: 'Vref/Vapp (ld_tools)', value: [ac.Vref, ac.Vapp], from: 'speeds.approach_table', rule: `LDG ${kias.toFixed(1)} KIAS ที่ ${m} kg (run ${mass} kg) → KCAS; VAPP − VREF ${dv} kt` });
+  }
+  const M = await loadSim(); applyAC(M, ac);
+  const res = runCard(M, ac, cardInfo(card, ac));
+  save(`ld_card_${id}${mass ? '_m' + mass : ''}.json`, JSON.stringify({ type: id, ac, trace, res }, (k, v) => (typeof v === 'number' ? +v.toPrecision(6) : v), 1));
+}
 else { console.error('usage: ld_tools.mjs derivs|inertia|fit <id>|card <id>'); process.exit(2); }

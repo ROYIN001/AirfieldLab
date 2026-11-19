@@ -1,0 +1,1907 @@
+{
+ "generated": "lh_stick.mjs 19 Nov 2026",
+ "method": "round-1 §6 reversible elevator hinge model with card leaves (ค่าประมาณ)",
+ "cfr23_143": {
+  "stick_temp_lbf": 60,
+  "wheel_two_hands_lbf": 75,
+  "wheel_one_hand_lbf": 50,
+  "prolonged_lbf": 10
+ },
+ "ids": {
+  "c172s": {
+   "id": "c172s",
+   "controller": "wheel",
+   "nL": 3.8,
+   "mtow_kg": 1156.66,
+   "train_kg": 1009.6,
+   "inputs": {
+    "eta": 0.9,
+    "at": 3.603,
+    "tau": 0.616,
+    "lt": 4.36,
+    "deda": 0.353,
+    "Se": 1.34,
+    "ce": 0.41,
+    "G": 3.6,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": null,
+   "train": {
+    "mass_kg": 1009.6,
+    "approach": {
+     "cas_kt": 67.5,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 3.48,
+     "de_deg": -7.65,
+     "tab_deg": 11.83,
+     "grad_N_per_kt": 1.26,
+     "grad_lbf_per_kt": 0.283,
+     "Fs_per_g_N": 69.3,
+     "Fs_per_g_lbf": 15.57,
+     "dde_per_g_deg": -11.54,
+     "flare": {
+      "to_cas_kt": 48.3,
+      "pull_N": 20.7,
+      "pull_lbf": 4.7
+     }
+    },
+    "cruise": {
+     "cas_kt": 110,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 0.82,
+     "de_deg": -1.59,
+     "tab_deg": 2.42,
+     "grad_N_per_kt": 0.773,
+     "grad_lbf_per_kt": 0.174,
+     "Fs_per_g_N": 67.7,
+     "Fs_per_g_lbf": 15.22,
+     "dde_per_g_deg": -4.26
+    }
+   },
+   "mtow": {
+    "mass_kg": 1156.7,
+    "approach": {
+     "cas_kt": 67.5,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 4.91,
+     "de_deg": -8.75,
+     "tab_deg": 13.18,
+     "grad_N_per_kt": 1.444,
+     "grad_lbf_per_kt": 0.325,
+     "Fs_per_g_N": 75.5,
+     "Fs_per_g_lbf": 16.96,
+     "dde_per_g_deg": -12.63,
+     "flare": {
+      "to_cas_kt": 51.7,
+      "pull_N": 20.1,
+      "pull_lbf": 4.5
+     }
+    },
+    "cruise": {
+     "cas_kt": 110,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 1.36,
+     "de_deg": -2,
+     "tab_deg": 2.93,
+     "grad_N_per_kt": 0.886,
+     "grad_lbf_per_kt": 0.199,
+     "Fs_per_g_N": 73.9,
+     "Fs_per_g_lbf": 16.62,
+     "dde_per_g_deg": -4.67
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 12.5,
+    "max": 42.9,
+    "from": "card validation.stick_force_targets"
+   },
+   "band_N_per_g": {
+    "min": 55.6,
+    "max": 190.8
+   },
+   "cfr23_155": {
+    "force_lbf": 25.5,
+    "per_g_lbf": 9.11
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 75,
+    "one_hand_lbf": 50,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 46.5,
+    "model_meets_23_155": true,
+    "model_pull_within_23_143_temporary": true,
+    "model_train_cruise_in_band": true,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": true,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 15.6,
+     "cruise": 15.2,
+     "min": 12.5,
+     "max": 26.7
+    },
+    "fs_per_g_N": {
+     "approach": 69,
+     "cruise": 68,
+     "min": 56,
+     "max": 119
+    },
+    "grad_N_per_kt": {
+     "approach": 1.26,
+     "cruise": 0.77
+    },
+    "flare_pull_N": 21,
+    "scale_vs_model": {
+     "approach": 1,
+     "cruise": 1
+    },
+    "basis": "hinge model inside the bounds"
+   }
+  },
+  "c172r": {
+   "id": "c172r",
+   "controller": "wheel",
+   "nL": 3.8,
+   "mtow_kg": 1111.3,
+   "train_kg": 998.7,
+   "inputs": {
+    "eta": 0.9,
+    "at": 3.603,
+    "tau": 0.616,
+    "lt": 4.36,
+    "deda": 0.353,
+    "Se": 1.34,
+    "ce": 0.41,
+    "G": 3.6,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": null,
+   "train": {
+    "mass_kg": 998.7,
+    "approach": {
+     "cas_kt": 65.5,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 3.98,
+     "de_deg": -8.03,
+     "tab_deg": 12.3,
+     "grad_N_per_kt": 1.285,
+     "grad_lbf_per_kt": 0.289,
+     "Fs_per_g_N": 68.8,
+     "Fs_per_g_lbf": 15.47,
+     "dde_per_g_deg": -12.17,
+     "flare": {
+      "to_cas_kt": 48,
+      "pull_N": 19.4,
+      "pull_lbf": 4.4
+     }
+    },
+    "cruise": {
+     "cas_kt": 110,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 0.78,
+     "de_deg": -1.56,
+     "tab_deg": 2.38,
+     "grad_N_per_kt": 0.765,
+     "grad_lbf_per_kt": 0.172,
+     "Fs_per_g_N": 67.3,
+     "Fs_per_g_lbf": 15.12,
+     "dde_per_g_deg": -4.23
+    }
+   },
+   "mtow": {
+    "mass_kg": 1111.3,
+    "approach": {
+     "cas_kt": 65.5,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 5.14,
+     "de_deg": -8.92,
+     "tab_deg": 13.4,
+     "grad_N_per_kt": 1.43,
+     "grad_lbf_per_kt": 0.321,
+     "Fs_per_g_N": 73.6,
+     "Fs_per_g_lbf": 16.54,
+     "dde_per_g_deg": -13.06,
+     "flare": {
+      "to_cas_kt": 50.7,
+      "pull_N": 18.8,
+      "pull_lbf": 4.2
+     }
+    },
+    "cruise": {
+     "cas_kt": 110,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 1.19,
+     "de_deg": -1.87,
+     "tab_deg": 2.77,
+     "grad_N_per_kt": 0.851,
+     "grad_lbf_per_kt": 0.191,
+     "Fs_per_g_N": 72,
+     "Fs_per_g_lbf": 16.19,
+     "dde_per_g_deg": -4.54
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 12.5,
+    "max": 42.9,
+    "from": "card validation.stick_force_targets"
+   },
+   "band_N_per_g": {
+    "min": 55.6,
+    "max": 190.8
+   },
+   "cfr23_155": {
+    "force_lbf": 24.5,
+    "per_g_lbf": 8.75
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 75,
+    "one_hand_lbf": 50,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 45.3,
+    "model_meets_23_155": true,
+    "model_pull_within_23_143_temporary": true,
+    "model_train_cruise_in_band": true,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": true,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 15.5,
+     "cruise": 15.1,
+     "min": 12.5,
+     "max": 26.7
+    },
+    "fs_per_g_N": {
+     "approach": 69,
+     "cruise": 67,
+     "min": 56,
+     "max": 119
+    },
+    "grad_N_per_kt": {
+     "approach": 1.28,
+     "cruise": 0.77
+    },
+    "flare_pull_N": 19,
+    "scale_vs_model": {
+     "approach": 1,
+     "cruise": 1
+    },
+    "basis": "hinge model inside the bounds"
+   }
+  },
+  "c152": {
+   "id": "c152",
+   "controller": "wheel",
+   "nL": 4.4,
+   "mtow_kg": 757.5,
+   "train_kg": 717.47,
+   "inputs": {
+    "eta": 0.9,
+    "at": 3.415,
+    "tau": 0.616,
+    "lt": 3.84,
+    "deda": 0.384,
+    "Se": 1.16,
+    "ce": 0.399,
+    "G": 3.6,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": {
+    "id": "c172s",
+    "keys": [
+     "gearing",
+     "Ch0",
+     "Ch_alpha",
+     "Ch_delta",
+     "Ch_tab"
+    ]
+   },
+   "train": {
+    "mass_kg": 717.5,
+    "approach": {
+     "cas_kt": 61,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 3.22,
+     "de_deg": -8.84,
+     "tab_deg": 14.02,
+     "grad_N_per_kt": 1.105,
+     "grad_lbf_per_kt": 0.248,
+     "Fs_per_g_N": 53.6,
+     "Fs_per_g_lbf": 12.04,
+     "dde_per_g_deg": -12.53,
+     "flare": {
+      "to_cas_kt": 45.1,
+      "pull_N": 15.3,
+      "pull_lbf": 3.4
+     }
+    },
+    "cruise": {
+     "cas_kt": 90,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 1.45,
+     "de_deg": -2.34,
+     "tab_deg": 3.5,
+     "grad_N_per_kt": 0.749,
+     "grad_lbf_per_kt": 0.168,
+     "Fs_per_g_N": 52.4,
+     "Fs_per_g_lbf": 11.78,
+     "dde_per_g_deg": -5.64
+    }
+   },
+   "mtow": {
+    "mass_kg": 757.5,
+    "approach": {
+     "cas_kt": 61,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 3.76,
+     "de_deg": -9.3,
+     "tab_deg": 14.62,
+     "grad_N_per_kt": 1.166,
+     "grad_lbf_per_kt": 0.262,
+     "Fs_per_g_N": 55.4,
+     "Fs_per_g_lbf": 12.46,
+     "dde_per_g_deg": -12.99,
+     "flare": {
+      "to_cas_kt": 46.3,
+      "pull_N": 15.1,
+      "pull_lbf": 3.4
+     }
+    },
+    "cruise": {
+     "cas_kt": 90,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 1.7,
+     "de_deg": -2.55,
+     "tab_deg": 3.77,
+     "grad_N_per_kt": 0.791,
+     "grad_lbf_per_kt": 0.178,
+     "Fs_per_g_N": 54.3,
+     "Fs_per_g_lbf": 12.2,
+     "dde_per_g_deg": -5.85
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 10.3,
+    "max": 38.2,
+    "from": "card validation.stick_force_targets"
+   },
+   "band_N_per_g": {
+    "min": 45.8,
+    "max": 169.9
+   },
+   "cfr23_155": {
+    "force_lbf": 20,
+    "per_g_lbf": 5.88
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 75,
+    "one_hand_lbf": 50,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 41.5,
+    "model_meets_23_155": true,
+    "model_pull_within_23_143_temporary": true,
+    "model_train_cruise_in_band": true,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": true,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 12,
+     "cruise": 11.8,
+     "min": 10.3,
+     "max": 22
+    },
+    "fs_per_g_N": {
+     "approach": 54,
+     "cruise": 52,
+     "min": 46,
+     "max": 98
+    },
+    "grad_N_per_kt": {
+     "approach": 1.1,
+     "cruise": 0.75
+    },
+    "flare_pull_N": 15,
+    "scale_vs_model": {
+     "approach": 1,
+     "cruise": 1
+    },
+    "basis": "hinge model inside the bounds"
+   }
+  },
+  "da40ng": {
+   "id": "da40ng",
+   "controller": "stick",
+   "nL": 3.8,
+   "mtow_kg": 1310,
+   "train_kg": 1150,
+   "inputs": {
+    "eta": 0.95,
+    "at": 4.11,
+    "tau": 0.54,
+    "lt": 4.78,
+    "deda": 0.287,
+    "Se": 0.665,
+    "ce": 0.196,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": null,
+   "train": {
+    "mass_kg": 1150,
+    "approach": {
+     "cas_kt": 72.9,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": -0.94,
+     "de_deg": -2.1,
+     "tab_deg": 3.98,
+     "grad_N_per_kt": 0.402,
+     "grad_lbf_per_kt": 0.09,
+     "Fs_per_g_N": 19.4,
+     "Fs_per_g_lbf": 4.36,
+     "dde_per_g_deg": -15.85,
+     "flare": {
+      "to_cas_kt": 58.5,
+      "pull_N": 5.2,
+      "pull_lbf": 1.2
+     }
+    },
+    "cruise": {
+     "cas_kt": 110,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 1.01,
+     "de_deg": -0.32,
+     "tab_deg": 0.14,
+     "grad_N_per_kt": 0.266,
+     "grad_lbf_per_kt": 0.06,
+     "Fs_per_g_N": 19.1,
+     "Fs_per_g_lbf": 4.29,
+     "dde_per_g_deg": -6.87
+    }
+   },
+   "mtow": {
+    "mass_kg": 1310,
+    "approach": {
+     "cas_kt": 72.9,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 0.62,
+     "de_deg": -3.79,
+     "tab_deg": 6.25,
+     "grad_N_per_kt": 0.458,
+     "grad_lbf_per_kt": 0.103,
+     "Fs_per_g_N": 21.4,
+     "Fs_per_g_lbf": 4.81,
+     "dde_per_g_deg": -17.55,
+     "flare": {
+      "to_cas_kt": 62.5,
+      "pull_N": 4.4,
+      "pull_lbf": 1
+     }
+    },
+    "cruise": {
+     "cas_kt": 110,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 1.69,
+     "de_deg": -1.07,
+     "tab_deg": 1.14,
+     "grad_N_per_kt": 0.303,
+     "grad_lbf_per_kt": 0.068,
+     "Fs_per_g_N": 21.1,
+     "Fs_per_g_lbf": 4.75,
+     "dde_per_g_deg": -7.62
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 7.5,
+    "max": 21.78,
+    "from": "computed here (stick, n/α 11.02 g/rad, nL 3.8, W 2888 lb)"
+   },
+   "band_N_per_g": {
+    "min": 33.4,
+    "max": 96.9
+   },
+   "cfr23_155": {
+    "force_lbf": 20.6,
+    "per_g_lbf": 7.37
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 60,
+    "one_hand_lbf": 60,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 13.3,
+    "model_meets_23_155": false,
+    "model_pull_within_23_143_temporary": true,
+    "model_train_cruise_in_band": false,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": false,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 7.5,
+     "cruise": 7.5,
+     "min": 7.5,
+     "max": 21.4
+    },
+    "fs_per_g_N": {
+     "approach": 34,
+     "cruise": 34,
+     "min": 34,
+     "max": 95
+    },
+    "grad_N_per_kt": {
+     "approach": 0.69,
+     "cruise": 0.47
+    },
+    "flare_pull_N": 9,
+    "scale_vs_model": {
+     "approach": 1.72,
+     "cruise": 1.75
+    },
+    "basis": "hinge model 4.29 lbf/g clamped to the bounds"
+   }
+  },
+  "da40_180": {
+   "id": "da40_180",
+   "controller": "stick",
+   "nL": 3.8,
+   "mtow_kg": 1200,
+   "train_kg": 1050,
+   "inputs": {
+    "eta": 0.95,
+    "at": 4.11,
+    "tau": 0.54,
+    "lt": 4.78,
+    "deda": 0.287,
+    "Se": 0.665,
+    "ce": 0.196,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": null,
+   "train": {
+    "mass_kg": 1050,
+    "approach": {
+     "cas_kt": 66.5,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": -0.11,
+     "de_deg": -3.01,
+     "tab_deg": 5.2,
+     "grad_N_per_kt": 0.393,
+     "grad_lbf_per_kt": 0.088,
+     "Fs_per_g_N": 17.6,
+     "Fs_per_g_lbf": 3.95,
+     "dde_per_g_deg": -17.31,
+     "flare": {
+      "to_cas_kt": 56.1,
+      "pull_N": 3.8,
+      "pull_lbf": 0.8
+     }
+    },
+    "cruise": {
+     "cas_kt": 100,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 1.41,
+     "de_deg": -0.75,
+     "tab_deg": 0.72,
+     "grad_N_per_kt": 0.262,
+     "grad_lbf_per_kt": 0.059,
+     "Fs_per_g_N": 17.3,
+     "Fs_per_g_lbf": 3.89,
+     "dde_per_g_deg": -7.55
+    }
+   },
+   "mtow": {
+    "mass_kg": 1200,
+    "approach": {
+     "cas_kt": 66.5,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 1.61,
+     "de_deg": -4.88,
+     "tab_deg": 7.7,
+     "grad_N_per_kt": 0.45,
+     "grad_lbf_per_kt": 0.101,
+     "Fs_per_g_N": 19.4,
+     "Fs_per_g_lbf": 4.37,
+     "dde_per_g_deg": -19.18,
+     "flare": {
+      "to_cas_kt": 60,
+      "pull_N": 2.8,
+      "pull_lbf": 0.6
+     }
+    },
+    "cruise": {
+     "cas_kt": 100,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 2.17,
+     "de_deg": -1.58,
+     "tab_deg": 1.83,
+     "grad_N_per_kt": 0.299,
+     "grad_lbf_per_kt": 0.067,
+     "Fs_per_g_N": 19.2,
+     "Fs_per_g_lbf": 4.31,
+     "dde_per_g_deg": -8.37
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 7.5,
+    "max": 23.61,
+    "from": "computed here (stick, n/α 10.16 g/rad, nL 3.8, W 2646 lb)"
+   },
+   "band_N_per_g": {
+    "min": 33.4,
+    "max": 105
+   },
+   "cfr23_155": {
+    "force_lbf": 18.9,
+    "per_g_lbf": 6.75
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 60,
+    "one_hand_lbf": 60,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 12.1,
+    "model_meets_23_155": false,
+    "model_pull_within_23_143_temporary": true,
+    "model_train_cruise_in_band": false,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": false,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 7.5,
+     "cruise": 7.5,
+     "min": 7.5,
+     "max": 21.4
+    },
+    "fs_per_g_N": {
+     "approach": 34,
+     "cruise": 34,
+     "min": 34,
+     "max": 95
+    },
+    "grad_N_per_kt": {
+     "approach": 0.75,
+     "cruise": 0.51
+    },
+    "flare_pull_N": 7,
+    "scale_vs_model": {
+     "approach": 1.9,
+     "cruise": 1.93
+    },
+    "basis": "hinge model 3.89 lbf/g clamped to the bounds"
+   }
+  },
+  "da40d": {
+   "id": "da40d",
+   "controller": "stick",
+   "nL": 3.8,
+   "mtow_kg": 1150,
+   "train_kg": 1060,
+   "inputs": {
+    "eta": 0.95,
+    "at": 4.11,
+    "tau": 0.54,
+    "lt": 4.78,
+    "deda": 0.287,
+    "Se": 0.665,
+    "ce": 0.196,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": null,
+   "train": {
+    "mass_kg": 1060,
+    "approach": {
+     "cas_kt": 67.4,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": -0.3,
+     "de_deg": -2.79,
+     "tab_deg": 4.91,
+     "grad_N_per_kt": 0.392,
+     "grad_lbf_per_kt": 0.088,
+     "Fs_per_g_N": 17.7,
+     "Fs_per_g_lbf": 3.98,
+     "dde_per_g_deg": -16.99,
+     "flare": {
+      "to_cas_kt": 55.5,
+      "pull_N": 4.2,
+      "pull_lbf": 1
+     }
+    },
+    "cruise": {
+     "cas_kt": 100,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 1.46,
+     "de_deg": -0.81,
+     "tab_deg": 0.79,
+     "grad_N_per_kt": 0.264,
+     "grad_lbf_per_kt": 0.059,
+     "Fs_per_g_N": 17.4,
+     "Fs_per_g_lbf": 3.92,
+     "dde_per_g_deg": -7.6
+    }
+   },
+   "mtow": {
+    "mass_kg": 1150,
+    "approach": {
+     "cas_kt": 67.4,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 0.7,
+     "de_deg": -3.89,
+     "tab_deg": 6.38,
+     "grad_N_per_kt": 0.425,
+     "grad_lbf_per_kt": 0.096,
+     "Fs_per_g_N": 18.8,
+     "Fs_per_g_lbf": 4.23,
+     "dde_per_g_deg": -18.09,
+     "flare": {
+      "to_cas_kt": 57.8,
+      "pull_N": 3.8,
+      "pull_lbf": 0.8
+     }
+    },
+    "cruise": {
+     "cas_kt": 100,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 1.91,
+     "de_deg": -1.3,
+     "tab_deg": 1.46,
+     "grad_N_per_kt": 0.287,
+     "grad_lbf_per_kt": 0.064,
+     "Fs_per_g_N": 18.6,
+     "Fs_per_g_lbf": 4.17,
+     "dde_per_g_deg": -8.1
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 7.5,
+    "max": 22.63,
+    "from": "computed here (stick, n/α 10.61 g/rad, nL 3.8, W 2535 lb)"
+   },
+   "band_N_per_g": {
+    "min": 33.4,
+    "max": 100.7
+   },
+   "cfr23_155": {
+    "force_lbf": 18.1,
+    "per_g_lbf": 6.47
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 60,
+    "one_hand_lbf": 60,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 11.7,
+    "model_meets_23_155": false,
+    "model_pull_within_23_143_temporary": true,
+    "model_train_cruise_in_band": false,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": false,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 7.5,
+     "cruise": 7.5,
+     "min": 7.5,
+     "max": 21.4
+    },
+    "fs_per_g_N": {
+     "approach": 34,
+     "cruise": 34,
+     "min": 34,
+     "max": 95
+    },
+    "grad_N_per_kt": {
+     "approach": 0.74,
+     "cruise": 0.51
+    },
+    "flare_pull_N": 8,
+    "scale_vs_model": {
+     "approach": 1.88,
+     "cruise": 1.91
+    },
+    "basis": "hinge model 3.92 lbf/g clamped to the bounds"
+   }
+  },
+  "da42ng": {
+   "id": "da42ng",
+   "controller": "stick",
+   "nL": 3.8,
+   "mtow_kg": 1900,
+   "train_kg": 1752,
+   "inputs": {
+    "eta": 0.95,
+    "at": 4.05,
+    "tau": 0.562,
+    "lt": 5.085,
+    "deda": 0.247,
+    "Se": 0.66,
+    "ce": 0.2,
+    "G": 2,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": null,
+   "train": {
+    "mass_kg": 1752,
+    "approach": {
+     "cas_kt": 81.6,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 0.5,
+     "de_deg": -4.03,
+     "tab_deg": 6.7,
+     "grad_N_per_kt": 0.08,
+     "grad_lbf_per_kt": 0.018,
+     "Fs_per_g_N": 7.5,
+     "Fs_per_g_lbf": 1.69,
+     "dde_per_g_deg": -7.75,
+     "flare": {
+      "to_cas_kt": 62.1,
+      "pull_N": 1.4,
+      "pull_lbf": 0.3
+     }
+    },
+    "cruise": {
+     "cas_kt": 135,
+     "flaps": 0,
+     "h_m": 1829,
+     "alpha_deg": 0.13,
+     "de_deg": -1.01,
+     "tab_deg": 1.68,
+     "grad_N_per_kt": 0.049,
+     "grad_lbf_per_kt": 0.011,
+     "Fs_per_g_N": 6.9,
+     "Fs_per_g_lbf": 1.56,
+     "dde_per_g_deg": -2.67
+    }
+   },
+   "mtow": {
+    "mass_kg": 1900,
+    "approach": {
+     "cas_kt": 81.6,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 1.38,
+     "de_deg": -4.42,
+     "tab_deg": 6.99,
+     "grad_N_per_kt": 0.087,
+     "grad_lbf_per_kt": 0.02,
+     "Fs_per_g_N": 7.8,
+     "Fs_per_g_lbf": 1.76,
+     "dde_per_g_deg": -8.14,
+     "flare": {
+      "to_cas_kt": 64.7,
+      "pull_N": 1.3,
+      "pull_lbf": 0.3
+     }
+    },
+    "cruise": {
+     "cas_kt": 135,
+     "flaps": 0,
+     "h_m": 1829,
+     "alpha_deg": 0.45,
+     "de_deg": -1.15,
+     "tab_deg": 1.78,
+     "grad_N_per_kt": 0.053,
+     "grad_lbf_per_kt": 0.012,
+     "Fs_per_g_N": 7.2,
+     "Fs_per_g_lbf": 1.62,
+     "dde_per_g_deg": -2.81
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 10.7,
+    "max": 20,
+    "from": "card validation.stick_force_targets"
+   },
+   "band_N_per_g": {
+    "min": 47.6,
+    "max": 89
+   },
+   "cfr23_155": {
+    "force_lbf": 29.9,
+    "per_g_lbf": 10.69
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 60,
+    "one_hand_lbf": 60,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 4.5,
+    "model_meets_23_155": false,
+    "model_pull_within_23_143_temporary": true,
+    "model_train_cruise_in_band": false,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": false,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 10.7,
+     "cruise": 10.7,
+     "min": 10.7,
+     "max": 20
+    },
+    "fs_per_g_N": {
+     "approach": 48,
+     "cruise": 48,
+     "min": 48,
+     "max": 88
+    },
+    "grad_N_per_kt": {
+     "approach": 0.51,
+     "cruise": 0.34
+    },
+    "flare_pull_N": 9,
+    "scale_vs_model": {
+     "approach": 6.33,
+     "cruise": 6.86
+    },
+    "basis": "hinge model 1.56 lbf/g clamped to the bounds"
+   }
+  },
+  "da42_tae125": {
+   "id": "da42_tae125",
+   "controller": "stick",
+   "nL": 3.8,
+   "mtow_kg": 1785,
+   "train_kg": 1600,
+   "inputs": {
+    "eta": 0.95,
+    "at": 4.05,
+    "tau": 0.562,
+    "lt": 5.085,
+    "deda": 0.247,
+    "Se": 0.66,
+    "ce": 0.2,
+    "G": 2,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": null,
+   "train": {
+    "mass_kg": 1600,
+    "approach": {
+     "cas_kt": 81.5,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": -0.39,
+     "de_deg": -3.64,
+     "tab_deg": 6.4,
+     "grad_N_per_kt": 0.073,
+     "grad_lbf_per_kt": 0.016,
+     "Fs_per_g_N": 7.3,
+     "Fs_per_g_lbf": 1.63,
+     "dde_per_g_deg": -7.36,
+     "flare": {
+      "to_cas_kt": 58.1,
+      "pull_N": 1.5,
+      "pull_lbf": 0.3
+     }
+    },
+    "cruise": {
+     "cas_kt": 135,
+     "flaps": 0,
+     "h_m": 1829,
+     "alpha_deg": -0.2,
+     "de_deg": -0.86,
+     "tab_deg": 1.57,
+     "grad_N_per_kt": 0.044,
+     "grad_lbf_per_kt": 0.01,
+     "Fs_per_g_N": 6.7,
+     "Fs_per_g_lbf": 1.5,
+     "dde_per_g_deg": -2.52
+    }
+   },
+   "mtow": {
+    "mass_kg": 1785,
+    "approach": {
+     "cas_kt": 81.5,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 0.71,
+     "de_deg": -4.13,
+     "tab_deg": 6.77,
+     "grad_N_per_kt": 0.082,
+     "grad_lbf_per_kt": 0.018,
+     "Fs_per_g_N": 7.6,
+     "Fs_per_g_lbf": 1.71,
+     "dde_per_g_deg": -7.85,
+     "flare": {
+      "to_cas_kt": 61.4,
+      "pull_N": 1.4,
+      "pull_lbf": 0.3
+     }
+    },
+    "cruise": {
+     "cas_kt": 135,
+     "flaps": 0,
+     "h_m": 1829,
+     "alpha_deg": 0.2,
+     "de_deg": -1.04,
+     "tab_deg": 1.7,
+     "grad_N_per_kt": 0.049,
+     "grad_lbf_per_kt": 0.011,
+     "Fs_per_g_N": 7,
+     "Fs_per_g_lbf": 1.57,
+     "dde_per_g_deg": -2.7
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 10.7,
+    "max": 20,
+    "from": "card validation.stick_force_targets"
+   },
+   "band_N_per_g": {
+    "min": 47.6,
+    "max": 89
+   },
+   "cfr23_155": {
+    "force_lbf": 28.1,
+    "per_g_lbf": 10.04
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 60,
+    "one_hand_lbf": 60,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 4.4,
+    "model_meets_23_155": false,
+    "model_pull_within_23_143_temporary": true,
+    "model_train_cruise_in_band": false,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": false,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 10.7,
+     "cruise": 10.7,
+     "min": 10.7,
+     "max": 20
+    },
+    "fs_per_g_N": {
+     "approach": 48,
+     "cruise": 48,
+     "min": 48,
+     "max": 88
+    },
+    "grad_N_per_kt": {
+     "approach": 0.48,
+     "cruise": 0.31
+    },
+    "flare_pull_N": 10,
+    "scale_vs_model": {
+     "approach": 6.56,
+     "cruise": 7.13
+    },
+    "basis": "hinge model 1.5 lbf/g clamped to the bounds"
+   }
+  },
+  "da42_vi": {
+   "id": "da42_vi",
+   "controller": "stick",
+   "nL": 3.8,
+   "mtow_kg": 1999,
+   "train_kg": 1752,
+   "inputs": {
+    "eta": 0.95,
+    "at": 4.05,
+    "tau": 0.562,
+    "lt": 5.085,
+    "deda": 0.247,
+    "Se": 0.66,
+    "ce": 0.2,
+    "G": 2,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": null,
+   "train": {
+    "mass_kg": 1752,
+    "approach": {
+     "cas_kt": 81.6,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 0.5,
+     "de_deg": -4.03,
+     "tab_deg": 6.7,
+     "grad_N_per_kt": 0.08,
+     "grad_lbf_per_kt": 0.018,
+     "Fs_per_g_N": 7.5,
+     "Fs_per_g_lbf": 1.69,
+     "dde_per_g_deg": -7.75,
+     "flare": {
+      "to_cas_kt": 62.1,
+      "pull_N": 1.4,
+      "pull_lbf": 0.3
+     }
+    },
+    "cruise": {
+     "cas_kt": 135,
+     "flaps": 0,
+     "h_m": 1829,
+     "alpha_deg": 0.13,
+     "de_deg": -1.01,
+     "tab_deg": 1.68,
+     "grad_N_per_kt": 0.049,
+     "grad_lbf_per_kt": 0.011,
+     "Fs_per_g_N": 6.9,
+     "Fs_per_g_lbf": 1.56,
+     "dde_per_g_deg": -2.67
+    }
+   },
+   "mtow": {
+    "mass_kg": 1999,
+    "approach": {
+     "cas_kt": 81.6,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 1.97,
+     "de_deg": -4.68,
+     "tab_deg": 7.19,
+     "grad_N_per_kt": 0.092,
+     "grad_lbf_per_kt": 0.021,
+     "Fs_per_g_N": 8,
+     "Fs_per_g_lbf": 1.8,
+     "dde_per_g_deg": -8.4,
+     "flare": {
+      "to_cas_kt": 66.3,
+      "pull_N": 1.3,
+      "pull_lbf": 0.3
+     }
+    },
+    "cruise": {
+     "cas_kt": 135,
+     "flaps": 0,
+     "h_m": 1829,
+     "alpha_deg": 0.66,
+     "de_deg": -1.25,
+     "tab_deg": 1.85,
+     "grad_N_per_kt": 0.055,
+     "grad_lbf_per_kt": 0.012,
+     "Fs_per_g_N": 7.4,
+     "Fs_per_g_lbf": 1.66,
+     "dde_per_g_deg": -2.91
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 10.7,
+    "max": 20,
+    "from": "card validation.stick_force_targets"
+   },
+   "band_N_per_g": {
+    "min": 47.6,
+    "max": 89
+   },
+   "cfr23_155": {
+    "force_lbf": 31.5,
+    "per_g_lbf": 11.24
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 60,
+    "one_hand_lbf": 60,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 4.6,
+    "model_meets_23_155": false,
+    "model_pull_within_23_143_temporary": true,
+    "model_train_cruise_in_band": false,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": false,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 10.7,
+     "cruise": 10.7,
+     "min": 10.7,
+     "max": 20
+    },
+    "fs_per_g_N": {
+     "approach": 48,
+     "cruise": 48,
+     "min": 48,
+     "max": 88
+    },
+    "grad_N_per_kt": {
+     "approach": 0.51,
+     "cruise": 0.34
+    },
+    "flare_pull_N": 9,
+    "scale_vs_model": {
+     "approach": 6.33,
+     "cruise": 6.86
+    },
+    "basis": "hinge model 1.56 lbf/g clamped to the bounds"
+   }
+  },
+  "t6a": {
+   "id": "t6a",
+   "controller": "stick",
+   "nL": 7,
+   "mtow_kg": 2948.4,
+   "train_kg": 2574.6,
+   "inputs": {
+    "eta": 0.9,
+    "at": 4.06,
+    "tau": 0.636,
+    "lt": 4.9,
+    "deda": 0.421,
+    "Se": 1.1,
+    "ce": 0.3,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": null,
+   "train": {
+    "mass_kg": 2574.6,
+    "approach": {
+     "cas_kt": 100,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 2.14,
+     "de_deg": -3.99,
+     "tab_deg": 6.14,
+     "grad_N_per_kt": 0.809,
+     "grad_lbf_per_kt": 0.182,
+     "Fs_per_g_N": 50.1,
+     "Fs_per_g_lbf": 11.26,
+     "dde_per_g_deg": -9.8,
+     "flare": {
+      "to_cas_kt": 75.7,
+      "pull_N": 17.3,
+      "pull_lbf": 3.9
+     }
+    },
+    "cruise": {
+     "cas_kt": 200,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": -0.32,
+     "de_deg": 2.28,
+     "tab_deg": -3.8,
+     "grad_N_per_kt": 0.405,
+     "grad_lbf_per_kt": 0.091,
+     "Fs_per_g_N": 49.5,
+     "Fs_per_g_lbf": 11.13,
+     "dde_per_g_deg": -2.43
+    }
+   },
+   "mtow": {
+    "mass_kg": 2948.4,
+    "approach": {
+     "cas_kt": 100,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 3.83,
+     "de_deg": -5.17,
+     "tab_deg": 7.6,
+     "grad_N_per_kt": 0.927,
+     "grad_lbf_per_kt": 0.208,
+     "Fs_per_g_N": 56,
+     "Fs_per_g_lbf": 12.58,
+     "dde_per_g_deg": -10.97,
+     "flare": {
+      "to_cas_kt": 81,
+      "pull_N": 16,
+      "pull_lbf": 3.6
+     }
+    },
+    "cruise": {
+     "cas_kt": 200,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 0.11,
+     "de_deg": 1.98,
+     "tab_deg": -3.43,
+     "grad_N_per_kt": 0.463,
+     "grad_lbf_per_kt": 0.104,
+     "Fs_per_g_N": 55.4,
+     "Fs_per_g_lbf": 12.46,
+     "dde_per_g_deg": -2.72
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 5.83,
+    "max": 13.2,
+    "from": "card validation.stick_force_targets"
+   },
+   "band_N_per_g": {
+    "min": 25.9,
+    "max": 58.7
+   },
+   "cfr23_155": {
+    "force_lbf": 35,
+    "per_g_lbf": 5.83
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 60,
+    "one_hand_lbf": 60,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 74.8,
+    "model_meets_23_155": true,
+    "model_pull_within_23_143_temporary": false,
+    "model_train_cruise_in_band": true,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": true,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 10,
+     "cruise": 10,
+     "min": 5.9,
+     "max": 10
+    },
+    "fs_per_g_N": {
+     "approach": 44,
+     "cruise": 44,
+     "min": 26,
+     "max": 44
+    },
+    "grad_N_per_kt": {
+     "approach": 0.72,
+     "cruise": 0.36
+    },
+    "flare_pull_N": 15,
+    "scale_vs_model": {
+     "approach": 0.89,
+     "cruise": 0.9
+    },
+    "basis": "hinge model 11.13 lbf/g clamped to the bounds"
+   }
+  },
+  "t6c": {
+   "id": "t6c",
+   "controller": "stick",
+   "nL": 7,
+   "mtow_kg": 3129.8,
+   "train_kg": 2775.5,
+   "inputs": {
+    "eta": 0.9,
+    "at": 4.06,
+    "tau": 0.636,
+    "lt": 4.9,
+    "deda": 0.421,
+    "Se": 1.1,
+    "ce": 0.3,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": null,
+   "train": {
+    "mass_kg": 2775.5,
+    "approach": {
+     "cas_kt": 104,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 2.1,
+     "de_deg": -3.97,
+     "tab_deg": 6.11,
+     "grad_N_per_kt": 0.839,
+     "grad_lbf_per_kt": 0.189,
+     "Fs_per_g_N": 53.2,
+     "Fs_per_g_lbf": 11.97,
+     "dde_per_g_deg": -9.64,
+     "flare": {
+      "to_cas_kt": 78.6,
+      "pull_N": 18.7,
+      "pull_lbf": 4.2
+     }
+    },
+    "cruise": {
+     "cas_kt": 200,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": -0.09,
+     "de_deg": 2.12,
+     "tab_deg": -3.6,
+     "grad_N_per_kt": 0.436,
+     "grad_lbf_per_kt": 0.098,
+     "Fs_per_g_N": 52.7,
+     "Fs_per_g_lbf": 11.84,
+     "dde_per_g_deg": -2.58
+    }
+   },
+   "mtow": {
+    "mass_kg": 3129.8,
+    "approach": {
+     "cas_kt": 104,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 3.58,
+     "de_deg": -5,
+     "tab_deg": 7.38,
+     "grad_N_per_kt": 0.946,
+     "grad_lbf_per_kt": 0.213,
+     "Fs_per_g_N": 58.8,
+     "Fs_per_g_lbf": 13.22,
+     "dde_per_g_deg": -10.67,
+     "flare": {
+      "to_cas_kt": 83.4,
+      "pull_N": 17.5,
+      "pull_lbf": 3.9
+     }
+    },
+    "cruise": {
+     "cas_kt": 200,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": 0.31,
+     "de_deg": 1.84,
+     "tab_deg": -3.26,
+     "grad_N_per_kt": 0.492,
+     "grad_lbf_per_kt": 0.111,
+     "Fs_per_g_N": 58.3,
+     "Fs_per_g_lbf": 13.1,
+     "dde_per_g_deg": -2.86
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 5.83,
+    "max": 14,
+    "from": "card validation.stick_force_targets"
+   },
+   "band_N_per_g": {
+    "min": 25.9,
+    "max": 62.3
+   },
+   "cfr23_155": {
+    "force_lbf": 35,
+    "per_g_lbf": 5.83
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 60,
+    "one_hand_lbf": 60,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 78.6,
+    "model_meets_23_155": true,
+    "model_pull_within_23_143_temporary": false,
+    "model_train_cruise_in_band": true,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": true,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 10,
+     "cruise": 10,
+     "min": 5.9,
+     "max": 10
+    },
+    "fs_per_g_N": {
+     "approach": 44,
+     "cruise": 44,
+     "min": 26,
+     "max": 44
+    },
+    "grad_N_per_kt": {
+     "approach": 0.7,
+     "cruise": 0.37
+    },
+    "flare_pull_N": 16,
+    "scale_vs_model": {
+     "approach": 0.84,
+     "cruise": 0.84
+    },
+    "basis": "hinge model 11.84 lbf/g clamped to the bounds"
+   }
+  },
+  "pc9m": {
+   "id": "pc9m",
+   "controller": "stick",
+   "nL": 7,
+   "mtow_kg": 2350,
+   "train_kg": 2123.8,
+   "inputs": {
+    "eta": 0.9,
+    "at": 4.06,
+    "tau": 0.636,
+    "lt": 4.9,
+    "deda": 0.42,
+    "Se": 1.1,
+    "ce": 0.3,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": null,
+   "train": {
+    "mass_kg": 2123.8,
+    "approach": {
+     "cas_kt": 90,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 2.33,
+     "de_deg": -3.96,
+     "tab_deg": 6.02,
+     "grad_N_per_kt": 0.617,
+     "grad_lbf_per_kt": 0.139,
+     "Fs_per_g_N": 37.4,
+     "Fs_per_g_lbf": 8.4,
+     "dde_per_g_deg": -9.33,
+     "flare": {
+      "to_cas_kt": 70.7,
+      "pull_N": 10.6,
+      "pull_lbf": 2.4
+     }
+    },
+    "cruise": {
+     "cas_kt": 200,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": -0.82,
+     "de_deg": 2.58,
+     "tab_deg": -4.15,
+     "grad_N_per_kt": 0.278,
+     "grad_lbf_per_kt": 0.062,
+     "Fs_per_g_N": 36.8,
+     "Fs_per_g_lbf": 8.27,
+     "dde_per_g_deg": -1.86
+    }
+   },
+   "mtow": {
+    "mass_kg": 2350,
+    "approach": {
+     "cas_kt": 90,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 3.58,
+     "de_deg": -4.73,
+     "tab_deg": 6.92,
+     "grad_N_per_kt": 0.682,
+     "grad_lbf_per_kt": 0.153,
+     "Fs_per_g_N": 40.3,
+     "Fs_per_g_lbf": 9.06,
+     "dde_per_g_deg": -10.1,
+     "flare": {
+      "to_cas_kt": 74.3,
+      "pull_N": 9.8,
+      "pull_lbf": 2.2
+     }
+    },
+    "cruise": {
+     "cas_kt": 200,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": -0.57,
+     "de_deg": 2.42,
+     "tab_deg": -3.97,
+     "grad_N_per_kt": 0.307,
+     "grad_lbf_per_kt": 0.069,
+     "Fs_per_g_N": 39.8,
+     "Fs_per_g_lbf": 8.94,
+     "dde_per_g_deg": -2.02
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 5.83,
+    "max": 10.5,
+    "from": "card validation.stick_force_targets"
+   },
+   "band_N_per_g": {
+    "min": 25.9,
+    "max": 46.7
+   },
+   "cfr23_155": {
+    "force_lbf": 35,
+    "per_g_lbf": 5.83
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 60,
+    "one_hand_lbf": 60,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 53.6,
+    "model_meets_23_155": true,
+    "model_pull_within_23_143_temporary": true,
+    "model_train_cruise_in_band": true,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": false,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 8.4,
+     "cruise": 8.3,
+     "min": 5.9,
+     "max": 10
+    },
+    "fs_per_g_N": {
+     "approach": 37,
+     "cruise": 37,
+     "min": 26,
+     "max": 44
+    },
+    "grad_N_per_kt": {
+     "approach": 0.62,
+     "cruise": 0.28
+    },
+    "flare_pull_N": 11,
+    "scale_vs_model": {
+     "approach": 1,
+     "cruise": 1
+    },
+    "basis": "hinge model inside the bounds"
+   }
+  },
+  "pc7mk2": {
+   "id": "pc7mk2",
+   "controller": "stick",
+   "nL": 7,
+   "mtow_kg": 2250,
+   "train_kg": 2068.8,
+   "inputs": {
+    "eta": 0.9,
+    "at": 4.06,
+    "tau": 0.636,
+    "lt": 4.9,
+    "deda": 0.42,
+    "Se": 1.1,
+    "ce": 0.3,
+    "G": 2.4,
+    "Ch0": 0,
+    "Cha": -0.1146,
+    "Chd": -0.3438,
+    "Cht": -0.2005
+   },
+   "fallback_from": null,
+   "train": {
+    "mass_kg": 2068.8,
+    "approach": {
+     "cas_kt": 89,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 2.28,
+     "de_deg": -3.93,
+     "tab_deg": 5.99,
+     "grad_N_per_kt": 0.608,
+     "grad_lbf_per_kt": 0.137,
+     "Fs_per_g_N": 36.6,
+     "Fs_per_g_lbf": 8.24,
+     "dde_per_g_deg": -9.35,
+     "flare": {
+      "to_cas_kt": 69.2,
+      "pull_N": 10.7,
+      "pull_lbf": 2.4
+     }
+    },
+    "cruise": {
+     "cas_kt": 200,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": -0.89,
+     "de_deg": 2.62,
+     "tab_deg": -4.19,
+     "grad_N_per_kt": 0.27,
+     "grad_lbf_per_kt": 0.061,
+     "Fs_per_g_N": 36.1,
+     "Fs_per_g_lbf": 8.11,
+     "dde_per_g_deg": -1.83
+    }
+   },
+   "mtow": {
+    "mass_kg": 2250,
+    "approach": {
+     "cas_kt": 89,
+     "flaps": 1,
+     "h_m": 300,
+     "alpha_deg": 3.31,
+     "de_deg": -4.56,
+     "tab_deg": 6.73,
+     "grad_N_per_kt": 0.661,
+     "grad_lbf_per_kt": 0.149,
+     "Fs_per_g_N": 39,
+     "Fs_per_g_lbf": 8.77,
+     "dde_per_g_deg": -9.98,
+     "flare": {
+      "to_cas_kt": 72.2,
+      "pull_N": 10.1,
+      "pull_lbf": 2.3
+     }
+    },
+    "cruise": {
+     "cas_kt": 200,
+     "flaps": 0,
+     "h_m": 914,
+     "alpha_deg": -0.68,
+     "de_deg": 2.49,
+     "tab_deg": -4.05,
+     "grad_N_per_kt": 0.294,
+     "grad_lbf_per_kt": 0.066,
+     "Fs_per_g_N": 38.4,
+     "Fs_per_g_lbf": 8.64,
+     "dde_per_g_deg": -1.95
+    }
+   },
+   "band_lbf_per_g": {
+    "min": 5.83,
+    "max": 10.1,
+    "from": "card validation.stick_force_targets"
+   },
+   "band_N_per_g": {
+    "min": 25.9,
+    "max": 44.9
+   },
+   "cfr23_155": {
+    "force_lbf": 35,
+    "per_g_lbf": 5.83
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 60,
+    "one_hand_lbf": 60,
+    "prolonged_lbf": 10
+   },
+   "checks": {
+    "pull_to_nL_mtow_lbf": 51.8,
+    "model_meets_23_155": true,
+    "model_pull_within_23_143_temporary": true,
+    "model_train_cruise_in_band": true,
+    "gradient_stable_23_173": true,
+    "gradient_ge_0_167_guide": false,
+    "flare_pull_le_one_hand_23_143": true
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 8.2,
+     "cruise": 8.1,
+     "min": 5.9,
+     "max": 10
+    },
+    "fs_per_g_N": {
+     "approach": 37,
+     "cruise": 36,
+     "min": 26,
+     "max": 44
+    },
+    "grad_N_per_kt": {
+     "approach": 0.61,
+     "cruise": 0.27
+    },
+    "flare_pull_N": 11,
+    "scale_vs_model": {
+     "approach": 1,
+     "cruise": 1
+    },
+    "basis": "hinge model inside the bounds"
+   }
+  },
+  "p2006t": {
+   "id": "p2006t",
+   "controller": "wheel",
+   "nL": 3.8,
+   "mtow_kg": 1180,
+   "train_kg": 1128,
+   "inputs": {
+    "eta": 0.9,
+    "at": 4.37,
+    "tau": 0.6,
+    "lt": 4.55,
+    "Se": 2.35,
+    "Ch0": 0
+   },
+   "fallback_from": null,
+   "no_hinge": "stabilator (all-moving tail + anti-servo tab): round-1 elevator hinge model not valid",
+   "band_lbf_per_g": {
+    "min": 12.5,
+    "max": 48.1,
+    "from": "card validation.stick_force_targets"
+   },
+   "band_N_per_g": {
+    "min": 55.6,
+    "max": 214
+   },
+   "cfr23_155": {
+    "force_lbf": 26,
+    "per_g_lbf": 9.29
+   },
+   "cfr23_143": {
+    "temporary_pitch_lbf": 75,
+    "one_hand_lbf": 50,
+    "prolonged_lbf": 10
+   },
+   "target": {
+    "fs_per_g_lbf": {
+     "approach": 19.6,
+     "cruise": 19.6,
+     "min": 12.5,
+     "max": 26.7
+    },
+    "fs_per_g_N": {
+     "approach": 87,
+     "cruise": 87,
+     "min": 56,
+     "max": 119
+    },
+    "grad_N_per_kt": null,
+    "flare_pull_N": null,
+    "scale_vs_model": null,
+    "basis": "band midpoint (no hinge model)"
+   }
+  }
+ }
+}

@@ -1,11 +1,6 @@
 {
  "type": "p2006t",
- "patched": true,
- "patchLog": [
-  "deUp 15 deDn 4",
-  "daMax 18.5",
-  "drMax 26"
- ],
+ "travel": "deUp 15 deDn 4 daMax 18.5 drMax 26 (จากบัตร)",
  "ac": {
   "m": 1230,
   "Ixx": 3556.97,
@@ -95,7 +90,7 @@
  },
  "res": {
   "stall": {
-   "0": {
+   "UP": {
     "f": 0,
     "gear": 0,
     "CLmax": 1.08895,
@@ -113,7 +108,7 @@
     "VSR_kias": 69.0515,
     "Vmin_kias": 66.337
    },
-   "15": {
+   "T/O": {
     "f": 0.7735,
     "gear": 1,
     "CLmax": 1.46574,
@@ -131,7 +126,7 @@
     "VSR_kias": 58.6538,
     "Vmin_kias": 57.1449
    },
-   "40": {
+   "FULL": {
     "f": 1,
     "gear": 1,
     "CLmax": 1.57724,
@@ -269,7 +264,7 @@
    }
   },
   "takeoff": {
-   "flap": "15",
+   "flap": "T/O",
    "VR": 64,
    "groundRoll_m": 334.962,
    "tLiftoff_s": 15.6417,

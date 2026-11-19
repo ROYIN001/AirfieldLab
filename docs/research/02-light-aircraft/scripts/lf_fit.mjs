@@ -7,7 +7,6 @@ import { fileURLToPath } from 'node:url';
 import { legacyFit, checkFit } from './lm_legacy_fit.mjs';
 import { loadType, isMainModule } from './lm_lib.mjs';
 import { compute } from './lf_calc.mjs';
-import { patchTravel } from './lf_card.mjs';
 import { solveStallCentre } from './lm_card.mjs';
 import { val } from './lm_lib.mjs';
 
@@ -21,14 +20,14 @@ export async function fit({ mode = 'static', T0 = null } = {}) {
   if (card.aero) delete card.aero.legacy;
   const t0 = T0 ?? compute().prop.static.T0_N;
   const f = legacyFit(card, { mode, T0: mode === 'static' ? t0 : null });
-  // workaround (lf_card.mjs): lm_card.buildAC ignores the card's control travel; apply TCDS travel, then re-solve the
-  // stall blend centres so the trimmed CLmax still equals the POH-derived targets with the real elevator authority
-  const plog = patchTravel(f.ac, card);
+  // D2 (19 Nov 2026): buildAC (inside legacyFit) now takes the card's TCDS travel itself, so no travel patch is applied;
+  // the stall blend centres are still re-solved so the trimmed CLmax equals the POH-derived targets
+  const RAD = 180 / Math.PI, plog = [`deUp ${(f.ac.deUp * RAD).toFixed(1)}`, `deDn ${(f.ac.deDn * RAD).toFixed(1)}`, `daMax ${(f.ac.daMax * RAD).toFixed(1)}`, `drMax ${(f.ac.drMax * RAD).toFixed(1)}`];
   const tg = val(card, 'aero.static_long.CLmax_target');
   f.ac.aStall = +solveStallCentre(f.ac, 0, tg['0']).toFixed(2);
   f.ac.aStallFlap = +((solveStallCentre(f.ac, 1, tg['30']) - f.ac.aStall) / 1).toFixed(2);
   f.legacy.aero.aStall = f.ac.aStall; f.legacy.aero.aStallFlap = f.ac.aStallFlap;
-  f.notes.push(`travel patched (${plog.join(', ')}); stall centres re-solved: aStall ${f.ac.aStall}, aStallFlap ${f.ac.aStallFlap}`);
+  f.notes.push(`travel from the card (${plog.join(', ')}); stall centres re-solved: aStall ${f.ac.aStall}, aStallFlap ${f.ac.aStallFlap}`);
   const { M } = await import(path.join(ROOT, 'test', 'harness.mjs'));
   const chk = await checkFit(M, card, f);
   return { type: 'c152', mode, T0_input: t0, legacy: f.legacy, notes: f.notes, targets: f.targets, check: chk };

@@ -1,0 +1,96 @@
+{
+ "run": "2026-11-19",
+ "editions": {
+  "2026-05-14": {
+   "url": "https://aip.caat.or.th/2026-05-14-AIRAC/html/eAIP/VT-AD-2.VTBD-en-GB.html",
+   "pass": 29,
+   "of": 29,
+   "freq_MHz": {
+    "TWR": 118.1,
+    "GND": [
+     121.9,
+     122.5
+    ],
+    "DEL": 127.7,
+    "ATIS_arr": 126.4,
+    "ATIS_dep": 118.55,
+    "APP_DMK": 119.4
+   },
+   "ad220_items": {
+    "vacate21L_holdShort21R": {
+     "item": "6.3",
+     "twy": "S"
+    },
+    "clearanceTOLDG": "7.3"
+   },
+   "ad222_items": {
+    "speed250": "4.1.2",
+    "reportingPoints": 26,
+    "trainingArea": "D72",
+    "trainOut": true,
+    "trainBack": true
+   }
+  },
+  "2026-07-09": {
+   "url": "https://aip.caat.or.th/2026-07-09-AIRAC/html/eAIP/VT-AD-2.VTBD-en-GB.html",
+   "pass": 29,
+   "of": 29,
+   "freq_MHz": {
+    "TWR": 118.1,
+    "GND": [
+     121.9,
+     122.5
+    ],
+    "DEL": 127.7,
+    "ATIS_arr": 126.4,
+    "ATIS_dep": 118.55,
+    "APP_DMK": 119.4
+   },
+   "ad220_items": {
+    "vacate21L_holdShort21R": {
+     "item": "6.3",
+     "twy": "S"
+    },
+    "clearanceTOLDG": "7.3"
+   },
+   "ad222_items": {
+    "speed250": "4.1.2",
+    "reportingPoints": 26,
+    "trainingArea": "D72",
+    "trainOut": true,
+    "trainBack": true
+   }
+  },
+  "2026-10-29": {
+   "url": "https://aip.caat.or.th/2026-10-29-AIRAC/html/eAIP/VT-AD-2.VTBD-en-GB.html",
+   "pass": 29,
+   "of": 29,
+   "freq_MHz": {
+    "TWR": 118.1,
+    "GND": [
+     121.9,
+     122.5
+    ],
+    "DEL": 127.7,
+    "ATIS_arr": 126.4,
+    "ATIS_dep": 118.55,
+    "APP_DMK": 119.4
+   },
+   "ad220_items": {
+    "vacate21L_holdShort21R": {
+     "item": "6.3",
+     "twy": "S"
+    },
+    "clearanceTOLDG": "7.3"
+   },
+   "ad222_items": {
+    "speed250": "4.1.2",
+    "reportingPoints": 26,
+    "trainingArea": "D6A,D6B",
+    "trainOut": true,
+    "trainBack": true
+   }
+  }
+ },
+ "fails": 0
+}

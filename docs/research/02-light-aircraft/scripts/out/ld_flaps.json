@@ -2,7 +2,7 @@
  "tau": 0.609,
  "cfc": 0.25,
  "datcom": {
-  "TO": {
+  "T/O": {
    "flap_deg": 20,
    "eta_delta": 0.8,
    "dcl": 1.02,
@@ -29,7 +29,7 @@
   },
   {
    "name": "T/O full power (NG p17)",
-   "flap": "TO",
+   "flap": "T/O",
    "kias": 73,
    "theta_deg": 7.5,
    "gamma_deg": 6.6,
@@ -40,7 +40,7 @@
   },
   {
    "name": "T/O idle (NG p20)",
-   "flap": "TO",
+   "flap": "T/O",
    "kias": 84,
    "theta_deg": -6,
    "gamma_deg": -4.04,
@@ -51,7 +51,7 @@
   },
   {
    "name": "T/O idle 88 kt (NG p20)",
-   "flap": "TO",
+   "flap": "T/O",
    "kias": 88,
    "theta_deg": -7.5,
    "gamma_deg": -5.8,
@@ -84,7 +84,7 @@
   },
   {
    "name": "T/O idle (TDI video p16/p20)",
-   "flap": "TO",
+   "flap": "T/O",
    "kias": 84,
    "theta_deg": -7.5,
    "gamma_deg": -6.41,

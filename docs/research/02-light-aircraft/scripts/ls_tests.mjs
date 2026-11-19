@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Round 2 / topic 02 (LS): data checks T-LS-01 … T-LS-09 on the common_light.thai_fleet block of
+// Round 2 / topic 02 (LS): data checks T-LS-01 … T-LS-09 and T-LS-13 on the common_light.thai_fleet block of
 // ../02-thai-schools.md (or a merged params file via --params <file>). Prints the measured value, the expected
 // value and PASS/FAIL. Expected values come from scripts/ls_fleet.mjs run on the CAAT register of 9 Jul 2026 [LS1].
 // Node >= 18, no dependencies. usage: node scripts/ls_tests.mjs [--params params-light.json]
@@ -57,14 +57,35 @@ const r = fleet.summary.v.ranking_extra;
 T('T-LS-08', 'ranking_extra[0..1], others P3', `${r[0]}, ${r[1]}, P3 rest: ${r.slice(2).every(x => x.endsWith(':P3'))}`, 'c172r:P1, c152:P2, P3 rest: true',
   r[0] === 'c172r:P1' && r[1] === 'c152:P2' && r.slice(2).every(x => x.endsWith(':P3')));
 // T-LS-09 C172 family share of ATO fleet and C172S share of C172
-const c172 = ['c172s', 'c172r', 'c172_m', 'c172_n', 'c172_p'].reduce((a, id) => a + sumType(ato, id), 0);
+// gap 21 (19 Nov 2026): 172M/N/P are counted under the card id c172r (variant note), so the family is c172s + c172r
+const C172_IDS = ['c172s', 'c172r'];
+const c172 = C172_IDS.reduce((a, id) => a + sumType(ato, id), 0);
 const sh = [pct(c172, atoTotal), pct(sumType(ato, 'c172s'), c172)];
 // number of ATOs flying any C172 variant / a C172S (added by the reviewer, 19 Nov 2026: §02.0 had said 6 for the whole family)
-const nFam = ato.filter(s => ['c172s', 'c172r', 'c172_m', 'c172_n', 'c172_p'].some(id => s.types[id])).length;
+const nFam = ato.filter(s => C172_IDS.some(id => s.types[id])).length;
 const nS = ato.filter(s => s.types.c172s).length;
 const sv = fleet.summary.v;
 T('T-LS-09', 'C172 % of ATO fleet / C172S % of C172 / ATOs with C172 / ATOs with C172S', `${sh.join(' / ')} / ${nFam} / ${nS}`, '56.4 / 77.3 (±0.1) / 7 / 6',
   near(sh[0], 56.4, 0.1) && near(sh[1], 77.3, 0.1) && nFam === 7 && nS === 6 && sv.c172_family_ato_schools === nFam && sv.c172s_ato_schools === nS);
+
+// T-LS-13 (gap 21, 19 Nov 2026): every key of `types` (schools, clubs and the military leaf) is a type id that has a data card
+// (schema-ext-r2 §3 and 13-other-trainers.md), and each `variants` row names an id of the same leaf with n <= types[id].
+// With the topic folder present (scripts/../*.md) the ids are also checked against the merged cards (airframe.identity).
+const CARD_IDS = new Set(['c172s', 'c172r', 'c152', 'da40ng', 'da40_180', 'da40d', 'da42ng', 'da42_tae125', 'da42_vi',
+  'pc7mk2', 'pc9m', 't6a', 't6c', 'p2006t', 'pa28_161', 'be76', 'p2002jf', 'p68c', 't206h', 'ct4']);
+const usedIds = [...new Set(schools.flatMap(s => Object.keys(s.types)))].sort();
+const notCard = usedIds.filter(id => !CARD_IDS.has(id));
+const badVar = schools.flatMap(s => (s.variants || []).filter(r => !(r.id in s.types) || r.n > s.types[r.id] || !r.variant).map(r => `${s.k}:${r.id}`));
+let noIdentity = [];
+try {
+  const L = await import('./lm_lib.mjs');
+  const res = L.mergeDir(new URL('..', HERE).pathname);
+  const merged = res.merged || res;
+  noIdentity = usedIds.filter(id => !merged[id] || !(merged[id].airframe?.identity));
+} catch (e) { noIdentity = ['(merge failed: ' + e.message + ')']; }
+T('T-LS-13', 'types ids that are not card ids / bad variants rows / ids without airframe.identity in the merged cards',
+  `${notCard.join(',') || 'none'} / ${badVar.join(',') || 'none'} / ${noIdentity.join(',') || 'none'}`, 'none / none / none',
+  notCard.length === 0 && badVar.length === 0 && noIdentity.length === 0);
 
 for (const x of results) console.log(`${x.ok ? 'PASS' : 'FAIL'} ${x.id} ${x.what}: got ${x.got}, expected ${x.exp}`);
 const nf = results.filter(x => !x.ok).length;

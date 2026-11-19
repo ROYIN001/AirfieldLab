@@ -27,7 +27,7 @@
  "notes": [
   "polar from glide 60.0 KCAS E 9.114: CD0s 0.0554 Ks 0.0774; idle 0 (POH glide is at idle, windmilling)",
   "climb fit (static): target Vy 66.3 KCAS ROC 715 fpm → T0 2382 N, Vc 31.0 m/s",
-  "travel patched (deUp 25 deDn 18, daMax 17.5, drMax 23); stall centres re-solved: aStall 16.4, aStallFlap 0.64"
+  "travel from the card (deUp 25.0, deDn 18.0, daMax 17.5, drMax 23.0); stall centres re-solved: aStall 16.4, aStallFlap 0.64"
  ],
  "targets": {
   "VS1": 48,

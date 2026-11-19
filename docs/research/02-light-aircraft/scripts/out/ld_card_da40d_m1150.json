@@ -44,10 +44,10 @@
   "eta": 1.0061,
   "T0": 3460,
   "idle": 0,
-  "deUp": 0.383972,
+  "deUp": 0.401426,
   "deDn": 0.261799,
-  "daMax": 0.349066,
-  "drMax": 0.436332,
+  "daMax": 0.287979,
+  "drMax": 0.506145,
   "gear": [
    {
     "b": [
@@ -349,31 +349,31 @@
   },
   {
    "field": "deUp",
-   "value": 0.383972,
-   "from": "controls.surfaces.elevator.travel_deg.up",
+   "value": 0.401426,
+   "from": "controls.surfaces.elevator.v.travel_deg.up",
    "rule": "deg → rad (de ลบ = ขอบท้ายขึ้น)",
-   "flag": "R1"
+   "flag": ""
   },
   {
    "field": "deDn",
    "value": 0.261799,
-   "from": "controls.surfaces.elevator.travel_deg.down",
+   "from": "controls.surfaces.elevator.v.travel_deg.down",
    "rule": "deg → rad",
-   "flag": "R1"
+   "flag": ""
   },
   {
    "field": "daMax",
-   "value": 0.349066,
-   "from": "controls.surfaces.aileron.travel_deg",
+   "value": 0.287979,
+   "from": "controls.surfaces.aileron.v.travel_deg",
    "rule": "da = ค่าเฉลี่ยของสองข้าง ½(up + down) ให้ตรงนิยาม Clda ต่อ rad ของ da เฉลี่ย",
-   "flag": "R1"
+   "flag": ""
   },
   {
    "field": "drMax",
-   "value": 0.436332,
-   "from": "controls.surfaces.rudder.travel_deg",
+   "value": 0.506145,
+   "from": "controls.surfaces.rudder.v.travel_deg",
    "rule": "ซิมจำกัดสมมาตร ±drMax จึงใช้ min(left, right)",
-   "flag": "R1"
+   "flag": ""
   },
   {
    "field": "aStall",
@@ -467,17 +467,26 @@
   },
   {
    "field": "Vref",
-   "value": 72,
+   "value": 67,
    "from": "speeds.VREF_kt",
    "rule": "KIAS → KCAS",
    "flag": ""
   },
   {
    "field": "Vapp",
-   "value": 72,
+   "value": 67,
    "from": "speeds.VAPP_kt",
    "rule": "KIAS → KCAS",
    "flag": ""
+  },
+  {
+   "field": "Vref/Vapp (ld_tools)",
+   "value": [
+    72,
+    72
+   ],
+   "from": "speeds.approach_table",
+   "rule": "LDG 71.0 KIAS ที่ 1150 kg (run 1150 kg) → KCAS; VAPP − VREF 0 kt"
   }
  ],
  "res": {
@@ -495,12 +504,12 @@
     "VSR_eas": 57.3408,
     "VSR_cas": 57.3466,
     "Vmin_eas": 55.3085,
-    "de_end_deg": -22,
+    "de_end_deg": -23,
     "ias0": 77,
     "VSR_kias": 53.7641,
     "Vmin_kias": 51.2787
    },
-   "TO": {
+   "T/O": {
     "f": 0.6933,
     "gear": 1,
     "CLmax": 1.65347,
@@ -513,7 +522,7 @@
     "VSR_eas": 55.7456,
     "VSR_cas": 55.7508,
     "Vmin_eas": 53.8589,
-    "de_end_deg": -22,
+    "de_end_deg": -23,
     "ias0": 75,
     "VSR_kias": 51.5374,
     "Vmin_kias": 49.6916
@@ -531,7 +540,7 @@
     "VSR_eas": 55.0705,
     "VSR_cas": 55.0755,
     "Vmin_eas": 53.2253,
-    "de_end_deg": -22,
+    "de_end_deg": -23,
     "ias0": 74,
     "VSR_kias": 51.0632,
     "Vmin_kias": 48.2879
@@ -656,7 +665,7 @@
    }
   },
   "takeoff": {
-   "flap": "TO",
+   "flap": "T/O",
    "VR": 62.1,
    "groundRoll_m": 361.938,
    "tLiftoff_s": 18.0292,

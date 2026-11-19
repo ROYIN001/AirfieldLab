@@ -4,11 +4,16 @@
 # Speeds: JSBSim has no pitot-static error model, so velocities/vc-kts is KCAS. POH KIAS values are converted to KCAS
 # with the POH calibration table before comparison (lb_compare.mjs). Weight: published MTOW of the real type, payload
 # placed at the model's empty-weight CG (lb_jsb.set_mass). ISA, zero wind, default JSBSim dt (1/120 s).
+# Fix 2026-11-19 (gap 14): FlightGear JSBSim models fg_pc9m, fg_c152, fg_da40ng, fg_t6 (fetch them first with
+# lb_fg_fetch.py; GPL files stay outside the repo). Model-type tests use the engine kind instead of a model list, the
+# elevator stop of a FlightGear model is measured at run time (full nose-up command), and results for the six bundled
+# models are unchanged.
 import sys, os, json, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lb_jsb import *
 HERE = os.path.dirname(os.path.abspath(__file__))
-PIST = ('c172p', 'c172r', 'c172x', 'pa28')
+PIST = tuple(k for k, v in MODELS.items() if v['kind'] == 'piston')   # c172p, c172r, c172x, pa28 + fg_c152, fg_da40ng
+NOTRIM = ('pc7', 'pa28') + tuple(k for k, v in FG_MODELS.items() if v['kind'] == 'turboprop')   # FGTrim fails (03.1 item 3)
 CASES = {   # w = MTOW (lb) of the real type; vs = rough stall guess (only sets start speeds); cruise = (alt ft, mode, target)
  'c172p':   dict(w=2400, vs=48, climb=range(55, 111, 5), glide=range(55, 96, 5), cruise=[(8000, 'rpm', 2600), (8000, 'rpm', 2500), (4000, 'rpm', 2500), (8000, 'full', None)], to_flap=10, vr=50, v50=56, theta_rot=8),
  'c172r':   dict(w=2450, vs=48, climb=range(55, 111, 5), glide=range(55, 96, 5), cruise=[(8000, 'rpm', 2600), (8000, 'rpm', 2500), (4000, 'rpm', 2500), (8000, 'full', None)], to_flap=10, vr=51, v50=57, theta_rot=8),
@@ -16,8 +21,21 @@ CASES = {   # w = MTOW (lb) of the real type; vs = rough stall guess (only sets 
  'pa28':    dict(w=2450, vs=50, climb=range(60, 121, 5), glide=range(60, 101, 5), cruise=[(8000, 'hp', 135.0), (8000, 'full', None), (4000, 'hp', 135.0)], to_flap=0, vr=60, v50=70, theta_rot=8),
  'pc7':     dict(w=5952, vs=70, climb=range(90, 201, 10), glide=range(85, 171, 5), cruise=[(10000, 'full', None), (20000, 'full', None, 130), (20000, 'full', None, 160)], to_flap=15, vr=85, v50=100, theta_rot=8),
  't6texan2':dict(w=6500, vs=80, climb=range(110, 231, 10), glide=range(100, 181, 5), cruise=[(1000, 'full', None, 240), (10000, 'full', None), (22000, 'full', None)], to_flap=15, vr=90, v50=110, theta_rot=8),
+ # FlightGear models (gap 14). w: PC-9M 2,350 kg acrobatic MTOW (07 [LP2]); C152 1,670 lb (11 [LF1]); DA40 NG 1,310 kg
+ # (05 [LD1]); T-6A 6,500 lb (07, [LB16]) of which the FG T-6 can carry only empty + full fuel.
+ 'fg_pc9m':  dict(w=5181, vs=75, stall_t0=25, climb=range(100, 201, 10), glide=range(90, 171, 5), cruise=[(10000, 'full', None), (20000, 'full', None, 160)], to_flap=23, vr=85, v50=100, theta_rot=8),
+ 'fg_c152':  dict(w=1670, vs=43, climb=range(50, 126, 5), glide=range(50, 86, 5), cruise=[(8000, 'rpm', 2500), (8000, 'rpm', 2400), (8000, 'full', None)], to_flap=10, vr=45, v50=54, theta_rot=8),
+ 'fg_da40ng':dict(w=2888, vs=60, climb=range(55, 111, 5), glide=range(60, 111, 5), cruise=[(8000, 'full', None, 120), (14000, 'hp', 100.8, 110), (16000, 'full', None, 110)], to_flap=15, vr=65, v50=72, theta_rot=8),
+ 'fg_t6':    dict(w=6500, vs=80, climb=range(110, 231, 10), glide=range(100, 181, 5), cruise=[(1000, 'full', None, 240), (10000, 'full', None)], to_flap=0.5, vr=90, v50=110, theta_rot=8),
 }
 EL_STOP = {'c172p': -28.0, 'c172r': -28.0, 'c172x': -28.0, 'pa28': -28.0, 'pc7': -20.05, 't6texan2': -30.0}  # TE-up stop, deg
+def el_stop(m):
+    """TE-up elevator stop (deg): table above for the bundled models, measured at run time for FlightGear models."""
+    if m not in EL_STOP:
+        f = new(m); f['fcs/elevator-cmd-norm'] = -1.0; f['fcs/pitch-trim-cmd-norm'] = 0.0
+        for _ in range(int(2 / f.get_delta_t())): f.run()
+        EL_STOP[m] = round(f['fcs/elevator-pos-deg'], 2)
+    return EL_STOP[m]
 def outpath(m): return os.path.join(HERE, 'out', f'lb_perf_{m}.json')
 def load(m):
     try: return json.load(open(outpath(m)))
@@ -30,9 +48,9 @@ def start(m, kcas, h, flap=0.0, gear_down=True, gamma=0.0, mix=None, thr=0.75, t
     settles the aircraft for 25 s: speed on pitch, altitude (or gamma) on throttle."""
     f = new(m, terrain); left = set_mass(f, m, CASES[m]['w'])
     setup(f, m, kcas, h, gamma=gamma, flap_deg=flap, gear_down=gear_down, mix=mix, thr=thr); start_engine(f, m)
-    ok = trim(f) if m not in ('pc7', 'pa28') else False
+    ok = trim(f) if m not in NOTRIM else False
     if not ok:
-        if m == 'pc7': f['fcs/throttle-cmd-norm'] = 0.8
+        if MODELS[m]['kind'] == 'turboprop': f['fcs/throttle-cmd-norm'] = 0.8
         P = Pilot(f['attitude/theta-deg']); dt = f.get_delta_t(); I = 0.0; thr0 = f['fcs/throttle-cmd-norm']
         for _ in range(int(25 / dt)):
             P.step(f, kcas, dt); e = -(f['velocities/h-dot-fps'] * 60 - 0.0) / 1000.0; I += e * dt
@@ -49,11 +67,11 @@ def t_stall(m):
             P.step(f, v0 - 1.0 * t, dt); f.run(); t += dt; s = state(f)
             if s['vc'] < vmin: vmin, rec = s['vc'], s
             if s['alpha'] > amax: amax, ra = s['alpha'], s
-            if s['vc'] > vmin + 5 and t > 5: break
+            if s['vc'] > vmin + 5 and t > c.get('stall_t0', 5): break   # fg_pc9m: ignore the transient after the idle cut
         res[str(fl)] = dict(trim_ok=ok, w_lb=r(s0['w'], 1), not_loaded_lb=r(left, 1), cg_x_in=r(s0['cgx'], 2), v0_kcas=v0, flap_deg=r(s0['flap'], 1),
                             vs_kcas=r(vmin), alpha_at_vs=r(rec['alpha']), elev_at_vs=r(rec['el']), CL_at_vs=r(rec['CL'], 3),
                             alpha_max=r(amax), CL_at_alpha_max=r(ra['CL'], 3), hdot_at_vs_fpm=r(rec['hdot'], 0),
-                            limit='elevator stop' if rec['el'] <= EL_STOP[m] + 1.0 else 'aero (CL break)')
+                            limit='elevator stop' if rec['el'] <= el_stop(m) + 1.0 else 'aero (CL break)')
     return res
 # ---------- climb at full throttle, sea level ISA --------------------------------------------------------------------
 def t_climb(m):
@@ -83,11 +101,11 @@ def t_climb(m):
 def t_glide(m):
     c = CASES[m]; pts = []
     for v in c['glide']:
-        f, ok, left = start(m, v, 6000, flap=0, gear_down=False, gamma=-4.0 if m not in ('pc7', 'pa28') else 0.0); s0 = state(f)
+        f, ok, left = start(m, v, 6000, flap=0, gear_down=False, gamma=-4.0 if m not in NOTRIM else 0.0); s0 = state(f)
         P = Pilot(s0['theta']); f['fcs/throttle-cmd-norm'] = 0.0; f['fcs/mixture-cmd-norm'] = 0.0
         if m in PIST: f['propulsion/magneto_cmd'] = 0
         else: f['propulsion/cutoff_cmd'] = 1
-        if m == 'pc7': f['fcs/feather-cmd-norm'] = 1.0
+        if MODELS[m]['kind'] == 'turboprop': f['fcs/feather-cmd-norm'] = 1.0
         dt = f.get_delta_t(); t = 0.0; win = []
         while t < 100:
             P.step(f, v, dt); f.run(); t += dt; s = state(f)
@@ -113,7 +131,7 @@ def t_cruise(m):
     res = []
     for case in CASES[m]['cruise']:
         h, mode, target = case[:3]; v0 = case[3] if len(case) > 3 else (100 if m in PIST else 180)
-        mix = best_mix(m, h, v0) if m in PIST else 1.0
+        mix = best_mix(m, h, v0) if (m in PIST and not MODELS[m].get('fadec')) else 1.0   # DA40 NG model: mixture from its FADEC schedule
         f, ok, left = start(m, v0, h, flap=0, gear_down=False, mix=mix); f['fcs/mixture-cmd-norm'] = mix
         P = Pilot(f['attitude/theta-deg']); dt = f.get_delta_t()
         thr = f['fcs/throttle-cmd-norm']; It = 0.0; Ih = 0.0; t = 0.0; win = []
@@ -147,7 +165,7 @@ def t_preq(m):
 def ground(m, flap):
     f = new(m, terrain_ft=0.0); set_mass(f, m, CASES[m]['w'])
     f['ic/h-agl-ft'] = 6.0 if m in PIST else 8.0; f['ic/vc-kts'] = 0; f['ic/u-fps'] = 0; f['ic/theta-deg'] = 0
-    f['fcs/flap-cmd-norm'] = flap / MODELS[m]['fmax']; f['gear/gear-cmd-norm'] = 1; f['fcs/mixture-cmd-norm'] = 1; f['fcs/advance-cmd-norm'] = 1
+    flap_cmd(f, m, flap); f['gear/gear-cmd-norm'] = 1; f['fcs/mixture-cmd-norm'] = 1; f['fcs/advance-cmd-norm'] = 1
     f.run_ic(); f['propulsion/set-running'] = -1; start_engine(f, m)
     for b in ('left', 'right', 'center'): f[f'fcs/{b}-brake-cmd-norm'] = 1.0
     f['fcs/throttle-cmd-norm'] = 0.0
@@ -176,7 +194,8 @@ def t_takeoff(m):
         else:
             if phase == 'rotate': P.hold_theta(f, c['theta_rot'], dt)
             else: P.step(f, c['v50'], dt)
-            wow = any(f[f'gear/unit[{i}]/WOW'] for i in range(3))
+            wow = any(f[f'gear/unit[{i}]/WOW'] for i in range(3)) if not is_fg(m) else any(
+                f[f'gear/unit[{i}]/WOW'] for i in range(int(f['gear/num-units'])) if f.get_property_manager().hasNode(f'gear/unit[{i}]/WOW'))
             if phase == 'rotate' and not wow:
                 phase = 'air'; x_lo = f['position/distance-from-start-mag-mt'] - x0; t_lo = t; v_lo = vc
                 P.theta0 = f['attitude/theta-deg']; P.Kv, P.Kvi = 0.6, 0.08
@@ -193,5 +212,7 @@ if __name__ == '__main__':
         out = load(m); out['jsbsim'] = jsbsim.__version__
         try: out[tname] = TESTS[tname](m)
         except Exception as e: out[tname] = dict(error=repr(e)[:300])
-        f = new(m); out['dt_s'] = f.get_delta_t(); out['mtow_lb'] = CASES[m]['w']; save(outpath(m), out)
+        f = new(m); out['dt_s'] = f.get_delta_t(); out['mtow_lb'] = CASES[m]['w']
+        if is_fg(m): out['source'] = dict(repo=FG_MODELS[m]['repo'], commit=FG_MODELS[m]['commit'], file=FG_MODELS[m]['xml'] + '.xml', licence=FG_MODELS[m]['licence'], el_stop_deg=el_stop(m))
+        save(outpath(m), out)
         print(m, tname, json.dumps(out[tname])[:300], flush=True)

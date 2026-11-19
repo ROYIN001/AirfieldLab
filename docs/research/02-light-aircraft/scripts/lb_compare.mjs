@@ -2,10 +2,16 @@
 // published figures of the real types, compute error % and a verdict, and write scripts/out/lb_compare.json.
 // Run: node scripts/lb_compare.mjs   (Node >= 18, no dependencies). POH KIAS are converted to KCAS with the POH
 // calibration table (C172P Fig 5-1) by linear interpolation; mph are converted with 1 mph = 0.868976 kt.
+// Fix 2026-11-19 (gap 28): every C172-family stall speed is compared on the FORWARD-CG basis of POH Fig 5-3 (C172P
+// 52/49/46 KCAS [LB9], C172R 52/47 KCAS [LE3]), the same basis as the 10-c172r card; the aft-CG / spec-page values
+// (51/48/46, 51/47) are given in the note. Gap 14: FlightGear JSBSim models (fg_*) run with lb_perf.py are compared
+// with the public figures used by the type cards of topics 05 (LD), 07 (LP) and 11 (LF); KIAS are converted with the
+// card's own calibration table. Rows whose only reference is a card ESTIMATE get published = null (not judged).
 import { readFileSync, writeFileSync } from 'node:fs';
 const OUT = new URL('./out/', import.meta.url);
 const rd = (f) => JSON.parse(readFileSync(new URL(f, OUT), 'utf8'));
 export const MPH = 0.868976;
+export const FG = ['fg_pc9m', 'fg_c152', 'fg_da40ng', 'fg_t6'];
 export function interp(xs, ys, x) {
   if (x <= xs[0]) return ys[0] + (x - xs[0]) * (ys[1] - ys[0]) / (xs[1] - xs[0]);
   for (let i = 1; i < xs.length; i++) if (x <= xs[i]) return ys[i - 1] + (x - xs[i - 1]) * (ys[i] - ys[i - 1]) / (xs[i] - xs[i - 1]);
@@ -22,13 +28,13 @@ export const pct = (model, ref) => 100 * (model - ref) / ref;
 export const verdict = (e) => (Math.abs(e) <= 5 ? 'ตรง (≤5%)' : Math.abs(e) <= 15 ? 'ใกล้ (5–15%)' : 'ไม่ตรง (>15%)');
 const r1 = (x, n = 1) => (x == null ? null : Math.round(x * 10 ** n) / 10 ** n);
 // KTAS at a given brake power, interpolated between the measured cruise points at one altitude
-function ktasAtHp(cruise, h, hp) {
-  const pts = cruise.filter((c) => c.h_ft === h && c.mode === 'rpm' && c.hp != null).sort((a, b) => a.hp - b.hp);
+function ktasAtHp(cruise, h, hp, modes = ['rpm']) {
+  const pts = cruise.filter((c) => c.h_ft === h && modes.includes(c.mode) && c.hp != null).sort((a, b) => a.hp - b.hp);
   if (pts.length < 2) return null;
   return interp(pts.map((p) => p.hp), pts.map((p) => p.ktas), hp);
 }
 function rows() {
-  const P = Object.fromEntries(['c172p', 'c172r', 'c172x', 'pa28', 'pc7', 't6texan2'].map((m) => [m, rd(`lb_perf_${m}.json`)]));
+  const P = Object.fromEntries(['c172p', 'c172r', 'c172x', 'pa28', 'pc7', 't6texan2', ...FG].map((m) => [m, rd(`lb_perf_${m}.json`)]));
   const A = rd('lb_aero.json');
   const R = [];
   const add = (model, qty, unit, modelVal, refVal, src, note = '') => {
@@ -38,9 +44,9 @@ function rows() {
   // ---- c172p and c172x (both describe a 172P; c172x header: "Models a 1982 Cessna 172P") vs C172P POH, 2400 lb
   for (const m of ['c172p', 'c172x']) {
     const p = P[m];
-    add(m, 'VS1 flaps up, power off', 'KCAS', p.stall['0'].vs_kcas, 51, 'LB9 Fig 5-3, LB10', 'POH aft CG 51, fwd CG 52 KCAS');
-    add(m, 'VS flaps 10', 'KCAS', p.stall['10'].vs_kcas, 48, 'LB9 Fig 5-3', 'POH aft CG 48, fwd CG 49');
-    add(m, 'VS0 flaps 30', 'KCAS', p.stall['30'].vs_kcas, 46, 'LB9 Fig 5-3, LB10', '');
+    add(m, 'VS1 flaps up, power off', 'KCAS', p.stall['0'].vs_kcas, 52, 'LB9 Fig 5-3', 'POH CG หน้าสุด 52 KCAS (ฐานเดียวกับบัตร 10-c172r); CG หลังสุด 51 = หน้า spec [LB10]');
+    add(m, 'VS flaps 10', 'KCAS', p.stall['10'].vs_kcas, 49, 'LB9 Fig 5-3', 'POH CG หน้าสุด 49; CG หลังสุด 48');
+    add(m, 'VS0 flaps 30', 'KCAS', p.stall['30'].vs_kcas, 46, 'LB9 Fig 5-3, LB10', 'POH CG หน้าและหลังเท่ากัน 46');
     add(m, 'CLmax flaps up (static sweep)', '-', A[m]['0'].CLmax, null, 'lb_aero', 'model only');
     add(m, 'Vy SL', 'KCAS', p.climb.vy_kcas, kcas172p(76), 'LB9 Fig 5-5', 'POH 76 KIAS → 75.4 KCAS (Fig 5-1)');
     add(m, 'ROC max SL ISA', 'fpm', p.climb.roc_max_fpm, interp([0, 20], [745, 685], 15), 'LB9 Fig 5-5, LB10', 'POH 745 @0°C, 685 @20°C → 700 @15°C; spec page 700');
@@ -53,8 +59,8 @@ function rows() {
   }
   // ---- c172r vs C172R spec page, 2450 lb
   { const p = P.c172r;
-    add('c172r', 'VS1 flaps up, power off', 'KCAS', p.stall['0'].vs_kcas, 51, 'LB11', '');
-    add('c172r', 'VS0 flaps 30', 'KCAS', p.stall['30'].vs_kcas, 47, 'LB11', '');
+    add('c172r', 'VS1 flaps up, power off', 'KCAS', p.stall['0'].vs_kcas, 52, 'LE3 Fig 5-3', 'CG หน้าสุด 52 KCAS ตามบัตร 10-c172r; หน้า spec [LB11] 51 = CG หลังสุด');
+    add('c172r', 'VS0 flaps 30', 'KCAS', p.stall['30'].vs_kcas, 47, 'LE3 Fig 5-3, LB11', 'CG หน้าและหลังเท่ากัน 47');
     add('c172r', 'ROC max SL ISA', 'fpm', p.climb.roc_max_fpm, 720, 'LB11', `model Vy ${p.climb.vy_kcas} KCAS`);
     add('c172r', 'KTAS at 80% (128 hp of 160), 8,000 ft', 'KTAS', ktasAtHp(p.cruise, 8000, 128), 122, 'LB11', 'model engine is 180 hp/2700 rpm, real 160 hp/2400 rpm');
     add('c172r', 'ground roll, SL', 'ft', p.takeoff.ground_roll_ft, 945, 'LB11', 'model flaps 10 short-field technique');
@@ -79,7 +85,46 @@ function rows() {
   { const p = P.t6texan2; const c1 = (p.cruise || []).find((c) => c.h_ft === 1000);
     add('t6texan2', 'max level speed at 1,000 ft', 'KTAS', c1 ? c1.ktas : null, 270, 'LB16', 'Navy: 270 kt at 1,000 ft; USAF: 320 mph (278 kt), altitude not stated');
     add('t6texan2', 'VS1 flaps up, power off', 'KCAS', p.stall['0'].vs_kcas, null, '-', 'no public figure found');
-    add('t6texan2', 'ROC max SL', 'fpm', p.climb.roc_max_fpm, null, '-', 'no public figure found'); }
+    add('t6texan2', 'ROC max SL', 'fpm', p.climb.roc_max_fpm, 3100, 'LP23', 'climb rate ในคู่มือ ATC ของ Navy (ไม่ระบุน้ำหนักและความเร็ว; บัตร 07 conf ต่ำ); โมเดลเป็น jet thrust'); }
+  // ---- FlightGear JSBSim models (gap 14), measured with lb_perf.py; references = the type cards' public figures
+  { const p = P.fg_c152; const k0 = (kias) => interp([40, 50, 60, 70, 80, 90, 100], [46, 53, 60, 69, 78, 88, 97], kias);   // LF1 Fig 5-1 flaps 0
+    add('fg_c152', 'VS1 flaps up, power off', 'KCAS', p.stall['0'].vs_kcas, 48, 'LF1 Fig 5-3', 'POH CG หน้าสุด 1,670 lb (CG หลังสุด 46)');
+    add('fg_c152', 'VS flaps 10', 'KCAS', p.stall['10'].vs_kcas, 46, 'LF1 Fig 5-3', 'CG หน้าสุด (หลังสุด 43)');
+    add('fg_c152', 'VS0 flaps 30', 'KCAS', p.stall['30'].vs_kcas, 43, 'LF1 Fig 5-3', 'CG หน้าสุด (หลังสุด 41)');
+    add('fg_c152', 'Vy SL', 'KCAS', p.climb.vy_kcas, k0(67), 'LF1 Fig 5-5, Fig 5-1', `POH 67 KIAS → ${r1(k0(67))} KCAS; ใบพัดของโมเดลหมุนเกิน redline 2,550 rpm (${p.climb.points.find((x) => x.kcas === 95)?.rpm} rpm ที่ 95 KCAS)`);
+    add('fg_c152', 'ROC max SL ISA', 'fpm', p.climb.roc_max_fpm, 715, 'LF1', '1,670 lb SL ISA');
+    add('fg_c152', 'best glide speed', 'KCAS', p.glide.best_kcas, 60, 'LF1 p3-3', 'POH 60 KIAS ≈ 60 KCAS; ใบพัดของโมเดลหยุด 0 rpm');
+    add('fg_c152', 'glide ratio (max)', '-', p.glide.best_ratio, 1.5 * 6076.12 / 1000, 'LF6', 'กฎหัวแม่มือ FAA 1.5 NM ต่อ 1,000 ft');
+    add('fg_c152', 'KTAS at 75% (82.5 hp), 8,000 ft', 'KTAS', ktasAtHp(p.cruise, 8000, 82.5, ['rpm', 'full']), 107, 'LF1', 'interpolate ระหว่าง 2,500 rpm (54.5 hp) และคันเร่งสุด (100.6 hp) ของโมเดล');
+    add('fg_c152', 'ground roll, flaps 10, SL', 'ft', p.takeoff.ground_roll_ft, 725, 'LF1', `model lift-off ${p.takeoff.v_liftoff_kcas} KCAS (VR 45 ของนักบินจำลองยกล้อไม่ขึ้นจนถึง ~61 KCAS)`);
+    add('fg_c152', 'over 50 ft, flaps 10, SL', 'ft', p.takeoff.over50_ft, 1340, 'LF1', '');
+    add('fg_c152', 'static full-throttle power', 'hp', p.static.hp, 110, 'LF2 (rating)', `${p.static.engine_rpm} rpm; rating 110 hp ที่ 2,550 rpm`); }
+  { const p = P.fg_da40ng; const up = (kias) => interp([60, 66, 99, 172], [58.6, 64.6, 99, 172], kias);   // LD3/LD4 IAS→CAS flaps UP
+    const cr16 = p.cruise.find((c) => c.h_ft === 16000 && c.mode === 'full'); const cr14 = p.cruise.find((c) => c.h_ft === 14000);
+    add('fg_da40ng', 'VS1 flaps UP, 1,310 kg', 'KCAS', p.stall['0'].vs_kcas, up(66), 'LD3', `66 KIAS → 64.6 KCAS (ตาราง IAS→CAS ของบัตร 05); model limit: ${p.stall['0'].limit} ที่ α ${p.stall['0'].alpha_at_vs}°`);
+    add('fg_da40ng', 'VS flaps T/O (model 15°)', 'KCAS', p.stall['15'].vs_kcas, interp([56, 62], [54.7, 60.7], 62), 'LD3', '62 KIAS → 60.7 KCAS');
+    add('fg_da40ng', 'VS0 flaps LDG (model 30°)', 'KCAS', p.stall['30'].vs_kcas, interp([54, 60], [52, 58], 60), 'LD3', '60 KIAS → 58 KCAS');
+    add('fg_da40ng', 'Vy SL', 'KCAS', p.climb.vy_kcas, up(72), 'LD3', `72 KIAS → ${r1(up(72))} KCAS (AFM ใช้แฟลป T/O; โมเดลวัดแฟลป 0)`);
+    add('fg_da40ng', 'ROC max SL ISA', 'fpm', p.climb.roc_max_fpm, 651, 'LD4', 'MTOM ISA MSL (เว็บผู้ผลิต "approximate")');
+    add('fg_da40ng', 'best glide speed', 'KCAS', p.glide.best_kcas, up(88), 'LD3', `88 KIAS → ${r1(up(88))} KCAS; ใบพัดของโมเดลหยุด 0 rpm`);
+    add('fg_da40ng', 'glide ratio (max)', '-', p.glide.best_ratio, 9.7, 'LD3', 'ใบพัดหมุนฟรี มีครอบล้อ; มวลไม่ระบุ');
+    add('fg_da40ng', 'KTAS full power, 16,000 ft', 'KTAS', cr16 ? cr16.ktas : null, 154, 'LD4', `อ้างอิง load 92 %; โมเดลคันเร่งสุดได้ ${cr16 ? cr16.hp : '–'} hp`);
+    add('fg_da40ng', 'KTAS at 60% (100.8 hp), 14,000 ft', 'KTAS', cr14 ? cr14.ktas : null, 124, 'LD4', '');
+    add('fg_da40ng', 'ground roll, flaps T/O, SL', 'ft', p.takeoff.ground_roll_ft, 1302, 'LD4', `model lift-off ${p.takeoff.v_liftoff_kcas} KCAS`);
+    add('fg_da40ng', 'over 50 ft, flaps T/O, SL', 'ft', p.takeoff.over50_ft, 1935, 'LD4', '');
+    add('fg_da40ng', 'static full-throttle power', 'hp', p.static.hp, 123.5 / 0.745699872, 'LD10, LD2 (rating)', `${p.static.prop_rpm} rpm ใบพัด; rating 123.5 kW ที่ 2,300 rpm`); }
+  { const p = P.fg_pc9m; const c20 = p.cruise.find((c) => c.h_ft === 20000 && c.mode === 'full');
+    add('fg_pc9m', 'VS1 flaps up, 2,350 kg', 'KCAS', p.stall['0'].vs_kcas, 77, 'LP2', `model limit: ${p.stall['0'].limit}`);
+    add('fg_pc9m', 'VS0 flaps LDG, 2,350 kg', 'KCAS', p.stall['50'].vs_kcas, 69, 'LP2', `model limit: ${p.stall['50'].limit}`);
+    add('fg_pc9m', 'Vy SL', 'KCAS', p.climb.vy_kcas, null, '-', 'ไม่มีค่าสาธารณะ (บัตร 07 ประมาณ 125 KCAS, est)');
+    add('fg_pc9m', 'ROC max SL', 'fpm', p.climb.roc_max_fpm, 4090, 'LP12, LP13', 'ไม่ระบุน้ำหนัก; โมเดลใช้ PT6A-25 และใบพัด η > 1');
+    add('fg_pc9m', 'max level speed at 20,000 ft', 'KTAS', c20 ? c20.ktas : null, 301, 'LP12', `โมเดลคันเร่งสุด ${c20 ? c20.hp : '–'} hp`);
+    add('fg_pc9m', 'static full-throttle power', 'hp', p.static.hp, 950, 'LP2 (rating)', 'โมเดลใช้ PT6A-25 (550 shp ของ PC-7); PC-9M ใช้ PT6A-62 950 shp'); }
+  { const p = P.fg_t6; const c1 = p.cruise.find((c) => c.h_ft === 1000);
+    add('fg_t6', 'VS1 flaps up', 'KCAS', p.stall['0'].vs_kcas, null, '-', `ไม่มีค่าสาธารณะ (บัตร 07 ประมาณ 82.9 KCAS ที่ 6,000 lb, est); โมเดลใส่ได้ ${p.stall['0'].w_lb} lb`);
+    add('fg_t6', 'ROC max SL', 'fpm', p.climb.roc_max_fpm, 3100, 'LP23', 'ไม่ระบุน้ำหนัก; โมเดลเป็น jet thrust (PT6A-68 + direct) ที่ 5,564 lb');
+    add('fg_t6', 'max level speed at 1,000 ft', 'KTAS', c1 ? c1.ktas : null, 270, 'LB16', 'Navy 270 kt ที่ 1,000 ft');
+    add('fg_t6', 'takeoff distance, SL', 'ft', p.takeoff.over50_ft, 1775, 'LP22', 'แหล่งไม่ระบุนิยาม (ถึง 50 ft หรือไม่) และน้ำหนัก; เทียบกับระยะถึง 50 ft ของโมเดล'); }
   return R;
 }
 import { pathToFileURL } from 'node:url';
@@ -93,7 +138,7 @@ const isMain = (() => { try { return realpathSync(process.argv[1]) === realpathS
 if (isMain) {
 const R = rows();
 const implied = [
-  { type: 'C172P POH', w_lb: 2400, s_ft2: 174, cfg: 'flaps 0', vs_kcas: 51 }, { type: 'C172P POH', w_lb: 2400, s_ft2: 174, cfg: 'flaps 30', vs_kcas: 46 },
+  { type: 'C172P POH (CG หลังสุด)', w_lb: 2400, s_ft2: 174, cfg: 'flaps 0', vs_kcas: 51 }, { type: 'C172P POH (CG หน้าสุด)', w_lb: 2400, s_ft2: 174, cfg: 'flaps 0', vs_kcas: 52 }, { type: 'C172P POH', w_lb: 2400, s_ft2: 174, cfg: 'flaps 30', vs_kcas: 46 },
   { type: 'jsbsim c172p', w_lb: 2400, s_ft2: 174, cfg: 'flaps 0', vs_kcas: 54.49 }, { type: 'jsbsim c172p', w_lb: 2400, s_ft2: 174, cfg: 'flaps 30', vs_kcas: 48.77 },
   { type: 'C172S manual', w_lb: 2550, s_ft2: 174, cfg: 'flaps 0', vs_kcas: 53 }, { type: 'C172S manual', w_lb: 2550, s_ft2: 174, cfg: 'flaps 30', vs_kcas: 48 },
   { type: 'PA-28-180 handbook', w_lb: 2450, s_ft2: 160, cfg: 'flaps 0', vs_kcas: 68 * MPH }, { type: 'PA-28-180 handbook', w_lb: 2450, s_ft2: 160, cfg: 'flaps 40', vs_kcas: 61 * MPH },

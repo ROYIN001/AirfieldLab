@@ -9,7 +9,7 @@
 // dr + = TE left (CYdr>0, Cndr<0, Cldr>0); rates non-dimensional with c/2V (q, adot) and b/2V (p, r).
 // Results are given in STABILITY axes and converted to BODY axes at the condition's alpha (the sim uses body axes).
 import path from 'node:path';
-import { loadType, val, isObj, isMainModule } from './lm_lib.mjs';
+import { loadType, val, isObj, isMainModule, trainingMassKg } from './lm_lib.mjs';
 
 const DEG = Math.PI / 180, KT = 0.514444, FT = 0.3048, G0 = 9.80665;
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
@@ -211,10 +211,10 @@ if (isMain) {
       'airframe.tail.l_h': geo.tail.l_h, 'airframe.tail.S_v': geo.tail.S_v, 'airframe.tail.b_v': geo.tail.b_v, 'airframe.tail.l_v': geo.tail.l_v };
     const missing = Object.entries(need).filter(([, x]) => typeof x !== 'number' || !Number.isFinite(x)).map(([k]) => k);
     if (missing.length) { console.error(`lm_derivs ${id}: missing required geometry (no default): ${missing.join(', ')}`); process.exit(1); }
-    const m = val(card, 'airframe.weights.training_mass') ?? val(card, 'airframe.weights.MTOW');
+    const m = trainingMassKg(card) ?? val(card, 'airframe.weights.MTOW');   // number or D3 object (19 Nov 2026)
     const out = {};
     for (const [k, Vkt] of [['cruise', +(opt('--V') ?? val(card, 'validation.trim_targets.cruise')?.ias_kt ?? 110)], ['approach', val(card, 'speeds.VAPP_kt') ?? 70]]) {
-      const V = Vkt * KT, CL = 2 * (typeof m === 'number' ? m : m?.kg) * G0 / (1.225 * geo.S * V * V);
+      const V = Vkt * KT, CL = 2 * m * G0 / (1.225 * geo.S * V * V);
       const r = estimate(geo, { CL, M: V / 340, alpha: (CL - 0.25) / 5 });
       out[k] = { V_kt: Vkt, CL, ...r };
     }

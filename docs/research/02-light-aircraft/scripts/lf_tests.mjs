@@ -1,25 +1,25 @@
 #!/usr/bin/env node
 // lf_tests.mjs — test cases T-LF-01..T-LF-24 for the c152 card (topic 11): expected values computed here from the POH/TCDS
 // numbers in lf_calc.F (or from physics/definitions), current-model results measured with today's sim through lf_card.run
-// (lm_card with the control-travel workaround). Writes scripts/out/lf_tests.json and lf_tests.md (table for §11.12).
+// (lm_card; since D2 of 19 Nov 2026 it reads the card's control travel itself, no workaround). Writes scripts/out/lf_tests.json and lf_tests.md (table for §11.12).
 // Run from the repo root: node <this folder>/lf_tests.mjs        exit 1 if a test marked `must` fails
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { F, compute, iasToCas, LB, IN, FT, KT } from './lf_calc.mjs';
-import { run, patchTravel } from './lf_card.mjs';
+import { run } from './lf_card.mjs';
 import { loadType, val } from './lm_lib.mjs';
 import { buildAC, applyAC, loadSim, takeoffTest, trim, climbSweep, iasCas } from './lm_card.mjs';
 import { clmaxFromStall, stallSpeed } from './lm_polar.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const G0 = 9.80665;
 const C = compute();
-const R = (await run({ mass: 757.5, patched: true })).res;
+const R = (await run({ mass: 757.5 })).res;
 const card = loadType('c152');
 const M = await loadSim();
 
 // extra current-model measurements: max level speed, hot day takeoff/climb (Aircraft.isaDev = +20 K)
-const ac = buildAC(card, { mass: 757.5 }); patchTravel(ac, card); const restore = applyAC(M, ac);
+const ac = buildAC(card, { mass: 757.5 }); const restore = applyAC(M, ac);
 const vmax = (Mx, h) => { let lo = 60, hi = 140; for (let k = 0; k < 40; k++) { const m = 0.5 * (lo + hi); const t = trim(Mx, new Mx.Aircraft(), { ias: m, h, flaps: 0, gear: 1 }); if (t.thr > 1) hi = m; else lo = m; } return 0.5 * (lo + hi); };
 const vmaxSL = vmax(M, 30), rhoR = M.atmosphere(M.FIELD.elev + 30, 0).rho / 1.225, vmaxSL_tas = vmaxSL / Math.sqrt(rhoR);
 const Hot = class extends M.Aircraft { constructor(...a) { super(...a); this.isaDev = 20; } };
@@ -63,12 +63,12 @@ add('T-LF-16', 'เดียวกับ T-LF-15', 'ระยะจาก 50 ft 
 add('T-LF-17', 'SL ISA MTOW คันเร่งเต็ม บินระดับ', 'ความเร็วสูงสุด (KTAS)', 110, 5, 'LF1 หน้าสเปก', f1(vmaxSL_tas), within(vmaxSL_tas, 110, 5), 'polar จาก glide แรงต้านสูงกว่า cruise ~24 % (lf_calc) งาน P2');
 // 18–19 trims
 const tc = R.trim.cruise, ta = R.trim.approach;
-add('T-LF-18', 'trim 90 KCAS 3,000 ft แฟลปขึ้น MTOW CG อ้างอิง', 'คันเร่ง และ δe', 'thr 0.6–1.0; δe ภายในระยะเคลื่อน −25…+18° (ค่าออกแบบ −2.5°)', 'ช่วง', 'LF1 Fig 5-7 (59–66 % ที่ 91–96 KTAS); δe ค่าประมาณจากการตั้ง Cm0', `thr ${f3(tc.thr)}, δe ${f1(tc.de_deg)}°`, tc.thr <= 1 && tc.thr >= 0.6 && tc.de_deg > -25 && tc.de_deg < 18);
-add('T-LF-19', 'approach 61 KCAS แฟลป 30 γ −3° MTOW', 'α, θ, คันเร่ง', 'α 3–6°, θ −1 ถึง +3°, thr 0.2–0.6', 'ช่วง', 'บัตร 08 §08.1.2 (pitch ใกล้ C172) + ฟิสิกส์', `α ${f1(ta.alpha_deg)}, θ ${f1(ta.theta_deg)}, thr ${f3(ta.thr)}`, ta.alpha_deg >= 3 && ta.alpha_deg <= 6 && ta.theta_deg >= -1 && ta.theta_deg <= 3 && ta.thr >= 0.2 && ta.thr <= 0.6);
+add('T-LF-18', 'trim 90 KCAS 3,000 ft แฟลปขึ้น MTOW CG อ้างอิง', 'คันเร่ง และ δe', 'thr 0.6–1.0; δe ภายในระยะเคลื่อน −25…+18° (ค่าออกแบบ −2.5°)', 'ช่วงปิดตามที่เขียน ส่วนเผื่อ 0', 'LF1 Fig 5-7 (59–66 % ที่ 91–96 KTAS); δe ค่าประมาณจากการตั้ง Cm0', `thr ${f3(tc.thr)}, δe ${f1(tc.de_deg)}°`, tc.thr <= 1 && tc.thr >= 0.6 && tc.de_deg > -25 && tc.de_deg < 18);
+add('T-LF-19', 'approach 61 KCAS แฟลป 30 γ −3° MTOW', 'α, θ, คันเร่ง', 'α 3–6°, θ −1 ถึง +3°, thr 0.2–0.6', 'ช่วงปิดตามที่เขียน ส่วนเผื่อ 0', 'บัตร 08 §08.1.2 (pitch ใกล้ C172) + ฟิสิกส์', `α ${f1(ta.alpha_deg)}, θ ${f1(ta.theta_deg)}, thr ${f3(ta.thr)}`, ta.alpha_deg >= 3 && ta.alpha_deg <= 6 && ta.theta_deg >= -1 && ta.theta_deg <= 3 && ta.thr >= 0.2 && ta.thr <= 0.6);
 // 20–21 modes vs MIL-F-8785C Level 1 (Class I, Cat C at approach)
 const ma = R.modes.approach;
-add('T-LF-20', 'linearise ที่ approach (T-LF-19)', 'short period ζ และ CAP (Level 1 Cat C)', 'ζ 0.35–1.30; CAP 0.15–3.6', 'ช่วง', 'MIL-F-8785C (R1:V8)', `ζ ${f3(ma.sp.zeta)}, ωn ${f3(ma.sp.wn)}, CAP ${f3(ma.CAP)}`, ma.sp.zeta >= 0.35 && ma.sp.zeta <= 1.3 && ma.CAP >= 0.15 && ma.CAP <= 3.6);
-add('T-LF-21', 'เดียวกับ T-LF-20', 'Dutch roll, roll mode, spiral (Level 1 Class I Cat C)', 'ζ ≥ 0.08, ωn ≥ 0.4, ζωn ≥ 0.15; τR ≤ 1.0 s; spiral t2 ≥ 12 s ถ้าลู่ออก', 'ช่วง', 'MIL-F-8785C (R1:V8)', `DR ${f3(ma.dr.wn)}/${f3(ma.dr.zeta)}, τR ${f3(ma.roll_tau)}, spiral ${ma.spiral.grows ? 'div' : 'conv'} t2 ${f1(ma.spiral.t2)} s`, ma.dr.zeta >= 0.08 && ma.dr.wn >= 0.4 && ma.dr.zeta * ma.dr.wn >= 0.15 && ma.roll_tau <= 1 && (!ma.spiral.grows || ma.spiral.t2 >= 12));
+add('T-LF-20', 'linearise ที่ approach (T-LF-19)', 'short period ζ และ CAP (Level 1 Cat C)', 'ζ 0.35–1.30; CAP 0.15–3.6', 'ช่วงปิดตามที่เขียน ส่วนเผื่อ 0', 'MIL-F-8785C (R1:V8)', `ζ ${f3(ma.sp.zeta)}, ωn ${f3(ma.sp.wn)}, CAP ${f3(ma.CAP)}`, ma.sp.zeta >= 0.35 && ma.sp.zeta <= 1.3 && ma.CAP >= 0.15 && ma.CAP <= 3.6);
+add('T-LF-21', 'เดียวกับ T-LF-20', 'Dutch roll, roll mode, spiral (Level 1 Class I Cat C)', 'ζ ≥ 0.08, ωn ≥ 0.4, ζωn ≥ 0.15; τR ≤ 1.0 s; spiral t2 ≥ 12 s ถ้าลู่ออก', 'ช่วงปิดตามที่เขียน ส่วนเผื่อ 0', 'MIL-F-8785C (R1:V8)', `DR ${f3(ma.dr.wn)}/${f3(ma.dr.zeta)}, τR ${f3(ma.roll_tau)}, spiral ${ma.spiral.grows ? 'div' : 'conv'} t2 ${f1(ma.spiral.t2)} s`, ma.dr.zeta >= 0.08 && ma.dr.wn >= 0.4 && ma.dr.zeta * ma.dr.wn >= 0.15 && ma.roll_tau <= 1 && (!ma.spiral.grows || ma.spiral.t2 >= 12));
 // 22 hot day (VTBD 35 °C) — POH interpolation vs current model (no ρ in thrust)
 const hot = C.perf.vtbd35;
 add('T-LF-22', 'VTBD PA 0 ft OAT 35 °C MTOW แฟลป 10 (ซิม isaDev +20 K)', 'ground roll / ถึง 50 ft (m)', `${f0(hot.to_gr_ft * FT)} / ${f0(hot.to_50_ft * FT)}`, '±20 % / ±15 %', 'LF1 Fig 5-4 interpolate 30–40 °C', `${f0(toHot.groundRoll_m)} / ${f0(toHot.dist50ft_m)}`, Math.abs(toHot.groundRoll_m / (hot.to_gr_ft * FT) - 1) <= 0.2 && Math.abs(toHot.dist50ft_m / (hot.to_50_ft * FT) - 1) <= 0.15, 'ซิมเพิ่มระยะเฉพาะจาก TAS ที่สูงขึ้น แรงขับไม่ลดตาม ρ');
@@ -91,7 +91,7 @@ add('T-LF-28', 'วิ่งขึ้น SL ISA MTOW แฟลป 10 ลมป�
 
 const must = new Set(['T-LF-01', 'T-LF-02', 'T-LF-03', 'T-LF-04', 'T-LF-05', 'T-LF-06', 'T-LF-08', 'T-LF-10', 'T-LF-11', 'T-LF-12', 'T-LF-14', 'T-LF-18', 'T-LF-20', 'T-LF-21', 'T-LF-26', 'T-LF-27', 'T-LF-28']);
 const md = ['| รหัส | เงื่อนไข | ปริมาณที่วัด | ผลคาดหวัง ± tolerance | ที่มา | โมเดลปัจจุบัน |', '|---|---|---|---|---|---|',
-  ...T.map(t => `| ${t.id} | ${t.cond} | ${t.qty} | ${t.exp} ± ${String(t.tol).replace(/^±\s*/, '').replace(/\/ ±/g, '/ ')} | ${t.origin} | ${t.cur} ${t.pass ? '✓' : '✗'}${t.note ? ' — ' + t.note : ''} |`)].join('\n');
+  ...T.map(t => `| ${t.id} | ${t.cond} | ${t.qty} | ${t.exp}${typeof t.tol === 'number' || /^±/.test(String(t.tol)) ? ' ± ' + String(t.tol).replace(/^±\s*/, '').replace(/\/ ±/g, '/ ') : ' (เกณฑ์: ' + t.tol + ')'} | ${t.origin} | ${t.cur} ${t.pass ? '✓' : '✗'}${t.note ? ' — ' + t.note : ''} |`)].join('\n');
 fs.writeFileSync(path.join(HERE, 'out', 'lf_tests.json'), JSON.stringify({ date: '2026-11-19', vmaxSL_keas: vmaxSL, vmaxSL_tas, toHot, climbHot: { Vy: climbHot.Vy_kt, ROC: climbHot.ROCmax_fpm }, tests: T }, (k, v) => (typeof v === 'number' ? +v.toPrecision(5) : v), 1));
 fs.writeFileSync(path.join(HERE, 'out', 'lf_tests.md'), md + '\n');
 console.log(md);

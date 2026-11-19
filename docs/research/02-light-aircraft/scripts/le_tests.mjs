@@ -21,13 +21,8 @@ export async function run() {
   const C = compute();
   const card = loadType('c172r');
   const ac = buildAC(card, { mass: MTOW });
-  // lm_card.buildAC reads controls.surfaces.<s>.travel_deg as a leaf path, but the cards (schema-ext-r2) keep the leaf at
-  // controls.surfaces.<s> with v.travel_deg, so buildAC falls back to round-1 travel. Use the card's (inherited from c172s).
-  const trv = s => val(card, `controls.surfaces.${s}`)?.travel_deg;
-  const el = trv('elevator'), ai = trv('aileron'), ru = trv('rudder');
-  const travelFix = { deUp: el.up * DEG, deDn: el.down * DEG, daMax: 0.5 * (ai.up + ai.down) * DEG, drMax: Math.min(ru.left, ru.right) * DEG };
-  const travelR1 = { deUp: ac.deUp, deDn: ac.deDn, daMax: ac.daMax, drMax: ac.drMax };
-  Object.assign(ac, travelFix);
+  // D2 (19 Nov 2026): lm_card.travelOf reads controls.surfaces.<s>.v.travel_deg (inherited from c172s), so the former
+  // travelFix workaround is gone; the travel used is reported from the AC.
   const M = await loadSim();
   const restore = applyAC(M, ac);
   const info = cardInfo(card, ac);
@@ -104,36 +99,36 @@ export async function run() {
   add('T-LE-16', 'เหมือน T-LE-15', 'ground roll (แตะพื้นถึงหยุด)', C.hot[15].ldg_roll_m, '±10 % = ±17 m', 'm', 'POH Fig 5-11 (550 ft) [LE3]; Part 60 1.e.1 [R1:V2]',
     lm.failed ? 'ล้มเหลว' : r(lm.ground_m, 0), !lm.failed && Math.abs(lm.ground_m - C.hot[15].ldg_roll_m) <= 17);
   add('T-LE-17', 'ซิม: MTOW, SL ISA, คันเร่งสุด, แฟลป 0, บินระดับ', 'ความเร็วสูงสุด', 123, 3, 'KTAS', 'IM p ii (เครื่องติด speed fairing; ไม่มี ≈ 121 KTAS ยังอยู่ใน tolerance) [LE2]', r(X.vmaxSL.ktas), Math.abs(X.vmaxSL.ktas - 123) <= 3);
-  add('T-LE-18', 'ซิม: MTOW, 8,000 ft ISA, บินระดับ 122 KTAS (80 % BHP ตาม POH)', 'คันเร่งที่ต้องใช้ (thr ของซิม)', '≤ 1.0 (บินได้)', '-', '-', 'IM p ii, p4-27 [LE2]',
+  add('T-LE-18', 'ซิม: MTOW, 8,000 ft ISA, บินระดับ 122 KTAS (80 % BHP ตาม POH)', 'คันเร่งที่ต้องใช้ (thr ของซิม)', '≤ 1.0 (บินได้)', 'ขีดบนเดียว ส่วนเผื่อ 0', '-', 'IM p ii, p4-27 [LE2]',
     r(X.cruise80.thr, 3), X.cruise80.thr <= 1.0);
   const sp = md.cruise.sp, ph = md.cruise.ph, drA = md.approach.dr, drC = md.cruise.dr;
-  add('T-LE-19', 'ซิม linearise: cruise 110 KCAS 3,000 ft แฟลป 0 (Category B; สภาพเดียวกับ c172s)', 'short period ζ / ωn', 'ζ 0.30–2.00; ωn = c172s 5.60 rad/s ± 10 % (โครงลำเดียวกัน มวลต่ำกว่า 4 %)', '-', '- / rad/s',
+  add('T-LE-19', 'ซิม linearise: cruise 110 KCAS 3,000 ft แฟลป 0 (Category B; สภาพเดียวกับ c172s)', 'short period ζ / ωn', 'ζ 0.30–2.00; ωn = c172s 5.60 rad/s ± 10 % (โครงลำเดียวกัน มวลต่ำกว่า 4 %)', 'ζ: ช่วงปิด ส่วนเผื่อ 0; ωn: ±10 %', '- / rad/s',
     'MIL-F-8785C Level 1 Class I [R1:V7, R1:V10]; บัตร c172s §04.9 [LC0]', `${r(sp.zeta, 3)} / ${r(sp.wn, 2)}`, lim(sp.zeta, 0.3, 2.0) && Math.abs(sp.wn / 5.60 - 1) <= 0.1);
-  add('T-LE-20', 'เหมือน T-LE-19', 'phugoid ζ / คาบ', 'ζ ≥ 0.04 (คาบ c172s 33 s ข้อมูลประกอบ)', '-', '- / s', 'MIL-F-8785C Level 1 [R1:V10]; บัตร c172s [LC0]', `${r(ph.zeta, 3)} / ${r(ph.T, 1)}`, ph.zeta >= 0.04);
-  add('T-LE-21', 'ซิม linearise: approach 66 KCAS 300 m แฟลป 30 γ −3° (Category C) และ cruise', 'Dutch roll ωn / ζ / ζωn', 'ζ ≥ 0.08, ζωn ≥ 0.15, ωn ≥ 1.0 (approach)', '-', 'rad/s / - / rad/s',
+  add('T-LE-20', 'เหมือน T-LE-19', 'phugoid ζ / คาบ', 'ζ ≥ 0.04 (คาบ c172s 33 s ข้อมูลประกอบ)', 'ζ: ขีดล่างเดียว ส่วนเผื่อ 0; คาบ: ไม่ตัดสิน', '- / s', 'MIL-F-8785C Level 1 [R1:V10]; บัตร c172s [LC0]', `${r(ph.zeta, 3)} / ${r(ph.T, 1)}`, ph.zeta >= 0.04);
+  add('T-LE-21', 'ซิม linearise: approach 66 KCAS 300 m แฟลป 30 γ −3° (Category C) และ cruise', 'Dutch roll ωn / ζ / ζωn', 'ζ ≥ 0.08, ζωn ≥ 0.15, ωn ≥ 1.0 (approach)', 'ขีดล่างเดียวทั้งสามค่า ส่วนเผื่อ 0; cruise แสดงอย่างเดียว', 'rad/s / - / rad/s',
     'MIL-F-8785C Level 1 Class I Cat C [R1:V10]', `approach ${r(drA.wn, 2)} / ${r(drA.zeta, 3)} / ${r(drA.wn * drA.zeta, 3)}; cruise ${r(drC.wn, 2)} / ${r(drC.zeta, 3)}`,
     drA.zeta >= 0.08 && drA.wn * drA.zeta >= 0.15 && drA.wn >= 1.0);
-  add('T-LE-22', 'เหมือน T-LE-21', 'roll mode τR (approach / cruise)', '≤ 1.0 (Cat C) / ≤ 1.4 (Cat B)', '-', 's', 'MIL-F-8785C Table 5 [R1:V7, R1:V10]',
+  add('T-LE-22', 'เหมือน T-LE-21', 'roll mode τR (approach / cruise)', '≤ 1.0 (Cat C) / ≤ 1.4 (Cat B)', 'ขีดบนเดียว ส่วนเผื่อ 0', 's', 'MIL-F-8785C Table 5 [R1:V7, R1:V10]',
     `${r(md.approach.roll_tau, 3)} / ${r(md.cruise.roll_tau, 3)}`, md.approach.roll_tau <= 1.0 && md.cruise.roll_tau <= 1.4);
   const spA = md.approach.spiral, spC = md.cruise.spiral;
-  add('T-LE-23', 'เหมือน T-LE-21', 'spiral: เวลาเพิ่มเป็นสองเท่า T₂ (approach / cruise)', 'T₂ ≥ 12 s (Cat C) / ≥ 20 s (Cat B)', '-', 's', 'MIL-F-8785C Table 6 [R1:V7, R1:V10]',
+  add('T-LE-23', 'เหมือน T-LE-21', 'spiral: เวลาเพิ่มเป็นสองเท่า T₂ (approach / cruise)', 'T₂ ≥ 12 s (Cat C) / ≥ 20 s (Cat B)', 'ขีดล่างเดียว ส่วนเผื่อ 0; spiral ที่ลู่เข้าผ่านเสมอ', 's', 'MIL-F-8785C Table 6 [R1:V7, R1:V10]',
     `${spA.grows ? r(spA.t2, 1) : 'เสถียร'} / ${spC.grows ? r(spC.t2, 1) : 'เสถียร'}`, (!spA.grows || spA.t2 >= 12) && (!spC.grows || spC.t2 >= 20));
-  add('T-LE-24', 'ลมขวาง 15 kt (demonstrated) ที่ 62.8 KCAS SL, wing-low ไม่มี crab: β = asin(15/V)', 'δr / δa / มุมเอียงที่ต้องใช้', `β ${r(X.xwind.beta_deg)}°; ขนาด δr ≤ ${r(X.xwind.drMax_deg)}° และ δa ≤ ${r(X.xwind.daMax_deg)}°`, '-', 'deg',
+  add('T-LE-24', 'ลมขวาง 15 kt (demonstrated) ที่ 62.8 KCAS SL, wing-low ไม่มี crab: β = asin(15/62.8) (±0.1° จากการปัดเศษ)', 'δr / δa / มุมเอียงที่ต้องใช้', `β ${r(X.xwind.beta_deg)}°; ขนาด δr ≤ ${r(X.xwind.drMax_deg)}° และ δa ≤ ${r(X.xwind.daMax_deg)}°`, 'ขีดบนเดียวที่ travel เต็ม ส่วนเผื่อ 0°', 'deg',
     'IM p4-5 [LE2]; travel จาก TCDS [LE1]; สมการ steady sideslip (Etkin) กับอนุพันธ์ของบัตร', `δr ${r(X.xwind.dr_deg)} / δa ${r(X.xwind.da_deg)} / φ ${r(X.xwind.phi_deg)}`,
     Math.abs(X.xwind.dr_deg) <= X.xwind.drMax_deg && Math.abs(X.xwind.da_deg) <= X.xwind.daMax_deg);
   const aps = X.apprShort;
-  add('T-LE-25', 'ซิม trim: 62.8 KCAS แฟลป 30 γ −3° ที่ 300 m, MTOW, CG อ้างอิง', 'elevator ที่ใช้ / ระยะเผื่อถึง travel ขึ้น 28°', 'เผื่อ ≥ 10° ไว้ flare (เกณฑ์ภายใน ค่าประมาณ)', '-', 'deg',
+  add('T-LE-25', 'ซิม trim: 62.8 KCAS แฟลป 30 γ −3° ที่ 300 m, MTOW, CG อ้างอิง', 'elevator ที่ใช้ / ระยะเผื่อถึง travel ขึ้น 28°', 'เผื่อ ≥ 10° ไว้ flare (เกณฑ์ภายใน ค่าประมาณ)', 'ขีดล่างเดียว ส่วนเผื่อ 0', 'deg',
     'TCDS travel [LE1]; เกณฑ์ของผู้เขียน', `de ${r(aps.de_deg)} / α ${r(aps.alpha_deg)} / θ ${r(aps.theta_deg)} / thr ${r(aps.thr, 2)}`, 28 + aps.de_deg >= 10);
   add('T-LE-26', 'เครื่อง IO-360-L2A คันเร่งสุด SL OAT 35 °C', 'P/P_ISA (indicated-minus-friction f 0.10)', 0.964, 0.005, '-', 'lm_engine [LM0]; NACA Rep. 190 [LM17]; เทียบ POH ROC 656/721 = 0.91 [LE3]',
     r(lapse35, 4), Math.abs(lapse35 - 0.964) <= 0.005);
-  add('T-LE-27', 'ใบพัด 1C235/LFA7570 (75 in × 70 in) BEM ที่ปรับเชือกใบให้รอบสถิต 2,115 rpm, SL ISA', 'figure of merit สถิต / แรงขับสถิต', 'FM 0.50–0.75 (ช่วงใบพัด GA สองใบ); T0 ระหว่างค่าที่รอบ 2,065 และ 2,165 rpm', '-', '- / N',
+  add('T-LE-27', 'ใบพัด 1C235/LFA7570 (75 in × 70 in) BEM ที่ปรับเชือกใบให้รอบสถิต 2,115 rpm, SL ISA', 'figure of merit สถิต / แรงขับสถิต', 'FM 0.50–0.75 (ช่วงใบพัด GA สองใบ); T0 ระหว่างค่าที่รอบ 2,065 และ 2,165 rpm', 'FM: ช่วงปิด ส่วนเผื่อ 0; T0: อยู่ระหว่างค่าทั้งสอง', '- / N',
     'TCDS 3A12 static rpm [LE1]; lm_prop [LM0]; ช่วง FM ของหัวข้อ 01 §01.7 [LM0]', `${C.prop.static.FM} / ${C.prop.static.T0_N} (${C.prop.static_range.rpm2065_T0_N}–${C.prop.static_range.rpm2165_T0_N})`, lim(C.prop.static.FM, 0.5, 0.75));
   add('T-LE-28', 'BEM ใบพัดเดิม คันเร่งสุด 160 hp SL ISA บินระดับ 123 KTAS (แรงต้านจาก polar สะอาด)', 'rpm ที่สมดุลกำลัง', '2,400 (rpm สูงสุด, คาดว่าความเร็วสูงสุดอยู่ใกล้รอบ redline)', 50, 'rpm',
     'IM p2-5, p ii [LE2]; lm_prop [LM0]', `${C.prop.at123.rpm} (J ${C.prop.at123.J})`, Math.abs(C.prop.at123.rpm - 2400) <= 50);
   add('T-LE-29', 'POH Fig 5-5 short field takeoff, 2,450 lb, SL, ตีความเชิงเส้นระหว่าง 30 และ 40 °C', 'ระยะถึง 50 ft ที่ 35 °C', 1945, 10, 'ft', 'POH p5-14 [LE3]; le_calc.mjs [LE0]', C.hot['35'].to_50_ft, Math.abs(C.hot['35'].to_50_ft - 1945) <= 10);
   add('T-LE-30', 'W/S = 14.08 lb/ft² (2,450 lb, 174 ft²)', 'limit descent velocity V = 4.4 (W/S)^¼ (7–10 fps)', 8.52, 0.02, 'fps', '14 CFR 23.473(d) ฉบับ 2011 [LM3]; le_calc.mjs [LE0]', C.part23.Vdesc_fps, Math.abs(C.part23.Vdesc_fps - 8.52) <= 0.02);
   add('T-LE-31', 'คอลัมน์ ISA ของ POH Fig 5-6 (interpolate OAT ISA ทุกความสูง) extrapolate ถึง 100 fpm', 'service ceiling', 13500, 300, 'ft', 'IM p ii 13,500 ft [LE2]; POH Fig 5-6 [LE3]', C.ceilings.service_100fpm_ft, Math.abs(C.ceilings.service_100fpm_ft - 13500) <= 300);
-  add('T-LE-32', `ตาราง cruise Fig 5-8 คอลัมน์ ISA ${C.bsfc.n} จุด ทั้งสองแผ่น (recommended lean): GPH × 6.0 lb / (%BHP × 160 hp)`, 'BSFC', '0.42–0.45 (ช่วงปกติของ IO-360 lean)', '-', 'lb/(hp h)', 'POH p5-17, p5-18 [LE3]; le_calc.mjs [LE0]',
+  add('T-LE-32', `ตาราง cruise Fig 5-8 คอลัมน์ ISA ${C.bsfc.n} จุด ทั้งสองแผ่น (recommended lean): GPH × 6.0 lb / (%BHP × 160 hp)`, 'BSFC', '0.42–0.45 (ช่วงปกติของ IO-360 lean)', 'ช่วงปิด ส่วนเผื่อ 0', 'lb/(hp h)', 'POH p5-17, p5-18 [LE3]; le_calc.mjs [LE0]',
     `${C.bsfc.lb_per_hp_h} (${C.bsfc.min}–${C.bsfc.max})`, lim(C.bsfc.lb_per_hp_h, 0.42, 0.45));
   add('T-LE-33', 'รุ่นเก่า 172P (ปีกเดียวกัน 2,400 lb แฟลป 30) และ 172N (2,300 lb แฟลป 40) ด้วย CLmax ของบัตร (1.464 แฟลป 0, 1.785 แฟลป 30)', 'VS1 ของ 172P / VS0 ของ 172N (แฟลป 30 ของบัตรเทียบ 40° จริง)', '52 (172P CG หน้า) / 44 (172N แฟลป 40)', '±1 / ข้อมูลประกอบ', 'KCAS',
     '172P POH ผ่านหัวข้อ 03 [LB9]; 172N POH 1978 p ii [LE4]; แฟลป 40° ของ 172N ให้ CLmax สูงกว่า 30° ราว 0.13', `${r(vs1P)} / ${r(vs0N)}`, Math.abs(vs1P - 52) <= 1);
@@ -146,7 +141,7 @@ export async function run() {
   add('T-LE-35', `polar cruise สะอาดของบัตร (CD0 ${C.cleanPolar.CD0}, K ${C.cleanPolar.K}) เทียบจุดคอลัมน์ ISA ของ Fig 5-8 ทั้งสองแผ่นที่ %BHP ≥ 55 (${ct.length} จุด, KTAS ตามที่พิมพ์, η 0.80 สมมติ)`, 'CD ที่ต้องการตาม POH ÷ CD ของ polar (ต่ำสุด / สูงสุด)', 1.0, 0.1, '-',
     'POH Fig 5-8 p5-17, p5-18 [LE3]; le_calc.mjs [LE0]; จุดกำลังต่ำ (50–54 %) เบี่ยงถึง +10 % เพราะ η 0.80 คงที่', `${Math.min(...ctR)} / ${Math.max(...ctR)}`, ctR.every(x => Math.abs(x - 1) <= 0.1));
 
-  return { type: 'c172r', mass_kg: MTOW, travel: { used: 'card', card_rad: travelFix, r1_rad: travelR1 }, tests: T,
+  return { type: 'c172r', mass_kg: MTOW, travel: { source: 'card controls.surfaces.<s>.v.travel_deg via lm_card.travelOf (D2)', card_rad: { deUp: ac.deUp, deDn: ac.deDn, daMax: ac.daMax, drMax: ac.drMax } }, tests: T,
     raw: { stall: R.stall, climb: R.climb, glide: R.glide, trim: R.trim, modes: R.modes, takeoff: R.takeoff, landing: R.landing, extra: X } };
 }
 
@@ -154,7 +149,7 @@ if (isMainModule(import.meta.url)) {
   const o = await run();
   fs.writeFileSync(path.join(HERE, 'out', 'le_tests.json'), JSON.stringify(o, (k, v) => (typeof v === 'number' ? +v.toPrecision(5) : v), 1));
   const pf = p => (p === true ? 'ผ่าน' : p === false ? '**ไม่ผ่าน**' : '–');
-  const tol = t => (t.tol === '-' ? '' : String(t.tol).startsWith('±') ? ` (${t.tol})` : ` ± ${t.tol}`);
+  const tol = t => (t.tol == null || t.tol === '-' ? '' : typeof t.tol === 'number' ? ` ± ${t.tol}` : String(t.tol).startsWith('±') ? ` (${t.tol})` : ` (เกณฑ์: ${t.tol})`);
   const unit = t => (t.unit === '-' ? '' : ` ${t.unit}`);
   const rows = o.tests.map(t => `| ${t.id} | ${t.cond} | ${t.qty} | ${t.expected}${tol(t)}${unit(t)} | ${t.origin} | ${t.current} (${pf(t.pass)}) |`);
   const md = '| รหัส | เงื่อนไข | ปริมาณที่วัด | ผลคาดหวัง ± tolerance | ที่มา | โมเดลปัจจุบัน (บัตรนี้ในฟิสิกส์ปัจจุบัน) |\n|---|---|---|---|---|---|\n' + rows.join('\n');

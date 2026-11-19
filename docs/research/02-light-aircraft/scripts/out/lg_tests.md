@@ -1,6 +1,6 @@
 | รหัส | เงื่อนไข | ปริมาณที่วัด | ผลคาดหวัง ± tolerance | ที่มา | โมเดลปัจจุบัน |
 |---|---|---|---|---|---|
-| T-LG-01 | stall แฟลป 0 ล้อขึ้น idle 1 kt/s 1,180 kg 3,000 ft | Vmin KIAS | 66 ±2 | AFM p2-7 green arc (VS1) [LG2] | 64.5 (ผ่าน) |
+| T-LG-01 | stall แฟลป UP (0°) ล้อขึ้น idle 1 kt/s 1,180 kg 3,000 ft | Vmin KIAS | 66 ±2 | AFM p2-7 green arc (VS1) [LG2] | 64.5 (ผ่าน) |
 | T-LG-02 | stall แฟลป T/O (15°) ล้อลง idle 1 kt/s 1,180 kg 3,000 ft | Vmin KIAS | 56 ±2 | AFM p5-5 [LG4] | 55.61 (ผ่าน) |
 | T-LG-03 | stall แฟลป FULL (40°) ล้อลง idle 1 kt/s 1,180 kg 3,000 ft | Vmin KIAS | 53 ±2 | AFM p5-5 [LG4] | 52.7 (ผ่าน) |
 | T-LG-04 | stall แฟลป FULL ล้อลง idle 1 kt/s 1,230 kg 3,000 ft | Vmin KCAS | 55 ±2 | AFM p W5-5 (1,230 kg) [LG4]; โบรชัวร์ 55 KCAS [LG6] | 55.16 (ผ่าน) |
@@ -9,7 +9,7 @@
 | T-LG-07 | climb SL ISA เต็มกำลังสองเครื่อง (2 × 73.5 kW) clean ล้อขึ้น 1,180 kg | Vy KCAS | 79 ±3 | AFM S4-7: VY 80 KIAS [LG3] | 78.51 (ผ่าน) |
 | T-LG-08 | เหมือน T-LG-07 | ROC max fpm | 1105 ±80 | ตาราง en-route ROC (ประมาณที่ 15 °C) [LG4]; โบรชัวร์ 1,036 ที่ 1,230 kg | 1120 (ผ่าน) |
 | T-LG-09 | ร่อน idle ใบพัดหมุน 3,000 ft clean ล้อขึ้น 1,180 kg | L/D | 11.2 ±0.6 | ค่าประมาณจาก polar ทดสอบบิน + แรงต้านใบพัด [LG7][LG0] | 11.2 (ผ่าน) |
-| T-LG-10 | เหมือน T-LG-09 | V best glide KCAS | 82 ±3 | AFM S3-56: best glide = VY 83 KIAS [LG3] | 81.89 (ผ่าน) |
+| T-LG-10 | เหมือน T-LG-09 | V best glide KCAS | 82 ±3 | AFM S3-56: best glide 83 KIAS (บท 3 เรียกว่า VY; บัตรใช้ VY 80 จาก S4-7) [LG3] | 81.89 (ผ่าน) |
 | T-LG-11 | trim cruise 110 KCAS 3,000 ft ISA มวลฝึก 1,128 kg clean ล้อขึ้น | α deg | 1.711 ±0.3 | ฟิสิกส์ α = (CL − CL0 − CLde δe)/CLα | 1.694 (ผ่าน) |
 | T-LG-12 | linear modes 110 KCAS 3,000 ft มวลฝึก | short period ωn rad/s | 3.41 ±15 % | ทดสอบบิน [LG7] | 3.847 (ผ่าน) |
 | T-LG-13 | เหมือน T-LG-12 | short period ζ | 0.4 ±0.1 | ทดสอบบิน [LG7] | 0.5934 (ไม่ผ่าน) |
@@ -24,3 +24,5 @@
 | T-LG-22 | วันร้อน VTBD 9 ft 35 °C คันเร่งเต็ม (ind_friction f 0.10) | P/P_rated | 0.9634 ±0.01 | หัวข้อ 01 §01.6.1 | ไม่รองรับในซิมวันนี้ |
 | T-LG-23 | climb SL 35 °C เต็มกำลัง 1,180 kg | ROC fpm | 971.2 ±100 | ตาราง en-route ต่อเส้นตรงจาก 0/25 °C [LG4] (ค่าประมาณ) | ไม่รองรับในซิมวันนี้ |
 | T-LG-24 | OEI: เครื่องซ้ายดับ feather 1,180 kg SL ISA ที่ VYSE 80 KIAS | ROC fpm | 250 ±60 | Flying 2011 [LG9]; ทดสอบ winglet 300 fpm ที่ 800 ft [LG7] | ไม่รองรับในซิมวันนี้ |
+| T-LG-25 | cruise 110 KCAS 3,000 ft MTOW 1,180 kg ดึงคันใน turn หรือ pull-up (n/α 10.39 g/rad) | แรงที่ wheel ต่อ g (lbf/g) | 12.5–48.1 (56–214 N/g) ช่วงปิด ส่วนเผื่อ 0 | MIL-F-8785C Level 1 wheel [R1:C12] + 14 CFR 23.155 W/100 [LM3] (แถบเป้าหมายค่าประมาณ ไม่ใช่ค่าวัด) | ไม่รองรับในซิมวันนี้ (ไม่มีแบบจำลองแรงที่คัน) |
+| T-LG-26 | stall แฟลป UP ปีกระดับ สองเครื่อง idle แล้วฟื้นตามวิธีมาตรฐาน (ลดมุมปะทะ เพิ่มกำลัง) 1,180 kg | ความสูงที่เสีย ft | 180 ±30 | AFM p5-5: สูงสุด 180 ft (55 m) [LG5] | ไม่รองรับในซิมวันนี้ |

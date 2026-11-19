@@ -8,6 +8,9 @@ const L = (v, u, note = '', scope = 'aircraft') => ({ v, u, scope, src: ['R1:V19
 const card = {
   _meta: { note: 'fixture: เครื่องฝึกสมมติของรอบที่ 1 = AC ใน src/20-flight.js:100-118 (cabf0f0) ใช้ทดสอบ lm_card เท่านั้น ไม่ใช่เครื่องบินจริง' },
   trainer_r1: {
+    // 19 Nov 2026 (gap 10): lm_lib.loadBases() adds the round-1 per-type leaves of params-trainer.json under this fixture;
+    // the two groups below are not trainer data (airliner engine classes and airliner control references of round 1)
+    _na: L(['turbofan.*', 'controls.reference_types.*'], '-', 'เครื่องฝึกรอบที่ 1 เป็น turboprop: turbofan.* ของรอบที่ 1 เป็นค่าคลาสเครื่องยนต์ของเครื่องบินโดยสาร และ controls.reference_types.* เป็นค่าอ้างอิงของ B737/ATR72 (รอบที่ 3) จึงไม่ใช้กับแบบนี้'),
     airframe: {
       identity: L({ manufacturer: '-', model: 'AirfieldLab trainer (round 1)', variant: 'fictional', engine: 'turboprop 700 kW', seats: 2, category: 'aerobatic' }, '-'),
       weights: { training_mass: L(2250, 'kg'), MTOW: L(2250, 'kg') },
@@ -21,7 +24,9 @@ const card = {
       flaps: { detents: L([{ name: 'UP', flap_deg: 0, dCL0: 0 }, { name: 'LDG', flap_deg: 40, dCL0: 0.55, dCD0: 0.05, dCm0: -0.10 }], '-', 'มุมแฟลป 40° เป็นค่าสมมติ') },
     },
     propulsion: { legacy: L({ P: 700e3, eta: 0.80, T0: 11500, idle: 0.045 }, 'W, -, N, -', '', 'engine'), layout: L([{ id: 1, pos: [3.5, 0, 0], axis: [1, 0, 0], type: 'turboprop', model: 'fictional', prop_sense: 1 }], 'm FRD', '', 'engine') },
-    controls: { surfaces: { elevator: { travel_deg: L({ up: 22, down: 15 }, 'deg') }, aileron: { travel_deg: L({ up: 20, down: 20 }, 'deg') }, rudder: { travel_deg: L({ left: 25, right: 25 }, 'deg') } } },
+    // 19 Nov 2026 (D2): leaf at controls.surfaces.<s> with v.travel_deg, as schema-ext-r2 §5 and every round-2 card
+    // (the old leaf path controls.surfaces.<s>.travel_deg is still read by lm_card.travelOf; lm_selftest T-LM-25 checks both)
+    controls: { surfaces: { elevator: L({ travel_deg: { up: 22, down: 15 } }, 'deg'), aileron: L({ travel_deg: { up: 20, down: 20 } }, 'deg'), rudder: L({ travel_deg: { left: 25, right: 25 } }, 'deg') } },
     gear: {
       layout: L('tricycle_retract', '-', '', 'gear'),
       legacy: L([{ b: [2.30, 0, 1.36], k: 5.2e4, c: 5.0e3, stroke: 0.22, steer: true }, { b: [-0.35, -1.55, 1.38], k: 1.25e5, c: 1.25e4, stroke: 0.25, brake: true }, { b: [-0.35, 1.55, 1.38], k: 1.25e5, c: 1.25e4, stroke: 0.25, brake: true }], 'm FRD, N/m, N s/m, m', 'AC.gear ตรง (override ที่ lm_card รองรับ)', 'gear'),

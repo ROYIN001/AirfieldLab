@@ -4,15 +4,16 @@
 
 ## 01.0 สรุปสั้น
 
-- **บัตรข้อมูล → ซิม**: `lm_card.buildAC` แปลงบัตรตาม schema-ext-r2 เป็น `AC` ครบ 51 ฟิลด์ แล้ววัด stall, trim, glide, climb, โหมดเชิงเส้น, วิ่งขึ้นและลงจอดด้วยซิมปัจจุบัน กับ fixture เครื่องฝึกรอบที่ 1 ได้ตัวเลขตรงที่รอบที่ 1 เผยแพร่ทุกค่า (V_SR 71.86 / 79.59 KEAS, Vy 128 kt ROC 3,225 fpm, L/D 16.46 / 21.73, short period 2.221 rad/s ζ 0.578, Dutch roll 1.611 rad/s ζ 0.139, ถึง 50 ft 590 m, ลงจอด 714 m) ชุดทดสอบ `lm_selftest.mjs` ผ่าน **49/49** ในราว 2 s
-- **ตัวตรวจ JSON**: `lm_merge.mjs` (แกนกลาง `mergeDir` ใน `lm_lib.mjs`) ตรวจรูปแบบ leaf, ความขัดแย้งข้ามไฟล์ และ coverage; บล็อก `common_light` ของรอบนี้ 27 leaf (ของหัวข้อนี้ 13) ไม่มี ERROR และ CONFLICT
+- **บัตรข้อมูล → ซิม**: `lm_card.buildAC` แปลงบัตรตาม schema-ext-r2 เป็น `AC` ครบ 51 ฟิลด์ แล้ววัด stall, trim, glide, climb, โหมดเชิงเส้น, วิ่งขึ้นและลงจอดด้วยซิมปัจจุบัน กับ fixture เครื่องฝึกรอบที่ 1 ได้ตัวเลขตรงที่รอบที่ 1 เผยแพร่ทุกค่า (V_SR 71.86 / 79.59 KEAS = 36.97 / 40.94 m/s, Vy 128 kt (65.8 m/s) ROC 3,225 fpm (16.4 m/s), L/D 16.46 / 21.73, short period 2.221 rad/s ζ 0.578, Dutch roll 1.611 rad/s ζ 0.139, ถึงความสูง 50 ft (15.2 m) ใน 590 m, ลงจอด 714 m) ชุดทดสอบ `lm_selftest.mjs` ผ่าน **78/78** (31 รหัส) ในราว 3 s (อัปเดต 19 พ.ย. 2026 จาก 49/49)
+- **แก้ bug ระยะเคลื่อนพื้นบังคับ (19 พ.ย. 2026)**: `buildAC` เดิมอ่าน `controls.surfaces.<s>.travel_deg` ซึ่งไม่มีในบัตรใดเลย บัตรทุกใบจึงบินด้วยระยะของเครื่องฝึกรอบที่ 1 (elevator ขึ้น 22° ลง 15°, aileron 20°, rudder 25°) ตอนนี้อ่าน leaf `controls.surfaces.<s>` ค่า `v.travel_deg` (path เดิมเป็นทางสำรอง) ผลของ `lm_card` ที่เปลี่ยนมีแค่มุม elevator ตอนจบการทดสอบ stall และ $V_{min}$ ต่างไม่เกิน 0.13 kt (0.07 m/s) ส่วน trim, climb, glide, โหมดเชิงเส้น, วิ่งขึ้นและลงจอดไม่เปลี่ยน ทางเลี่ยงที่สคริปต์ของหัวข้อ 04, 06, 07, 10, 11, 12 ใส่ไว้ตอนนี้ให้ผลเท่ากับไม่ใส่ (§01.2.3) และทุกเครื่องมือรับ `training_mass` ได้ทั้งตัวเลขและอ็อบเจกต์ D3 `{kg, empty_kg, crew_kg, fuel_kg}`
+- **ตัวตรวจ JSON**: `lm_merge.mjs` (แกนกลาง `mergeDir` ใน `lm_lib.mjs`) ตรวจรูปแบบ leaf, ความขัดแย้งข้ามไฟล์ และ coverage; บล็อก `common_light` ของรอบนี้ 52 leaf (ของหัวข้อนี้ 14) ไม่มี ERROR และ CONFLICT ตั้งแต่ 19 พ.ย. 2026 ยังตรวจความสอดคล้อง 8 ข้อ (scope ตามหมวด D4, `est` กับคำว่า "ค่าประมาณ", `est` กับ `conf` สูง, รูปแบบ `training_mass` D3, มี VREF/VAPP, VAPP ≥ VREF, ความเร็ว approach ของ 08/09 เท่ากับของบัตร ±0.5 kt (±0.26 m/s), ชื่อ detent D6) รายงานเป็น WARN และเป็น ERROR เมื่อใส่ `--strict`; ผลรันทั้งโฟลเดอร์วันที่ 19 พ.ย. 511 WARN ใน 23 id (402 ข้อเป็น scope) ไม่มี ERROR และ CONFLICT (§01.2.4) `trainer_r2` resolve กับฐาน `trainer_r1` ได้ครบ (coverage กรอก 317, `_na` 67, ขาด 0) โดยไม่คัดลอกค่ารอบที่ 1 ลง `params-light.json` และ id ที่มี `_na ["*"]` นับเป็นขาด 0 (§01.2.5)
 - **polar รูปแบบซิม**: ซิมใช้ $C_D = C_{D0} + K(C_L-0.15)^2$ จึงต้องแปลง polar จริงด้วย $K_s = 1/(2E(C_L^*-0.15))$, $C_{D0,s} = K_s(C_L^{*2}-0.0225)$ ซึ่งคง (L/D)max และ $C_L$ ที่ best glide (ตรวจ: เป้า 12.91 ได้ 12.91) และห้าม fit จุด glide กับจุด cruise รวมกันเพราะต่างกันราว 13 %
 - **CLmax จาก POH**: ความเร็ว stall ใน POH เป็นความเร็วต่ำสุด ใช้ $n_z$ ที่ $V_{min}$ = 0.95 (ค่าประมาณ ช่วง 0.90–1.00) ตามนิยาม 14 CFR 25.103 แล้วแก้ KIAS → KCAS, น้ำหนัก และ CG; CLmax ไม่แน่นอนราว ±5 % จาก $n_z$ และอีก ±6 % จากการปัดความเร็ว
-- **derivative จากรูปทรง** (`lm_derivs`, DATCOM + Roskam + Raymer + tail volume และตัวแก้ lifting line ของการม้วน $K_{LL}$ ≈ 0.54): เทียบข้อมูลการบินของเครื่องคลาส C172 (NASA TM-80163) และ Navion (TN D-6643) ค่ามัธยฐานของความผิดพลาด 14.5 % (ชุดบินจริง 29 ค่า) เครื่องหมายถูกทั้ง 46 ค่า ตามยาวผิด 0–24 % (ความเชื่อมั่นกลาง) แต่ Cnβ, Cnr, Clδa, Cnδa ผิด 14–160 % (ต่ำ)
+- **derivative จากรูปทรง** (`lm_derivs`, DATCOM + Roskam + Raymer + tail volume และตัวแก้ lifting line ของการม้วน $K_{LL}$ ≈ 0.54): เทียบข้อมูลการบินของเครื่องคลาส C172 (NASA TM-80163) และ Navion (TN D-6643) ค่ามัธยฐานของความผิดพลาด 14.5 % (ชุดบินจริง 29 ค่า) เครื่องหมายถูกทั้ง 46 ค่า ตามยาวผิด 0–24 % (ความเชื่อมั่นกลาง) แต่ Cnβ, Cnr, Clδa, Cnδa ผิด 14–160 % (ต่ำ) ชุดตรวจมีแค่ลูกสูบเครื่องเดียวหางธรรมดา จึงแนะนำ tolerance ของการทดสอบโหมด lateral-directional เป็นอัตราส่วนค่าจริง/ค่าบัตร (§01.3.4, ค่าประมาณ จาก `lm_tolerance.mjs`): คลาสที่ตรวจแล้ว Dutch roll ωn 0.90–1.45, ζ 0.60–1.40, roll mode τR 0.65–1.60; หาง T, สองเครื่องยนต์ และ turboprop ωn 0.75–1.55, ζ 0.45–1.75, τR 0.55–2.10 และ spiral ใช้เกณฑ์ T2 ≥ 12 s แทนการเทียบตัวเลข
 - **inertia**: รัศมีไจเรชันไร้มิติแบบ Roskam ที่หาย้อนจาก 7 ลำ: single_prop Rx 0.257, Ry 0.357, Rz 0.404 (leave-one-out ผิดถึง 42 %), เครื่องฝึก turboprop 0.261 / 0.338 / 0.400 กลุ่ม twin มีแค่ C310 ไม่ควรใช้กับ DA42 (ค่าประมาณ ความเชื่อมั่นต่ำ)
-- **เครื่องยนต์ลูกสูบ/ดีเซล**: ที่ 8,000 ft ISA สูตร Gagg–Farrar ให้ 0.758 และสูตร indicated-friction (NACA R-190, f 0.10) ให้ 0.741 แต่วันร้อน VTBD 35 °C ได้ 0.926 กับ 0.963 จึงแนะนำ indicated-friction เมื่อมี ISA deviation; C172S ใช้ IO-360-L2A 180 hp ที่ 2,700 rpm (TCDS IM.A.051); AE300 123.5 kW ที่รอบใบพัด 2,300 rpm, BSFC 227 g/kWh ที่ 100 % และ 205 g/kWh ที่ 60 % (คำนวณจาก factsheet)
-- **ใบพัด** (`lm_prop`, BEM + Prandtl tip loss): ใบ fixed pitch 76×60 ปรับคอร์ดให้รอบสถิต 2,350 rpm ตาม TCDS (2,300–2,400) ได้แรงขับสถิต 3,538 N (795 lbf), FM 0.66, η สูงสุด 0.85 ส่วนตาราง JSBSim `prop_75in2f` ให้ 2,245 rpm ต่ำกว่า TCDS; ใบ constant speed 3 ใบ 1.90 m ที่ 123.5 kW ได้ 3,450 N และ η cruise 0.87
-- **legacy fit**: ปรับ polar, aStall และแรงขับให้ซิมวันนี้บินตาม POH ได้ (V_SR ผิดไม่เกิน 1 kt, ROC ผิด 15 fpm, L/D ร่อนตรง) แต่ Vy ของซิมต่ำกว่า POH ราว 8 kt เพราะซิมมี polar เดียวทุกสภาวะแรงขับ ต้องแก้ฟิสิกส์ (P2) จึงจะหายขาด
+- **เครื่องยนต์ลูกสูบ/ดีเซล**: ที่ 8,000 ft (2,438 m) ISA สูตร Gagg–Farrar ให้ 0.758 และสูตร indicated-friction (NACA R-190, f 0.10) ให้ 0.741 แต่วันร้อน VTBD 35 °C (ISA+20, ความสูงสนาม 3 m) ได้ 0.926 กับ 0.963 จึงแนะนำ indicated-friction เมื่อมี ISA deviation; C172S ใช้ IO-360-L2A 180 hp (134 kW) ที่ 2,700 rpm (TCDS IM.A.051); AE300 123.5 kW (168 hp) ที่รอบใบพัด 2,300 rpm, BSFC 227 g/kWh ที่ 100 % และ 205 g/kWh ที่ 60 % (คำนวณจาก factsheet)
+- **ใบพัด** (`lm_prop`, BEM + Prandtl tip loss): ใบ fixed pitch 76×60 in (เส้นผ่านศูนย์กลาง 1.93 m) ปรับคอร์ดให้รอบสถิต 2,350 rpm ตาม TCDS (2,300–2,400) ได้แรงขับสถิต 3,538 N (795 lbf), FM 0.66, η สูงสุด 0.85 ส่วนตาราง JSBSim `prop_75in2f` ให้ 2,245 rpm ต่ำกว่า TCDS; ใบ constant speed 3 ใบ 1.90 m (75 in) ที่ 123.5 kW (168 hp) ได้ 3,450 N (776 lbf) และ η cruise 0.87
+- **legacy fit**: ปรับ polar, aStall และแรงขับให้ซิมวันนี้บินตาม POH ได้ (V_SR ผิดไม่เกิน 1 kt (0.5 m/s), ROC ผิด 15 fpm (0.08 m/s), L/D ร่อนตรง) แต่ Vy ของซิมต่ำกว่า POH ราว 8 kt (4.1 m/s) เพราะซิมมี polar เดียวทุกสภาวะแรงขับ ต้องแก้ฟิสิกส์ (P2) จึงจะหายขาด
 - **ข้อจำกัดหลักของซิมวันนี้**: แรงขับไม่มีเทอมความหนาแน่น (ROC เท่ากันทุกความสูง), แฟลปเป็นตัวแปรเดียว f, "ias" ของซิมคือ EAS ทุกข้อมีงานแก้ใน §01.13
 
 ## 01.1 ทำไมต้องขยาย schema และตารางการแปลง schema → AC
@@ -26,7 +27,7 @@
 
 | ฟิลด์ AC | แหล่งในบัตร (ตามลำดับ) | กฎ | ค่าเริ่มต้นเมื่อไม่มีข้อมูล |
 |---|---|---|---|
-| `m` | `--mass` → `airframe.weights.training_mass` (ตัวเลขหรือ `{kg}`) → `MTOW` | ตรง | 2250 kg (R1) |
+| `m` | `--mass` → `airframe.weights.training_mass` (อ็อบเจกต์ D3 `{kg, empty_kg, crew_kg, fuel_kg}` หรือตัวเลขแบบเดิม อ่านด้วย `trainingMassKg`; อัปเดต 19 พ.ย. 2026) → `MTOW` | ตรง | 2250 kg (R1) |
 | `Ixx, Iyy, Izz, Ixz` | `airframe.inertia.*` | คูณ `m / ref_mass` (รัศมีไจเรชันคงที่เมื่อมวลเปลี่ยน) | ถ้าไม่มี inertia: Roskam radii (`airframe.inertia.radii` หรือ `common_light.methods.radii.<class>` §01.4) กับ `airframe.wing.b` และ `airframe.geometry.length`; `Ixz` = 0 |
 | `S, b, c` | `aero.ref.*` → `airframe.wing.{S, b, MAC}` | ตรง | R1 |
 | `CL0, CLa, Cm0, Cma` | `aero.legacy.*` → `aero.static_long.{CL0, CLalpha, Cm0, Cmalpha}` ค่า clean | ตรง | R1 |
@@ -36,9 +37,9 @@
 | `CD0, K` | `aero.legacy.{CD0, K}` (รูปแบบของซิม) → `aero.derivatives.{CD0, K}` (polar แบบพาราโบลารอบ CL = 0) | แปลงด้วย `toSimPolar` ให้ (L/D)max และ CL ที่ (L/D)max เท่าเดิม (สมการ 01.1-1) | R1 |
 | `CLq … Cndr` (19 ตัว) | `aero.derivatives.<ชื่อ>` | ถ้า `v` เป็นอ็อบเจกต์ตาม config เลือกตามลำดับ `--config`, `approach`, `landing`, `cruise`, `clean` แล้วตัวแรกที่มี | ค่าประมาณจาก `lm_derivs` (§01.3) ถ้าส่งเข้ามา มิฉะนั้น R1 |
 | `aStall, aStallFlap` | `aero.legacy.*` → แก้หา | หา a0 (จุดกลางการผสม Beard–McLain) ที่ทำให้ CLmax 1 g แบบ trim ของซิมเท่ากับเป้า เป้ามาจาก `static_long.CLmax_target` → `detents.CLmax` → `VS1/VS0` ผ่าน `lm_polar.clmaxFromStall` (MTOW, KCAS, ความเร็วต่ำสุด nz 0.95) | R1 |
-| `deUp, deDn` | `controls.surfaces.elevator.travel_deg.{up, down}` | deg → rad (`de` ลบ = ขอบท้ายขึ้น) | R1 |
-| `daMax` | `controls.surfaces.aileron.travel_deg` | ½(up + down) เพราะ `Clda` นิยามต่อ rad ของมุมเฉลี่ยสองข้าง | R1 |
-| `drMax` | `controls.surfaces.rudder.travel_deg` | min(left, right) เพราะซิมจำกัดแบบสมมาตร | R1 |
+| `deUp, deDn` | leaf `controls.surfaces.elevator` ค่า `v.travel_deg.{up, down}` (รูปแบบ schema-ext-r2 §5) → path เดิม `controls.surfaces.elevator.travel_deg` (ทางสำรอง) อ่านด้วย `travelOf`; อัปเดต 19 พ.ย. 2026 §01.2.3 | deg → rad (`de` ลบ = ขอบท้ายขึ้น); `v.travel_deg` เป็นตัวเลขเดียว = สมมาตร | R1 |
+| `daMax` | leaf `controls.surfaces.aileron` ค่า `v.travel_deg.{up, down}` → path เดิม (ทางสำรอง) | ½(up + down) เพราะ `Clda` นิยามต่อ rad ของมุมเฉลี่ยสองข้าง | R1 |
+| `drMax` | leaf `controls.surfaces.rudder` ค่า `v.travel_deg.{left, right}` → path เดิม (ทางสำรอง) | min(left, right) เพราะซิมจำกัดแบบสมมาตร | R1 |
 | `P` | `propulsion.legacy.P` → `piston.ratings.P_rated × จำนวนเครื่อง` | W | R1 |
 | `eta` | `propulsion.legacy.eta` | – | 0.80 (ค่าประมาณ) |
 | `T0` | `propulsion.legacy.T0` → ทฤษฎีโมเมนตัมจาก `propeller.identity.diameter` | $T_0 = (FM\,P\,f_{rpm}\sqrt{2\rho_0 A})^{2/3}$, FM 0.55, $f_{rpm}$ = รอบสถิต/รอบพิกัด | R1 × P/700 kW |
@@ -80,12 +81,13 @@ $$K_s = \frac{1}{2E\,(C_L^* - 0.15)},\qquad C_{D0,s} = K_s\,(C_L^{*2} - 0.15^2)$
 
 | สคริปต์ | หน้าที่ | คำสั่ง |
 |---|---|---|
-| `lm_lib.mjs` | แกนกลาง: `mergeDir(dir, {only, r1})` → `{merged, errors, warnings, conflicts, coverage, stats, …}`; `extractBlocks`, `resolveType` (ตาม `_inherits`), `val/leaf(card, 'a.b.c')`, `loadType(id)` (โฟลเดอร์ก่อน แล้ว `lm_fixture_*.json`), `isMainModule` | `import { mergeDir } from './lm_lib.mjs'` |
-| `lm_merge.mjs` | CLI เดิม พฤติกรรมและตัวเลือกเหมือนเดิมทุกตัว (`--dir --out --type --coverage --schema --quiet --dry --r1`) ตอนนี้เรียก `mergeDir` | `node scripts/lm_merge.mjs --type c172s --coverage --dry` |
-| `lm_card.mjs` | `buildAC`, `applyAC`, `cardInfo`, `runCard` และตัวทดสอบเชิงตัวเลข (`trim`, `trimThr`, `linearise`, `modes`, `stallTest`, `climbSweep`, `glideSweep`, `takeoffTest`, `landingTest`) เขียนใหม่จาก `v10_perf.mjs` / `v10_modes.mjs` / `v10_timeresp.mjs` ของรอบที่ 1 ด้วยกฎควบคุมและขั้นเวลาเดิม | `node scripts/lm_card.mjs <typeId> [--mass kg] [--config approach] [--flapmap lift\|deflection] [--json] [--quick] [--no-ground] [--trace]` |
+| `lm_lib.mjs` | แกนกลาง: `mergeDir(dir, {only, r1, strict, checks, bases})` → `{merged, errors, warnings, conflicts, coverage, stats, checks, bases, …}`; `extractBlocks`, `resolveType` (ตาม `_inherits` รวมฐาน resolve), `val/leaf(card, 'a.b.c')`, `loadType(id)` (โฟลเดอร์ก่อน แล้วฐาน `trainer_r1` และ `lm_fixture_*.json`), `isMainModule`; เพิ่ม 19 พ.ย. 2026: `validate`, `checkSummary`, `CHECK_NAMES` (§01.2.4), `loadBases`, `r1ParamsCandidates` (§01.2.5), `coverageOf`, `naMatcher` (`_na` รวม `"*"`), `trainingMass`, `trainingMassKg` (D3), `iasCas`, `speedAs`, `landingDetent`, `expectedScope`, `SCOPE_BY_CAT` (D4) | `import { mergeDir } from './lm_lib.mjs'` |
+| `lm_merge.mjs` | CLI เดิม ตัวเลือกเดิมทำงานเหมือนเดิมทุกตัว (`--dir --out --type --coverage --schema --quiet --dry --r1`) ตอนนี้เรียก `mergeDir`; เพิ่ม 19 พ.ย. 2026: `--strict` (WARN ของการตรวจความสอดคล้องนับเป็น ERROR, exit 1), `--checks` (พิมพ์ทุกข้อ ค่าเริ่มต้นพิมพ์ตารางสรุปต่อ id กับ 60 ข้อแรก), `--json-checks <file>` (ผลตรวจเป็น JSON) | `node scripts/lm_merge.mjs --type c172s --coverage --dry` |
+| `lm_card.mjs` | `buildAC`, `travelOf` (§01.2.3), `applyAC`, `cardInfo`, `runCard` และตัวทดสอบเชิงตัวเลข (`trim`, `trimThr`, `linearise`, `modes`, `stallTest`, `climbSweep`, `glideSweep`, `takeoffTest`, `landingTest`) เขียนใหม่จาก `v10_perf.mjs` / `v10_modes.mjs` / `v10_timeresp.mjs` ของรอบที่ 1 ด้วยกฎควบคุมและขั้นเวลาเดิม | `node scripts/lm_card.mjs <typeId> [--mass kg] [--config approach] [--flapmap lift\|deflection] [--json] [--quick] [--no-ground] [--trace]` |
 | `lm_fixture_trainer_r1.mjs` → `lm_fixture_trainer_r1.json` | เครื่องฝึกรอบที่ 1 ในรูปบัตรข้อมูล (fixture สำหรับทดสอบ ไม่อยู่ในบล็อก JSON ของรายงาน) | `node scripts/lm_fixture_trainer_r1.mjs` |
-| `lm_selftest.mjs` | ตรวจ T-LM อัตโนมัติ (exit 1 ถ้าไม่ผ่าน) | `node scripts/lm_selftest.mjs` |
+| `lm_selftest.mjs` | ตรวจ T-LM อัตโนมัติ 78 ข้อ 31 รหัส (exit 1 ถ้าไม่ผ่าน) | `node scripts/lm_selftest.mjs` |
 | `lm_derivs.mjs`, `lm_inertia.mjs`, `lm_polar.mjs`, `lm_engine.mjs`, `lm_prop.mjs`, `lm_legacy_fit.mjs` | วิธีประมาณค่าใน §01.3–01.8 | ดูแต่ละหัวข้อ |
+| `lm_tolerance.mjs` | tolerance ของการทดสอบโหมด lateral-directional เมื่อ derivative มาจาก `lm_derivs` (§01.3.4, เพิ่ม 19 พ.ย. 2026) → `out/lm_tolerance.json` | `node scripts/lm_tolerance.mjs [--json]` |
 
 ### 01.2.1 สิ่งที่ `lm_card` วัด (ซิมปัจจุบัน ISA ลมสงบ)
 
@@ -101,16 +103,98 @@ $$K_s = \frac{1}{2E\,(C_L^* - 0.15)},\qquad C_{D0,s} = K_s\,(C_L^{*2} - 0.15^2)$
 
 | ปริมาณ | รอบที่ 1 เผยแพร่ [R1:V19] | `lm_card` วันนี้ |
 |---|---|---|
-| V_SR แฟลปลง ล้อลง / clean | 71.9 / 79.6 kt | 71.86 / 79.59 kt |
-| Vy, ROC สูงสุด (SL) | 128 kt, 3,225 fpm | 128 kt (กริด; จุดยอดพาราโบลา 128.8), 3,225 fpm |
+| V_SR แฟลปลง ล้อลง / clean | 71.9 / 79.6 kt (37.0 / 40.9 m/s) | 71.86 / 79.59 kt (36.97 / 40.94 m/s) |
+| Vy, ROC สูงสุด (SL) | 128 kt (65.8 m/s), 3,225 fpm (16.4 m/s) | 128 kt (กริด; จุดยอดพาราโบลา 128.8), 3,225 fpm |
 | L/D แรงขับศูนย์ / idle | 16.5 / 21.7 | 16.46 / 21.73 |
 | approach: short period ωn, ζ | 2.22 rad/s, 0.58 | 2.221, 0.578 |
 | approach: Dutch roll ωn, ζ; τR; spiral t½ | 1.61, 0.139; 0.218 s; 36.2 s | 1.611, 0.139; 0.218 s; 36.2 s |
-| cruise 155 kt: SP, DR | 3.593/0.560, 2.525/0.145 | 3.593/0.560, 2.525/0.145 |
-| วิ่งขึ้น flaps 0 VR 82: ground roll, 50 ft, V50 | 358 m, 590 m, 113.8 kt | 358 m, 590 m, 113.8 kt |
+| cruise 155 kt (79.7 m/s): SP, DR | 3.593/0.560, 2.525/0.145 | 3.593/0.560, 2.525/0.145 |
+| วิ่งขึ้น flaps 0 VR 82 kt (42.2 m/s): ground roll, ถึง 50 ft (15.2 m), V50 | 358 m, 590 m, 113.8 kt (58.5 m/s) | 358 m, 590 m, 113.8 kt |
 | ลงจอดจาก 50 ft เบรกเต็ม | 714 m | 714 m |
 
 ผลเต็มอยู่ใน `scripts/out/lm_card_trainer_r1.json` เวลารันทั้งชุดประมาณ 1 s ข้อสังเกต: ROC ของซิมไม่ขึ้นกับความหนาแน่นอากาศ (`thrustAvail` ไม่มี ρ) ดังนั้น `lm_card` วัด climb ที่ระดับน้ำทะเลเท่านั้น ตามข้อจำกัดที่รอบที่ 1 บันทึกไว้
+
+
+### 01.2.3 bug ระยะเคลื่อนพื้นบังคับและ `training_mass` (แก้ 19 พ.ย. 2026)
+
+**อาการ**: `buildAC` ฉบับ 18 พ.ย. อ่าน `val(card, 'controls.surfaces.<s>.travel_deg')` แต่บัตรทุกใบเก็บระยะเคลื่อนเป็น leaf เดียวที่ `controls.surfaces.<s>` และใส่ `travel_deg` ไว้ใน `v` ตาม schema-ext-r2 §5 `leaf()` จึงได้ `undefined` และ `deUp, deDn, daMax, drMax` ถอยไปใช้ค่าของเครื่องฝึกรอบที่ 1 (elevator ขึ้น 22° ลง 15°, aileron 20°, rudder 25°) กับทุกบัตร trace ติดธง `R1` ไว้แต่ไม่มีใครเห็น หัวข้อบัตรจึงเลี่ยงกันคนละแบบ: 05 ใช้ระยะ R1 ต่อ, 04 และ 10 ใช้ `travelFix`, 06 แก้ `AC_R1`, 07 ใช้ `withTravel`, 11 และ 12 ใช้ `patchTravel` ผลในคอลัมน์ "โมเดลปัจจุบัน" ที่ขึ้นกับระยะเคลื่อน (τR ที่มุมสุด, δa/δr ที่ลมขวาง, ระยะเผื่อ elevator ตอน flare, stall) จึงตั้งอยู่บนสมมติฐานที่ไม่ตรงกัน ส่วน CLI ของ `lm_inertia` ล้มเมื่อ `training_mass` เป็นอ็อบเจกต์ (05.12 ข้อ 14)
+
+**สิ่งที่แก้**: ฟังก์ชันใหม่ `travelOf(card, s)` ใน `lm_card.mjs` อ่าน `v.travel_deg` ของ leaf `controls.surfaces.<s>` ก่อน (อ็อบเจกต์ `{up, down}` หรือ `{left, right}` หรือตัวเลขเดียวซึ่งถือว่าสมมาตร) แล้วจึงถอยไปที่ path เดิม `controls.surfaces.<s>.travel_deg` และติดธง `R1` เฉพาะเมื่อไม่มีทั้งสองแบบ `buildAC`, `lm_card`, `lm_inertia` และ `lm_derivs` อ่านมวลผ่าน `trainingMassKg` ซึ่งรับตัวเลข อ็อบเจกต์ D3 และคีย์แบบเก่า `{kg, BEW, crew, fuel}` (`lm_inertia da40ng` ตอนนี้พิมพ์ m 1,150 kg) fixture `trainer_r1` ย้ายระยะเคลื่อนไปรูปแบบ leaf ใหม่โดยค่าเท่าเดิม ผลของ fixture จึงไม่เปลี่ยน (T-LM-01…07) การทดสอบใหม่: T-LM-25 และ T-LM-26
+
+ตาราง 01.2-1 ระยะเคลื่อนที่ `buildAC` ส่งเข้าซิม (องศา ก่อน → หลังแก้) และผลของ `node scripts/lm_card.mjs <id> --json` ที่เปลี่ยน (รันวันที่ 19 พ.ย. 2026 ก่อนและหลังแก้กับไฟล์หัวข้อชุดเดียวกัน ค่าที่ไม่อยู่ในตารางไม่เปลี่ยน):
+
+| id | deUp | deDn | daMax | drMax | ผลของ `lm_card` ที่เปลี่ยน |
+|---|---|---|---|---|---|
+| c172s, c172r | 22 → 28 | 15 → 23 | 20 → 17.5 | 25 → 17.73 | มุม elevator ตอนจบ stall แฟลป 10/20/30°: −22 (ชนสต็อป) → −22.3/−23.8/−24.6° |
+| c152 | 22 → 25 | 15 → 18 | 20 → 17.5 | 25 → 23 | มุมจบ stall −22 → −24.1 ถึง −25° |
+| da40ng | 22 → 21 | 15 → 17 | 20 → 16.5 | 25 → 24 | มุมจบ stall −22 → −21° |
+| da40_180 | 22 → 18 | 15 → 16 | 20 → 16.5 | 25 → 29 | มุมจบ stall −22 → −18°; $V_{min}$ UP −0.002 kt |
+| da40d | 22 → 23 | 15 (เท่าเดิม) | 20 → 16.5 | 25 → 29 | มุมจบ stall −22 → −23° |
+| da42ng, da42_vi | 22 → 15.5 | 15 → 13 | 20 (เท่าเดิม) | 25 → 27 | มุมจบ stall −22 → −15.5°; $V_{min}$ LDG −0.01 kt |
+| da42_tae125 | 22 → 15.5 | 15 → 13 | 20 (เท่าเดิม) | 25 → 27 | มุมจบ stall −22 → −15.5°; $V_{min}$ LDG 54.05 → 53.92 KIAS (−0.13 kt = −0.07 m/s) |
+| pc9m, pc7mk2, trainer_r2 | 22 → 18.5 | 15 → 16 | 20 → 15.5 | 25 → 24 | มุมจบ stall LDG −19.7 ถึง −20.3 → −18.5° |
+| t6a, t6c | 22 → 18 | 15 → 16 | 20 → 15.5 | 25 → 24 | มุมจบ stall TO/LDG −19.6/−22 → −18° |
+| p2006t | 22 → 15 | 15 → 4 | 20 → 18.5 | 25 → 26 | มุมจบ stall −15.9 ถึง −19.1 → −15°; $V_{min}$ แฟลป 0 −0.001 kt |
+| trainer_r1 (fixture) | 22 | 15 | 20 | 25 | ไม่เปลี่ยน |
+
+ทำไมผลแทบไม่เปลี่ยน: บัตรทุกใบมี `aero.legacy.aStall` อยู่แล้ว จึงไม่ต้องแก้หา aStall ซึ่งเป็นขั้นเดียวของ `buildAC` ที่ใช้ `deUp`; โหมดเชิงเส้นใช้ derivative ต่อ rad ระยะเคลื่อนจึงไม่เข้าไปในค่าลักษณะเฉพาะ; trim, climb, glide, วิ่งขึ้น และลงจอดใน `lm_card` ไม่ชนสต็อป ผลที่ขึ้นกับระยะเคลื่อนจริงอยู่ในสคริปต์ของหัวข้อบัตร (ลมขวาง, flare, อัตราม้วนที่มุมสุด) ซึ่งเจ้าของใส่ทางเลี่ยงไว้แล้ว รันซ้ำทุกสคริปต์หลังแก้: จำนวนข้อที่ผ่านของ `lc_tests`, `le_tests`, `lf_tests`, `ld_tests`, `lt_tests`, `lg_tests`, `lp_check`, `lh_tests`, `lo_tests`, `ls_tests`, `lb_tests` ไม่เปลี่ยน ทางเลี่ยงของ 04, 06, 07, 10, 11, 12 ตอนนี้ให้ค่าเท่ากับไม่ใส่ จึงลบได้ ส่วน `lc_tests --r1-travel` ไม่ได้เลือกระยะ R1 อีกต่อไป (ได้ระยะของบัตรเหมือนค่าเริ่มต้น) และค่า `travel.r1_rad` ใน `out/lc_tests.json` กับ `out/le_tests.json` เท่ากับระยะของบัตรแล้ว เจ้าของหัวข้อควรแก้ข้อความที่บอกว่า "buildAC ใช้ระยะ R1" ในไฟล์ของตน
+
+### 01.2.4 การตรวจความสอดคล้อง (`validate`, เพิ่ม 19 พ.ย. 2026)
+
+`mergeDir` เรียก `validate()` หลังรวมบล็อก (ปิดได้ด้วย `{checks: false}`) ผลแต่ละข้อมีระดับ `warn` หรือ `info`, id, ชื่อการตรวจ, ข้อความ และไฟล์:บรรทัดของบล็อกที่ต้องแก้ (ถ้าค่ารับมาจาก id แม่ บอกว่า "(รับจาก …)") `lm_merge` พิมพ์จำนวนรวม ตารางสรุปต่อ id และ 60 ข้อแรก (`--checks` หรือ `--type <id>` พิมพ์ทุกข้อ, `--json-checks <file>` เขียน JSON) ค่าเริ่มต้นคือ WARN ซึ่งไม่ทำให้ exit code เป็น 1 เพื่อไม่ให้งานของหัวข้ออื่นหยุด เมื่อใส่ `--strict` ทุก WARN กลายเป็น ERROR รูป `[strict] <id> <check>: …` และ exit 1 (T-LM-30) ทุกการตรวจทดสอบกับข้อมูลสังเคราะห์ใน T-LM-29
+
+ตาราง 01.2-2 การตรวจทั้ง 8 ข้อ:
+
+| ชื่อ | ตรวจอะไร | ตรวจบน |
+|---|---|---|
+| `scope` | scope ตามหมวด (D4): `gear.*` → gear; `piston.*`, `turboprop.*`, `turbofan.*`, `engine.*` → engine; `propeller.*` → propeller; `airframe, aero, speeds, performance, controls, ops, procedures, validation, otherSims` → aircraft; หมวดอื่น (เช่น `interference`, `wind`, `input`) ใช้ scope ของ path เดียวกันในรอบที่ 1 ถ้ามี; `common_light` ต้องเป็น environment หรือ sim | บล็อกตามที่เขียน |
+| `est` | `est: true` ต้องมีคำว่า "ประมาณ" ใน note; `est: false` แต่ note มีคำว่า "ค่าประมาณ" ก็เตือน (ยกเว้นวลีปฏิเสธ "ไม่ใช่/ไม่ได้เป็น/ไม่เป็น/ไม่ได้ใช้/ไม่มี ค่าประมาณ") | บล็อกตามที่เขียน |
+| `est_conf` | `est: true` กับ `conf: "สูง"` (ค่าประมาณใช้ "กลาง" หรือ "ต่ำ") | บล็อกตามที่เขียน |
+| `training_mass` | D3: เป็นตัวเลข; ขาดคีย์ใดใน `kg, empty_kg, crew_kg, fuel_kg` หรือมีคีย์อื่นนอกจาก `fuel_l`; `kg` ต่างจากผลรวมเกิน 2 kg; `empty_kg` ต่างจาก `airframe.weights.BEW_typical` เกิน 1 kg โดย note ไม่อ้าง `BEW_typical` | บล็อกของ id เอง (variant ที่รับค่ามาจากแม่ตรวจที่แม่) |
+| `speeds` | บัตรมี `speeds.VREF_kt` และ `speeds.VAPP_kt` เป็นตัวเลข (D1: บัตรเป็นเจ้าของ) | บัตรที่ resolve แล้ว ยกเว้น id ที่มี `_na ["*"]` |
+| `vapp_vref` | VAPP ≥ VREF หลังแปลงเป็น KCAS ด้วย `speeds.ias_cas` ที่ detent ลงจอด (`u` ของ leaf บอก KIAS หรือ KCAS); ถ้าสองค่าต่างหน่วยและไม่มีตาราง ias_cas เทียบตรง ๆ และออก `info` | บัตรที่ resolve แล้ว |
+| `xfile_vapp` | `ops.attitude_power.final.v.ias_kt` (หัวข้อ 08) และ `procedures.stabilised.v.Vapp` (หัวข้อ 09; ถ้าเป็นอ็อบเจกต์ตามมวลใช้คีย์ที่ใกล้ `training_mass` ที่สุด) ต่างจาก `speeds.VAPP_kt` ไม่เกิน 0.5 kt (0.26 m/s) ในหน่วยเดียวกัน; ถ้า note ของ leaf นั้นบอกว่าแก้ตามมวล ("แก้มวล", "แก้ตามมวล", "mass-corrected") ลดเป็น `info` | บัตรที่ resolve แล้ว |
+| `detent` | ชื่อแฟลปใน `ops.attitude_power.*.v.flap`, `procedures.stabilised.v.landingFlaps`, `procedures.pattern.v.flapsAt.*`, `procedures.{short_field, soft_field}.v.{takeoff, landing}.flaps`, `procedures.go_around.v.flapsSeq` ต้องอยู่ใน `aero.flaps.detents[].name` ของบัตร (D6) | บัตรที่ resolve แล้ว |
+
+ตาราง 01.2-3 จำนวน WARN ต่อ id จาก `node scripts/lm_merge.mjs --dry` วันที่ 19 พ.ย. 2026 (12 ไฟล์ 170 บล็อก ไม่มี ERROR และ CONFLICT รวม 511 WARN และ 2 info; ตัวเลขจะลดลงเมื่อเจ้าของบัตรแก้ รายการเต็มได้จาก `--checks` หรือ `--json-checks`):
+
+| id | scope | est | est_conf | training_mass | speeds | vapp_vref | xfile_vapp | detent | รวม |
+|---|---|---|---|---|---|---|---|---|---|
+| common_light | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| c172s | 63 | 2 | 0 | 1 | 0 | 0 | 0 | 0 | 66 |
+| c172r | 23 | 1 | 4 | 1 | 0 | 0 | 0 | 0 | 29 |
+| c152 | 30 | 7 | 5 | 1 | 0 | 0 | 0 | 0 | 43 |
+| da40ng | 99 | 1 | 0 | 2 | 0 | 0 | 2 | 5 | 109 |
+| da40_180 | 22 | 0 | 0 | 2 | 0 | 0 | 1 | 5 | 30 |
+| da40d | 19 | 0 | 0 | 1 | 0 | 0 | 1 | 5 | 26 |
+| da42ng | 72 | 2 | 0 | 2 | 0 | 0 | 0 | 0 | 76 |
+| da42_tae125 | 0 | 0 | 0 | 2 | 0 | 0 | 1 | 0 | 3 |
+| da42_vi | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 2 |
+| pc9m | 28 | 2 | 3 | 1 | 0 | 0 | 1 | 0 | 35 |
+| pc7mk2 | 3 | 2 | 3 | 1 | 0 | 0 | 1 | 0 | 10 |
+| t6a | 28 | 1 | 6 | 1 | 0 | 0 | 0 | 0 | 36 |
+| t6c | 0 | 0 | 3 | 1 | 0 | 1 | 0 | 0 | 5 |
+| trainer_r2 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 3 | 5 |
+| p2006t | 15 | 3 | 0 | 1 | 0 | 0 | 0 | 9 | 28 |
+| pa28_180, pa28_161, be76, p2002jf, p68c, t206h, ct4 | 0 | 0 | 0 | 0 | 1 ต่อ id | 0 | 0 | 0 | 7 |
+
+รันซ้ำหลังเจ้าของบัตรและหัวข้อ 08/09 แก้ครบ (19 พ.ย. 2026, 13 ไฟล์ 181 บล็อก): `node scripts/lm_merge.mjs --coverage --dry --strict` ได้ 0 ERROR, 0 CONFLICT, 0 WARN, 0 info และ exit 0 ทุก id (ตารางข้างบนเก็บไว้เป็นภาพก่อนแก้)
+
+ข้อสังเกต: scope (402 ข้อ) ส่วนใหญ่เป็น `gear.*` ที่ใส่ scope aircraft และ `propeller.*`, `piston.*`, `turboprop.*` ที่ใส่ aircraft หรือ engine ผิดหมวด; `training_mass` คือบัตรที่ยังเป็นตัวเลข (c172s, c172r, c152, p2006t), ใช้คีย์แบบเก่า `{kg, BEW, crew, fuel}` (07) หรือขาด `fuel_kg` และ `empty_kg` ไม่เท่า `BEW_typical` (05, 06); `speeds` คือ id ที่ยังไม่มีบัตร (pa28_180 รอ `_na ["*"]`, อีก 6 id รอไฟล์ 13 ของ LN); `xfile_vapp` คือ final approach ของ 08 หรือ Vapp ของ 09 ที่ไม่เท่าบัตร (เช่น da40ng 74 และ 76 KIAS เทียบบัตร 77 KIAS, pc9m 89 เทียบ 95 KCAS); `detent` คือชื่อแฟลปที่ไม่ใช่ชื่อใน AFM (D6) ผลต่อ id ส่งให้เจ้าของบัตรแล้ว
+
+### 01.2.5 ฐาน resolve `trainer_r1`, `trainer_r2` และ `_na ["*"]` (เพิ่ม 19 พ.ย. 2026)
+
+`trainer_r2` (หัวข้อ 07) เขียน `_inherits: "trainer_r1"` แต่โฟลเดอร์รอบที่ 2 ไม่มีบล็อก `trainer_r1` เดิม `lm_merge` จึงเตือน "not found (yet)" และ resolve ไม่ได้ (ฟิลด์ของบัตรสเปกขาด 52 ฟิลด์) ตอนนี้ `loadBases()` สร้าง **ฐาน resolve** คือ id ที่ `_inherits` อ้างได้แม้ไม่มีบล็อกในไฟล์หัวข้อ จากสองแหล่ง
+1. ทุก id ระดับบนของ `scripts/lm_fixture_*.json` (`trainer_r1` = `AC` ของซิมวันนี้ในรูปบัตร, src `R1:V19`)
+2. เฉพาะ `trainer_r1`: leaf ต่อแบบของรอบที่ 1 จาก `params-trainer.json` ตามรายการ `r1-pertype-paths.json` ยกเว้น `turbofan.*` และ `controls.reference_types.*` (ไม่ใช่ของเครื่องฝึก จึงอยู่ใน `_na` ของ fixture) รหัสใน `src` เติม `R1:` ถ้า path ซ้ำ fixture ชนะ (ซ้ำแค่ `aero.ref.S/b/c` และค่าเท่ากัน)
+
+ไฟล์ `params-trainer.json` หาตามลำดับ: `../../01-flight-physics/params-trainer.json` นับจากโฟลเดอร์ `scripts/` (ตำแหน่งใน repo), ตัวแปรสภาพแวดล้อม `AIRFIELDLAB_R1_PARAMS`, แล้ว worktree รอบที่ 1 ในเครื่องนี้ (ทางสำรองเท่านั้น) ถ้าไม่เจอ ฐานมีแค่ fixture และ `lm_merge` บอกไว้ในบรรทัด `base trainer_r1: … leaves from …` วันนี้ฐานมี 361 leaf
+
+**ทำไมไม่คัดลอกลง `params-light.json`**: (1) ค่ารอบที่ 1 มีเจ้าของคือ `docs/research/01-flight-physics/params-trainer.json` อยู่แล้ว คัดลอกซ้ำจะได้สองสำเนาที่ต้องตามแก้ให้ตรงกัน; (2) `params-light.json` เป็นผลรวมของบล็อกรอบที่ 2 ถ้าใส่ 361 leaf ของรอบที่ 1 จำนวน leaf และสถิติความเชื่อมั่นของรอบนี้จะเพี้ยน; (3) ผู้ใช้ปลายทาง (`loadType` และซิมในอนาคต) resolve จากสองไฟล์ด้วยกฎเดียวกันได้ `paramsObject` จึงเขียนแค่ `_meta.bases.trainer_r1 = {from, leaves, note}` บอกที่มา และ `trainer_r2` ในไฟล์ยังมีเฉพาะ leaf ของตัวเองกับ `_inherits` (T-LM-28) ผลวันนี้: `coverage trainer_r2 (resolved via trainer_r1)` กรอก 317, `_na` 67, ขาด 0; `loadType('trainer_r2')` ได้บัตรครบ (เช่น `aero.ref.S` 16.3 m² จากรอบที่ 1) และ `lm_card trainer_r2` รันได้
+
+**coverage ของ id ที่สืบทอด** คิดบนบัตรที่ resolve แล้ว (บรรทัด `coverage <id> (resolved via …)`) จึงไม่นับ path ที่แม่กรอกแล้วเป็น "ขาด" ตัวอย่างวันนี้ c172r, da40_180, da40d, da42_tae125, da42_vi, pc7mk2, t6c ขาด 0 ทุกตัว
+
+**`_na ["*"]` (D5)**: ถ้า `v` ของ `_na` มี `"*"` หมายความว่าทุก path ต่อแบบของรอบที่ 1 ที่ยังไม่กรอกตั้งใจไม่ใส่ (เช่น id ที่มีแค่ข้อมูลโมเดลเปิดอย่าง `pa28_180`) coverage จึงได้ ขาด 0 และ `validate()` ข้ามการตรวจความเร็วของ id นั้น รายการ `_na` อื่นยังใช้รูป glob ได้ (`"gear.*"`) (T-LM-27)
 
 
 ## 01.3 การประมาณ derivative จากรูปทรง (lm_derivs)
@@ -195,6 +279,32 @@ path ที่ไม่บังคับซึ่ง `lm_derivs` อ่าน�
 - ทุก derivative ได้เครื่องหมายถูกตามที่บินจริง (T-LM-11, ไม่มีข้อยกเว้นในการตรวจเครื่องหมายแล้วหลังการตรวจทาน) ค่ามัธยฐานของความผิดพลาดสัมบูรณ์ 14.5 % (29 ค่าบินจริง, T-LM-12) และ 17.6 % เมื่อรวมค่าอ้างอิง (46 ค่า)
 
 ข้อสังเกตเรื่องเครื่องหมายเมื่ออ่านเอกสาร: TM-80163 นิยาม δa = มุมซ้าย − มุมขวา (ผลรวม), δe บวก = ขอบท้ายลง และ δr บวก = ขอบท้ายไปซ้าย [LM5 รายการสัญลักษณ์] จึงต้องคูณ Clδa ด้วย 2 ให้เป็นต่อมุมเฉลี่ยแบบ `AC` และกลับเครื่องหมายเพราะ Clδa ในรายงานเป็นลบ (Table X ที่ $C_L$ 0.6: −0.102 → +0.204; Table VII ทุกเคส −0.074 ถึง −0.127) **ฉบับก่อนการตรวจทานใช้ −0.070 ซึ่งเป็นค่า Clβ ในแถวข้างกันของ Table X จึงได้ 0.14 และสรุปว่า Clδa ประมาณสูงไป 74 % ซึ่งผิด**; TN D-6643 ใช้แกนลำตัวที่ CG และ CZα ≈ −CLα; ลำดับแถวของตาราง lateral ใน TN D-6643 อนุมานจากคอลัมน์อ้างอิงที่ตรงกับชุด Navion ของตำรา (CYβ, CYδr, Clβ, Clp, Clr, Clδa, Clδr, Cnβ, Cnp, Cnr, Cnδa, Cnδr) จึงมีความเชื่อมั่นกลาง
+
+
+### 01.3.4 ขอบเขตการตรวจและ tolerance ของการทดสอบโหมด lateral-directional (เพิ่ม 19 พ.ย. 2026)
+
+**ขอบเขตที่ตรวจแล้ว**: `lm_derivs` ตรวจกับเครื่องสองแบบเท่านั้น คือปีกสูงค้ำคลาส C172 (TM-80163 [LM5], 40.7 m/s = 79 kt) และ Navion ปีกต่ำ (TN D-6643 [LM9], 73.2 m/s = 142 kt) ทั้งสองเป็นลูกสูบเครื่องเดียว หางธรรมดา ยังไม่มีชุดตรวจของหาง T (DA40, DA42), สองเครื่องยนต์ (DA42, P2006T) หรือ turboprop (PC-9M, PC-7 Mk II, T-6) ช่วงความผิดที่พบ (ประมาณ − จริง หารด้วยจริง ทั้งชุดบินจริงและค่าอ้างอิงในตาราง 01.3-3): Cnβ −22 ถึง −37 %, Cnr −28 ถึง +14 %, Clp −4 ถึง +15 %, Clδa +19 ถึง +49 %, Cnδa +127 ถึง +159 % และ inertia กลุ่ม single_prop จาก leave-one-out (§01.4) Izz −28 ถึง +31 %, Ixx −28 ถึง +42 %
+
+**วิธีหา tolerance** (`scripts/lm_tolerance.mjs`, ค่าประมาณ): อัตราส่วนค่าจริง/ค่าประมาณของแต่ละตัวคือ $r = 1/(1+e)$ เมื่อ $e$ อยู่ในช่วงข้างบน ใส่ $r$ ที่ปลายช่วงลงในบัตรทีละมุมของ {Cnβ, Cnr, Clp, Izz, Ixx} ครบ $2^5 = 32$ มุม แล้ว trim และ linearise ด้วย `lm_card.modes` ที่ approach (แฟลปสุด ล้อลง ความสูง 300 m (984 ft) γ −3°) เทียบ Dutch roll ωn, ζ, roll mode τR และ spiral T2 กับค่าของบัตรเอง ช่วงของอัตราส่วนคือสิ่งที่การทดสอบต้องเผื่อ สำหรับคลาสที่ไม่มีชุดตรวจ ขยายครึ่งช่วงของ $e$ รอบจุดกลาง $K = 1.5$ เท่า (ผู้เขียนเลือก เพราะไม่มีข้อมูลบอกว่าความผิดจะมากขึ้นเท่าใด) Clδa และ Cnδa ไม่อยู่ในการกวาดเพราะไม่เปลี่ยนค่าลักษณะเฉพาะของเครื่องบินมือปล่อย
+
+ตาราง 01.3-4 ผลของ `lm_tolerance.mjs` (อัตราส่วน ค่าที่มุม / ค่าของบัตร; บัตรวันที่ 19 พ.ย. 2026, `out/lm_tolerance.json`):
+
+| บัตร (คลาส) | ความเร็ว approach | ค่าของบัตร: DR ωn rad/s, ζ; τR s; spiral T2 s | ช่วงความผิดที่ตรวจแล้ว (K 1): ωn, ζ, τR; spiral | ขยาย K 1.5: ωn, ζ, τR; spiral |
+|---|---|---|---|---|
+| c172s (ปีกสูง หางธรรมดา = คลาสที่ตรวจ) | 67 KIAS (34.5 m/s) | 1.888, 0.334; 0.194; 55.8 | 0.90–1.37, 0.64–1.36, 0.66–1.59; ไดเวอร์จทุกมุม T2 13.0–94.5 s | 0.79–1.50, 0.49–1.62, 0.55–2.04; บางมุมลู่เข้า (เครื่องหมายเปลี่ยน) |
+| da40ng (ปีกต่ำ หาง T) | 76 KIAS (39.1 m/s) | 1.599, 0.220; 0.222; 116.1 | 0.93–1.39, 0.62–1.33, 0.67–1.57; ไดเวอร์จทุกมุม T2 25.9–166 s | 0.81–1.52, 0.47–1.60, 0.57–2.06; บางมุมลู่เข้า (เครื่องหมายเปลี่ยน) |
+| pc9m (turboprop ปีกต่ำ) | 95 KIAS (48.9 m/s) | 1.890, 0.187; 0.307; 29.4 | 0.93–1.40, 0.60–1.39, 0.69–1.52; ไดเวอร์จทุกมุม T2 14.2–33.1 s | 0.81–1.53, 0.47–1.72, 0.58–2.00; ไดเวอร์จทุกมุม T2 12.7–58.8 s |
+
+**แนวทาง tolerance** (leaf `common_light.methods.lateral_mode_tolerance` ใน §01.9 ปัดออกทีละ 0.05 ให้ครอบทั้งสามบัตร, ตรวจด้วย T-LM-31):
+
+| คลาส | Dutch roll ωn | Dutch roll ζ | roll mode τR | spiral |
+|---|---|---|---|---|
+| ตรวจแล้ว: ปีกสูงหรือปีกต่ำ หางธรรมดา ลูกสูบเครื่องเดียว (C172S, C172R, C152) | 0.90–1.45 | 0.60–1.40 | 0.65–1.60 | ไม่เทียบตัวเลข ใช้เกณฑ์ T2 ≥ 12 s เมื่อไดเวอร์จ (`validation.hqLimits.spiralT2min_catAC` ระดับ 1 ของรอบที่ 1 ตาม MIL-F-8785C Category C [R1:V7]) |
+| ยังไม่ตรวจ: หาง T, สองเครื่องยนต์, turboprop เครื่องเดียว (DA40, DA42, P2006T, PC-9M, PC-7 Mk II, T-6, trainer_r2) | 0.75–1.55 | 0.45–1.75 | 0.55–2.10 | เหมือนข้างบน และยอมรับ spiral ลู่เข้า |
+
+วิธีใช้: เมื่อการทดสอบเทียบโหมดของซิม (บัตรที่ใช้ derivative จาก `lm_derivs`) กับค่าอ้างอิงของเครื่องจริง $R$ (การบินทดสอบ หรือเกณฑ์ handling qualities) ให้ผ่านเมื่อ $R/\text{ค่าซิม}$ อยู่ในช่วงของคลาส ไม่ใช่ ±5–10 % แบบตามยาว ส่วนการทดสอบถดถอยที่เทียบซิมกับค่าที่บัตรเดียวกันคำนวณไว้ก่อนแล้ว ใช้ tolerance แคบตามเดิมได้ Cnδa ไม่ทดสอบเชิงตัวเลข และ Clδa ควรปรับจากอัตราม้วนใน POH หรือข้อมูลการบินเมื่อมี เมื่อบัตรใช้ derivative จากการบินทดสอบหรือโมเดลที่ตรวจแล้ว ช่วงนี้ไม่จำเป็น
+
+**ชุดตรวจที่ค้นเพิ่ม (ยังไม่ได้ใช้)**: (1) รายงานการบินทดสอบ PC-9/A ของหน่วยงานวิจัยด้านกลาโหมของออสเตรเลีย (หัวข้อ 03 และ 07 ค้นแล้ว ไม่มีฉบับที่เข้าถึงได้สาธารณะ); (2) NASA TN D-6946 [LM30] ลักษณะ lateral-directional ของเครื่องสองเครื่องยนต์ใบพัดขนาดเล็ก รวมผลกำลังเครื่อง เป็นงานรัฐบาลสหรัฐฯ ใช้ได้ แต่ค่าจากการบินอยู่ในกราฟเท่านั้น ข้อความที่อ่านได้ไม่มีตารางตัวเลข จึงยังไม่ใช้เป็นชุดตรวจ (งาน P3 §01.13: ถอดค่าจากกราฟแล้วคำนวณ `lm_tolerance` ใหม่); (3) derivative ของโมเดล FlightGear/JSBSim ไม่ใช่ข้อมูลการบิน ใช้ได้แค่เทียบระหว่างวิธีประมาณ (หัวข้อ 03, 07) ดังนั้นข้อ 17 ฝั่งหัวข้อนี้ทำได้บางส่วน: มีขอบเขต ช่วงความผิด และ tolerance แต่ยังไม่มีชุดตรวจของหาง T หรือ turboprop
 
 
 ## 01.4 moment of inertia จาก radius of gyration (lm_inertia)
@@ -624,6 +734,21 @@ FADEC: นักบินมีคันเดียวเป็น load % ร�
         "conf": "สูง",
         "est": false,
         "note": "ผลของ lm_card กับ fixture trainer_r1 (AC ของ commit cabf0f0) ตรงกับค่าที่รอบที่ 1 เผยแพร่ทุกค่า ใช้เป็น regression baseline ของเครื่องมือ; ความเร็วเป็น KEAS (ias ของซิม = EAS); scripts/lm_selftest.mjs T-LM-01..07"
+      },
+      "lateral_mode_tolerance": {
+        "v": {
+          "quantity": "อัตราส่วน ค่าจริง / ค่าของบัตร ของโหมดที่ approach เมื่อ derivative lateral-directional ของบัตรมาจาก lm_derivs",
+          "validated_class": {"classes": ["ปีกสูง หางธรรมดา ลูกสูบเดียว (คลาส C172)", "ปีกต่ำ หางธรรมดา ลูกสูบเดียว (คลาส Navion)"], "dr_wn": [0.90, 1.45], "dr_zeta": [0.60, 1.40], "tauR": [0.65, 1.60]},
+          "unvalidated_class": {"classes": ["หาง T", "สองเครื่องยนต์", "turboprop เครื่องเดียว"], "K_widen": 1.5, "dr_wn": [0.75, 1.55], "dr_zeta": [0.45, 1.75], "tauR": [0.55, 2.10]},
+          "spiral": "ไม่เทียบตัวเลข ใช้เกณฑ์ T2 ≥ 12 s เมื่อไดเวอร์จ (validation.hqLimits.spiralT2min_catAC L1 ของรอบที่ 1)",
+          "Cnda": "ไม่ทดสอบเชิงตัวเลข"
+        },
+        "u": "-",
+        "scope": "sim",
+        "src": ["LM0", "LM5", "LM9", "LM15", "R1:V7"],
+        "conf": "ต่ำ",
+        "est": true,
+        "note": "ค่าประมาณ: scripts/lm_tolerance.mjs คำนวณ Dutch roll, roll mode และ spiral ที่ approach ใหม่ในซิมวันนี้ที่มุมทั้ง 32 ของ {Cnβ, Cnr, Clp, Izz, Ixx} ตามช่วงความผิดของ lm_derivs (ตาราง 01.3-3) และ leave-one-out ของ inertia single_prop กับบัตร c172s, da40ng, pc9m แล้วปัดออกทีละ 0.05 ให้ครอบทั้งสามบัตร; คลาสนอกชุดตรวจขยายครึ่งช่วงความผิด 1.5 เท่า (ผู้เขียนเลือก) §01.3.4, T-LM-31"
       }
     }
   }
@@ -632,7 +757,7 @@ FADEC: นักบินมีคันเดียวเป็น load % ร�
 
 ## 01.10 กรณีทดสอบ
 
-ทุกกรณีรันอัตโนมัติด้วย `node docs/research/02-light-aircraft/scripts/lm_selftest.mjs` (exit 1 ถ้ามีข้อใดไม่ผ่าน, `--json` ให้ผลเป็น JSON) ใช้เวลาประมาณ 2 s ผลรันล่าสุด 2026-11-18 กับ commit cabf0f0 (หลังการตรวจทาน): **49/49 ผ่าน** (24 รหัส) ค่าคาดหวังทุกค่าคำนวณด้วย Node ในสคริปต์ที่ระบุ ไม่ได้กรอกเอง ค่าความเร็วของซิมเป็น KEAS เพราะ "ias" ของซิมคือ EAS ส่วนการทดสอบที่ใช้บัตรข้อมูลจริงเป็น KCAS
+ทุกกรณีรันอัตโนมัติด้วย `node docs/research/02-light-aircraft/scripts/lm_selftest.mjs` (exit 1 ถ้ามีข้อใดไม่ผ่าน, `--json` ให้ผลเป็น JSON) ใช้เวลาประมาณ 3 s ผลรันล่าสุด 2026-11-19 กับ commit cabf0f0 (หลังการแก้ตามการตรวจความครบถ้วน §01.15): **78/78 ผ่าน** (31 รหัส; ก่อนแก้ 49/49, 24 รหัส) ค่าคาดหวังทุกค่าคำนวณด้วย Node ในสคริปต์ที่ระบุ ไม่ได้กรอกเอง ค่าความเร็วของซิมเป็น KEAS เพราะ "ias" ของซิมคือ EAS ส่วนการทดสอบที่ใช้บัตรข้อมูลจริงเป็น KCAS
 
 | รหัส | เงื่อนไข | ปริมาณที่วัด | ผลคาดหวัง ± tolerance | ที่มา | โมเดลปัจจุบัน |
 |---|---|---|---|---|---|
@@ -660,6 +785,13 @@ FADEC: นักบินมีคันเดียวเป็น load % ร�
 | T-LM-22 | อ่านบล็อก `common_light.methods` จากรายงานนี้ด้วย `mergeDir` | จำนวนค่าที่ไม่ตรงค่าคงที่ในสคริปต์ (`RADII`, `DEFAULTS` ×2, `FUEL_DENSITY`, ค่าคงที่ lapse) | 0 ± 0 | [LM0] | 0 |
 | T-LM-23 | `lm_merge` เฉพาะ `common_light` ทั้งโฟลเดอร์ | ERRORS + CONFLICTS | 0 ± 0 | [LM0] | 0 |
 | T-LM-24 | (ก) `node lm_derivs.mjs trainer_r1` (fixture ไม่มี `airframe.tail.*`); (ข) `node lm_polar.mjs --selftest` จาก root ของ repo | (ก) exit code 1 และข้อความระบุ `airframe.tail.S_h`; (ข) L/D ร่อนแรงขับศูนย์ของ trainer_r1 ที่พิมพ์ออกมา | (ก) ผ่าน = 1 ± 0; (ข) 16.46 ± 0.05 | [LM0] [R1:V19] (เพิ่มในการตรวจทาน) | 1; 16.458 |
+| T-LM-25 | `buildAC` กับ (ก) fixture trainer_r1 ที่เก็บระยะเคลื่อนเป็น leaf `controls.surfaces.<s>` ค่า `v.travel_deg` (ข) บัตรสังเคราะห์ที่ใช้ path เดิม `controls.surfaces.<s>.travel_deg` (18/13/15/24°) (ค) บัตร c172s (ง) `v.travel_deg` เป็นตัวเลขเดียว 30 | deUp (ก); ผลรวม deUp + deDn + daMax + drMax (ข, ค); จำนวนฟิลด์ระยะเคลื่อนที่ trace ติดธง R1 (ค); ระยะซ้ายของ rudder (ง) | 22 ± 0°; 70 ± 0° และ 86.23 ± 0° (28 + 23 + 17.5 + 17.73 ตามบัตร 04); 0 ± 0; 30 ± 0° | [LM22] [R1:V19] §01.2.3 | 22; 70; 86.23; 0; 30 |
+| T-LM-26 | (ก) บัตรสังเคราะห์ `training_mass` = อ็อบเจกต์ D3 kg 2,100 (ข) `trainingMassKg` ของ fixture (ตัวเลข 2,250) + อ็อบเจกต์ D3 (2,100) + `empty_kg` จากคีย์แบบเก่า `BEW` 800 (ค) `node lm_inertia.mjs da40ng` | `AC.m` (ก); ผลรวม (ข); exit 0 และ m เท่ากับ kg ของบัตร (ค) | 2,100 ± 0 kg; 5,150 ± 0 kg; 1 ± 0 (จริง) | [LM0] D3 | 2,100; 5,150; 1 (m 1,150 kg) |
+| T-LM-27 | `coverageOf` กับบัตรสังเคราะห์ (ก) `_na ["*"]` และกรอก 1 path (ข) `_na ["gear.*"]` และกรอก 1 path | path ที่ขาด (ก); กรอก + `_na` (ก); path ที่ขาด (ข) | 0 ± 0; 384 ± 0; 315 ± 0 (path ต่อแบบนอก `gear.*` ลบ 1) | [LM0] D5 | 0; 384; 315 |
+| T-LM-28 | `mergeDir` ทั้งโฟลเดอร์ และ `loadType('trainer_r2')` | คำเตือน "_inherits not found" ของ trainer_r2; path ที่ขาดหลัง resolve; `aero.ref.S` (leaf ของ trainer_r2 เองต้องชนะ); `params-light` ไม่มี `trainer_r1` และมี `_meta.bases.trainer_r1` | 0 ± 0; 0 ± 0; 16.3 ± 0 m²; 1 ± 0 (จริง) | [R1:V19] §01.2.5 | 0; 0; 16.3; 1 |
+| T-LM-29 | `validate()` กับผลรวมสังเคราะห์ 4 id (xa, xb, xc, xd) + `common_light` ที่เขียนในสคริปต์ | จำนวน WARN ต่อการตรวจ: scope; est; est_conf; training_mass (100·xa + 10·xb + xc); vapp_vref (10·xa + xb); xfile_vapp (10·xa + xb); xfile_vapp ที่ note บอก "แก้มวล" (10·warn + info ของ xc); detent; จำนวนผลของ xd ที่มี `_na ["*"]` | 2; 2; 1; 103; 1; 12; 11; 2; 0 (ทุกค่า ± 0) | [LM0] D1 D3 D4 D6 §01.2.4 | ตรงทุกค่า |
+| T-LM-30 | `lm_merge.mjs --dry` บนโฟลเดอร์ชั่วคราวที่มีแต่ WARN | 10 × exit code ค่าเริ่มต้น + exit code กับ `--strict` | 1 ± 0 (คือ 0 และ 1) | [LM0] §01.2.4 | 1 |
+| T-LM-31 | `lm_tolerance.mjs` (32 มุม approach) กับบัตร c172s, da40ng, pc9m; leaf `common_light.methods.lateral_mode_tolerance` | (ก) อัตราส่วน DR ωn ของ c172s คลาสที่ตรวจแล้ว 10·min + max (ข) τR สูงสุดของ pc9m ขยาย 1.5 (ค) spiral ของ da40ng ขยาย 1.5 เปลี่ยนเครื่องหมายที่บางมุม (ง) จำนวนช่วงของบัตรที่อยู่นอก leaf | (ก) 10.37 ± 0.05 (min 0.90, max 1.37) (ข) 2.00 ± 0.05 (ค) 1 ± 0 (ง) 0 ± 0 | [LM5] [LM9] [LM0] §01.3.4 | 10.396; 1.999; 1; 0 |
 
 หมายเหตุ T-LM-12: tolerance กว้างโดยตั้งใจ จุดประสงค์คือจับการถดถอย (ถ้ามีใครแก้สูตรแล้วค่ามัธยฐานเกิน 35 % การทดสอบจะล้ม) ไม่ได้อ้างว่าความแม่นยำ 16 % ใช้ได้กับทุกแบบ T-LM-19 ถึง T-LM-21 ใช้บัตรตัวเลขสมมติ (`DEMO.demo_light` ใน `lm_legacy_fit.mjs`) เพื่อทดสอบเครื่องมือเท่านั้น ไม่ใช่ข้อมูลของเครื่องบินจริง เมื่อหัวข้อ 03–07 ทำบัตรของแบบจริงเสร็จแล้ว ควรเพิ่มกรณีแบบเดียวกันต่อแบบ (ดู §01.13)
 
@@ -686,12 +818,13 @@ FADEC: นักบินมีคันเดียวเป็น load % ร�
 3. **แฟลปเป็นตัวแปรเดียว f** ทำให้ CD ของขั้นกลางเป็น $C_{D,flap}f^{1.5}$ ตายตัว ตั้ง f ตามสัดส่วนแรงยกได้ V_SR ทุกขั้นตรง แต่ drag และ pitching moment ของขั้นกลางเป็นค่าประมาณ
 4. **ความเร็วในซิมเป็น EAS** POH ให้ KIAS ส่วน `lm_card` แปลง KIAS → KCAS ด้วย `speeds.ias_cas` แล้วถือว่า KCAS ≈ KEAS (ผิดไม่เกิน 0.13 kt ที่ ≤ 100 kt และ ≤ 10,000 ft; ที่ 200 kt ผิด 0.26 kt ที่ 3,000 ft และ 1.0 kt ที่ 10,000 ft ซึ่งเกี่ยวกับ cruise ของเครื่องฝึก turboprop)
 5. **ความเร็ว stall ใน POH** มักเป็นความเร็วต่ำสุดที่ CG หน้าสุด จึงต้องใช้ $n_z$ ที่ $V_{min}$ (ค่าประมาณ 0.95, ช่วง 0.90–1.00) และแก้ CG ช่วง $n_z$ อย่างเดียวทำให้ CLmax ไม่แน่นอน ±5 % และความเร็วใน POH ที่ปัดทีละ 1–2 kt เพิ่มอีกราว ±6 % ที่ 48 kt (ค่าประมาณ: $\Delta C_L/C_L = 2\Delta V/V$)
-6. **`lm_derivs` ปรับค่าคงที่กับข้อมูลเพียง 3 ชุด** (เครื่องปีกสูงคลาส C172 และ Navion ปีกต่ำ) ยังไม่มีชุดตรวจของหาง T (DA40, DA42) ปีกเรียวมาก หรือเครื่องฝึก turboprop จึงให้ความเชื่อมั่นไม่เกิน "กลาง" สำหรับตามยาว และ "ต่ำ" สำหรับ Cnβ, Cnr, Clδa, Cnδa และ rudder derivative
+6. **`lm_derivs` ปรับค่าคงที่กับข้อมูลเพียง 3 ชุด** (เครื่องปีกสูงคลาส C172 และ Navion ปีกต่ำ) ยังไม่มีชุดตรวจของหาง T (DA40, DA42) ปีกเรียวมาก หรือเครื่องฝึก turboprop จึงให้ความเชื่อมั่นไม่เกิน "กลาง" สำหรับตามยาว และ "ต่ำ" สำหรับ Cnβ, Cnr, Clδa, Cnδa และ rudder derivative ขอบเขตการตรวจ ช่วงความผิด และ tolerance ที่แนะนำสำหรับการทดสอบโหมด lateral-directional ของหาง T, สองเครื่องยนต์ และ turboprop อยู่ใน §01.3.4 (อัปเดต 19 พ.ย. 2026)
 7. **ข้อมูลอ้างอิงอ่านจาก OCR** ลำดับแถว lateral ของ TN D-6643 Table XI/XIII อนุมานจากการเทียบคอลัมน์อ้างอิงกับชุด Navion ที่ตำราใช้ [LM13], คอลัมน์ $C_L$ 0.6 ของ TM-80163 Table X อนุมานจากจำนวนตัวเลขในแถว (แถวที่มี 5 ตัวถือว่า 3 ตัวท้ายเป็นค่า fit ที่ $C_L$ 0.3/0.6/1.0) และ Iyy ของ TM-80163 อ่านจาก "lk80" เป็น 1,480 kg m² ส่วน Cmq + Cmα̇ จากการบินของ Navion (−24.6) มี Cmq ที่ถูกตรึงไว้ −6.5 ระหว่าง extract [LM9] ชุดตรวจจึงมีความเชื่อมั่นกลาง เอกสารของ Teper [LM26] มีหน้า Navion แต่ไม่มีชั้นข้อความ จึงไม่ได้ใช้
 8. **รัศมีไจเรชัน** ไม่ได้เปิดตารางใน Roskam Part V [LM15] เอง จึงหาย้อนจาก 7 ลำ (2 ลำวัดจริง 5 ลำจากโมเดล JSBSim ซึ่งไม่ระบุที่มาของ inertia) leave-one-out ผิดถึง 42 % (ส่วนใหญ่ Ixx) และกลุ่ม twin มีแค่ C310 ที่มีถังปลายปีก ไม่ควรใช้กับ DA42 โดยไม่ตรวจซ้ำ
 9. **ใบพัด** รูปทรงใบจริงของ McCauley และ MT ไม่เปิดเผย คอร์ดและหน้าตัดเป็นค่าประมาณ ปรับเทียบด้วยรอบสถิตจุดเดียว ข้อมูลของ NACA TR-640 [LM24] มีแต่กราฟ จึงไม่ได้ใช้ตรวจเชิงตัวเลข
 10. **เครื่องยนต์** Lycoming ไม่เผยแพร่ BSFC เป็นตัวเลข (SI 1094D [LM18] ให้แค่วิธี leaning) ตาราง FADEC ของ AE300 และความสูงวิกฤตของเทอร์โบยังไม่มีแหล่งสาธารณะ factsheet [LM19] ระบุว่าเป็นข้อมูลประกอบ ไม่ผูกพัน สูตร Gagg–Farrar อ้างจากแหล่งทุติยภูมิ [LM27] เพราะต้นฉบับ SAE ต้องซื้อ
 11. **AC 23-8C** (ส่วนเครื่อง turbojet) บอกว่าถ้าความเร็ว stall ที่ idle กับที่แรงขับศูนย์ต่างกันไม่เกิน 0.5 kt ถือว่าไม่มีนัยสำคัญ [LM1, p. 20] และเครื่องลูกสูบทดสอบ stall ที่ "engines idling with throttles closed" [LM1, p. 16] ส่วนซิมของรอบที่ 1 มี idle 0.045 ของแรงขับเต็ม ทำให้ L/D ต่างกันถึง 16.5 กับ 21.7 ซึ่งเกินผลของ idle ในเครื่องจริงมาก ค่า idle ของเครื่องลูกสูบในบัตรรอบที่ 2 จึงควรใกล้ 0 (legacy fit ใช้ 0)
+12. **การตรวจความสอดคล้อง (§01.2.4) อิง path ที่หัวข้อ 08 และ 09 ใช้วันนี้** (`ops.attitude_power.final.v.ias_kt`, `procedures.stabilised.v.Vapp`, ชื่อแฟลปใน `procedures.*`) ถ้าหัวข้อเหล่านั้นเปลี่ยน path ต้องแก้ `validate()` ด้วย การตรวจ `est` ดูแค่คำในภาษาไทย ("ประมาณ", "ค่าประมาณ") note ที่เขียนเป็นภาษาอังกฤษจึงไม่ถูกตรวจ และการตรวจทั้งหมดเป็น WARN จนกว่าจะเปิด `--strict` (อัปเดต 19 พ.ย. 2026)
 
 ## 01.12 แหล่งอ้างอิง
 
@@ -718,18 +851,29 @@ FADEC: นักบินมีคันเดียวเป็น load % ร�
 18. [LM18] Textron Lycoming, Service Instruction No. 1094D *Fuel Mixture Leaning Procedures*, 25 March 1994, https://www.lycoming.com/sites/default/files/attachments/Fuel%2520Mixture%2520Leaning%2520Procedures.pdf — ปฐมภูมิ (เอกสารผู้ผลิต) · © Lycoming · อ้างข้อเท็จจริงพร้อมหน้าได้ ไม่คัดลอกข้อความหรือขั้นตอน
 19. [LM19] Austro Engine / Diamond Aircraft, *AE300 (E4 series) factsheet*, พฤษภาคม 2024 ("illustrative, non-binding"), https://diamondaircraft.com/fileadmin/diamondaircraft/products/austro-engine/AE_E4_Series_Factsheet_screen.pdf — เอกสารผู้ผลิต · © Austro Engine / Diamond · อ้างตัวเลขพร้อมที่มาได้ ไม่คัดลอกเอกสารหรือรูป
 20. [LM20] Wikipedia/Wikiwand, "Austro Engine E4", เปิดอ่าน 2026-11-18, https://www.wikiwand.com/en/articles/Austro_Engine_E4 — ทุติยภูมิ · CC BY-SA 4.0 · อ้างตัวเลขได้ (อัตราทดเกียร์ 1:1.69, bore/stroke) ถ้าคัดลอกข้อความต้องให้เครดิตและใช้สัญญาเดียวกัน
-21. [LM21] EASA, Type-Certificate Data Sheet IM.E.032, Lycoming IO-360 series engines, Issue 03, 24 August 2022, https://www.easa.europa.eu/hr/downloads/7741/en (p. 6 ความจุ 5.916 dm³ 4 สูบ; p. 9 น้ำหนักแห้ง L2A 122 kg; p. 12 พิกัด L2A 119 kW/2,400 rpm และ alternate 134 kW/2,700 rpm) — ปฐมภูมิ · เอกสารสาธารณะของ EASA (เงื่อนไขการทำซ้ำยังไม่ได้ตรวจ) · อ้างข้อเท็จจริงพร้อมที่มาได้ ไม่คัดลอกทั้งฉบับ
-22. [LM22] EASA, Type-Certificate Data Sheet IM.A.051, Cessna 172 series, Issue 11, 17 November 2025, Section 2 (172S): C.5 เครื่องยนต์ IO-360-L2A 180 hp / 2,700 rpm และ C.6 ใบพัด McCauley 1A170E/JHA7660 75–76 in รอบสถิต 2,300–2,400 rpm (p. 18), C.21 ระยะเคลื่อนพื้นบังคับ (p. 20–21), https://www.easa.europa.eu/es/downloads/7423/en — ปฐมภูมิ · เหมือน [LM21] · อ้างข้อเท็จจริงพร้อมที่มาได้
+21. [LM21] EASA, Type-Certificate Data Sheet IM.E.032, Lycoming IO-360 series engines, Issue 03, 24 August 2022, https://www.easa.europa.eu/hr/downloads/7741/en (p. 6 ความจุ 5.916 dm³ 4 สูบ; p. 9 น้ำหนักแห้ง L2A 122 kg; p. 12 พิกัด L2A 119 kW/2,400 rpm และ alternate 134 kW/2,700 rpm) — ปฐมภูมิ · © EASA (ท้ายทุกหน้า "All rights reserved"); เว็บ EASA อนุญาตให้ทำซ้ำเมื่อระบุแหล่ง ยกเว้นที่ระบุเป็นอย่างอื่น ตรวจแล้ว 19 พ.ย. 2026 ดู §01.12.1 [LM29] · อ้างข้อเท็จจริงและตัวเลขพร้อมเลข TCDS ฉบับ วันที่ หน้า และลิงก์ได้ ไม่เผยแพร่ PDF ซ้ำ ไม่คัดลอกตารางทั้งตาราง
+22. [LM22] EASA, Type-Certificate Data Sheet IM.A.051, Cessna 172 series, Issue 11, 17 November 2025, Section 2 (172S): C.5 เครื่องยนต์ IO-360-L2A 180 hp / 2,700 rpm และ C.6 ใบพัด McCauley 1A170E/JHA7660 75–76 in รอบสถิต 2,300–2,400 rpm (p. 18), C.21 ระยะเคลื่อนพื้นบังคับ (p. 20–21), https://www.easa.europa.eu/es/downloads/7423/en — ปฐมภูมิ · © EASA ตาม §01.12.1 [LM29] · อ้างข้อเท็จจริงพร้อมที่มาได้ตาม §01.12.1
 23. [LM23] H. S. Fletcher, *Comparison of Several Methods for Estimating Low-Speed Stability Derivatives for Two Airplane Configurations*, NASA TN D-6531 (L-7914), 1971, https://ntrs.nasa.gov/api/citations/19720004247/downloads/19720004247.pdf (p. 7–11) — ปฐมภูมิ · NASA public domain ในสหรัฐฯ · อ้างและคัดลอกได้
 24. [LM24] E. P. Hartman, D. Biermann, *The Aerodynamic Characteristics of Full-Scale Propellers Having 2, 3, and 4 Blades of Clark Y and R.A.F. 6 Airfoil Sections*, NACA Report No. 640, 1938, https://ntrs.nasa.gov/api/citations/19930091715/downloads/19930091715.pdf — ปฐมภูมิ · NACA public domain ในสหรัฐฯ · คัดลอกข้อมูลและรูปได้พร้อมอ้างอิง (ข้อมูลอยู่ในกราฟ หัวข้อนี้ใช้แค่เป็นบริบท)
 25. [LM25] FAA, *Airplane Flying Handbook*, FAA-H-8083-3C, Chapter 9 "Approaches and Landings", p. 9-2 ถึง 9-3 (สำเนาบน FAASafety.gov), https://www.faasafety.gov/files/events/SO/SO15/2024/SO15134233/ApproachesAndLandings10_afh_ch9a.pdf — ปฐมภูมิ (คู่มือทางการ) · public domain · อ้างและคัดลอกได้
 26. [LM26] G. L. Teper (Systems Technology, Inc.), *Aircraft Stability and Control Data*, NASA CR-96008, April 1969 (สำเนาบนเว็บ JSBSim), https://jsbsim.sourceforge.net/NASA_CR-96008.pdf — ปฐมภูมิ (รายงานผู้รับจ้าง NASA) · เผยแพร่สาธารณะ สถานะลิขสิทธิ์ของรายงานผู้รับจ้างไม่ได้ระบุ · อ้างได้ (หน้า Navion ไม่มีชั้นข้อความ จึงไม่ได้ใช้ตัวเลข)
 27. [LM27] J. G. Leishman, *Introduction to Aerospace Flight Vehicles*, Embry-Riddle Aeronautical University (Eagle Pubs), บท "Reciprocating Engine & Propeller" eq. 12: $P_{alt}/P_{MSL} = 1.132\,\sigma - 0.132$ ("often used in practice") ซึ่งเท่ากับ $\sigma - (1-\sigma)/7.55$ ทางพีชคณิต, เปิดอ่าน 2026-11-18, https://eaglepubs.erau.edu/introductiontoaerospaceflightvehicles/chapter/reciprocating-engine-propeller/ — ตำราออนไลน์ (ทุติยภูมิ) · CC BY-NC-ND 4.0 · อ้างสูตรและตัวเลขพร้อมเครดิตได้ ห้ามคัดลอกเนื้อหาไปดัดแปลงหรือใช้เชิงพาณิชย์
-28. [LM28] EASA, Type-Certificate Data Sheet for Noise EASA.IM.A.022 (DA 40, DA 40 D, DA 40 F, DA 40 NG), Issue 2, 26 March 2025, p. 8–11 (DA 40 NG เครื่องยนต์ Austro Engine E4, ใบพัด MT-Propeller MTV-6-R/190-69), https://www.easa.europa.eu/et/downloads/44276/en — ปฐมภูมิ · เอกสารสาธารณะของ EASA · อ้างข้อเท็จจริงพร้อมที่มาได้ (TCDS หลัก EASA.A.022 ให้รายละเอียดใบพัดครบกว่า หัวข้อ 05 ควรเปิด)
+28. [LM28] EASA, Type-Certificate Data Sheet for Noise EASA.IM.A.022 (DA 40, DA 40 D, DA 40 F, DA 40 NG), Issue 2, 26 March 2025, p. 8–11 (DA 40 NG เครื่องยนต์ Austro Engine E4, ใบพัด MT-Propeller MTV-6-R/190-69), https://www.easa.europa.eu/et/downloads/44276/en — ปฐมภูมิ · © EASA (ท้ายหน้า "All rights reserved" และ "Proprietary document") ตาม §01.12.1 [LM29] · อ้างข้อเท็จจริงพร้อมที่มาได้ (TCDS หลัก EASA.A.022 ให้รายละเอียดใบพัดครบกว่า หัวข้อ 05 ควรเปิด)
+29. [LM29] EASA, "Copyright and disclaimer" (ประกาศลิขสิทธิ์ของเว็บไซต์ easa.europa.eu), เปิดอ่าน 2026-11-19, https://www.easa.europa.eu/en/copyright-disclaimer — ประกาศทางการของผู้ออกเอกสาร · © EASA · ใช้เป็นหลักฐานเงื่อนไขการทำซ้ำ (§01.12.1) ยกข้อความสั้นพร้อมแหล่งได้
+30. [LM30] C. H. Wolowicz, R. B. Yancey, *Lateral-Directional Aerodynamic Characteristics of Light, Twin-Engine, Propeller-Driven Airplanes*, NASA TN D-6946 (H-694), October 1972, https://ntrs.nasa.gov/citations/19730002289 — ปฐมภูมิ (รายงานวิจัยของ NASA) · งานของรัฐบาลสหรัฐฯ (NTRS: "Public Use Permitted") · อ้างและคัดลอกได้พร้อมอ้างอิง (ค่าจากการบินอยู่ในกราฟ ยังไม่ได้ใช้เป็นชุดตรวจ §01.3.4)
 
 อ้างข้ามรอบ (รหัสของรอบที่ 1 ในโฟลเดอร์ `docs/research/01-flight-physics/`):
 - [R1:V19] AirfieldLab `src/20-flight.js`, `src/10-atmo.js`, `test/*.mjs` (commit cabf0f0) และสคริปต์ของหัวข้อ 10-validation (`v10_perf.mjs`, `v10_modes.mjs` ฯลฯ) — โค้ดของโครงการเอง · ยังไม่มี LICENSE · ใช้ได้ทั้งหมด
 - [R1:P10] A. Ning, CCBlade.jl และบทความ "Using Blade Element Momentum Methods with Gradient-Based Design Optimization", Struct. Multidisc. Optim. 64(2), 2021, https://github.com/byuflowlab/CCBlade.jl — โค้ดเปิด/บทความ · MIT · พอร์ตอัลกอริทึมได้ ถ้าคัดลอกโค้ดต้องคง copyright notice (`lm_prop` เขียนใหม่ ไม่ได้คัดลอก)
+- [R1:V7] D. L. Peahl, F. Kolkailah, D. R. Sandlin, *A Survey of Handling Qualities Criteria and Their Applications to High Performance Aircraft*, NASA NCC2-338 (Cal Poly), 1986, https://ntrs.nasa.gov/api/citations/19860021266/downloads/19860021266.pdf (ตาราง MIL-F-8785C ที่รอบที่ 1 ใช้ตั้ง `validation.hqLimits.spiralT2min_catAC`) — ทุติยภูมิต่อสเปก · งานทุน NASA เผยแพร่ใน NTRS · อ้างได้
+
+### 01.12.1 เงื่อนไขการใช้ซ้ำเอกสาร EASA (TCDS, TCDSN): ข้อกำหนดเดียวของรอบที่ 2 (19 พ.ย. 2026)
+
+ตรวจครั้งเดียวสำหรับทุกหัวข้อ หัวข้อ 02, 05, 06, 07 และ 12 อ้างมาที่นี่แทนการเขียนสถานะเอง
+- ประกาศลิขสิทธิ์ของเว็บไซต์ EASA [LM29] ระบุว่าเนื้อหาเป็นลิขสิทธิ์ของ EASA และอนุญาตให้ทำซ้ำได้เมื่อระบุแหล่งที่มา ยกเว้นที่ระบุไว้เป็นอย่างอื่น ถ้าเอกสารใดต้องขออนุญาตก่อน การอนุญาตทั่วไปนี้ไม่ใช้กับเอกสารนั้น
+- ตัว TCDS มีข้อความท้ายทุกหน้าว่า "© European Union Aviation Safety Agency, <ปี>. All rights reserved." (เช่น IM.E.032 [LM21]) และฉบับใหม่บางฉบับเพิ่ม "Proprietary document. Copies are not controlled." (เช่น TCDSN IM.A.022 [LM28]) ข้อความนี้อ่านได้ว่าเป็นกรณี "ระบุไว้เป็นอย่างอื่น" จึงไม่ถือว่าได้รับอนุญาตให้ทำซ้ำทั้งฉบับ
+- **ข้อกำหนดของ AirfieldLab**: (1) อ้างข้อเท็จจริงและตัวเลข (มิติ น้ำหนัก ความเร็ว พิกัดเครื่องยนต์ ใบพัด ระยะเคลื่อนพื้นบังคับ) ได้ พร้อมเลข TCDS ฉบับ (Issue) วันที่ หน้าหรือข้อ และลิงก์ไปหน้า EASA เพราะข้อเท็จจริงไม่มีลิขสิทธิ์และการระบุแหล่งตรงตามเงื่อนไขของ [LM29]; (2) ยกข้อความสั้นได้ในเครื่องหมายคำพูดพร้อมแหล่ง; (3) ไม่เผยแพร่ PDF ของ TCDS ซ้ำใน repo หรือบนหน้าเว็บ ไม่คัดลอกตารางทั้งตารางหรือทั้งหน้า ให้ลิงก์แทน; (4) ในรายการแหล่งอ้างอิงใช้สถานะ "© EASA · อ้างข้อเท็จจริงพร้อมที่มาได้ตาม 01-methods §01.12.1"
+- ความเชื่อมั่นของข้อสรุปนี้: กลาง (อ่านจากประกาศของ EASA เอง ไม่ใช่ความเห็นทางกฎหมาย)
 
 ## 01.13 งานที่แนะนำสำหรับ Claude Code
 
@@ -737,17 +881,20 @@ FADEC: นักบินมีคันเดียวเป็น load % ร�
 
 | ลำดับ | งาน | รหัสทดสอบ |
 |---|---|---|
-| P1 · S | ย้ายโฟลเดอร์ `scripts/` นี้เข้า `docs/research/02-light-aircraft/scripts/` ตามเดิม (สคริปต์หา repo จาก `AIRFIELDLAB_ROOT` และหาไฟล์จากตำแหน่งตัวเองแล้ว) แล้วรัน `node docs/research/02-light-aircraft/scripts/lm_selftest.mjs` ต้องได้ 49/49 | T-LM-01…T-LM-24 |
+| P1 · S | ย้ายโฟลเดอร์ `scripts/` นี้เข้า `docs/research/02-light-aircraft/scripts/` ตามเดิม (สคริปต์หา repo จาก `AIRFIELDLAB_ROOT` และหาไฟล์จากตำแหน่งตัวเองแล้ว) แล้วรัน `node docs/research/02-light-aircraft/scripts/lm_selftest.mjs` ต้องได้ 78/78 | T-LM-01…T-LM-31 |
 | P1 · S | เพิ่มขั้น `lm_merge.mjs --dry` และ `lm_selftest.mjs` ใน workflow ของ GitHub Pages (หรือ workflow แยกสำหรับ `docs/research/**`) เพื่อจับบล็อก JSON ที่ผิดรูปแบบและการถดถอยของเครื่องมือ | T-LM-22, T-LM-23 |
 | P1 · M | เมื่อบัตรของแบบจริง (หัวข้อ 03–07) เสร็จ ทำ `test/types.test.mjs` ที่โหลดบัตรด้วย `loadType`, สร้าง `AC` ด้วย `buildAC`, ใส่ด้วย `applyAC` แล้ววัด V_SR, ROC, glide, ระยะวิ่งขึ้น และโหมด เทียบค่าคาดหวังของแต่ละหัวข้อ (รูปแบบเดียวกับ T-LM-02…07) | T-LM-02…T-LM-07 และรหัสของหัวข้อ 03–07 |
-| P1 · S | ปรับ `schema.md` ตอนรวมรอบที่ 2 เข้า repo: เพิ่ม `ind_friction` (และฟิลด์ `f`) ใน enum ของ `piston.altitude.model` และเพิ่มคำอธิบาย `common_light.methods.*` ทั้ง 13 leaf | T-LM-14, T-LM-22 |
+| P1 · S | เมื่อเจ้าของบัตรแก้ WARN ของ `lm_merge` ครบ (ตาราง 01.2-3; ครบแล้วเมื่อรันซ้ำ 19 พ.ย. 2026 ได้ 0 WARN) เปิด `--strict` ในขั้น CI ของงานข้อก่อนหน้า เพื่อไม่ให้ scope, est, training_mass, VREF/VAPP และชื่อ detent กลับมาไม่สอดคล้อง (เพิ่ม 19 พ.ย. 2026) | T-LM-29, T-LM-30 |
+| P1 · S | ตอนรวมเข้า repo ลบทางเลี่ยงระยะเคลื่อนพื้นบังคับในสคริปต์ของหัวข้อ 04, 06, 07, 10, 11, 12 (`travelFix`, `AC_R1`, `withTravel`, `patchTravel`) และตัวเลือก `--r1-travel` ผลต้องไม่เปลี่ยน (เพิ่ม 19 พ.ย. 2026) | T-LM-25 |
+| P1 · S | ใน `test/types.test.mjs` ใช้ช่วงอัตราส่วนของ `common_light.methods.lateral_mode_tolerance` เป็น tolerance ของ Dutch roll, roll mode และ spiral เมื่อเทียบกับค่าอ้างอิงของเครื่องจริง สำหรับบัตรที่ derivative มาจาก `lm_derivs` (เพิ่ม 19 พ.ย. 2026) | T-LM-31 |
+| P1 · S | ปรับ `schema.md` ตอนรวมรอบที่ 2 เข้า repo: เพิ่ม `ind_friction` (และฟิลด์ `f`) ใน enum ของ `piston.altitude.model` และเพิ่มคำอธิบาย `common_light.methods.*` ทั้ง 14 leaf | T-LM-14, T-LM-22 |
 | P1 · S | เขียน `lm_merge` ส่วนขยาย: ทุกรหัสใน `src` ต้องมีรายการในส่วนแหล่งอ้างอิงของไฟล์หัวข้อเจ้าของ (หรือเป็น `R1:` ที่มีจริง) | T-LM-23 (ขยาย) |
 | P2 · M | (แก้ฟิสิกส์) ใส่ density lapse ในแรงขับ: กำลังเครื่องลูกสูบตาม `piston.lapse` (ใช้ `ind_friction` เมื่อมี ISA deviation, `gagg_ferrar` เป็นค่าเริ่ม) ทดสอบใหม่: ROC ที่ 5,000 ft ต่ำกว่า SL และวันร้อน VTBD 35 °C กำลังเหลือ 0.93–0.96 | T-LM-14, T-LM-16 |
 | P2 · M | (แก้ฟิสิกส์) แยก polar ตามสภาวะแรงขับ หรือเพิ่ม slipstream ΔCL/ΔCD แบบง่าย เพื่อให้ legacy fit ได้ Vy ตรง POH โดยไม่ต้องใช้ η > 1 เกณฑ์: demo_light โหมด static Vy 74 ± 2 kt | T-LM-20 |
 | P2 · M | (แก้ฟิสิกส์) ให้ซิมรับตารางขั้นแฟลป (ΔCL, ΔCD, ΔCm, Δα_stall ต่อขั้น) แทน f ตัวเดียว แล้วให้ `buildAC` ส่งตารางนี้แทน `flap_map` | T-LM-19 |
 | P2 · L | (แก้ฟิสิกส์) ใบพัดตามรอบที่ 1 งาน propeller: สร้างตาราง CT/CP ต่อแบบด้วย `lm_prop.mjs` ตอน build (fixed pitch และ constant speed) แล้วซิมอ่านตารางแทน $T_0V_c/\sqrt{V^2+V_c^2}$ | T-LM-17, T-LM-18 |
 | P2 · S | ใช้ `inertiaFromRadii` กับ `common_light.methods.radii` เมื่อบัตรไม่มี inertia แล้วคำนวณ `AC.Iinv` ใหม่ตาม `src/20-flight.js:119–122` | T-LM-13 |
-| P3 · M | ปรับ `lm_derivs`: แก้ Clδa/Cnδa สำหรับ aileron แบบ Frise, ค่า η_h ของหาง T, และหาชุดตรวจเพิ่ม (เครื่องปีกต่ำหาง T หรือ turboprop) ก่อนใช้กับ DA40/DA42 | T-LM-10…T-LM-12 |
+| P3 · M | ปรับ `lm_derivs`: แก้ Clδa/Cnδa สำหรับ aileron แบบ Frise, ค่า η_h ของหาง T, และหาชุดตรวจเพิ่ม (เครื่องปีกต่ำหาง T หรือ turboprop) ก่อนใช้กับ DA40/DA42; ถอดค่าจากกราฟของ TN D-6946 [LM30] (สองเครื่องยนต์ลูกสูบ) เป็นชุดตรวจที่สามแล้วคำนวณ `lm_tolerance.mjs` ใหม่ | T-LM-10…T-LM-12, T-LM-31 |
 | P3 · S | เมื่อได้ข้อมูล FADEC ของ AE300 จาก AFM ที่เปิดเผยได้ แทนตาราง load → rpm สมมติใน `lm_engine.fadec` และเพิ่มกรณีทดสอบรอบที่ 60 % / 100 % | T-LM-15 |
 | P3 · S | หาตารางรัศมีไจเรชันของ Roskam Part V ฉบับจริงมาเทียบกับ `radii` ที่หาเอง ถ้าต่างเกิน 15 % ให้รายงานและเลือกค่าที่มีแหล่งปฐมภูมิ | T-LM-13 |
 | P3 · S | อ่าน Table IV, VII, X ของ TM-80163 จากภาพสแกนโดยตรง (ไม่ผ่าน OCR) เพื่อยืนยันคอลัมน์ $C_L$ 0.6 ของ Clp, Cnr, Cnδr, Clδa, Cnδa และยืนยันว่าพื้นบังคับตามยาวเป็น elevator หรือ stabilator แล้วแก้ `VALIDATION` ของ `lm_derivs.mjs` | T-LM-10…T-LM-12 |
@@ -802,3 +949,28 @@ FADEC: นักบินมีคันเดียวเป็น load % ร�
 13. แหล่งอ้างอิง: แก้ LM3, LM4, LM10 (Volume II และตัดชื่อหน่วยงานของกองทัพออกตามกติกาข้อมูลทหาร), LM12, LM15, LM17, LM21, LM22 (เลขหน้า), LM9/LM26 (เดือนปี) และเพิ่ม LM27, LM28; note ของ `lm_card_defaults` บอกวิธีประมาณครบ
 
 **ยังไม่ได้ตรวจหรือยังค้าง**: ตาราง X ของ TM-80163 อ่านผ่าน OCR เท่านั้น (คอลัมน์ของแถวที่มี 5 ตัวเลขเป็นการอนุมาน); สูตรและค่าคงที่ที่อ่านจากตำราที่มีลิขสิทธิ์ (Raymer Fig. 16.14 `KF_TABLE`, $K_i$, $K_n$, ตัวคูณ 1.55 ของ $A_{v,eff}$) ไม่ได้เปิดต้นฉบับ ตรวจได้เพียงความสมเหตุสมผลและพีชคณิต; ตารางรัศมีไจเรชันของ Roskam Part V ยังไม่ได้เทียบ; ยังไม่มีชุดตรวจของปีกต่ำหาง T หรือ turboprop สำหรับ `lm_derivs`
+
+## 01.15 บันทึกการแก้ตามการตรวจความครบถ้วน (19 พ.ย. 2026)
+
+การตรวจความครบถ้วนของรอบที่ 2 (รายการช่องว่าง 31 ข้อของการตรวจความครบถ้วน (ไฟล์ทำงาน ไม่อยู่ใน repo)) ส่งข้อบกพร่องให้หัวข้อนี้ 9 ข้อ พร้อมข้อตัดสิน D1–D6 ของผู้ประสานงาน ผลการแก้:
+
+| ข้อ | เรื่อง | สิ่งที่แก้ | สถานะ |
+|---|---|---|---|
+| 2 | `buildAC` อ่านระยะเคลื่อนพื้นบังคับผิด path ทุกบัตรบินด้วยระยะ R1; `lm_inertia` ล้มกับ `training_mass` แบบอ็อบเจกต์ | `travelOf` อ่าน leaf `controls.surfaces.<s>` ค่า `v.travel_deg` ก่อน path เดิม (D2); `trainingMassKg` ในทุกเครื่องมือ; fixture รูปแบบใหม่; ตาราง 01.2-1 ผลที่เปลี่ยน; T-LM-25, T-LM-26 | แก้แล้ว |
+| 5 (ฝั่งเครื่องมือ) | id ที่ไม่มีบัตรขึ้นว่าขาดครบ 384 path | `_na ["*"]` = ขาด 0 และข้ามการตรวจความเร็ว (D5) §01.2.5; T-LM-27 | แก้แล้ว (การใส่ `_na ["*"]` ใน pa28_180 และบัตรของ 6 id เป็นงานของหัวข้อ 03 และ 13) |
+| 10 | `trainer_r2` resolve ไม่ได้ | ฐาน resolve `trainer_r1` (fixture + leaf ต่อแบบของรอบที่ 1) ไม่คัดลอกลง `params-light.json`, `_meta.bases`, coverage แบบ resolve §01.2.5; T-LM-28 | แก้แล้ว |
+| 13 (ไฟล์นี้) | ไม่มีหน่วย SI คู่กับหน่วยการบิน | ใส่ m/s, m, kW, lbf ใน 01.0, 01.2.2 และส่วนที่เพิ่มใหม่ | แก้แล้ว |
+| 17 (ฝั่ง 01) | ขอบเขตการตรวจของ `lm_derivs` และ tolerance ของโหมด lateral-directional | §01.3.4, `lm_tolerance.mjs`, leaf `common_light.methods.lateral_mode_tolerance`, T-LM-31 | บางส่วน: ยังไม่มีชุดตรวจของหาง T หรือ turboprop ที่เข้าถึงได้ (PC-9/A ไม่เปิดเผย, TN D-6946 มีแต่กราฟ) |
+| 19 (ฝั่งเครื่องมือ) | `training_mass` หลายรูปแบบ | รูปแบบ D3 ใน schema-ext-r2 §5, `trainingMass`, การตรวจ `training_mass` §01.2.4 | แก้แล้ว (บัตรต้องแก้ตามตาราง 01.2-3) |
+| 20 | scope ไม่ตรงหมวด | การตรวจ `scope` (D4) | ตรวจแล้ว 402 WARN รอเจ้าของบัตรแก้ |
+| 24 | สถานะการใช้ซ้ำ TCDS ของ EASA ไม่ตรงกัน | §01.12.1, สถานะ LM21, LM22, LM28 และเพิ่ม LM29 | แก้แล้ว (02, 05, 06, 07, 12 ต้องอ้าง §01.12.1) |
+| 27 | `est` ไม่ตรงกับ note | การตรวจ `est` และ `est_conf` | ตรวจแล้ว 48 WARN รอเจ้าของบัตรแก้ |
+| D1, D6 | ความเร็ว approach และชื่อแฟลปข้ามไฟล์ | การตรวจ `speeds`, `vapp_vref`, `xfile_vapp`, `detent` | ตรวจแล้ว 44 WARN รอหัวข้อ 03, 05, 06, 07, 08, 09, 12, 13 แก้ |
+
+**ตัวเลขที่เปลี่ยนในไฟล์นี้**: `lm_selftest` 49/49 (24 รหัส) → 78/78 (31 รหัส); บล็อก `common_light.methods` 13 → 14 leaf (เพิ่ม `lateral_mode_tolerance`); ผลของ `lm_card` ต่อบัตรตามตาราง 01.2-1 (มุม elevator ตอนจบ stall และ $V_{min}$ ไม่เกิน 0.13 kt); ผลของ fixture `trainer_r1` ทุกค่าใน §01.2.2 และ T-LM-01…24 ไม่เปลี่ยน
+
+**ผลต่อสคริปต์ของหัวข้ออื่น** (รันซ้ำทุกสคริปต์ก่อนและหลังแก้ จาก root ของ repo): ข้อความผลของ `lc_tests`, `le_tests`, `lf_tests`, `ld_tests`, `lt_tests`, `lt_run`, `lt_oei`, `lt_review`, `lg_tests`, `lg_card`, `lp_check`, `lh_tests`, `lo_tests`, `ls_tests`, `lb_tests` เหมือนเดิมทุกตัวอักษร (ผ่าน 22/31, 28/35, 23/28, 30/37, 27/29, –, –, –, 17/24, –, –, 52/52, 30/30, 9/9, 10/10 เท่าเดิม); ไฟล์ผลที่เปลี่ยน: `out/ld_card_da40ng_m1310.json`, `ld_card_da40_180_m1200.json`, `ld_card_da40d_m1150.json` (ระยะเคลื่อนใน `ac`, ธง R1 ใน `trace` หาย, มุม elevator ตอนจบ stall −22 → −21/−18/−23°, $V_{min}$ ของ da40_180 −0.002 kt), `out/lf_card_unpatched.json` (ตอนนี้ใช้ระยะของบัตร c152 เท่ากับแบบ patched), `out/lt_card_da42*.json` (`r1defaults` ไม่มีฟิลด์ระยะเคลื่อนแล้ว) และ `travel.r1_rad` ใน `out/lc_tests.json`, `out/le_tests.json` (ตอนนี้เท่ากับระยะของบัตร); ทางเลี่ยงของ 04, 06, 07, 10, 11, 12 ให้ค่าเท่ากับไม่ใส่ รายละเอียดส่งให้เจ้าของหัวข้อแล้ว
+
+**ไฟล์ที่แก้**: `01-methods.md`; `scripts/lm_lib.mjs`, `lm_merge.mjs`, `lm_card.mjs`, `lm_inertia.mjs`, `lm_derivs.mjs`, `lm_selftest.mjs`, `lm_fixture_trainer_r1.mjs` (+ `.json`); ใหม่ `scripts/lm_tolerance.mjs`, `scripts/out/lm_tolerance.json`, `scripts/out/lm_fix_notes.md`; `_brief/schema-ext-r2.md` (D1, D2, D3, D4, D5, D6 และการตรวจ)
+
+**ยังค้าง**: ชุดตรวจ derivative ของหาง T หรือ turboprop; WARN ในตาราง 01.2-3 ต้องให้เจ้าของบัตรแก้ก่อนเปิด `--strict` (รันซ้ำ 19 พ.ย. 2026: 0 WARN แล้ว); การตรวจ `est` อ่านได้แค่ note ภาษาไทย

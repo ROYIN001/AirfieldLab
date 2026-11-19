@@ -127,7 +127,7 @@ export function compute() {
 
   // polars: flight-test (EWADE) and glide estimate
   const K_ft = 1 / (Math.PI * F.AR * F.ft.e_winglet), K_icas = 1 / (Math.PI * F.AR * F.icas.polarWinglet.e);
-  const Vbg_kcas = 82;   // best glide = VY 83 KIAS (AFM S3-56/57); −1 kt IAS→CAS (ค่าประมาณ จากแนวโน้ม VNO 135/134, VA 119/117)
+  const Vbg_kcas = 82;   // best glide 83 KIAS (AFM S3-56/57, called VY there; the card's VY is 80 from S4-7); −1 kt IAS→CAS (ค่าประมาณ จากแนวโน้ม VNO 135/134, VA 119/117)
   const CLbg = 2 * F.MTOW * G0 / (RHO0 * S * (Vbg_kcas * KT) ** 2);
   const CD_ft = F.ft.CD0 + K_ft * CLbg * CLbg, dCDidle = 0.008;   // two idling constant-speed props at fine pitch (ค่าประมาณ ±0.004)
   const E_aero = CLbg / CD_ft, E_idle = CLbg / (CD_ft + dCDidle);

@@ -48,7 +48,7 @@
    "VSR_eas": 66.672,
    "VSR_cas": 66.681,
    "Vmin_eas": 63.435,
-   "de_end_deg": -15.942,
+   "de_end_deg": -15,
    "ias0": 98
   },
   "stall_full": {
@@ -62,7 +62,7 @@
    "VSR_eas": 55.389,
    "VSR_cas": 55.394,
    "Vmin_eas": 52.814,
-   "de_end_deg": -19.094,
+   "de_end_deg": -15,
    "ias0": 81
   },
   "climb": {

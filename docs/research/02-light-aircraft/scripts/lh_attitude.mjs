@@ -1,134 +1,152 @@
 #!/usr/bin/env node
 // lh_attitude.mjs — AirfieldLab research round 2, topic 08 (LH): pitch-attitude estimates per flight phase.
 // ค่าประมาณ: theta = alpha_body + gamma, alpha_body = (CL_req - CL0[flap]) / CLalpha, CL_req = n m g cos(gamma) / (q S),
-// q = 0.5 rho V_TAS^2 (sea level ISA, rho 1.225 -> TAS = CAS). Ground effect, thrust-line lift and downwash lag ignored.
-// Aero inputs are a snapshot of the data cards (04-c172s, 05-da40, 06-da42, 07-turboprop) aero.static_long / aero.ref /
-// airframe.weights as merged on 2026-11-18; speeds and flight-path angles come from the operating sources [LH..] listed
-// per phase. Output: scripts/out/lh_attitude.json and a table on stdout. Pure Node >= 18, no dependencies.
+// q = 0.5 rho V_CAS^2 (sea level ISA, rho 1.225 -> TAS = CAS). Thrust-line lift, elevator trim lift and downwash lag ignored.
+// Touchdown / flare (gap 8, 19 Nov 2026): CL_req at 1.05 V_S0 of the training mass (CL = CLmax_LDG / 1.05^2) in ground
+// effect, round-1 model 01-flight-physics §2.4 [R1:U7]: sigma = exp(-2.48 (2h/b)^0.768) with h = height of the MAC
+// quarter-chord above the runway when the main wheels touch, and CL_w = CL_OGE(alpha) / (1 - sigma CLa_w / (pi A)).
+// Inputs (19 Nov 2026, gap 9): every number comes from the data cards through lm_lib.loadType (aero.ref.S/b,
+// aero.static_long.CL0/CLalpha/CLmax_target, speeds.ias_cas, airframe.weights.training_mass, interference.groundEffect,
+// gear.geometry.main_contact_body_extended), so c152 uses its own card (no longer the c172s values). Speeds per phase
+// come from the operating sources [LH..] (rows in PHASES); the final-approach speed of every type is the card's
+// speeds.VAPP_kt (decision D1). Output: scripts/out/lh_attitude.json and a table on stdout. Pure Node >= 18.
 //   node lh_attitude.mjs            (run from anywhere; writes next to this script in out/)
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadType, mergeDir, val, leaf, isObj, trainingMassKg } from './lm_lib.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const G0 = 9.80665, RHO0 = 1.225, KT = 0.514444, FPM = 0.00508, DEG = Math.PI / 180;
+const G0 = 9.80665, RHO0 = 1.225, KT = 0.514444, FPM = 0.00508, DEG = Math.PI / 180, FT = 0.3048;
 
-// ---- aero snapshot (card path in comment) ----
-export const TYPES = {
-  c172s: { // 04-c172s.md: aero.ref.S, aero.static_long.CL0/CLalpha, speeds.ias_cas, airframe.weights.training_mass
-    S: 16.165, CLa: 5.17, CL0: { 0: 0.25, 10: 0.367, 20: 0.503, 30: 0.571 }, mass: 1009.6,
-    iasCas: { 0: [[50, 56], [60, 62], [70, 70], [80, 78], [90, 87], [100, 97], [110, 107], [120, 117]],
-      10: [[40, 51], [50, 57], [60, 63], [70, 71], [80, 80], [90, 89]], 20: [[40, 50.5], [50, 56.5], [60, 63], [70, 71.5], [80, 80.5], [85, 85.5]],
-      30: [[40, 50], [50, 56], [60, 63], [70, 72], [80, 81], [85, 86]] },
-    VS0cas: 48,
-  },
-  da40ng: { // 05-da40.md
-    S: 13.244, CLa: 5.45, CL0: { UP: 0.34, TO: 0.86, LDG: 1.09 }, mass: 1150,
-    iasCas: { UP: [[60, 58.6], [66, 64.6], [99, 99], [172, 172]], TO: [[56, 54.7], [62, 60.7], [93, 93], [110, 110]], LDG: [[54, 52], [60, 58], [90, 90], [98, 98]] },
-    VS0cas: 55,
-  },
-  da42ng: { // 06-da42.md
-    S: 16.29, CLa: 5.511, CL0: { UP: 0.35, APP: 0.65, LDG: 0.95 }, mass: 1750,
-    iasCas: { UP: [[68, 67], [76, 75], [151, 155], [188, 192]], APP: [[65, 65], [133, 135]], LDG: [[62, 60], [64, 62], [113, 110]] },
-    VS0cas: 58,
-  },
-  t6a: { // 07-turboprop-trainers.md (IAS ~ CAS assumed: no public calibration table)
-    S: 16.28, CLa: 4.988, CL0: { UP: 0.25, TO: 0.55, LDG: 0.8 }, mass: 2574.6, iasCas: null, VS0cas: 77.3,
-  },
-  pc9m: { S: 16.29, CLa: 4.987, CL0: { UP: 0.25, TO: 0.55, LDG: 0.8 }, mass: 2123.8, iasCas: null, VS0cas: 69 },
-  pc7mk2: { S: 16.6, CLa: 4.987, CL0: { UP: 0.25, TO: 0.55, LDG: 0.8 }, mass: 2068.8, iasCas: null, VS0cas: 67 },
+// ---- card-driven aero (gap 9) ----
+export const CARD_IDS = ['c172s', 'c172r', 'c152', 'da40ng', 'da40_180', 'da40d', 'da42ng', 'da42_tae125', 'da42_vi',
+  't6a', 't6c', 'pc9m', 'pc7mk2', 'p2006t'];
+let _merged = null;
+const merged = () => (_merged ??= mergeDir(path.join(HERE, '..'), { checks: false, bases: false }).merged);
+export const card = id => loadType(id, { merged: merged() });
+
+const lin = (tab, x) => {                       // piecewise-linear inside the table; outside it the IAS-CAS offset of the end row is held
+  if (!tab || tab.length < 2) return x;
+  if (x <= tab[0][0]) return x + (tab[0][1] - tab[0][0]);
+  if (x >= tab[tab.length - 1][0]) { const [xe, ye] = tab[tab.length - 1]; return x + (ye - xe); }
+  let i = 0; while (i < tab.length - 2 && x > tab[i + 1][0]) i++;
+  const [x0, y0] = tab[i], [x1, y1] = tab[i + 1]; return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
 };
+/** type object from a card: {S, b, A, CLa, CLaW, CL0{det}, CLmax{det}, mass, dets[{name,deg}], ias2cas(det,kt), cas2ias(det,kt), landFlap, ge{xm,zm,xmac,zmac}} */
+export function typeFromCard(id, c = card(id)) {
+  const dets = (val(c, 'aero.flaps.detents') || []).map(d => ({ name: String(d.name), deg: +d.flap_deg })).sort((a, b) => a.deg - b.deg);
+  const S = val(c, 'aero.ref.S'), b = val(c, 'aero.ref.b'), CLa = val(c, 'aero.static_long.CLalpha');
+  const CL0 = val(c, 'aero.static_long.CL0'), CLmax = val(c, 'aero.static_long.CLmax_target');
+  const tab = val(c, 'speeds.ias_cas');
+  const tabFor = det => {                       // IAS->CAS rows for a detent; nearest detent by flap angle when absent
+    if (!isObj(tab)) return null;
+    const keys = Object.keys(tab).filter(k => Array.isArray(tab[k]));
+    if (!keys.length) return null;
+    if (keys.includes(String(det))) return tab[String(det)].slice().sort((p, q) => p[0] - q[0]);
+    const degOf = n => dets.find(d => d.name === n)?.deg ?? 0, want = degOf(String(det));
+    const k = keys.slice().sort((p, q) => Math.abs(degOf(p) - want) - Math.abs(degOf(q) - want))[0];
+    return tab[k].slice().sort((p, q) => p[0] - q[0]);
+  };
+  const ias2cas = (det, kt) => lin(tabFor(det), kt);
+  const cas2ias = (det, kt) => { const t = tabFor(det); return t ? lin(t.map(([x, y]) => [y, x]), kt) : kt; };
+  const ge = val(c, 'interference.groundEffect.rMac'), mc = val(c, 'gear.geometry.main_contact_body_extended');
+  const A = val(c, 'interference.groundEffect.A') ?? (b && S ? b * b / S : null);
+  return { id, S, b, A, CLa, CLaW: val(c, 'interference.groundEffect.CLa_w') ?? CLa, CL0, CLmax, mass: trainingMassKg(c), dets,
+    landFlap: dets.length ? dets[dets.length - 1].name : null, ias2cas, cas2ias,
+    ge: Array.isArray(ge) && Array.isArray(mc) ? { xmac: ge[0], zmac: ge[2], xm: mc[0][0], zm: mc[0][2] } : null,
+    unitVAPP: leaf(c, 'speeds.VAPP_kt')?.u, VAPP: val(c, 'speeds.VAPP_kt'), VREF: val(c, 'speeds.VREF_kt') };
+}
+export const TYPES = Object.fromEntries(CARD_IDS.map(id => [id, typeFromCard(id)]));
 
-// ---- phases: [phase, KIAS, flap, gamma source: {fpm} or {deg}, power text, source codes] ----
-// KIAS / power / flap come from operating documents; rate_fpm marked est where it is ours.
+// ---- phases: [phase, KIAS, flap detent name (card, D6), gamma {fpm}|{deg}, power text, source codes] ----
+// KIAS / power / flap come from operating documents (lh_json.mjs rows give the sources); 'VAPP' = card speeds.VAPP_kt (D1).
+const c172 = (vr, vy, roc, ga, gaFlap) => [
+  ['rotation', vr, '0', { fpm: 0 }], ['initial_climb', vy, '0', { fpm: roc }], ['cruise_climb', 80, '0', { fpm: 600, est: true }],
+  ['cruise', 105, '0', { fpm: 0 }], ['descent', 100, '0', { fpm: -500, est: true }], ['downwind', 90, '0', { fpm: 0 }],
+  ['base', 75, '20', { fpm: -500, est: true }], ['final', 'VAPP', '30', { deg: -3 }], ['go_around', ga, gaFlap, { fpm: 300, est: true }]];
 export const PHASES = {
-  c172s: [
-    ['rotation', 55, 0, { fpm: 0 }, 'เต็ม (2,300–2,400 rpm static)', 'LH11 LH8; rpm LC'],
-    ['initial_climb', 74, 0, { fpm: 730 }, 'เต็ม', 'LH11; ROC 730 fpm MTOW SL (04-c172s)'],
-    ['cruise_climb', 80, 0, { fpm: 600, est: true }, 'เต็ม/2,500 rpm', 'LH11 (70–85 KIAS)'],
-    ['cruise', 105, 0, { fpm: 0 }, '2,200–2,500 rpm (55–75 %)', 'LH12 (60–80 %)'],
-    ['descent', 100, 0, { fpm: -500, est: true }, '≈2,000 rpm', 'LH9 est'],
-    ['downwind', 90, 0, { fpm: 0 }, '2,000–2,200 rpm', 'LH11 LH9'],
-    ['base', 75, 20, { fpm: -500, est: true }, '≈1,500 rpm', 'LH11 LH8'],
-    ['final', 65, 30, { deg: -3 }, '≈1,500 rpm → idle ที่ TD', 'LH11 LH9 LH1'],
-    ['touchdown', null, 30, { deg: -0.5 }, 'idle', 'LH1 (power-off stall attitude)'],
-    ['go_around', 60, 20, { fpm: 300, est: true }, 'เต็ม', 'LH11 LH12'],
-  ],
-  da40ng: [
-    ['rotation', 60, 'TO', { fpm: 0 }, 'MAX 100 % load', 'LH17 (VR 58–61 ที่ 1,000–1,100 kg)'],
-    ['initial_climb', 72, 'TO', { fpm: 650 }, 'MAX 100 %', 'LH17; ROC 651 fpm MTOM (05-da40)'],
-    ['cruise_climb', 88, 'UP', { fpm: 500, est: true }, '≈92 % (sim SOP)', 'LH17 LH18'],
-    ['cruise', 115, 'UP', { fpm: 0 }, '60–75 % load', 'LD cruise_table est'],
-    ['descent', 110, 'UP', { fpm: -500, est: true }, '≈35–45 %', 'est'],
-    ['downwind', 90, 'UP', { fpm: 0 }, '30–40 %', 'LH18 (sim SOP, ต่ำ)'],
-    ['base', 80, 'TO', { fpm: -500, est: true }, '≈25–30 %', 'est'],
-    ['final', 74, 'LDG', { deg: -3 }, '≈20–30 % → idle', 'LH17 (VREF LDG 72–76)'],
-    ['touchdown', null, 'LDG', { deg: -0.5 }, 'idle', 'LH1'],
-    ['go_around', 72, 'TO', { fpm: 400, est: true }, 'MAX', 'LH17 (min GA 72 flaps T/O)'],
-  ],
-  da42ng: [
-    ['rotation', 76, 'UP', { fpm: 0 }, 'MAX 2×100 %', '06-da42 VR'],
-    ['initial_climb', 90, 'UP', { fpm: 1100 }, 'MAX', '06-da42 VY; ROC 1,180 MTOM'],
-    ['cruise_climb', 100, 'UP', { fpm: 900, est: true }, '≈92 %', 'LH29 (L360: 100 KIAS)'],
-    ['cruise', 140, 'UP', { fpm: 0 }, '60–75 %', '06-da42 cruise_table est'],
-    ['descent', 130, 'UP', { fpm: -500 }, '≈35–40 %', 'LH29 (130–140 KIAS 500 fpm)'],
-    ['downwind', 100, 'UP', { fpm: 0 }, '≈35 %', 'LH29 est'],
-    ['base', 95, 'APP', { fpm: -500, est: true }, '≈25–30 % ล้อลง', 'LH29'],
-    ['final', 84, 'LDG', { deg: -3 }, '≈20–30 %', '06-da42 VREF (LT9)'],
-    ['touchdown', null, 'LDG', { deg: -0.5 }, 'idle', 'LH1'],
-    ['go_around', 90, 'APP', { fpm: 500, est: true }, 'MAX', 'LH29'],
-  ],
-  t6a: [
-    ['rotation', 85, 'TO', { fpm: 0 }, 'MAX', 'LH14 (7–10° NH) LH15'],
-    ['initial_climb', 140, 'UP', { fpm: 3000, est: true }, 'MAX', 'LH14 (tech climb 140 KIAS 15° NH)'],
-    ['cruise_climb', 160, 'UP', { fpm: 2500, est: true }, 'MAX', 'LH14 (160 KIAS 12.5° NH)'],
-    ['cruise', 200, 'UP', { fpm: 0 }, '≈50 % + 1 %/1,000 ft', 'LH14'],
-    ['descent', 200, 'UP', { fpm: -1500, est: true }, '≈10–20 %', 'LH15 est'],
-    ['downwind', 120, 'UP', { fpm: 0 }, '≈31 %', 'LH15'],
-    ['base', 110, 'LDG', { fpm: -800, est: true }, '≈15 % (abeam)', 'LH15 (90 position 110–120 KIAS)'],
-    ['final', 100, 'LDG', { deg: -3 }, 'ตามต้อง (on-speed AOA)', 'LH15'],
-    ['touchdown', null, 'LDG', { deg: -0.5 }, 'idle (flare 5–10 ft)', 'LH15'],
-    ['go_around', 110, 'TO', { fpm: 1500, est: true }, 'MAX', 'LH15 est'],
-  ],
+  c172s: c172(55, 74, 730, 60, '20'),
+  c172r: c172(55, 79, 720, 55, '20'),
+  c152: [['rotation', 50, '0', { fpm: 0 }], ['initial_climb', 67, '0', { fpm: 715 }], ['cruise_climb', 75, '0', { fpm: 500, est: true }],
+    ['cruise', 95, '0', { fpm: 0 }], ['descent', 85, '0', { fpm: -500, est: true }], ['downwind', 80, '0', { fpm: 0 }],
+    ['base', 65, '20', { fpm: -500, est: true }], ['final', 'VAPP', '30', { deg: -3 }], ['go_around', 55, '20', { fpm: 200, est: true }]],
+  da40ng: [['rotation', 63, 'T/O', { fpm: 0 }], ['initial_climb', 72, 'T/O', { fpm: 650 }], ['cruise_climb', 88, 'UP', { fpm: 500, est: true }],
+    ['cruise', 115, 'UP', { fpm: 0 }], ['descent', 110, 'UP', { fpm: -500, est: true }], ['downwind', 90, 'UP', { fpm: 0 }],
+    ['base', 80, 'T/O', { fpm: -500, est: true }], ['final', 'VAPP', 'LDG', { deg: -3 }], ['go_around', 72, 'T/O', { fpm: 400, est: true }]],
+  da40_180: [['rotation', 59, 'T/O', { fpm: 0 }], ['initial_climb', 62, 'T/O', { fpm: 780 }], ['cruise_climb', 70, 'UP', { fpm: 600, est: true }],
+    ['cruise', 110, 'UP', { fpm: 0 }], ['descent', 105, 'UP', { fpm: -500, est: true }], ['downwind', 85, 'UP', { fpm: 0 }],
+    ['base', 75, 'T/O', { fpm: -500, est: true }], ['final', 'VAPP', 'LDG', { deg: -3 }], ['go_around', 62, 'T/O', { fpm: 400, est: true }]],
+  da40d: [['rotation', 59, 'T/O', { fpm: 0 }], ['initial_climb', 62, 'T/O', { fpm: 550 }], ['cruise_climb', 70, 'UP', { fpm: 450, est: true }],
+    ['cruise', 105, 'UP', { fpm: 0 }], ['descent', 100, 'UP', { fpm: -500, est: true }], ['downwind', 85, 'UP', { fpm: 0 }],
+    ['base', 75, 'T/O', { fpm: -500, est: true }], ['final', 'VAPP', 'LDG', { deg: -3 }], ['go_around', 62, 'T/O', { fpm: 300, est: true }]],
+  da42ng: [['rotation', 76, 'UP', { fpm: 0 }], ['initial_climb', 90, 'UP', { fpm: 1100 }], ['cruise_climb', 100, 'UP', { fpm: 900, est: true }],
+    ['cruise', 140, 'UP', { fpm: 0 }], ['descent', 130, 'UP', { fpm: -500 }], ['downwind', 100, 'UP', { fpm: 0 }],
+    ['base', 95, 'APP', { fpm: -500, est: true }], ['final', 'VAPP', 'LDG', { deg: -3 }], ['go_around', 90, 'APP', { fpm: 500, est: true }]],
+  da42_tae125: [['rotation', 70, 'UP', { fpm: 0 }], ['initial_climb', 77, 'UP', { fpm: 1060 }], ['cruise_climb', 90, 'UP', { fpm: 800, est: true }],
+    ['cruise', 125, 'UP', { fpm: 0 }], ['descent', 120, 'UP', { fpm: -500, est: true }], ['downwind', 100, 'UP', { fpm: 0 }],
+    ['base', 90, 'APP', { fpm: -500, est: true }], ['final', 'VAPP', 'LDG', { deg: -3 }], ['go_around', 82, 'APP', { fpm: 400, est: true }]],
+  t6a: [['rotation', 85, 'TO', { fpm: 0 }], ['initial_climb', 140, 'UP', { fpm: 3000, est: true }], ['cruise_climb', 160, 'UP', { fpm: 2500, est: true }],
+    ['cruise', 200, 'UP', { fpm: 0 }], ['descent', 200, 'UP', { fpm: -1500, est: true }], ['downwind', 120, 'UP', { fpm: 0 }],
+    ['base', 110, 'LDG', { fpm: -800, est: true }], ['final', 'VAPP', 'LDG', { deg: -3 }], ['go_around', 110, 'TO', { fpm: 1500, est: true }]],
+  p2006t: [['rotation', 64, 'T/O', { fpm: 0 }], ['initial_climb', 80, 'UP', { fpm: 1105 }], ['cruise_climb', 90, 'UP', { fpm: 800, est: true }],
+    ['cruise', 135, 'UP', { fpm: 0 }], ['descent', 110, 'UP', { fpm: -500, est: true }], ['downwind', 90, 'T/O', { fpm: 0 }],
+    ['base', 80, 'T/O', { fpm: -500, est: true }], ['final', 'VAPP', 'FULL', { deg: -3 }], ['go_around', 70, 'T/O', { fpm: 400, est: true }]],
 };
-// C172R (review 2026-11-18): same airframe/flaps as the 172S, so the 172S aero snapshot and training mass are reused
-// (ค่าประมาณ); speeds from the 172R Information Manual [LH12 p.ii, 4-5, 4-17]: Vy SL 79 KIAS, ROC 720 fpm at 2,450 lb,
-// enroute climb 75–85 KIAS, balked landing 55 KIAS flaps 20.
-TYPES.c172r = { ...TYPES.c172s };
-PHASES.c172r = PHASES.c172s.map(r => {
-  if (r[0] === 'initial_climb') return ['initial_climb', 79, 0, { fpm: 720 }, 'เต็ม', 'LH12 p.4-5 (Vy SL 79); ROC 720 fpm p.ii'];
-  if (r[0] === 'go_around') return ['go_around', 55, 20, { fpm: 300, est: true }, 'เต็ม', 'LH12 p.4-5, 4-17 (balked landing 55 KIAS flaps 20)'];
-  return r;
-});
-// PC-9 M and PC-7 MkII: T-6 class technique with low-speed phases scaled by VS0 ratio (ค่าประมาณ)
+// T-6C: same technique and speeds as the T-6A except the mass-scaled approach (card VAPP 104) — 07 [LP27]
+PHASES.t6c = PHASES.t6a.map(r => r.slice());
+// PC-9 M and PC-7 MkII: T-6 class technique; rotation = card VR_kt, initial climb = card VY_kt (07, both ค่าประมาณ),
+// downwind/base/go-around scaled by the VS0 ratio (ค่าประมาณ), final = card VAPP
+export const VS0_RATIO = { pc9m: 69 / 77.3, pc7mk2: 67 / 77.3 };   // VS0 KCAS of the PC cards / T-6A VS0 77.3 KCAS (07, first edition) — kept fixed
+const PC_CARD = { pc9m: { vr: 78, vy: 136, roc: 3000 }, pc7mk2: { vr: 76, vy: 136, roc: 2500 } };   // 07 cards speeds.VR_kt / VY_kt; climb rate below the card ROC (est)
 for (const id of ['pc9m', 'pc7mk2']) {
-  const k = TYPES[id].VS0cas / TYPES.t6a.VS0cas;
-  PHASES[id] = PHASES.t6a.map(([ph, v, fl, g, pw, src]) => {
-    const low = ['rotation', 'downwind', 'base', 'final', 'go_around'].includes(ph);
-    return [ph, v == null ? null : Math.round(low ? v * k : v), fl, g, pw + ' (คลาส T-6)', `scaled T-6 ×${k.toFixed(3)} (est) ${src}`];
+  const k = VS0_RATIO[id], pc = PC_CARD[id];
+  PHASES[id] = PHASES.t6a.map(([ph, v, fl, g]) => {
+    if (ph === 'rotation') return [ph, pc.vr, fl, g];
+    if (ph === 'initial_climb') return [ph, pc.vy, fl, { fpm: pc.roc, est: true }];
+    const low = ['downwind', 'base', 'go_around'].includes(ph);
+    return [ph, v === 'VAPP' ? v : Math.round(low ? v * k : v), fl, g];
   });
 }
+PHASES.da42_vi = PHASES.da42ng.map(r => r.slice());
 
-export function interp(tab, x) {
-  if (!tab) return x;
-  if (x <= tab[0][0]) return tab[0][1] + (x - tab[0][0]) * (tab[1][1] - tab[0][1]) / (tab[1][0] - tab[0][0]);
-  for (let i = 1; i < tab.length; i++) if (x <= tab[i][0]) {
-    const [x0, y0] = tab[i - 1], [x1, y1] = tab[i]; return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
-  }
-  const n = tab.length; return tab[n - 1][1] + (x - tab[n - 1][0]) * (tab[n - 1][1] - tab[n - 2][1]) / (tab[n - 1][0] - tab[n - 2][0]);
-}
-export function iasToCas(t, flap, ias) { return t.iasCas ? interp(t.iasCas[flap] || t.iasCas[Object.keys(t.iasCas)[0]], ias) : ias; }
+export function interp(tab, x) { return lin(tab, x); }
+export function iasToCas(t, flap, ias) { return t.ias2cas(flap, ias); }
 
-/** steady flight: alpha_body (deg) and theta (deg) at CAS (kt), flap key, gamma (rad), load factor n */
-export function attitude(t, flap, vcas, gamma, n = 1) {
+/** steady flight: alpha_body (deg) and theta (deg) at CAS (kt), flap key, gamma (rad), load factor n, ground-effect sigma */
+export function attitude(t, flap, vcas, gamma, n = 1, sigma = 0) {
   const V = vcas * KT, q = 0.5 * RHO0 * V * V;
   const CL = n * t.mass * G0 * Math.cos(gamma) / (q * t.S);
-  const a = (CL - t.CL0[flap]) / t.CLa;
+  const kGE = 1 - sigma * (t.CLaW ?? t.CLa) / (Math.PI * (t.A ?? 7));       // round-1 §2.4: CL_w = CL_OGE / kGE
+  const a = (CL * kGE - t.CL0[flap]) / t.CLa;
   return { CL, alpha: a / DEG, theta: (a + gamma) / DEG };
+}
+/** ground-effect sigma (round-1 §2.4, Tani/Torenbeek) for MAC height h (m) and span b (m) */
+export const sigmaGE = (h, b) => Math.exp(-2.48 * Math.pow(Math.max(2 * h / b, 0.02), 0.768));
+/** MAC quarter-chord height above the runway when the main wheels touch at pitch theta (rad) */
+export function hMac(t, theta) {
+  if (!t.ge) return null;
+  const { xm, zm, xmac, zmac } = t.ge, c = Math.cos(theta), s = Math.sin(theta);
+  return (zm * c - xm * s) - (zmac * c - xmac * s);
+}
+/** 1-g stall speed (KCAS) of the training mass at a detent, from the card's CLmax_target (SL ISA) */
+export function vsCas(t, flap) {
+  const cl = isObj(t.CLmax) ? t.CLmax[flap] : null;
+  return cl ? Math.sqrt(2 * t.mass * G0 / (RHO0 * t.S * cl)) / KT : null;
+}
+/** touchdown (end of flare): 1.05 V_S0 at the training mass, sink 120 fpm, in ground effect (and the OGE upper bound) */
+export function touchdown(t, flap = t.landFlap, { k = 1.05, sinkFpm = 120 } = {}) {
+  const vs = vsCas(t, flap); if (!vs) return null;
+  const vcas = k * vs, gamma = -Math.asin(sinkFpm * FPM / (vcas * KT));
+  const oge = attitude(t, flap, vcas, gamma);
+  let th = oge.theta * DEG, h = null, sig = 0, r = oge;
+  for (let i = 0; i < 4 && t.ge; i++) { h = hMac(t, th); sig = sigmaGE(h, t.b); r = attitude(t, flap, vcas, gamma, 1, sig); th = r.theta * DEG; }
+  return { vs_cas: vs, cas_kt: vcas, ias_kt: t.cas2ias(flap, vcas), gamma_deg: gamma / DEG, CL: r.CL, alpha_deg: r.alpha, pitch_deg: r.theta,
+    pitch_oge_deg: oge.theta, h_mac_m: h, h_over_b: h != null ? h / t.b : null, sigma: sig };
 }
 /** instantaneous load-factor increment when flaps move f1 -> f2 at KIAS v and the pilot holds alpha (balloon tendency) */
 export function balloon(t, f1, f2, kias) {
-  const v = iasToCas(t, f2, kias) * KT, q = 0.5 * RHO0 * v * v;
+  const v = t.ias2cas(f2, kias) * KT, q = 0.5 * RHO0 * v * v;
   return (t.CL0[f2] - t.CL0[f1]) * q * t.S / (t.mass * G0);
 }
 /** flight-path angle from rate (fpm) and TAS (kt) */
@@ -137,19 +155,29 @@ export const gammaOf = (fpm, vkt) => Math.asin((fpm * FPM) / (vkt * KT));
 export const fpmPerDeg = vkt => vkt * KT * Math.sin(DEG) / FPM;
 /** descent rate on a glide path of angle g (deg) at ground speed gs (kt) */
 export const vsOnPath = (gs, gdeg = 3) => gs * KT * Math.tan(gdeg * DEG) / FPM;
+/** card VAPP as KIAS (cards in kt CAS are converted with the landing-detent table) */
+export function vappIas(t) { return /CAS/i.test(t.unitVAPP || '') ? t.cas2ias(t.landFlap, t.VAPP) : t.VAPP; }
 
 export function run() {
   const out = {};
   for (const id of Object.keys(PHASES)) {
     const t = TYPES[id]; out[id] = {};
-    for (const [ph, kias, flap, g, power, src] of PHASES[id]) {
-      let vcas = kias == null ? 1.05 * t.VS0cas : iasToCas(t, flap, kias);
-      const ias = kias == null ? null : kias;
+    for (const [ph, kRaw, flap, g] of PHASES[id]) {
+      const kias = kRaw === 'VAPP' ? Math.round(vappIas(t) * 10) / 10 : kRaw;
+      const vcas = t.ias2cas(flap, kias);
       const gamma = g.deg != null ? g.deg * DEG : gammaOf(g.fpm, vcas);
       const r = attitude(t, flap, vcas, gamma);
       const rate = Math.round(Math.sin(gamma) * vcas * KT / FPM);
-      out[id][ph] = { ias_kt: ias, cas_kt: +vcas.toFixed(1), flap, rate_fpm: rate, gamma_deg: +(gamma / DEG).toFixed(2),
-        CL: +r.CL.toFixed(3), alpha_deg: +r.alpha.toFixed(1), pitch_deg: +r.theta.toFixed(1), power, src, rate_est: !!g.est };
+      out[id][ph] = { ias_kt: kias, cas_kt: +vcas.toFixed(1), flap, rate_fpm: rate, gamma_deg: +(gamma / DEG).toFixed(2),
+        CL: +r.CL.toFixed(3), alpha_deg: +r.alpha.toFixed(1), pitch_deg: +r.theta.toFixed(1), rate_est: !!g.est, from_card_vapp: kRaw === 'VAPP' };
+    }
+    const td = touchdown(t);
+    if (td) {
+      const fin = out[id].final, ias = Math.round(td.ias_kt);
+      out[id].touchdown = { ias_kt: ias, cas_kt: +td.cas_kt.toFixed(1), flap: t.landFlap, rate_fpm: -120, gamma_deg: +td.gamma_deg.toFixed(2), CL: +td.CL.toFixed(3),
+        alpha_deg: +td.alpha_deg.toFixed(1), pitch_deg: +td.pitch_deg.toFixed(1), pitch_oge_deg: +td.pitch_oge_deg.toFixed(1),
+        h_mac_m: td.h_mac_m != null ? +td.h_mac_m.toFixed(2) : null, h_over_b: td.h_over_b != null ? +td.h_over_b.toFixed(3) : null, sigma: +td.sigma.toFixed(3), vs0_cas_train: +td.vs_cas.toFixed(1) };
+      out[id].flare = { ias_kt: Math.round((fin.ias_kt + ias) / 2), ias_range_kt: [fin.ias_kt, ias], flap: t.landFlap, pitch_start_deg: fin.pitch_deg, pitch_deg: +td.pitch_deg.toFixed(1), rate_fpm: -120 };
     }
   }
   return out;
@@ -159,23 +187,27 @@ const real = f => { try { return fs.realpathSync(f); } catch { return path.resol
 const isMain = !!process.argv[1] && real(process.argv[1]) === real(fileURLToPath(import.meta.url));
 if (isMain) {
   const out = run();
+  const C = TYPES.c172s;
   const checks = {
     fpm_per_deg_65kt: +fpmPerDeg(65).toFixed(1), fpm_per_deg_90kt: +fpmPerDeg(90).toFixed(1), fpm_per_deg_120kt: +fpmPerDeg(120).toFixed(1),
     vs_3deg_gs65: +vsOnPath(65).toFixed(0), vs_3deg_gs74: +vsOnPath(74).toFixed(0), vs_3deg_gs84: +vsOnPath(84).toFixed(0), vs_3deg_gs100: +vsOnPath(100).toFixed(0),
     t6_150kias_flapsUP_level: +attitude(TYPES.t6a, 'UP', 150, 0).theta.toFixed(1),
     t6_250kias_level: +attitude(TYPES.t6a, 'UP', 250, 0).theta.toFixed(1),
-    c172_alpha_flap0_65kias_level: +attitude(TYPES.c172s, 0, iasToCas(TYPES.c172s, 0, 65), 0).alpha.toFixed(2),
-    c172_alpha_flap30_65kias_3deg: +attitude(TYPES.c172s, 30, iasToCas(TYPES.c172s, 30, 65), -3 * DEG).alpha.toFixed(2),
-    c172_balloon_dn_flap0to10_85kias: +balloon(TYPES.c172s, 0, 10, 85).toFixed(3),
-    c172_balloon_dn_flap10to20_80kias: +balloon(TYPES.c172s, 10, 20, 80).toFixed(3),
-    c172_balloon_dn_flap20to30_70kias: +balloon(TYPES.c172s, 20, 30, 70).toFixed(3),
-    da40_balloon_dn_UPtoTO_100kias: +balloon(TYPES.da40ng, 'UP', 'TO', 100).toFixed(3),
+    c172_alpha_flap0_65kias_level: +attitude(C, '0', C.ias2cas('0', 65), 0).alpha.toFixed(2),
+    c172_alpha_flap30_65kias_3deg: +attitude(C, '30', C.ias2cas('30', 65), -3 * DEG).alpha.toFixed(2),
+    c172_balloon_dn_flap0to10_85kias: +balloon(C, '0', '10', 85).toFixed(3),
+    c172_balloon_dn_flap10to20_80kias: +balloon(C, '10', '20', 80).toFixed(3),
+    c172_balloon_dn_flap20to30_70kias: +balloon(C, '20', '30', 70).toFixed(3),
+    da40_balloon_dn_UPtoTO_100kias: +balloon(TYPES.da40ng, 'UP', 'T/O', 100).toFixed(3),
   };
+  const inputs = Object.fromEntries(Object.entries(TYPES).map(([id, t]) => [id, { S: t.S, b: t.b, A: t.A, CLa: t.CLa, CLa_w: t.CLaW, CL0: t.CL0, CLmax: t.CLmax, mass: t.mass,
+    landFlap: t.landFlap, ge: t.ge, VAPP: t.VAPP, VAPP_u: t.unitVAPP, VREF: t.VREF }]));
   fs.mkdirSync(path.join(HERE, 'out'), { recursive: true });
-  fs.writeFileSync(path.join(HERE, 'out', 'lh_attitude.json'), JSON.stringify({ generated: 'lh_attitude.mjs', note: 'ค่าประมาณ: theta = alpha + gamma (SL ISA, no ground effect)', checks, types: out }, null, 1) + '\n');
+  fs.writeFileSync(path.join(HERE, 'out', 'lh_attitude.json'), JSON.stringify({ generated: 'lh_attitude.mjs (cards via lm_lib.loadType, 19 Nov 2026)',
+    note: 'ค่าประมาณ: theta = alpha + gamma (SL ISA); touchdown/flare in ground effect (round-1 §2.4)', checks, inputs, types: out }, null, 1) + '\n');
   for (const id of Object.keys(out)) {
-    console.log(`\n${id}`);
-    for (const [ph, r] of Object.entries(out[id])) console.log(`  ${ph.padEnd(14)} ${String(r.ias_kt ?? '-').padStart(4)} KIAS ${String(r.cas_kt).padStart(6)} KCAS flap ${String(r.flap).padEnd(3)} ${String(r.rate_fpm).padStart(6)} fpm  CL ${r.CL.toFixed(2)}  α ${String(r.alpha_deg).padStart(5)}°  θ ${String(r.pitch_deg).padStart(5)}°`);
+    console.log(`\n${id}  (m ${TYPES[id].mass} kg, S ${TYPES[id].S}, CLα ${TYPES[id].CLa})`);
+    for (const [ph, r] of Object.entries(out[id])) console.log(`  ${ph.padEnd(14)} ${String(r.ias_kt ?? '-').padStart(5)} KIAS ${String(r.cas_kt ?? '').padStart(6)} KCAS flap ${String(r.flap).padEnd(4)} ${String(r.rate_fpm).padStart(6)} fpm  CL ${r.CL != null ? r.CL.toFixed(2) : '  - '}  α ${String(r.alpha_deg ?? '-').padStart(5)}°  θ ${String(r.pitch_deg).padStart(5)}°${r.sigma != null ? `  (OGE ${r.pitch_oge_deg}°, h/b ${r.h_over_b}, σ ${r.sigma})` : ''}`);
   }
   console.log('\nchecks', JSON.stringify(checks));
 }

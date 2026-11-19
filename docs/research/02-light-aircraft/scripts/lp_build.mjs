@@ -9,6 +9,7 @@ import path from 'node:path';
 import { HERE, isObj, isLeaf, resolveType, isMainModule } from './lm_lib.mjs';
 import { legacyFit } from './lm_legacy_fit.mjs';
 import { PUB, R1, r1leaf, L, setp, derive, derivs, geoFor, KT, FT, LB, HP, G0, IN } from './lp_cards.mjs';
+import { perfAll } from './lp_perf.mjs';
 
 const r = (x, n = 3) => (typeof x === 'number' ? +x.toFixed(n) : x);
 const E = (v, u, src, note = '', o = {}) => L(v, u, src, { conf: 'ต่ำ', est: true, note: ('ค่าประมาณ: ' + note).trim(), ...o });
@@ -20,6 +21,11 @@ function adopt(card, p, why = '', o = {}) {
     note: (`ค่าประมาณ: ใช้ค่าคลาสของเครื่องฝึกรอบที่ 1 (ฮาร์ดแวร์คลาสเดียวกัน)` + (why ? '; ' + why : '')).trim() });
 }
 const C = 'LP27';   // this topic's scripts (lp_cards / lp_build / lp_check)
+// D3 (19 Nov 2026): training_mass = {kg, empty_kg, crew_kg, fuel_kg, fuel_l}; empty_kg = airframe.weights.BEW_typical of the card
+function tmLeaf(tm, src, rho, mtow) {
+  return E({ kg: tm.kg, empty_kg: tm.empty_kg, crew_kg: tm.crew_kg, fuel_kg: tm.fuel_kg, fuel_l: tm.fuel_l }, 'kg (fuel_l L)', src,
+    `empty_kg = airframe.weights.BEW_typical (${tm.empty_kg} kg) + ครูและศิษย์ 2 × 95 kg (รวมร่มชูชีพและอุปกรณ์ ค่าประมาณ) + เชื้อเพลิงครึ่งถัง ${tm.fuel_l} L = ${tm.fuel_kg} kg (${rho}); การเทียบ TCDS/POH ใช้ MTOW ${r(mtow, 1)} kg`);
+}
 
 export function buildMain(id, d) {
   const T6 = id === 't6a', P = T6 ? PUB.t6a : PUB.pc9m, P9 = PUB.pc9m, dd = T6 ? d.t6a : d.pc9m;
@@ -50,7 +56,7 @@ export function buildMain(id, d) {
     s('airframe.weights.max_fuel_usable', H(d.pc9m.fuel_kg, 'kg', ['LP2'], '518 L × 0.806 kg/L (ถังในปีก)'));
   }
   s('airframe.weights.useful_load', L(r(MTOW - (T6 ? P.BEW : P9.BEW), 1), 'kg', [C, ...SRC], { conf: 'กลาง', note: 'MTOW − BEW' }));
-  s('airframe.weights.training_mass', E({ kg: dd.training_mass, BEW: r(T6 ? P.BEW : P9.BEW, 1), crew: 190, fuel: r(0.5 * dd.fuel_kg, 1) }, 'kg', [C], 'BEW + ครูและศิษย์ 2 × 95 kg (รวมร่มชูชีพและอุปกรณ์) + เชื้อเพลิงครึ่งถัง; การเทียบ TCDS/POH ใช้ --mass ' + r(MTOW, 1)));
+  s('airframe.weights.training_mass', tmLeaf(dd.tm, [C, ...(T6 ? ['LP14', 'LP21'] : ['LP13', 'LP2'])], T6 ? 'Jet A 0.80 kg/L' : '0.806 kg/L ตาม TCDS', MTOW));
 
   s('airframe.cg.datum', T6 ? H('F.S. 0 อยู่หน้า firewall 118.1 in (3.000 m)', '-', ['LP5'], 'firewall อยู่ที่ F.S. 118.1 in ⇒ datum อยู่หน้า firewall 3.000 m เท่ากับของ Pilatus') : H('3,000 mm หน้า firewall', '-', ['LP2']));
   s('airframe.cg.MAC', T6 ? E(P9.MAC, 'm', ['LP2', C], 'TCDS ของ T-6 ไม่ให้ MAC; ใช้ของ PC-9 M เพราะช่วงปีกและพื้นที่ปีกเท่ากัน (10.19 m, 16.28 m²)') : H(P9.MAC, 'm', ['LP2']));
@@ -124,13 +130,14 @@ export function buildMain(id, d) {
   s('aero.static_long.Cm0', E({ UP: 0.045, TO: -0.005, LDG: -0.055 }, '-', ['R1:A1', C], 'เท่ารอบที่ 1 (CG 25 %MAC); ไม่มีข้อมูล trim สาธารณะ'));
   s('aero.static_long.Cmalpha', E(r(dc.static.Cmalpha, 3), '1/rad', ['LM10', 'LM12', C], `CG ${dd.cgref.pct} %MAC, h_n ${r(dc.static.h_n, 3)}, static margin ${r(dc.static.static_margin, 3)}; รอบที่ 1 = −0.72`));
   const CLs = d.stallCL;
-  if (T6) s('aero.static_long.CLmax_target', E({ UP: CLs.pc9m_UP.CLmax_1g, LDG: CLs.pc9m_LDG.CLmax_1g }, '-', ['LP2', 'LM1', C], 'ไม่มีความเร็ว stall สาธารณะของ T-6; ใช้ CLmax 1 g ของ PC-9 M (ปีกตระกูลเดียวกัน) ⇒ VS1/VS0 86.3/77.3 KCAS ที่ 6,500 lb'));
+  if (T6) s('aero.static_long.CLmax_target', E({ UP: CLs.t6a_UP.CLmax_1g, LDG: CLs.t6a_LDG.CLmax_1g }, '-', ['LP29', 'LM1', C], `จาก VS1/VS0 82/74 KIAS ที่ 6,300 lb ISA SL [LP29] โดยถือ KIAS = KCAS (ไม่มี PEC สาธารณะ ดู speeds.ias_cas) และนิยามความเร็วต่ำสุด nz 0.95 ⇒ CL ปรากฏ ${CLs.t6a_UP.CLapp}/${CLs.t6a_LDG.CLapp}; แทนค่าเดิมที่ยืม CLmax ของ PC-9 M (${CLs.pc9m_UP.CLmax_1g}/${CLs.pc9m_LDG.CLmax_1g}) (ตรวจความครบถ้วน 19 พ.ย. 2026)`, { conf: 'กลาง' }));
   else s('aero.static_long.CLmax_target', M({ UP: CLs.pc9m_UP.CLmax_1g, LDG: CLs.pc9m_LDG.CLmax_1g }, '-', ['LP2', 'LM1', C], `จาก TCDS 77/69 KCAS ที่ 2,350 kg (ความเร็วต่ำสุด, nz 0.95 ⇒ CL ปรากฏ ${CLs.pc9m_UP.CLapp}/${CLs.pc9m_LDG.CLapp}); PC-9 รุ่นแรก 79/70 kt EAS ที่ 2,250 kg ให้ ${CLs.pc9_UP.CLmax_1g}/${CLs.pc9_LDG.CLmax_1g}`));
+  const CU = T6 ? CLs.t6a_UP : CLs.pc9m_UP, CD = T6 ? CLs.t6a_LDG : CLs.pc9m_LDG;
   s('aero.flaps.detents', E([
-    { name: 'UP', flap_deg: 0, VFE_kt: null, dCL0: 0, dCD0: 0, dCm0: 0, CLmax: CLs.pc9m_UP.CLmax_1g },
-    { name: 'TO', flap_deg: 23, VFE_kt: 150, dCL0: 0.30, dCD0: 0.020, dCm0: -0.05, CLmax: r((CLs.pc9m_UP.CLmax_1g + CLs.pc9m_LDG.CLmax_1g) / 2 + 0.03, 4) },
-    { name: 'LDG', flap_deg: 50, VFE_kt: 150, dCL0: 0.55, dCD0: 0.060, dCm0: -0.10, CLmax: CLs.pc9m_LDG.CLmax_1g }],
-    '-', [...SRC, 'LP2', C], 'มุมแฟลป 23°/50° และ VFE 150 kt จาก TCDS; CLmax ของ UP/LDG จากความเร็ว stall ของ PC-9 M; dCL0/dCD0/dCm0 และ CLmax ของ TO เป็นค่าประมาณ (dCL0 ของ LDG เท่ารอบที่ 1 = 0.55)'));
+    { name: 'UP', flap_deg: 0, VFE_kt: null, dCL0: 0, dCD0: 0, dCm0: 0, CLmax: CU.CLmax_1g },
+    { name: 'TO', flap_deg: 23, VFE_kt: 150, dCL0: 0.30, dCD0: 0.020, dCm0: -0.05, CLmax: r((CU.CLmax_1g + CD.CLmax_1g) / 2 + 0.03, 4) },
+    { name: 'LDG', flap_deg: 50, VFE_kt: 150, dCL0: 0.55, dCD0: 0.060, dCm0: -0.10, CLmax: CD.CLmax_1g }],
+    '-', [...SRC, T6 ? 'LP29' : 'LP2', C], `ชื่อขั้น UP/TO/LDG ตามคู่มือ (D6); มุมแฟลป 23°/50° และ VFE 150 kt จาก TCDS; CLmax ของ UP/LDG จากความเร็ว stall ${T6 ? 'ของ T-6A [LP29]' : 'ของ PC-9 M [LP2]'}; dCL0/dCD0/dCm0 และ CLmax ของ TO เป็นค่าประมาณ (dCL0 ของ LDG เท่ารอบที่ 1 = 0.55)`));
   s('aero.flaps.transition_time_s', E(6, 's', [C], 'ไม่มีข้อมูล; เท่าเวลาล้อ 6 s ของ T-6 [LP21]'));
   s('aero.gear_drag.dCD0', E(0.020, '-', ['R1:A1', C], 'เท่ารอบที่ 1; ไม่มีข้อมูลรายแบบ'));
   s('aero.static_long.alpha_star_neg', E({ UP: 13, LDG: 9 }, 'deg', ['R1:A1'], 'เท่ารอบที่ 1'));
@@ -232,58 +239,85 @@ export function buildMain(id, d) {
   else s('turboprop.reference_engines.PT6A-62', { ...r1leaf('turboprop.reference_engines.PT6A-62'), src: ['R1:E1', 'R1:E2'], note: 'EASA TCDS IM.E.078; เครื่องยนต์ของ PC-9 M' });
 
   // ── propulsion ──
-  s('propulsion.layout', M([{ id: 1, pos: hub, axis: [1, 0, 0], type: 'turboprop', model: T6 ? 'PT6A-68' : 'PT6A-62', prop_sense: 1 }], 'm FRD', [...SRC, C], 'ตำแหน่งดุมเป็นค่าประมาณ'));
+  s('propulsion.layout', E([{ id: 1, pos: hub, axis: [1, 0, 0], type: 'turboprop', model: T6 ? 'PT6A-68' : 'PT6A-62', prop_sense: 1 }], 'm FRD', [...SRC, C], 'pos = interference.slipstream.hubPos (ระนาบใบพัดสมมติที่ 0.45 m DAT); แกนแรงขับตามแกนลำตัว (ไม่มีข้อมูล right/down thrust); รุ่นเครื่องยนต์และทิศหมุนใบพัดจาก TCDS', { conf: 'กลาง' }));
 
-  // ── speeds ──
+  // ── speeds ── (completeness check 19 Nov 2026: one unit per type — Pilatus kt CAS (TCDS), T-6 kt IAS (AOPA [LP29], training
+  // material); speeds.ias_cas identity (est); VREF/VAPP at training_mass (D1); VX from lp_perf.mjs; stall_altitude_loss_ft (class est))
+  const PF = d.perf, V = d.vref[id], ALC = d.altLossCoef;
   const kc = (v, src, note, conf = 'สูง') => L(v, 'kt CAS', src, { conf, note });
+  const idTable = (top, u) => E({ UP: [[50, 50], [top, top]], TO: [[50, 50], [150, 150]], LDG: [[50, 50], [150, 150]] }, u, [C],
+    'ไม่มีตาราง PEC (KIAS → KCAS) สาธารณะ ใช้ IAS = CAS ทุกแฟลป (identity) เพื่อให้ lm_card/lm_merge แปลงหน่วยได้; ' + (T6
+      ? 'ความเร็วทุกค่าของบัตร t6a/t6c เป็น kt IAS; VS 82/74 KIAS ของ [LP29] ต่ำกว่าค่าที่คิดจาก CL ของ PC-9 M ราว 3 kt (84.9/76.1 kt ที่ 6,300 lb) ซึ่งอาจเป็น PEC ของ T-6 ที่ความเร็วต่ำ (ยังไม่ยืนยัน)'
+      : 'TCDS ของ Pilatus ให้ความเร็วเป็น KCAS บัตร pc9m/pc7mk2 จึงเก็บทุกค่าเป็น kt CAS; หัวข้อ 08/09 ที่อ้างเป็น KIAS ถือเท่ากันจนกว่าจะมี PEC'));
+  const altLoss = vs1 => Math.round(ALC.mean * vs1 * vs1 / 10) * 10;
+  const altLossLeaf = (vs1, u) => E(altLoss(vs1), 'ft', [C, 'LC2', 'LF1', 'LG5'], `ไม่มีค่าใน TCDS/เอกสารสาธารณะ; สัดส่วน h/VS1² ของ POH เครื่องฝึกลูกสูบ (C172S 230 ft/53 KCAS [LC2], C152 160 ft/48 KCAS [LF1], P2006T 180 ft/66 KIAS [LG5]) เฉลี่ย ${ALC.mean} ft/kt² (ช่วง ${ALC.lo}–${ALC.hi}) × VS1 ${vs1} ${u} ที่ MTOW² ⇒ ${altLoss(vs1)} ft (${Math.round(altLoss(vs1) * FT)} m; ช่วง ${Math.round(ALC.lo * vs1 * vs1)}–${Math.round(ALC.hi * vs1 * vs1)} ft) สำหรับ stall ปีกระดับแล้วแก้แบบปกติ; ไม่รวม spin`);
   if (T6) {
-    s('speeds.VS1_kt', E(d.t6a.VS1, 'kt CAS', ['LP2', C], 'ไม่มีค่าสาธารณะ; CL ของ PC-9 M ที่ 6,500 lb (ความเร็วต่ำสุดแบบ POH) ⇒ ตรวจไขว้: 1.3 VS0 = 100.5 kt ≈ final 100–110 KIAS และ on-speed AOA = 1.3 Vs [LP20][LP21]; JSBSim t6texan2 82.4 KCAS ที่ 6,000 lb'));
-    s('speeds.VS0_kt', E(d.t6a.VS0, 'kt CAS', ['LP2', C], 'แฟลป LDG ล้อลง idle; วิธีเดียวกับ VS1'));
-    s('speeds.VR_kt', L(85, 'kt IAS', ['LP15'], { conf: 'กลาง', note: 'takeoff 85 KIAS แฟลป TO pitch 7–10° (ตารางความเร็วทั่วไปของคู่มือฝึก; ค่าโดยประมาณตามน้ำหนัก)' }));
-    s('speeds.VY_kt', L(140, 'kt IAS', ['LP15', 'LP20'], { conf: 'ต่ำ', note: 'climbout 140 KIAS (เทคนิคไต่ 140/160/180 KIAS); ไม่ใช่ Vy จากกราฟ POH' }));
+    const A = P.aopa, f63 = x => r(x * Math.sqrt(MTOW / d.t6a.m_pub), 1);
+    s('speeds.VS1_kt', M(A.VS1, 'kt IAS', ['LP29'], `แฟลป UP ล้อขึ้น idle ที่ 6,300 lb (2,858 kg) ISA SL: ตารางสเปกของผู้ผลิตใน AOPA Pilot (ส.ค. 1997) [LP29] (ผลคำนวณของผู้ผลิต); ที่ MTOW 6,500 lb = ${d.t6a.VS1} kt (สเกล √W); ค่าเดิมของบัตรจาก CL ของ PC-9 M = ${d.t6a.pc9mCL_check.VS1_6300} kt ที่ 6,300 lb; JSBSim t6texan2 82.4 KCAS ที่ 6,000 lb`));
+    s('speeds.VS0_kt', M(A.VS0, 'kt IAS', ['LP29'], `แฟลป LDG ล้อลง idle ที่ 6,300 lb ISA SL [LP29]; ที่ MTOW 6,500 lb = ${d.t6a.VS0} kt (สเกล √W); ค่าเดิมจาก CL ของ PC-9 M = ${d.t6a.pc9mCL_check.VS0_6300} kt ที่ 6,300 lb`));
+    s('speeds.VX_kt', E(Math.round(PF.t6a.MTOW.Vx_card_kcas), 'kt IAS', [C, 'LP30', 'LP29'], `ไม่มีค่าสาธารณะ; lp_perf.mjs (ใบพัด BEM ของรอบที่ 1 + polar clean): มุมไต่สูงสุดของโมเดลที่ ${PF.t6a.MTOW.Vx_model_keas} kt ต่ำกว่า 1.2 VS1 จึงใช้ 1.2 VS1 = ${PF.t6a.MTOW.Vx_card_kcas} kt ที่ MTOW ตาม 14 CFR 23.65(a)(4) [LP30] (γ ${PF.t6a.MTOW.gamma_at_Vx_card_deg}° เทียบสูงสุด ${PF.t6a.MTOW.gamma_max_deg}°); ที่มวลฝึก ${PF.t6a.training_mass.Vx_card_kcas} kt; IAS = CAS`));
+    s('speeds.VR_kt', L(A.VR, 'kt IAS', ['LP29', 'LP15'], { conf: 'กลาง', note: 'VR 85 KIAS ที่ 6,300 lb [LP29]; คู่มือฝึก: takeoff 85 KIAS แฟลป TO pitch 7–10° [LP15]' }));
+    s('speeds.VY_kt', L(A.VY, 'kt IAS', ['LP29', 'LP15', 'LP20'], { conf: 'กลาง', note: `VY 140 KIAS ที่ 6,300 lb ISA SL ในตารางสเปกของผู้ผลิต [LP29]; คู่มือฝึกใช้ 140 KIAS เป็นความเร็วไต่หลังขึ้น (140/160/180 KIAS) [LP15][LP20]; โมเดลไต่ BEM ของ lp_perf.mjs ให้ Vy ${PF.t6a.m6300.Vy_keas} kt ที่ 6,300 lb (+${r(PF.t6a.m6300.Vy_keas - A.VY, 1)} kt)` }));
     s('speeds.VG_kt', M(125, 'kt IAS', ['LP16', 'LP19', 'LP20'], 'best glide clean (ใบพัด feather จำลองด้วย torque 4–6 %); ล้อลง 105 KIAS'));
-    s('speeds.VREF_kt', E(Math.round(1.3 * d.t6a.VS0), 'kt CAS', [C, 'LP21'], '1.3 VS0 = on-speed AOA ที่ MTOW; ที่ 6,000 lb 96.6 kt'));
-    s('speeds.VAPP_kt', L(100, 'kt IAS', ['LP20', 'LP23'], { conf: 'ต่ำ', note: 'final แฟลป LDG 100 KIAS (แฟลป TO 105, ไม่มีแฟลป 110) จาก flashcard; คู่มือ ATC ให้ approach speed เฉลี่ย 110 kt; touchdown 80–95 KIAS; ลดราว 1 kt ต่อเชื้อเพลิง 100 lb ที่ใช้ไป [LP21]' }));
+    s('speeds.VREF_kt', E(V.VREF, 'kt IAS', [C, 'LP29', 'LP21'], `1.3 VS0 ที่มวลฝึก ${r(dd.training_mass, 0)} kg (D1): VS0 74 KIAS ที่ 6,300 lb [LP29] × √(${dd.training_mass}/${d.t6a.m_pub}) = ${V.VS0_tm} kt ⇒ ${V.VREF_exact}; on-speed AOA = 1.3 Vs [LP21]; ที่ MTOW 6,500 lb = ${d.icao.t6a} kt; kt IAS = kt CAS (speeds.ias_cas)`));
+    s('speeds.VAPP_kt', L(V.VAPP, 'kt IAS', ['LP20', 'LP29', 'LP23'], { conf: 'กลาง', note: `final แฟลป LDG 100 KIAS (flashcard [LP20]; รายงานบินของ AOPA "100 on final" [LP29]) ไม่ระบุมวล บัตรใช้เป็นค่าที่มวลฝึก ${r(dd.training_mass, 0)} kg (D1; VAPP/VREF = ${r(V.VAPP / V.VREF_exact, 3)}); แฟลป TO 105, ไม่มีแฟลป 110 KIAS [LP20]; คู่มือ ATC: approach เฉลี่ย 110 kt [LP23]; ลดราว 1 kt ต่อเชื้อเพลิง 100 lb ที่ใช้ไป [LP21]; แก้มวลเป็น MTOW ≈ ${V.VAPP_at_MTOW} kt; kt IAS = kt CAS (speeds.ias_cas)` }));
     s('speeds.VA_kt', H(227, 'kt IAS', ['LP5', 'LP20'], 'manoeuvring (สมมาตร); asymmetric 177 KIAS'));
-    s('speeds.VNE_kt', H(316, 'kt IAS', ['LP5', 'LP18'], 'VMO 316 KIAS / MMO 0.67'));
-    s('speeds.VNO_kt', L(195, 'kt IAS', ['LP20'], { conf: 'ต่ำ', note: 'max turbulence penetration 195 KIAS (ไม่ใช่ VNO ตามนิยาม FAR 23)' }));
-    s('speeds.VFE', H({ TO: 150, LDG: 150 }, 'kt IAS', ['LP5', 'LP18']));
-    s('speeds.VLE_kt', H(150, 'kt IAS', ['LP5'])); s('speeds.VLO_kt', H(150, 'kt IAS', ['LP18'], 'gear and/or flaps 150 KIAS'));
-    s('speeds.stall_table', E({ mass_lb: [6000, 6500, 6900], UP: [r(d.t6a.VS1 * Math.sqrt(6000 / 6500), 1), d.t6a.VS1, r(d.t6a.VS1 * Math.sqrt(6900 / 6500), 1)], LDG: [d.t6a.VS0_6000, d.t6a.VS0, r(d.t6a.VS0 * Math.sqrt(6900 / 6500), 1)] }, 'kt CAS', [C], 'สเกล √W จาก VS1/VS0 ประมาณ'));
+    s('speeds.VNE_kt', H(316, 'kt IAS', ['LP5', 'LP18', 'LP30'], 'VMO 316 KIAS / MMO 0.67; เครื่องเทอร์ไบน์ใช้ VMO/MMO แทน VNE/VNO ตาม 14 CFR 23.1505(c) [LP30] จึงไม่มี VNO (อยู่ใน _na); max turbulence penetration 195 KIAS [LP20] เป็นค่าการปฏิบัติ ไม่ใช่ VNO'));
+    s('speeds.VFE', H({ TO: 150, LDG: 150 }, 'kt IAS', ['LP5', 'LP18', 'LP29']));
+    s('speeds.VLE_kt', H(150, 'kt IAS', ['LP5', 'LP29'])); s('speeds.VLO_kt', H(150, 'kt IAS', ['LP18', 'LP29'], 'gear and/or flaps 150 KIAS'));
+    const ms = [6000, 6300, 6500, 6900], sc = (v, lb) => r(v * Math.sqrt(lb / A.m_lb), 1);
+    s('speeds.stall_table', E({ mass_lb: ms, UP: ms.map(lb => sc(A.VS1, lb)), LDG: ms.map(lb => sc(A.VS0, lb)) }, 'kt IAS', ['LP29', C], 'แถว 6,300 lb = 82/74 KIAS จาก [LP29] (ข้อเท็จจริง); น้ำหนักอื่นสเกล √W; ปีกระดับ idle; ไม่มีตารางตามมุมเอียงสาธารณะ (ที่มุมเอียง φ คูณ 1/√cos φ)', { conf: 'กลาง' }));
     s('speeds.stall_warning_margin_kt', M([5, 10], 'kt', ['LP19', 'LP20'], 'stick shaker'));
-    s('speeds.crosswind_demonstrated_kt', M(25, 'kt', ['LP18', 'LP20'], 'ขีดจำกัดการปฏิบัติ (ไม่ใช่ demonstrated): แห้ง 25, เปียก 10, น้ำแข็ง 5, touch-and-go 20; ลมท้ายวิ่งขึ้น 10 kt'));
-    s('speeds.icao_approach_category', E('B', '-', [C], `1.3 VS0 = ${d.icao.t6a} kt (91–120 kt)`));
+    s('speeds.stall_altitude_loss_ft', altLossLeaf(d.t6a.VS1, 'kt IAS'));
+    s('speeds.crosswind_demonstrated_kt', M(A.xwind, 'kt', ['LP29'], 'maximum demonstrated crosswind 24 kt ในตารางสเปกของผู้ผลิต (6,300 lb) [LP29]; ขีดจำกัดการปฏิบัติของผู้ใช้ (แห้ง 25 kt, เปียก 10, น้ำแข็ง 5, touch-and-go 20, ลมท้ายวิ่งขึ้น 10) [LP18] ย้ายไปหัวข้อ 08 ops.crosswind_limits'));
+    s('speeds.icao_approach_category', E('B', '-', [C, 'LP29'], `1.3 VS0 ที่ MTOW 6,500 lb = 1.3 × ${d.t6a.VS0} = ${d.icao.t6a} kt (91–120 kt)`));
+    s('speeds.ias_cas', idTable(320, 'kt IAS → kt CAS'));
   } else {
+    const vy = Math.round(PF.pc9m.MTOW.Vy_keas * d.vyBias);
     s('speeds.VS1_kt', kc(77, ['LP2'], '2,350 kg acrobatic, แฟลปขึ้น; utility 3,200 kg 93 KCAS; PC-9 (EAS) 79 kt ที่ 2,250 kg'));
     s('speeds.VS0_kt', kc(69, ['LP2'], 'แฟลปลง (ล้อลง); utility 85 KCAS; PC-9 70 kt EAS'));
     s('speeds.VA_kt', M(205, 'kt CAS', ['LP2'], 'ที่ 2,350 kg; 170 kt ที่ 1,650 kg (TCDS ไม่ระบุชนิดความเร็ว; PC-9 TCDS ใช้ EAS)'));
-    s('speeds.VNE_kt', M(320, 'kt CAS', ['LP2'], 'VMO ถึง 15,000 ft; MMO 0.65'));
+    s('speeds.VNE_kt', M(320, 'kt CAS', ['LP2', 'LP30'], 'VMO ถึง 15,000 ft; MMO 0.65; เครื่องเทอร์ไบน์ใช้ VMO/MMO แทน VNE/VNO ตาม 14 CFR 23.1505(c) [LP30] จึงไม่มี VNO (อยู่ใน _na)'));
     s('speeds.VFE', M({ TO: 150, LDG: 150 }, 'kt CAS', ['LP2'], 'VFE = VLO 150 kt'));
     s('speeds.VLO_kt', M(150, 'kt CAS', ['LP2']));
     s('speeds.VLE_kt', E(150, 'kt CAS', ['LP2'], 'TCDS ไม่ระบุ VLE; ใช้ VLO'));
-    s('speeds.VREF_kt', E(90, 'kt CAS', [C], '1.3 VS0 = 89.7 kt'));
-    s('speeds.VAPP_kt', E(95, 'kt CAS', [C], 'VREF + 5'));
+    s('speeds.VREF_kt', E(V.VREF, 'kt CAS', [C, 'LP2'], `1.3 VS0 ที่มวลฝึก ${r(dd.training_mass, 0)} kg (D1): VS0 69 KCAS ที่ 2,350 kg [LP2] × √(${dd.training_mass}/2,350) = ${V.VS0_tm} ⇒ ${V.VREF_exact}; ที่ MTOW ${d.icao.pc9m} kt`));
+    s('speeds.VAPP_kt', E(V.VAPP, 'kt CAS', [C], `VREF + 5 kt ที่มวลฝึก ${r(dd.training_mass, 0)} kg แฟลป LDG ล้อลง (D1); แก้มวลเป็น MTOW ≈ ${V.VAPP_at_MTOW} kt`));
+    s('speeds.VX_kt', E(Math.round(PF.pc9m.MTOW.Vx_card_kcas), 'kt CAS', [C, 'LP30'], `ไม่มีค่าสาธารณะ; lp_perf.mjs (ใบพัด BEM HC-D4N ของรอบที่ 1 + polar clean): มุมไต่สูงสุดของโมเดลที่ ${PF.pc9m.MTOW.Vx_model_keas} kt ต่ำกว่า 1.2 VS1 จึงใช้ 1.2 VS1 = ${PF.pc9m.MTOW.Vx_card_kcas} kt ที่ MTOW ตาม 14 CFR 23.65(a)(4) [LP30] (γ ${PF.pc9m.MTOW.gamma_at_Vx_card_deg}° เทียบสูงสุด ${PF.pc9m.MTOW.gamma_max_deg}°); ที่มวลฝึก ${PF.pc9m.training_mass.Vx_card_kcas} kt`));
     s('speeds.VR_kt', E(78, 'kt CAS', [C], 'ไม่มีค่าสาธารณะ; ≈ 1.05 × VS แฟลป TO (ประมาณ 74 kt)'));
-    s('speeds.VY_kt', E(125, 'kt CAS', [C], 'ไม่มีค่าสาธารณะ; 140 KIAS ของ T-6 สเกล √(W/S)'));
+    s('speeds.VY_kt', E(vy, 'kt CAS', [C, 'LP29'], `ไม่มีค่าสาธารณะ; lp_perf.mjs ให้ Vy ${PF.pc9m.MTOW.Vy_keas} kt ที่ MTOW (${PF.pc9m.training_mass.Vy_keas} ที่มวลฝึก) คูณ ${d.vyBias} ซึ่งเป็นอัตราส่วน VY 140 KIAS ของ T-6A [LP29] ต่อ Vy ของโมเดลเดียวกันที่ 6,300 lb (${PF.t6a.m6300.Vy_keas}) ⇒ ${vy} kt; ค่าเดิม 125 kt (สเกล √(W/S) จาก T-6) ต่ำไป; เส้น ROC แบน: ±10 kt เสีย ROC < 2 %`));
     s('speeds.VG_kt', E(d.pc9m.glideV, 'kt CAS', [C], 'จาก polar คลาส (CL* ' + r(Math.sqrt(pol.CD0 / pol.K), 3) + ') ที่ 2,350 kg'));
     s('speeds.stall_table', H({ acrobatic_2350kg: { UP: 77, LDG: 69 }, utility_3200kg: { UP: 93, LDG: 85 } }, 'kt CAS', ['LP2'], 'PC-9 (F 56-22): 2,250 kg 79/70 kt EAS; PC-9/B 2,500 kg 83/74 kt'));
     s('speeds.stall_warning_margin_kt', E(5, 'kt', ['R1:A22'], '14 CFR 23.207 (เท่ารอบที่ 1)'));
+    s('speeds.stall_altitude_loss_ft', altLossLeaf(77, 'kt CAS'));
     s('speeds.icao_approach_category', E('A', '-', [C], `1.3 VS0 = ${d.icao.pc9m} kt (< 91 kt)`));
+    s('speeds.ias_cas', idTable(320, 'kt IAS → kt CAS'));
   }
 
-  // ── performance ──
+  // ── performance ── (completeness check 19 Nov 2026: AOPA spec table [LP29] for the T-6A distances; VTBD hot-day tables from the
+  // lp_perf.mjs factors (ค่าประมาณ); pc9m/pc7mk2 distances from the lm_card runs are added by lp_check.mjs)
+  const hot = PF[id].hot, OAT = hot.map(h => h.oat_C);
+  const rocTable = (roc0, note) => E({ h_ft: 9, oat_C: OAT, ROC_fpm: hot.map(h => Math.round(roc0 * h.ROC_fpm_MTOW / hot[0].ROC_fpm_MTOW / 10) * 10), ROC_ms: hot.map(h => r(roc0 * h.ROC_fpm_MTOW / hot[0].ROC_fpm_MTOW * FT / 60, 1)) }, 'fpm (m/s)', [C, ...(T6 ? ['LP23'] : ['LP12', 'LP13'])],
+    `ความสูงสนาม VTBD 9 ft; ROC_SL_fpm (${roc0} fpm) × อัตราส่วน ROC ของโมเดลไต่ BEM (lp_perf.mjs) ที่ OAT นั้นต่อ 15 °C (กำลังเต็มเพราะ flat rating ถึง ${T6 ? 46 : 37} °C); ไม่มีตาราง POH สาธารณะ; ${note}`);
   if (T6) {
-    s('performance.ROC_SL_fpm', L(3100, 'fpm', ['LP23'], { conf: 'ต่ำ', note: 'climb rate เฉลี่ยในคู่มือ ATC (ไม่ระบุน้ำหนัก/ความเร็ว); GlobalSecurity: initial ROC > 4,500 fpm (ไม่ระบุน้ำหนัก) [LP22]; ฟิสิกส์ที่ MTOW η 0.8 ให้ราว 3,100' }));
-    s('performance.service_ceiling_ft', H(31000, 'ft', ['LP5', 'LP6'], 'ความสูงปฏิบัติการสูงสุด'));
-    s('performance.cruise_table', M([{ h_ft: 1000, ktas: 270, power: 'max', mass_lb: 6000, src: 'LB16' }, { h_ft: null, ktas: 280, note: 'cruise (Wikipedia)', src: 'LP14' }], 'ft, kt TAS', ['LB16', 'LP14'], 'ความเร็วสูงสุดบินระดับ 270 KTAS ที่ 1,000 ft'));
+    const A = P.aopa, ft2m = x => Math.round(x * FT), kW2 = (MTOW / d.t6a.m_pub) ** 2, kW1 = MTOW / d.t6a.m_pub;
+    s('performance.ROC_SL_fpm', L(3100, 'fpm', ['LP23'], { conf: 'ต่ำ', note: `climb rate เฉลี่ยในคู่มือ ATC (ไม่ระบุน้ำหนัก/ความเร็ว) ใช้เป็นเป้า fit ที่ MTOW (15.7 m/s); ตารางสเปกของผู้ผลิต 1997: 4,000 fpm (20.3 m/s) ที่ 6,300 lb SL ISA [LP29] (ผู้เขียนบินได้เฉลี่ยราว 3,600 fpm ถึง 15,000 ft); GlobalSecurity: initial > 4,500 fpm [LP22]; โมเดลไต่ BEM ของ lp_perf.mjs (ไม่ fit) ให้ ${PF.t6a.MTOW.ROC_fpm} fpm ที่ MTOW และ ${PF.t6a.m6300.ROC_fpm} ที่ 6,300 lb — ค่า 4,000 ต้องการกำลังส่วนเกินมากกว่าโมเดล ${Math.round((A.ROC / PF.t6a.m6300.ROC_fpm - 1) * 100)} % (ดู §07.13)` }));
+    s('performance.ROC_table', rocTable(3100, 'มวล MTOW'));
+    s('performance.service_ceiling_ft', H(31000, 'ft', ['LP5', 'LP6'], 'ความสูงปฏิบัติการสูงสุด (9,449 m); ตารางสเปก 1997 ให้ service ceiling 35,000 ft [LP29]'));
+    s('performance.cruise_table', M([{ h_ft: 1000, ktas: 270, power: 'max', mass_lb: 6000, src: 'LB16' }, { h_ft: 0, ktas: 310, power: 'max', mass_lb: 6300, src: 'LP29', note: 'max level speed SL ผลคำนวณของผู้ผลิต 1997 ขัดกับ 270 KTAS ของ fact sheet' }, { h_ft: null, ktas: 280, note: 'cruise (Wikipedia)', src: 'LP14' }], 'ft, kt TAS', ['LB16', 'LP29', 'LP14'], 'ความเร็วสูงสุดบินระดับ 270 KTAS (139 m/s) ที่ 1,000 ft [LB16] ใช้ fit polar clean ใน lp_perf.mjs; 310 kt ของ [LP29] สูงกว่า 15 % (ดู §07.13)'));
     s('performance.glide', E({ speed_kt: d.t6a.glideV_MTOW, ratio: d.t6a.glideLD.central }, 'kt IAS', ['LP16', 'LP19', 'LP20', C], `125 KIAS ที่ ~6,000 lb สเกลเป็น MTOW; L/D จาก sink 1,100–1,350 fpm ที่ 3,000–9,000 ft ได้ ${d.t6a.glideLD.low}–${d.t6a.glideLD.high} (ใบพัด feather/แรงขับศูนย์)`));
-    s('performance.takeoff', L({ ground_roll_m: null, over50ft_m: null, distance_ft: 1775 }, 'm, ft', ['LP22'], { conf: 'ต่ำ', note: 'takeoff distance 1,775 ft ที่ระดับน้ำทะเล (ไม่ระบุนิยาม/น้ำหนัก)' }));
-    s('performance.landing', L({ min_runway_ft: 4000, rule: 'ground roll + 500 ft หรือ 4,000 ft' }, 'ft', ['LP18'], { conf: 'กลาง', note: 'เกณฑ์ความยาวทางวิ่งขั้นต่ำของผู้ใช้ ไม่ใช่ระยะลงจอดจาก POH' }));
-    s('performance.fuel', M({ usable_lb: 1100, max_ff_pph: 799, range_nm: 900 }, 'lb, pph, nm', ['LP21', 'LP18', 'LP14']));
+    s('performance.takeoff', M({ ground_roll_m: ft2m(A.TO_gr_ft), over50ft_m: ft2m(A.TO50_ft), mass_kg: d.t6a.m_pub }, 'm', ['LP29', 'LP22'], `1,400 / 2,000 ft ที่ 6,300 lb ISA SL ลมสงบ แฟลป TO (ตารางสเปกของผู้ผลิต [LP29]); สเกลเป็น MTOW 6,500 lb ด้วย (W/W0)² ⇒ ${Math.round(ft2m(A.TO_gr_ft) * kW2)} / ${Math.round(ft2m(A.TO50_ft) * kW2)} m (performance.takeoff_table); takeoff distance 1,775 ft (541 m) ของ [LP22] ไม่ระบุนิยามและน้ำหนัก`));
+    s('performance.landing', M({ ground_roll_m: ft2m(A.LD_gr_ft), over50ft_m: ft2m(A.LD50_ft), mass_kg: d.t6a.m_pub, min_runway_rule: 'ground roll + 500 ft หรือ 4,000 ft' }, 'm', ['LP29', 'LP18'], '1,900 / 2,400 ft ที่ 6,300 lb ISA SL ลมสงบ แฟลป LDG [LP29]; เกณฑ์ความยาวทางวิ่งขั้นต่ำของผู้ใช้ ground roll + 500 ft หรือ 4,000 ft (1,219 m) [LP18] ไม่ใช่ระยะ POH'));
+    s('performance.takeoff_table', E({ mass_kg: r(MTOW, 1), h_ft: 9, oat_C: OAT, ground_roll_m: hot.map(h => Math.round(ft2m(A.TO_gr_ft) * kW2 * h.takeoff_factor)), over50ft_m: hot.map(h => Math.round(ft2m(A.TO50_ft) * kW2 * h.takeoff_factor)) }, 'm', ['LP29', C],
+      `จุด 15 °C = [LP29] (6,300 lb) × (6,500/6,300)²; 31/35 °C คูณตัวคูณวันร้อนของ lp_perf.mjs 1/(σ·T/T_ISA) = ${hot.map(h => h.takeoff_factor).join('/')} (แรงขับ BEM ที่ 0.7 V_LOF, กำลังเต็มเพราะ flat rating); ไม่มีตาราง POH สาธารณะ`));
+    s('performance.landing_table', E({ mass_kg: r(MTOW, 1), h_ft: 9, oat_C: OAT, ground_roll_m: hot.map(h => Math.round(ft2m(A.LD_gr_ft) * kW1 * h.landing_factor)), over50ft_m: hot.map(h => Math.round(ft2m(A.LD50_ft) * kW1 * h.landing_factor)) }, 'm', ['LP29', C],
+      `จุด 15 °C = [LP29] (6,300 lb) × 6,500/6,300 (V² ∝ W); 31/35 °C คูณ 1/σ = ${hot.map(h => h.landing_factor).join('/')} (ความเร็วจริงสูงขึ้นที่ IAS เท่าเดิม); ไม่มีตาราง POH สาธารณะ`));
+    s('performance.fuel', M({ usable_lb: 1100, max_ff_pph: 799, range_nm: 900 }, 'lb, pph, nm', ['LP21', 'LP18', 'LP14'], '499 kg, 362 kg/h, 1,667 km'));
   } else {
-    s('performance.ROC_SL_fpm', L(4090, 'fpm', ['LP12', 'LP13'], { conf: 'ต่ำ', note: 'best ROC ที่ระดับน้ำทะเล (โบรชัวร์/Jane\'s ไม่ระบุน้ำหนัก; ฟิสิกส์บอกว่าน่าจะเป็นน้ำหนักฝึกเบา ≈ 2,000–2,100 kg)' }));
-    s('performance.service_ceiling_ft', H(25000, 'ft', ['LP2'], 'ความสูงปฏิบัติการสูงสุด (Jane\'s ผ่าน Wikipedia ให้เพดาน 37,990 ft)'));
-    s('performance.cruise_table', L([{ h_ft: 2000, ktas: 276, power: 'max' }, { h_ft: 20000, ktas: 301, power: 'max' }], 'ft, kt TAS', ['LP12'], { conf: 'ต่ำ', note: 'max level speed ISA (ข้อความโบรชัวร์ที่เผยแพร่ซ้ำ)' }));
+    s('performance.ROC_SL_fpm', L(4090, 'fpm', ['LP12', 'LP13'], { conf: 'ต่ำ', note: `best ROC ที่ระดับน้ำทะเล 20.8 m/s (โบรชัวร์/Jane's ไม่ระบุน้ำหนัก); โมเดลไต่ BEM ของ lp_perf.mjs ให้ ${PF.pc9m.MTOW.ROC_fpm} fpm ที่ MTOW และ ${PF.pc9m.training_mass.ROC_fpm} ที่มวลฝึก ${r(dd.training_mass, 0)} kg จึงน่าเป็นค่าที่น้ำหนักฝึก; ใช้เป็นเป้า fit ที่ MTOW ตามเดิม (ดู §07.13)` }));
+    s('performance.ROC_table', rocTable(4090, 'มวลเดียวกับ ROC_SL_fpm (ไม่ระบุ)'));
+    s('performance.service_ceiling_ft', H(25000, 'ft', ['LP2'], 'ความสูงปฏิบัติการสูงสุด 7,620 m (Jane\'s ผ่าน Wikipedia ให้เพดาน 37,990 ft)'));
+    s('performance.cruise_table', L([{ h_ft: 2000, ktas: 276, power: 'max' }, { h_ft: 20000, ktas: 301, power: 'max' }], 'ft, kt TAS', ['LP12'], { conf: 'ต่ำ', note: 'max level speed ISA (ข้อความโบรชัวร์ที่เผยแพร่ซ้ำ) 142/155 m/s' }));
     s('performance.glide', E({ speed_kt: d.pc9m.glideV, ratio: d.t6a.glideLD.central }, 'kt CAS', [C], 'ใช้ polar ของ T-6 (ปีกตระกูลเดียวกัน) ที่ 2,350 kg; ไม่มีค่าสาธารณะของ PC-9 M'));
     s('performance.fuel', M({ usable_L: 518, usable_kg: d.pc9m.fuel_kg, endurance_h: { '2000ft_120KIAS': 2.45, '25000ft_120KIAS': 4.0 } }, 'L, kg, h', ['LP2', 'LP12'], 'endurance รวมสำรอง 100 nm'));
   }
@@ -378,7 +412,7 @@ export function buildPC7(d) {
   s('airframe.weights.MLW', H(P.MLW, 'kg', S)); s('airframe.weights.MRW', H(P.MRW, 'kg', S)); s('airframe.weights.MZFW', H(P.MZFW, 'kg', S));
   s('airframe.weights.BEW_typical', M(P.BEW, 'kg', ['LP9'], '3,682 lb (fact sheet)'));
   s('airframe.weights.useful_load', L(P.MTOW - P.BEW, 'kg', ['LP27', 'LP1', 'LP9'], { note: 'MTOW − BEW' }));
-  s('airframe.weights.training_mass', E({ kg: d.pc7mk2.training_mass, BEW: P.BEW, crew: 190, fuel: r(0.5 * d.pc9m.fuel_kg, 1) }, 'kg', ['LP27'], 'BEW + 2 × 95 kg + เชื้อเพลิงครึ่งถัง; เทียบ TCDS ใช้ --mass 2250'));
+  s('airframe.weights.training_mass', tmLeaf(d.pc7mk2.tm, ['LP27', 'LP9', 'LP1'], '0.806 kg/L', P.MTOW));
   s('airframe.cg.envelope', H(d.pc9m.cg_env.slice(0, 1).concat([[2350, 4.285, 4.3675]]), 'kg, m DAT', S, '≤2,250 kg 22–30 %MAC; 2,350 kg (MKX) 25–30 %MAC; stores 2,700 kg 22.5–29, 2,850 kg 23–28'));
   s('airframe.inertia.ref_mass', E(P.MTOW, 'kg', ['LP27'], 'inertia ของ pc9m สเกลด้วยรัศมีไจเรชันคงที่ (ลดลง 4 %); ค่า Ixx … ของ pc9m ถูกคูณ 2,250/2,350 โดย buildAC'));
   s('airframe.inertia.Ixx', E(Math.round(d.pc9m.I.Ixx * P.MTOW / 2350), 'kg m2', ['LM15', 'LP27'], 'Roskam radii คลาส trainer_turboprop ที่ 2,250 kg'));
@@ -389,20 +423,22 @@ export function buildPC7(d) {
   s('speeds.VS0_kt', M(67, 'kt CAS', ['LP9'], 'แฟลปและล้อลง'));
   s('speeds.VA_kt', M(210, 'kt CAS', S, 'ที่ 2,250 kg; 200 kt เมื่อมี stores'));
   s('speeds.VNE_kt', M(300, 'kt CAS', S, 'VMO ถึง 15,000 ft; MMO 0.60; fact sheet: 300 KCAS'));
-  s('speeds.VREF_kt', E(87, 'kt CAS', ['LP27'], '1.3 VS0 = 87.1'));
-  s('speeds.VAPP_kt', E(92, 'kt CAS', ['LP27'], 'VREF + 5'));
+  const PF = d.perf, V = d.vref.pc7mk2, hot = PF.pc7mk2.hot, vy = Math.round(PF.pc7mk2.MTOW.Vy_keas * d.vyBias), al = Math.round(d.altLossCoef.mean * 75 * 75 / 10) * 10;
+  s('speeds.VREF_kt', E(V.VREF, 'kt CAS', ['LP27', 'LP9'], `1.3 VS0 ที่มวลฝึก ${r(d.pc7mk2.training_mass, 0)} kg (D1): VS0 67 KCAS ที่ 2,250 kg [LP9] × √(${d.pc7mk2.training_mass}/2,250) = ${V.VS0_tm} ⇒ ${V.VREF_exact}; ที่ MTOW ${d.icao.pc7mk2} kt`));
+  s('speeds.VAPP_kt', E(V.VAPP, 'kt CAS', ['LP27'], `VREF + 5 kt ที่มวลฝึก แฟลป LDG ล้อลง (D1); แก้มวลเป็น MTOW ≈ ${V.VAPP_at_MTOW} kt`));
+  s('speeds.VX_kt', E(Math.round(PF.pc7mk2.MTOW.Vx_card_kcas), 'kt CAS', ['LP27', 'LP30'], `ไม่มีค่าสาธารณะ; lp_perf.mjs: มุมไต่สูงสุดของโมเดลที่ ${PF.pc7mk2.MTOW.Vx_model_keas} kt ≤ 1.2 VS1 จึงใช้ 1.2 VS1 = ${PF.pc7mk2.MTOW.Vx_card_kcas} kt ที่ MTOW ตาม 14 CFR 23.65(a)(4) [LP30] (γ ${PF.pc7mk2.MTOW.gamma_at_Vx_card_deg}° เทียบสูงสุด ${PF.pc7mk2.MTOW.gamma_max_deg}°); ที่มวลฝึก ${PF.pc7mk2.training_mass.Vx_card_kcas} kt`));
   s('speeds.VR_kt', E(76, 'kt CAS', ['LP27'], 'ไม่มีค่าสาธารณะ'));
-  s('speeds.VY_kt', E(120, 'kt CAS', ['LP27'], 'ไม่มีค่าสาธารณะ; ค่าประมาณจากกำลังต่ำกว่า PC-9 M'));
+  s('speeds.VY_kt', E(vy, 'kt CAS', ['LP27', 'LP29'], `ไม่มีค่าสาธารณะ; lp_perf.mjs ให้ Vy ${PF.pc7mk2.MTOW.Vy_keas} kt ที่ MTOW × ${d.vyBias} (อัตราส่วน VY ของ T-6A [LP29] ต่อโมเดลเดียวกัน) ⇒ ${vy} kt; ค่าเดิม 120 kt (เดาจากกำลังที่ต่ำกว่า) ต่ำไป; เส้น ROC แบน`));
   s('speeds.VG_kt', E(d.pc7mk2.glideV, 'kt CAS', ['LP27'], 'polar คลาสที่ 2,250 kg'));
-  s('speeds.stall_table', M({ '2250kg': { UP: 75, LDG: 67 } }, 'kt CAS', ['LP9'], 'น้ำหนักสมมติ'));
+  s('speeds.stall_table', M({ '2250kg': { UP: 75, LDG: 67 } }, 'kt CAS', ['LP9'], 'fact sheet ไม่ระบุน้ำหนัก บัตรถือว่าเป็น MTOW 2,250 kg'));
+  s('speeds.stall_altitude_loss_ft', E(al, 'ft', ['LP27', 'LC2', 'LF1', 'LG5'], `วิธีเดียวกับ pc9m: ${d.altLossCoef.mean} ft/kt² × (VS1 75 KCAS)² = ${al} ft (${Math.round(al * FT)} m; ช่วง ${Math.round(d.altLossCoef.lo * 75 * 75)}–${Math.round(d.altLossCoef.hi * 75 * 75)} ft)`));
   s('speeds.icao_approach_category', E('A', '-', ['LP27'], `1.3 VS0 = ${d.icao.pc7mk2} kt`));
-  s('performance.ROC_SL_fpm', M(2840, 'fpm', ['LP9'], 'ISA SL (น้ำหนักไม่ระบุ สมมติ 2,250 kg)'));
-  s('performance.takeoff', M({ ground_roll_m: null, over50ft_m: 415 }, 'm', ['LP9'], 'ISA SL ถึง 50 ft (1,360 ft)'));
-  s('performance.landing', M({ ground_roll_m: null, over50ft_m: 674 }, 'm', ['LP9'], 'ISA SL จาก 50 ft (2,210 ft)'));
-  s('performance.cruise_table', M([{ h_ft: 0, ktas: 242, power: 'max' }, { h_ft: 10000, ktas: 251, power: 'max' }], 'ft, kt TAS', ['LP9'], 'max level cruise'));
+  s('performance.ROC_SL_fpm', M(2840, 'fpm', ['LP9'], `ISA SL 14.4 m/s (fact sheet ไม่ระบุน้ำหนัก บัตรถือว่าเป็น MTOW 2,250 kg); โมเดลไต่ BEM ของ lp_perf.mjs ให้ ${PF.pc7mk2.MTOW.ROC_fpm} fpm ที่ MTOW (${r((PF.pc7mk2.MTOW.ROC_fpm / 2840 - 1) * 100, 1)} %)`));
+  s('performance.ROC_table', E({ h_ft: 9, oat_C: hot.map(h => h.oat_C), ROC_fpm: hot.map(h => Math.round(2840 * h.ROC_fpm_MTOW / hot[0].ROC_fpm_MTOW / 10) * 10), ROC_ms: hot.map(h => r(2840 * h.ROC_fpm_MTOW / hot[0].ROC_fpm_MTOW * FT / 60, 1)) }, 'fpm (m/s)', ['LP9', 'LP27'], 'ความสูงสนาม VTBD 9 ft; 2,840 fpm × อัตราส่วน ROC ของโมเดลไต่ BEM (lp_perf.mjs) ที่ OAT นั้นต่อ 15 °C (PT6A-25C flat rated กว้าง กำลังเต็ม); ไม่มีตาราง POH สาธารณะ'));
+  s('performance.cruise_table', M([{ h_ft: 0, ktas: 242, power: 'max' }, { h_ft: 10000, ktas: 251, power: 'max' }], 'ft, kt TAS', ['LP9'], 'max level cruise 124/129 m/s'));
   s('performance.glide', E({ speed_kt: d.pc7mk2.glideV, ratio: d.t6a.glideLD.central }, 'kt CAS', ['LP27'], 'polar คลาสของ T-6'));
   s('performance.fuel', M({ usable_L: 518, usable_kg: d.pc9m.fuel_kg, range_nm: 810 }, 'L, kg, nm', ['LP1', 'LP9']));
-  s('propulsion.layout', M([{ id: 1, pos: [r(4.285 - 0.45, 2), 0, -0.05], axis: [1, 0, 0], type: 'turboprop', model: 'PT6A-25C', prop_sense: 1 }], 'm FRD', ['LP1', 'LP27'], 'ตำแหน่งดุมเป็นค่าประมาณ'));
+  s('propulsion.layout', E([{ id: 1, pos: [r(4.285 - 0.45, 2), 0, -0.05], axis: [1, 0, 0], type: 'turboprop', model: 'PT6A-25C', prop_sense: 1 }], 'm FRD', ['LP1', 'LP27'], 'pos จาก CG อ้างอิงของ pc9m กับระนาบใบพัดสมมติที่ 0.45 m DAT; รุ่นเครื่องยนต์และทิศหมุนจาก TCDS F 56-25', { conf: 'กลาง' }));
   s('propeller.identity.model', H('Hartzell HC-D4N-2D หรือ -2E / D9512A(K)', '-', S, '', { scope: 'propeller' }));
   s('propeller.engineInterface.maxShaftPower', H(522, 'kW', S, '700 shp (thermodynamic 850 shp [LP9])', { scope: 'engine' }));
   s('propeller.engineInterface.rpmGoverned', L(2040, 'rpm', S, { scope: 'engine', conf: 'สูง', note: 'TCDS F 56-25 Issue 10 หน้า 1 (ตรวจทานแล้ว); transient 2,205 rpm 2 s; PC-9 M ใช้ 2,000' }));
@@ -430,17 +466,28 @@ export function buildT6C(d) {
   s('airframe.weights.MZFW', H(r(P.MZFW, 1), 'kg', ['LP5'], '5,850 lb'));
   s('airframe.weights.BEW_typical', M(r(P.BEW, 1), 'kg', ['LP8'], '5,150 lb (LP7: 5,170 lb)'));
   s('airframe.weights.useful_load', L(r(P.MTOW - P.BEW, 1), 'kg', ['LP27', 'LP8'], { note: 'MTOW − BEW' }));
-  s('airframe.weights.training_mass', E({ kg: d.t6c.training_mass, BEW: r(P.BEW, 1), crew: 190, fuel: r(0.5 * d.t6a.fuel_kg, 1) }, 'kg', ['LP27'], 'BEW + 2 × 95 kg + เชื้อเพลิงครึ่งถัง; เทียบใช้ --mass ' + r(P.MTOW, 1)));
+  s('airframe.weights.training_mass', tmLeaf(d.t6c.tm, ['LP27', 'LP8', 'LP21'], 'Jet A 0.80 kg/L', P.MTOW));
   s('airframe.cg.envelope', H(d.t6a.cg_env, 'kg, m DAT', ['LP5'], 'ตารางของ Model 3000 PM series ตรงกับน้ำหนัก T-6C'));
   s('airframe.inertia.ref_mass', E(r(P.MTOW, 1), 'kg', ['LP27'], 'inertia ของ t6a × 6,900/6,500'));
   for (const k of ['Ixx', 'Iyy', 'Izz']) s('airframe.inertia.' + k, E(Math.round(d.t6a.I[k] * 6900 / 6500), 'kg m2', ['LM15', 'LP27'], 'Roskam radii ที่ 6,900 lb'));
-  s('speeds.VS1_kt', E(d.t6c.VS1, 'kt CAS', ['LP2', 'LP27'], 'CL ของ PC-9 M ที่ 6,900 lb'));
-  s('speeds.VS0_kt', E(d.t6c.VS0, 'kt CAS', ['LP2', 'LP27'], 'เหมือนกัน'));
-  s('speeds.VREF_kt', E(Math.round(1.3 * d.t6c.VS0), 'kt CAS', ['LP27'], '1.3 VS0'));
-  s('speeds.icao_approach_category', E('B', '-', ['LP27'], `1.3 VS0 = ${d.icao.t6c} kt`));
+  const PF = d.perf, V = d.vref.t6c, A = PUB.t6a.aopa, hot = PF.t6c.hot, m0 = d.t6a.m_pub, kW2 = (P.MTOW / m0) ** 2, kW1 = P.MTOW / m0, ft2m = x => Math.round(x * FT);
+  const al = Math.round(d.altLossCoef.mean * d.t6c.VS1 ** 2 / 10) * 10;
+  s('speeds.VS1_kt', E(d.t6c.VS1, 'kt IAS', ['LP29', 'LP27'], '82 KIAS ที่ 6,300 lb [LP29] สเกล √W เป็น MTOW 6,900 lb', { conf: 'กลาง' }));
+  s('speeds.VS0_kt', E(d.t6c.VS0, 'kt IAS', ['LP29', 'LP27'], '74 KIAS ที่ 6,300 lb [LP29] สเกล √W เป็น MTOW 6,900 lb', { conf: 'กลาง' }));
+  s('speeds.VX_kt', E(Math.round(PF.t6c.MTOW.Vx_card_kcas), 'kt IAS', ['LP27', 'LP30'], `lp_perf.mjs: 1.2 VS1 ที่ MTOW 6,900 lb = ${PF.t6c.MTOW.Vx_card_kcas} kt (มุมไต่สูงสุดของโมเดลที่ ${PF.t6c.MTOW.Vx_model_keas} kt) ตาม 14 CFR 23.65(a)(4) [LP30]; ที่มวลฝึก ${PF.t6c.training_mass.Vx_card_kcas} kt`));
+  s('speeds.VREF_kt', E(V.VREF, 'kt IAS', ['LP27', 'LP29'], `1.3 VS0 ที่มวลฝึก ${r(d.t6c.training_mass, 0)} kg (D1): 74 KIAS ที่ 6,300 lb [LP29] × √(${d.t6c.training_mass}/${m0}) = ${V.VS0_tm} ⇒ ${V.VREF_exact}; ที่ MTOW ${d.icao.t6c} kt`));
+  s('speeds.VAPP_kt', E(V.VAPP, 'kt IAS', ['LP27', 'LP20', 'LP31'], `final 100 KIAS ของ T-6A [LP20] × √(${d.t6c.training_mass}/${d.t6a.training_mass}) = ${V.VAPP_exact} ที่มวลฝึก (D1; VAPP/VREF = ${r(V.VAPP / V.VREF_exact, 3)}); รายงานบิน T-6C ของ AOPA 2021: short final 110 KIAS, touchdown 100 [LP31]; แก้มวลเป็น MTOW ≈ ${V.VAPP_at_MTOW} kt`));
+  s('speeds.stall_altitude_loss_ft', E(al, 'ft', ['LP27', 'LC2', 'LF1', 'LG5'], `วิธีเดียวกับ t6a: ${d.altLossCoef.mean} ft/kt² × (VS1 ${d.t6c.VS1} kt ที่ MTOW)² = ${al} ft (${Math.round(al * FT)} m)`));
+  s('speeds.icao_approach_category', E('B', '-', ['LP27'], `1.3 VS0 ที่ MTOW = ${d.icao.t6c} kt`));
+  const roc = Math.round(3100 * PF.t6c.MTOW.ROC_fpm / PF.t6a.MTOW.ROC_fpm / 10) * 10;
+  s('performance.ROC_SL_fpm', E(roc, 'fpm', ['LP23', 'LP27'], `3,100 fpm ของ t6a (MTOW 6,500 lb) × อัตราส่วน ROC ของโมเดลไต่ BEM (lp_perf.mjs) ที่ 6,900/6,500 lb (${PF.t6c.MTOW.ROC_fpm}/${PF.t6a.MTOW.ROC_fpm}) = ${roc} fpm (${r(roc * FT / 60, 1)} m/s); ค่าเดิม 2,850 (ลด 8 % ตามน้ำหนัก); รายงาน AOPA 2021 เห็น 4,000 fpm ไม่ทราบน้ำหนัก [LP31]`));
+  s('performance.ROC_table', E({ h_ft: 9, oat_C: hot.map(h => h.oat_C), ROC_fpm: hot.map(h => Math.round(roc * h.ROC_fpm_MTOW / hot[0].ROC_fpm_MTOW / 10) * 10), ROC_ms: hot.map(h => r(roc * h.ROC_fpm_MTOW / hot[0].ROC_fpm_MTOW * FT / 60, 1)) }, 'fpm (m/s)', ['LP27'], 'ความสูงสนาม VTBD 9 ft MTOW; ROC_SL_fpm × อัตราส่วน ROC ของ lp_perf.mjs ที่ OAT นั้นต่อ 15 °C'));
+  s('performance.takeoff', E({ ground_roll_m: Math.round(ft2m(A.TO_gr_ft) * kW2), over50ft_m: Math.round(ft2m(A.TO50_ft) * kW2) }, 'm', ['LP29', 'LP27'], '1,400 / 2,000 ft ของ T-6A ที่ 6,300 lb [LP29] × (6,900/6,300)² (แรงขับเท่ากัน) ที่ MTOW 6,900 lb ISA SL', { conf: 'กลาง' }));
+  s('performance.landing', E({ ground_roll_m: Math.round(ft2m(A.LD_gr_ft) * kW1), over50ft_m: Math.round(ft2m(A.LD50_ft) * kW1) }, 'm', ['LP29', 'LP27'], '1,900 / 2,400 ft ของ T-6A ที่ 6,300 lb [LP29] × 6,900/6,300 (V² ∝ W) ที่ MLW 6,900 lb ISA SL', { conf: 'กลาง' }));
+  s('performance.takeoff_table', E({ mass_kg: r(P.MTOW, 1), h_ft: 9, oat_C: hot.map(h => h.oat_C), ground_roll_m: hot.map(h => Math.round(ft2m(A.TO_gr_ft) * kW2 * h.takeoff_factor)), over50ft_m: hot.map(h => Math.round(ft2m(A.TO50_ft) * kW2 * h.takeoff_factor)) }, 'm', ['LP29', 'LP27'], `performance.takeoff × ตัวคูณวันร้อนของ lp_perf.mjs ${hot.map(h => h.takeoff_factor).join('/')}`));
+  s('performance.landing_table', E({ mass_kg: r(P.MTOW, 1), h_ft: 9, oat_C: hot.map(h => h.oat_C), ground_roll_m: hot.map(h => Math.round(ft2m(A.LD_gr_ft) * kW1 * h.landing_factor)), over50ft_m: hot.map(h => Math.round(ft2m(A.LD50_ft) * kW1 * h.landing_factor)) }, 'm', ['LP29', 'LP27'], `performance.landing × 1/σ = ${hot.map(h => h.landing_factor).join('/')}`));
   s('performance.fuel', M({ usable_L: 681.37, range_nm: 884, ferry_range_nm: 1382 }, 'L, nm', ['LP5', 'LP8'], 'range ไม่มีถังภายนอก 884 nm; ferry (ถัง 2 ใบ) 1,382 nm; usable_L = 2 × 90 gal ตาม TCDS ข้อ A.III.9.1 (ข้อ A.III.2 ให้ 1,100 lb ดู t6a.airframe.weights.max_fuel_usable)'));
-  s('performance.ROC_SL_fpm', E(2850, 'fpm', ['LP23', 'LP27'], '3,100 fpm ของ T-6A ลดตามน้ำหนัก 6,900/6,500 (excess power ลด ~8 %)'));
-  s('propulsion.layout', M([{ id: 1, pos: [r(4.252 - 0.45, 2), 0, -0.05], axis: [1, 0, 0], type: 'turboprop', model: 'PT6A-68A', prop_sense: 1 }], 'm FRD', ['LP8', 'LP27'], 'PT6A-68A ตาม product card'));
+  s('propulsion.layout', E([{ id: 1, pos: [r(4.252 - 0.45, 2), 0, -0.05], axis: [1, 0, 0], type: 'turboprop', model: 'PT6A-68A', prop_sense: 1 }], 'm FRD', ['LP8', 'LP27'], 'pos จาก CG อ้างอิงของ t6a กับระนาบใบพัดสมมติที่ 0.45 m DAT; รุ่นเครื่องยนต์ PT6A-68A ตาม product card [LP8]', { conf: 'กลาง' }));
   return c;
 }
 
@@ -455,12 +502,19 @@ export function naLeaf(id) {
     'otherSims.jsbsim.gearSideForcePacejkaDefaults', 'otherSims.jsbsim.c172xTrimCruise100kcas3000ft', 'otherSims.jsbsim.c172xTrimApproach65kcas1000ftFlap30', 'otherSims.yasim.*', 'otherSims.xplane.*', 'otherSims.msfs.*', 'otherSims.geofs.*', 'otherSims.airfieldlab.*',
     'aero.stall_warning.alpha_warn_design', 'aero.static_long.alpha_CLmax', 'aero.static_long.alpha_star', 'aero.stall_warning.alpha_warn_5kt', 'wind.fFactor.trainerExcessTW',
     T6 ? 'turboprop.reference_engines.PT6A-62' : 'turboprop.reference_engines.PT6A-68',
+    'speeds.VNO_kt', ...(T6 ? [] : ['speeds.crosswind_demonstrated_kt']),
     'turboprop.reference_engines.PT6A-60A', 'turboprop.reference_engines.PT6A-52', 'turboprop.reference_engines.PT6A-68B_C_D_T'];
   return list;
 }
 
+// class coefficient for the stall altitude loss (gap 18): POH values of round-2 piston trainers, h / VS1² (ft/kt²)
+const ALT_LOSS_POH = [{ id: 'c172s', ft: 230, vs1: 53, src: 'LC2' }, { id: 'c152', ft: 160, vs1: 48, src: 'LF1' }, { id: 'p2006t', ft: 180, vs1: 66, src: 'LG5' }];
 export function buildAll() {
   const d = derive();
+  d.perf = perfAll();
+  d.vyBias = r(PUB.t6a.aopa.VY / d.perf.t6a.m6300.Vy_keas, 4);      // T-6A public VY / lp_perf Vy at the same mass
+  const ks = ALT_LOSS_POH.map(o => o.ft / o.vs1 ** 2);
+  d.altLossCoef = { mean: r(ks.reduce((a, b) => a + b, 0) / ks.length, 4), lo: r(Math.min(...ks), 4), hi: r(Math.max(...ks), 4), rows: ALT_LOSS_POH };
   const cards = { pc9m: buildMain('pc9m', d), t6a: buildMain('t6a', d), pc7mk2: buildPC7(d), t6c: buildT6C(d) };
   return { d, cards };
 }

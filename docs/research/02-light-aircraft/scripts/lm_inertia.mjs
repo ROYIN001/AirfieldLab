@@ -8,7 +8,7 @@
 //                                               -> inertia of a merged type (airframe.weights/geometry/wing)
 //   node scripts/lm_inertia.mjs --json          -> machine output (used for common_light.methods.radii)
 import path from 'node:path';
-import { HERE, loadType, val, isMainModule } from './lm_lib.mjs';
+import { HERE, loadType, val, isMainModule, trainingMassKg } from './lm_lib.mjs';
 
 const SLUGFT2 = 1.3558179483, LB = 0.45359237, FT = 0.3048;
 // reference aircraft: m kg, I kg m2, b m, L m (overall length), src code in 01-methods.md
@@ -67,7 +67,8 @@ if (isMain) {
     console.log('\nleave-one-out error (%):'); for (const r of leaveOneOut()) console.log(`${r.id.padEnd(20)} ${r.err_pct ? `Ixx ${f(r.err_pct.Ixx, 1)}  Iyy ${f(r.err_pct.Iyy, 1)}  Izz ${f(r.err_pct.Izz, 1)}` : r.note}`);
   } else {
     const card = loadType(id);
-    const m = +(opt('--mass') ?? val(card, 'airframe.weights.training_mass') ?? val(card, 'airframe.weights.MTOW'));
+    // 19 Nov 2026 (gap 2, D3): training_mass may be a number or {kg, empty_kg, crew_kg, fuel_kg}; '+{kg:…}' used to give NaN
+    const m = +(opt('--mass') ?? trainingMassKg(card) ?? val(card, 'airframe.weights.MTOW'));
     const b = val(card, 'airframe.wing.b') ?? val(card, 'aero.ref.b') ?? val(card, 'airframe.geometry.span'), L = val(card, 'airframe.geometry.length');
     const cls = opt('--class', null); const R = val(card, 'airframe.inertia.radii') ?? RADII[cls ?? 'single_prop'];
     if (!(m && b && L)) { console.error(`need mass, span and length (got m ${m}, b ${b}, L ${L})`); process.exit(1); }

@@ -2,19 +2,25 @@
 // Topic 09 (LO): place the generic training circuit on AirfieldLab's VTBD runways for every type and write
 // scripts/out/lo_circuits.json + lo_circuits.md. Run from the repo root:  node <this folder>/lo_run.mjs
 import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { makeCircuit, toNE, windLeg, TYPES, FT, NM, SM, KT, defaultOffset, turnRadius } from './lo_lib.mjs';
 
-const ROOT = process.env.AIRFIELDLAB_ROOT || decodeURIComponent(new URL('../../../../', import.meta.url).pathname).replace(/\/$/, '');
-const { M } = await import(ROOT + '/test/harness.mjs');
+// Repo root: relative to this folder first (docs/research/02-light-aircraft/scripts -> four levels up), then
+// $AIRFIELDLAB_ROOT, then the default of lm_card.mjs (same convention as the shared tools).
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const IN_REPO = path.resolve(HERE, '..', '..', '..', '..');
+const ROOT = fs.existsSync(path.join(IN_REPO, 'test', 'harness.mjs')) ? IN_REPO : (process.env.AIRFIELDLAB_ROOT || decodeURIComponent(new URL('../../../../', import.meta.url).pathname).replace(/\/$/, ''));
+const { M } = await import(pathToFileURL(path.join(ROOT, 'test', 'harness.mjs')).href);
 const OUT = new URL('./out/', import.meta.url);
 
-// Circuit side per landing runway. 03R/21L: AIP VTBD AD 2.20 4.2 puts the circuit EAST of the runway [LO13]:
+// Circuit side per landing runway. 03R/21L: AIP VTBD AD 2.20 4.2 puts the circuit EAST of the runway [LO13][LO39]:
 // 03R lands on 028.75 deg, east = right -> 'R'; 21L lands on 208.75 deg, east = left -> 'L'.
 // 03L/21R: no AIP circuit (it is the main airliner runway); the sim proposal uses the WEST side so the two
 // circuits never overlap (fictional, labelled as such): 03L -> 'L', 21R -> 'R'.
 const SIDES = { '03R': 'R', '21L': 'L', '03L': 'L', '21R': 'R' };
-const HP = (id) => (TYPES[id].features.turboprop ? 1000 : 800);   // AIP join heights: light 800, conventional 1000 [LO13]; turboprop = 1000 is an estimate
-const ATZ_R = 5 * NM, ATZ_TOP_FT = 2000;                          // AIP AD 2.17 [LO13]
+const HP = (id) => (TYPES[id].features.turboprop ? 1000 : 800);   // AIP join heights: light 800, conventional 1000 [LO39 AD 2.20 4.2.2, AD 2.22 8.6.2]; turboprop = 1000 is an estimate
+const ATZ_R = 5 * NM, ATZ_TOP_FT = 2000;                          // AIP AD 2.17 [LO39]
 
 const res = { note: 'LO0 circuits on VTBD; runway frame x along landing direction from threshold, y right; h AGL m', runs: [] };
 for (const rwy of ['21L', '03R', '03L', '21R']) {

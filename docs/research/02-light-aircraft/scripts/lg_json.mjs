@@ -10,6 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { F, compute } from './lg_calc.mjs';
 import { isMainModule } from './lm_lib.mjs';
+import { normaliseScopes, stickForceBand } from './lc_cardfix.mjs';   // shared helpers (D4 scope rule, wheel Fs/g band), read-only use
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const MD = path.join(HERE, '..', '12-p2006t.md');
@@ -24,6 +25,9 @@ export const IYY_SCALE = 1.3;   // est: build-up Iyy raised to the top of its ±
 // (see 12-p2006t.md §12.6.3 for the reasons; Cnb/Clb/Clp/Cnr from flight were rejected because they do not reproduce the measured
 // Dutch-roll frequency with any plausible Izz, see out/lg_iter.json)
 export const DERIV_CHOICE = { Cmq: 'ft', Cmde: 'ft' };
+// D6 (19 Nov 2026): flap detent names of the card = the AFM checklist names UP / T/O / FULL with flap_deg 0 / 15 / 40; 08 and 09
+// follow these names. lg_calc keeps its internal keys '0' / '15' / '40'.
+export const DET_NAME = { '0': 'UP', '15': 'T/O', '40': 'FULL' };
 
 export function buildCard() {
   const C = compute(), g = C.geom, w = C.weights, D = rd('lg_derivs.json'), leg = rd('lg_legacy.json'), it = rd('lg_iter.json'), card1180 = rd('lg_card_1180.json'), T = rd('lg_tests.json');
@@ -41,9 +45,9 @@ export function buildCard() {
       MLW: L(F.MTOW, 'kg', ['LG1', 'LG2'], 'สูง', false, 'เท่ากับ MTOW (TCDS ให้ take-off/landing ค่าเดียว; AFM p2-15)'),
       MZFW: L(F.MZFW, 'kg', ['LG1'], 'สูง', false, 'maximum zero (wing) fuel mass 1,145 kg (1,195 kg ที่ MTOW 1,230)'),
       BEW_typical: L(F.bro.BEW, 'kg', ['LG6', 'LG9'], 'กลาง', false, 'standard empty weight ตามโบรชัวร์ 2021 (รุ่น 1,230 kg); เครื่องทดสอบก่อนรับรอง 1,817 lb = 824 kg [LG9]; น้ำหนักจริงอยู่ใน weighing record ของแต่ละลำ (AFM Section 6)'),
-      max_fuel_usable: L(r(F.fuelUsable_L * 0.72, 4), 'kg', ['LG1', 'LM4'], 'สูง', false, `ใช้ได้ 194.4 L (51.4 US gal) จาก 200 L × 0.72 kg/l (MOGAS/AVGAS ความหนาแน่นค่าประมาณของหัวข้อ 01)`),
+      max_fuel_usable: L(r(F.fuelUsable_L * 0.72, 4), 'kg', ['LG1', 'LM4'], 'สูง', false, `ใช้ได้ 194.4 L (51.4 US gal) จาก 200 L × 0.72 kg/l (ความหนาแน่น MOGAS/AVGAS ที่หัวข้อ 01 ใช้ร่วมกัน [LM4])`),
       useful_load: L(F.MTOW - F.bro.BEW, 'kg', ['LG1', 'LG6'], 'กลาง', false, 'MTOW 1,180 − BEW 860; โบรชัวร์ให้ 370 kg ที่ MTOW 1,230'),
-      training_mass: E(w.training_mass, 'kg', ['LG6', 'LG0'], `BEW 860 + ครู 85 + ศิษย์ 75 + เชื้อเพลิง ${w.trainFuelL} L (108 kg) = ${w.training_mass} kg; สองคน + เชื้อเพลิงเต็มได้ ${w.fullFuelTwoPilots} kg ยังไม่เกิน MTOW`),
+      training_mass: E({ kg: w.training_mass, empty_kg: F.bro.BEW, crew_kg: 160, fuel_kg: r(w.trainFuelL * 0.72, 4), fuel_l: w.trainFuelL }, 'kg', ['LG6', 'LG0'], `empty_kg = BEW_typical ${F.bro.BEW} kg (โบรชัวร์ [LG6]); ครู 85 + ศิษย์ 75 = 160 kg; เชื้อเพลิง ${w.trainFuelL} L × 0.72 kg/l = ${r(w.trainFuelL * 0.72, 4)} kg; รวม ${w.training_mass} kg (ต่ำกว่า 1,180 kg จึงใช้ความเร็วคอลัมน์ 1,180 kg ของ AFM); สองคน + เชื้อเพลิงเต็มได้ ${w.fullFuelTwoPilots} kg ยังไม่เกิน MTOW`),
     },
     cg: {
       datum: L('ระนาบตั้งที่สัมผัสขอบหน้าปีก (wing leading edge)', '-', ['LG1', 'LG2'], 'สูง', false, 'ระยะ m DAT บวกไปทางท้าย'),
@@ -111,21 +115,21 @@ export function buildCard() {
 
   // ───────── aero
   const cl = C.clmax, fl = C.flaps;
-  const dets = [{ name: '0', flap_deg: 0, VFE_kt: null, dCL0: 0, dCD0: 0, dCm0: 0, CLmax: cl['0'].CLmax_1g },
-    { name: '15', flap_deg: 15, VFE_kt: 119, dCL0: fl.dCL0['15'], dCD0: 0.012, dCm0: -0.04, CLmax: cl['15'].CLmax_1g },
-    { name: '40', flap_deg: 40, VFE_kt: 93, dCL0: fl.dCL0['40'], dCD0: 0.050, dCm0: -0.10, CLmax: cl['40'].CLmax_1g }];
+  const dets = [{ name: 'UP', flap_deg: 0, VFE_kt: null, dCL0: 0, dCD0: 0, dCm0: 0, CLmax: cl['0'].CLmax_1g },
+    { name: 'T/O', flap_deg: 15, VFE_kt: 119, dCL0: fl.dCL0['15'], dCD0: 0.012, dCm0: -0.04, CLmax: cl['15'].CLmax_1g },
+    { name: 'FULL', flap_deg: 40, VFE_kt: 93, dCL0: fl.dCL0['40'], dCD0: 0.050, dCm0: -0.10, CLmax: cl['40'].CLmax_1g }];
   c.aero = {
     ref: { S: L(F.S, 'm2', ['LG2'], 'สูง', false, ''), b: L(F.b, 'm', ['LG2'], 'สูง', false, ''), c: L(F.MAC_tcds, 'm', ['LG1'], 'สูง', false, 'MAC ของ TCDS') },
     static_long: {
-      CL0: L({ clean: F.ft.CL0, '15': r(F.ft.CL0 + fl.dCL0['15'], 3), '40': r(F.ft.CL0 + fl.dCL0['40'], 3) }, '-', ['LG7', 'LG0'], 'กลาง', true, `ค่าประมาณ (แฟลป): clean จาก parameter estimation การบิน 110 kt [LG7] (อุโมงค์ลม 0.153); แฟลป = clean + ΔCLmax/0.85 จากความเร็ว stall ของ AFM`),
+      CL0: L({ UP: F.ft.CL0, 'T/O': r(F.ft.CL0 + fl.dCL0['15'], 3), FULL: r(F.ft.CL0 + fl.dCL0['40'], 3) }, '-', ['LG7', 'LG0'], 'กลาง', true, `ค่าประมาณ (แฟลป): UP (clean) จาก parameter estimation การบิน 110 kt [LG7] (อุโมงค์ลม 0.153); แฟลป = UP + ΔCLmax/0.85 จากความเร็ว stall ของ AFM`),
       CLalpha: L(F.ft.CLa, '1/rad', ['LG7'], 'กลาง', false, 'parameter estimation 4.152; บินระดับหลายความเร็ว 3.85; อุโมงค์ลม 4.5 (Re 0.6e6)'),
-      Cm0: L({ clean: F.ft.WT.Cm0 }, '-', ['LG7'], 'ต่ำ', false, 'อุโมงค์ลม −0.08 (ค่าจาก parameter estimation −0.922 อ้างอิงต่างกันและใช้กับ AC ไม่ได้)'),
+      Cm0: L({ UP: F.ft.WT.Cm0 }, '-', ['LG7'], 'ต่ำ', false, 'อุโมงค์ลม −0.08 (ค่าจาก parameter estimation −0.922 อ้างอิงต่างกันและใช้กับ AC ไม่ได้)'),
       Cmalpha: L(F.ft.Cma, '1/rad', ['LG7'], 'กลาง', false, 'parameter estimation −0.871; อุโมงค์ลม −0.80; neutral point ~41 % MAC และ SM ~16 % ที่ CL 0.3 [LG8]'),
-      CLmax_target: L({ clean: cl['0'].CLmax_1g, '15': cl['15'].CLmax_1g, '40': cl['40'].CLmax_1g }, '-', ['LG2', 'LG4', 'LM1'], 'กลาง', true, `ค่าประมาณ: 1 g trimmed ที่ 1,180 kg จาก V_S ของ AFM (KCAS 66/56/54) ด้วยวิธีความเร็วต่ำสุด nz 0.95 ของหัวข้อ 01; ทดสอบการบิน [LG7] ให้ static CLmax clean 1.25 (= 62 KCAS) ขัดกับ green arc 66 KIAS`),
-      alpha_CLmax: card1180?.res?.stall ? E(Object.fromEntries(Object.entries(card1180.res.stall).map(([k, s]) => [k === '0' ? 'clean' : k, r(s.alpha_deg, 3)])), 'deg', ['LG0', 'LM0'], 'มุมปะทะที่ CLmax ในการทดสอบ stall 1 kt/s ของซิม (lm_card, 1,180 kg) จาก aStall ที่แก้หา; ไม่มีค่าจากการวัด') : undefined,
+      CLmax_target: L({ UP: cl['0'].CLmax_1g, 'T/O': cl['15'].CLmax_1g, FULL: cl['40'].CLmax_1g }, '-', ['LG2', 'LG4', 'LM1'], 'กลาง', true, `ค่าประมาณ: 1 g trimmed ที่ 1,180 kg จาก V_S ของ AFM (KCAS 66/56/54) ด้วยวิธีความเร็วต่ำสุด nz 0.95 ของหัวข้อ 01; ทดสอบการบิน [LG7] ให้ static CLmax clean 1.25 (= 62 KCAS) ขัดกับ green arc 66 KIAS`),
+      alpha_CLmax: card1180?.res?.stall ? E(Object.fromEntries(Object.entries(card1180.res.stall).map(([k, s]) => [DET_NAME[k] ?? k, r(s.alpha_deg, 3)])), 'deg', ['LG0', 'LM0'], 'มุมปะทะที่ CLmax ในการทดสอบ stall 1 kt/s ของซิม (lm_card, 1,180 kg) จาก aStall ที่แก้หา; ไม่มีค่าจากการวัด') : undefined,
     },
     flaps: {
-      detents: L(dets, 'deg, kt IAS, -', ['LG1', 'LG2', 'LG4', 'LG7', 'LG0'], 'ต่ำ', true, 'ค่าประมาณ (dCL0, dCD0, dCm0): มุม 0/40° จาก TCDS, ตำแหน่ง T/O = 15° จากการทดสอบ stall [LG7] (AFM ไม่พิมพ์มุม); CLmax จาก V_S ของ AFM; VFE T/O 119 FULL 93 KIAS; แฟลปไฟฟ้าตั้งได้ต่อเนื่อง (ไม่มี detent กลไก) [LH21]'),
+      detents: L(dets, 'deg, kt IAS, -', ['LG1', 'LG2', 'LG4', 'LG7', 'LG0'], 'ต่ำ', true, 'ค่าประมาณ (dCL0, dCD0, dCm0): ชื่อตำแหน่ง UP / T/O / FULL ตาม checklist ของ AFM [LG3] (หัวตาราง S4-7 เขียนแฟลปขึ้นว่า 0°) ใช้ชื่อชุดนี้ในหัวข้อ 08 และ 09 ด้วย (D6); มุม 0/40° จาก TCDS, ตำแหน่ง T/O = 15° จากการทดสอบ stall [LG7] (AFM ไม่พิมพ์มุม); CLmax จาก V_S ของ AFM; VFE T/O 119 FULL 93 KIAS; แฟลปไฟฟ้าตั้งได้ต่อเนื่อง (ไม่มี detent กลไก) [LH21]'),
       transition_time_s: E(10, 's', ['LG0'], '0 → 40° แฟลปไฟฟ้า ไม่พบตัวเลข'),
     },
     gear_drag: { dCD0: E(0.012, '-', ['LG0'], 'ล้อพับเข้า sponson ใต้ลำตัว; ΔCD0 ของล้อลงเทียบเครื่องสองเครื่องยนต์เบา (0.010–0.020)') },
@@ -191,26 +195,26 @@ export function buildCard() {
     VS1_kt: ias(66, 'green arc ล่าง = VS1 แฟลป 0 ที่ MTOW (AFM p2-7); ตารางแฟลป 0 อ่านไม่ได้ในสำเนา; ขัดกับการทดสอบบิน CLmax 1.25 (≈ 62 KCAS) [LG7] และ final แฟลปขึ้น 82 kt [LG10]', ['LG2', 'LG7'], 'กลาง'),
     VS_TO_kt: ias(56, 'แฟลป T/O = 56 KCAS (AFM p5-5)', ['LG4'], 'กลาง'),
     VX_kt: ias(73, '1,180 kg แฟลป 0 (AFM p S4-7); 72 ที่ 1,230 kg', ['LG3']),
-    VY_kt: ias(80, '1,180 kg แฟลป 0 (AFM p S4-7); 84 ที่ 1,230 kg; บท 3 (p 3-46 ของไฟล์ส่วนที่ 1, S3-56 ของไฟล์ส่วนที่ 2) ให้ 83 — ขัดกัน', ['LG3'], 'กลาง'),
+    VY_kt: ias(80, 'ค่าเดียวของบัตร: 80 KIAS (41.2 m/s) แฟลป UP ที่ 1,180 kg (ใช้กับมวลฝึก 1,128 kg) จากตารางความเร็วของ AFM p S4-7 [LG3]; 84 ที่ 1,230 kg; ค่าอื่นในเอกสาร: บท 3 (p 3-46 ของไฟล์ส่วนที่ 1 [LG2], S3-56 ของไฟล์ส่วนที่ 2) ให้ 83 KIAS ซึ่งเป็นความเร็ว best glide (= VG_kt) หัวข้อ 09 ควรอ้าง 80 สำหรับไต่ใน pattern และ go-around', ['LG3'], 'กลาง'),
     VR_kt: ias(64, 'แฟลป T/O 1,180 kg (S4-7); 65 ที่ 1,230 kg; AFM 1st ed: lift-off 66.5 KIAS บนหญ้า', ['LG3', 'LG5']),
-    VAPP_kt: ias(70, 'final approach แฟลป FULL 1,180 kg (S4-7); 71 ที่ 1,230 kg; approach แฟลป T/O 90 KIAS (downwind)', ['LG3']),
-    VREF_kt: ias(70, 'AFM ไม่ใช้คำว่า VREF; ใช้ final approach speed แฟลป FULL (= 1.3 × 54 KCAS = 70.2); แตะพื้น 65 KIAS', ['LG3', 'LG0'], 'กลาง'),
-    VG_kt: ias(83, 'best glide แฟลป 0 = VY ตามบท 3 (p 3-46 [LG2], S3-56 [LG3]: 83 ที่ 1,180 kg, 84 ที่ 1,230 kg)', ['LG2', 'LG3'], 'กลาง'),
+    VAPP_kt: ias(70, 'final approach แฟลป FULL 70 KIAS (36.0 m/s) คอลัมน์ 1,180 kg ของ S4-7 ใช้กับมวลฝึก 1,128 kg [LG3]; 71 ที่ 1,230 kg; approach แฟลป T/O 90 KIAS (downwind); บัตรเป็นเจ้าของค่านี้ (D1) หัวข้อ 08 และ 09 อ้างจากที่นี่', ['LG3']),
+    VREF_kt: ias(70, 'AFM ไม่ใช้คำว่า VREF; ใช้ final approach speed แฟลป FULL 70 KIAS ที่คอลัมน์ 1,180 kg (มวลฝึก 1,128 kg) (= 1.3 × 54 KCAS = 70.2); แตะพื้น 65 KIAS; VAPP = VREF (D1)', ['LG3', 'LG0'], 'กลาง'),
+    VG_kt: ias(83, 'best glide แฟลป UP 83 KIAS (42.7 m/s) ที่ 1,180 kg, 84 ที่ 1,230 kg (บท 3: p 3-46 [LG2], S3-56 [LG3]) บท 3 เรียกความเร็วนี้ว่า VY แต่บัตรใช้ VY_kt 80 KIAS จากตาราง S4-7 และเก็บ 83 เป็น best glide', ['LG2', 'LG3'], 'กลาง'),
     VA_kt: ias(119, 'TCDS 119/117 KCAS (1,180 kg); AFM p2-5/2-19 ให้ 118 — ขัดกัน 1 kt; 122 ที่ 1,230 kg', ['LG1', 'LG2']),
     VNO_kt: ias(135, 'TCDS 135/134 KCAS (AFM 133 KCAS); 138 ที่ 1,230 kg', ['LG1', 'LG2']),
     VNE_kt: ias(167, '168 KCAS; 171 ที่ 1,230 kg', ['LG1', 'LG2']),
     VLE_kt: ias(93, '92 KCAS; MOD2006/033 เพิ่มเป็น 122 KIAS', ['LG1', 'LG2']),
     VLO_kt: ias(93, 'เหมือน VLE', ['LG1', 'LG2']),
-    VFE: L({ '15': 119, '40': 93 }, 'kt IAS', ['LG1', 'LG2'], 'สูง', false, 'T/O 119/117 KCAS, FULL 93/92 KCAS; 1,230 kg: T/O 122'),
+    VFE: L({ 'T/O': 119, FULL: 93 }, 'kt IAS', ['LG1', 'LG2'], 'สูง', false, 'T/O 119/117 KCAS, FULL 93/92 KCAS; 1,230 kg: T/O 122'),
     VMCA_kt: ias(62, 'แฟลป T/O, 62 KCAS; red line (AFM p2-7, TCDS)', ['LG1', 'LG2']),
     VYSE_kt: ias(80, 'blue line ระดับน้ำทะเล 1,180 kg; 84 ที่ 1,230 kg (AFM p3-24)', ['LG2']),
     VXSE_kt: ias(79, '1,180 kg; 83 ที่ 1,230 kg (AFM p3-24)', ['LG2']),
     VSSE_kt: ias(70, 'safe single-engine speed สำหรับการฝึก ไม่ขึ้นกับน้ำหนัก (AFM S4-8)', ['LG3']),
-    ias_cas: L({ '0': [[75, 74], [93, 92], [119, 117], [135, 134], [167, 168]], '15': [[56, 56], [57, 57], [60, 60], [67, 67], [81, 79], [119, 117]], '40': [[53, 54], [54, 55], [58, 58], [64, 64], [78, 76], [93, 92]] }, 'KIAS→KCAS', ['LG1', 'LG4', 'LG5'], 'ต่ำ', false,
-      'จุดจากตาราง stall (แฟลป 15/40) และขีดจำกัดใน TCDS; แฟลป 0 ใช้ตัวอย่างกราฟ 75→74 KIAS (กราฟเต็มเป็นรูปภาพ) และ VLE/VA/VNO/VNE; ต่ำกว่า 75 KIAS แฟลป 0 ไม่มีจุด (ซิมใช้ค่าปลายสุด)'),
-    stall_table: L({ axes: { flap: ['15', '40'], bank_deg: [0, 15, 30, 45, 60] }, data: [F.stall.TO, F.stall.FULL], note_1230: [F.stall1230.TO, F.stall1230.FULL] }, '[KIAS, KCAS]', ['LG4'], 'กลาง', false,
+    ias_cas: L({ UP: [[75, 74], [93, 92], [119, 117], [135, 134], [167, 168]], 'T/O': [[56, 56], [57, 57], [60, 60], [67, 67], [81, 79], [119, 117]], FULL: [[53, 54], [54, 55], [58, 58], [64, 64], [78, 76], [93, 92]] }, 'KIAS→KCAS', ['LG1', 'LG4', 'LG5'], 'ต่ำ', false,
+      'จุดจากตาราง stall (แฟลป T/O และ FULL) และขีดจำกัดใน TCDS; แฟลป UP ใช้ตัวอย่างกราฟ 75→74 KIAS (กราฟเต็มเป็นรูปภาพ) และ VLE/VA/VNO/VNE; ต่ำกว่า 75 KIAS แฟลป UP ไม่มีจุด (ซิมใช้ค่าปลายสุด)'),
+    stall_table: L({ axes: { flap: ['T/O', 'FULL'], bank_deg: [0, 15, 30, 45, 60] }, data: [F.stall.TO, F.stall.FULL], note_1230: [F.stall1230.TO, F.stall1230.FULL] }, '[KIAS, KCAS]', ['LG4'], 'กลาง', false,
       '1,180 kg CG 22 % idle ล้อลง (AFM p5-5, อ่านจากข้อความที่สกัดจากสำเนาออนไลน์; ป้ายคอลัมน์มุมเอียงอนุมานจากอัตราส่วน 1/√cos φ ซึ่งตรงทุกช่อง ≤ 0.6 %); note_1230 = หน้า W5-5 รุ่น 1,230 kg'),
-    stall_altitude_loss_ft: L(F.stallAltLoss_ft, 'ft', ['LG5'], 'กลาง', false, 'การฟื้นจาก stall แบบปกติ มุมเอียง < 30° (AFM p5-5)'),
+    stall_altitude_loss_ft: L(F.stallAltLoss_ft, 'ft', ['LG5'], 'กลาง', false, `ความสูงที่เสียสูงสุด ${F.stallAltLoss_ft} ft (${Math.round(F.stallAltLoss_ft * 0.3048)} m) ระหว่าง stall และการแก้แบบปกติ มุมเอียง < 30° (AFM p5-5)`),
     stall_warning_margin_kt: E(5, 'kt', ['LM3', 'LG0'], 'ใช้เกณฑ์ขั้นต่ำของฐานรับรอง CS-23.207(c) amdt 0 (เตือนก่อน stall อย่างน้อย 5 kt หรือ 5 % ของความเร็ว stall แล้วแต่ค่าไหนมากกว่า); ส่วนที่อ่านได้ของ AFM ไม่บอก margin จริงของระบบเตือนของ P2006T', 'ต่ำ'),
     crosswind_demonstrated_kt: L(F.xwind_kt, 'kt', ['LG4', 'LG5'], 'สูง', false, 'maximum demonstrated crosswind (AFM p5-6)'),
     icao_approach_category: L('A', '-', ['LG0'], 'สูง', false, 'Vat = 1.3 VS0 ≈ 70 kt < 91 kt (ICAO Doc 8168)'),
@@ -224,7 +228,7 @@ export function buildCard() {
     service_ceiling_ft: L(14000, 'ft', ['LG1'], 'กลาง', false, 'maximum operating altitude (TCDS p.7) ไม่ใช่ service ceiling; OEI ceiling 7,500 ft [LG9]'),
     oei: L({ ROC_fpm: F.fly.rocOEI, ceiling_ft: F.fly.ceilOEI, ROC_800ft_winglet_fpm: 300 }, 'fpm, ft', ['LG9', 'LG7', 'LG8'], 'กลาง', false, 'Flying 2011: ราว 250 fpm และเพดาน OEI 7,500 ft (ตัวเลขที่ผู้ผลิตประกาศ ไม่บอกมวล/อุณหภูมิ); สไลด์ [LG7] 169 → 300 fpm ที่ 800 ft ก่อน/หลังติด winglet (สไลด์ไม่ได้เขียนว่า OEI แต่บริบทคือการไต่เครื่องเดียว); ICAS 2008 §4.4: OEI 160 → 300 fpm ที่ MTOW'),
     cruise_table: L([{ ktas: 142, h_ft: 3500, oat_c: -8, map_inhg: 25, pct: 75, src: 'LG10' }, { ktas: 151, map_inhg: 26, note: 'max power', src: 'LG10' }, { ktas: 150, mass_kg: 1180, note: 'max level speed', src: 'LG8' }, { ktas: 145, note: 'max cruise (brochure)', src: 'LG6' }], 'kt TAS', ['LG10', 'LG8', 'LG6'], 'ต่ำ', false, 'ตาราง cruise ของ AFM เป็นรูป (อ่านไม่ได้); จุดจากบทความทดสอบบินและเอกสารผู้ผลิต'),
-    glide: E({ speed_kt: 83, ratio: C.polar.E_idle_at_Vbg }, 'kt IAS, -', ['LG3', 'LG7', 'LG0'], `ความเร็ว best glide = VY 83 KIAS (AFM S3-56); L/D ไม่มีใน AFM: polar ทดสอบบิน CD0 0.0334 e 0.82 ให้ L/D ${C.polar.E_aero_at_Vbg} ที่ ${C.polar.Vbg_kcas} KCAS แล้วบวกแรงต้านใบพัด idle สองใบ ΔCD ${C.polar.dCDidle} ⇒ ${C.polar.E_idle_at_Vbg} (ช่วง ${C.polar.E_range.join('–')})`),
+    glide: E({ speed_kt: 83, ratio: C.polar.E_idle_at_Vbg }, 'kt IAS, -', ['LG3', 'LG7', 'LG0'], `ความเร็ว best glide 83 KIAS (AFM S3-56 ซึ่งเรียกว่า VY; VY_kt ของบัตรคือ 80 จาก S4-7); L/D ไม่มีใน AFM: polar ทดสอบบิน CD0 0.0334 e 0.82 ให้ L/D ${C.polar.E_aero_at_Vbg} ที่ ${C.polar.Vbg_kcas} KCAS แล้วบวกแรงต้านใบพัด idle สองใบ ΔCD ${C.polar.dCDidle} ⇒ ${C.polar.E_idle_at_Vbg} (ช่วง ${C.polar.E_range.join('–')})`),
     takeoff: L({ ground_roll_m: F.bro.toRun, over50ft_m: F.bro.toDist }, 'm', ['LG6'], 'ต่ำ', false, 'โบรชัวร์ 2021 รุ่น MTOW 1,230 kg ไม่ระบุสภาพ (อนุมาน ISA SL ลมสงบ ทางแข็ง, 394 m อนุมานว่าเป็นระยะถึง 50 ft); AFM: แฟลป T/O, lift-off 66.5 KIAS, หญ้า, ทางแข็ง −6 %'),
     landing: L({ ground_roll_m: F.bro.ldgRun, over50ft_m: F.bro.ldgDist }, 'm', ['LG6'], 'ต่ำ', false, 'โบรชัวร์ 2021 (1,230 kg ไม่ระบุสภาพ); AFM: แฟลป FULL idle short final 67 KIAS'),
     takeoff_table: L({ oat_c: -25, rows: [{ h_ft: 0, ground_roll_m: 148, over50ft_m: 193 }, { h_ft: 1000, ground_roll_m: 165, over50ft_m: 216 }, { h_ft: 2000, ground_roll_m: 184, over50ft_m: 241 }], corrections: { headwind_m_per_kt: -2.5, tailwind_m_per_kt: 10, paved_pct: -6, upslope_pct_per_pct: 5 } }, 'm', ['LG4', 'LG5'], 'ต่ำ', false,
@@ -232,8 +236,16 @@ export function buildCard() {
     landing_corrections: L({ headwind_m_per_kt: -3.5, obstacle_m_per_kt: -5, final_kias: 67 }, 'm/kt', ['LG5'], 'กลาง', false, 'AFM 1st ed p5-11 (หญ้า แฟลป FULL)'),
     fuel: L({ usable_L: F.fuelUsable_L, ff_per_engine: { MCP_gph: 5, pct75_gph: 4, icas_lph: 19 }, total_cruise_gph: F.fly.gph, fuel_types: 'MOGAS RON95 (EN 228) หรือ AVGAS 100LL' }, 'L, US gal/h', ['LG1', 'LG10', 'LG9', 'LG8'], 'กลาง', false, ''),
   };
+  // gap 16 (19 Nov 2026): VTBD hot-day (35 °C, SL) estimates where the AFM copy has no hot-day column
+  { const sig = 288.15 / 308.15, lap = C.engine.lapse_VTBD_35C, fTO = sig ** (-4 / 3) * lap ** (-2 / 3), fLD = 1 / sig;
+    c.performance.takeoff_table.v.vtbd_hot_estimate = { OAT_C: 35, elev_ft: 9, mass_kg: 1230, ground_roll_m: Math.round(F.bro.toRun * fTO), over50ft_m: Math.round(F.bro.toDist * fTO), factor: r(fTO, 4) };
+    c.performance.takeoff_table.est = true; c.performance.takeoff_table.note = `ค่าประมาณ (เฉพาะ vtbd_hot_estimate): ${c.performance.takeoff_table.note}; จุด VTBD 35 °C สเกลระยะของโบรชัวร์ (${F.bro.toRun} / ${F.bro.toDist} m, 1,230 kg [LG6]) ด้วย σ^(−4/3) × (P/P0)^(−2/3) = ${r(fTO, 4)} (σ ${r(sig, 3)}, กำลัง Rotax ที่ 35 °C ${r(lap, 3)} ของพิกัดตาม §01.6.1; แรงขับสถิต ∝ (ρP²)^(1/3))`;
+    c.performance.landing_table = E({ vtbd_hot_estimate: { OAT_C: 35, elev_ft: 9, mass_kg: 1230, ground_roll_m: Math.round(F.bro.ldgRun * fLD), over50ft_m: Math.round(F.bro.ldgDist * fLD), factor: r(fLD, 4) } }, 'm', ['LG6', 'LG5', 'LG0'],
+      `ตารางลงจอดของ AFM อ่านไม่ได้ในสำเนา (มีเฉพาะตัวแก้ p5-11 [LG5]); สเกลระยะของโบรชัวร์ (${F.bro.ldgRun} / ${F.bro.ldgDist} m, 1,230 kg [LG6], สภาพไม่ระบุ อนุมาน ISA SL) ด้วย 1/σ = ${r(fLD, 4)} (IAS เท่าเดิม ⇒ TAS² ∝ 1/σ) ที่ 35 °C ระดับน้ำทะเล`); }
+  // gap 16: performance.tests carries the same rows as the §12.11 table (origin, current model, pass)
   const card0 = rd('lg_card.json');
-  c.performance.tests = L(T?.tests ? T.tests.map(t => ({ case: t.id, conditions: t.cond, quantity: t.qty, expected: t.expected, tolerance: t.tol })) : testsList(C, card0), '-', ['LG0'], 'กลาง', false, 'จุดเป้าสำหรับทดสอบอัตโนมัติ (รายละเอียด ที่มา และผลโมเดลปัจจุบันใน §12.11, scripts/lg_tests.mjs)');
+  c.performance.tests = L(T?.tests ? T.tests.map(t => ({ case: t.id, conditions: t.cond, quantity: t.qty, expected: t.expected, tolerance: t.tol, origin: t.origin, current_model: t.current, pass: t.pass })) : testsList(C, card0), 'ตามช่อง quantity ของแต่ละแถว', ['LG0'], 'กลาง', false,
+    `จุดเป้าสำหรับทดสอบอัตโนมัติ (ตาราง §12.11 สร้างจาก scripts/lg_tests.mjs)${T?.summary ? `: ${T.summary.n} กรณี ผ่าน ${T.summary.pass} ไม่ผ่าน ${T.summary.fail} ไม่รองรับในซิมวันนี้ ${T.summary.na}` : ''}`);
 
   // ───────── propulsion, piston, propeller
   const lp = leg?.legacy?.propulsion;
@@ -283,7 +295,7 @@ export function buildCard() {
       elevator: L({ travel_deg: { up: tv.stab.up, down: tv.stab.down } }, 'deg', ['LG1', 'LG12'], 'กลาง', false, 'stabilator: TCDS p7 "15° ±2° to pitch up / 4° ±2° to pitch down" (ขอบท้ายขึ้น 15° / ลง 4°); AFM p1-6 [LG12] พิมพ์ว่าขอบท้าย Up 4° Down 15° — ขัดกัน; ใช้ TCDS เพราะเป็นเอกสารรับรองและซิมต้องใช้ขอบท้ายขึ้นเกิน 4° เพื่อ trim approach (6.9°)'),
       aileron: L({ travel_deg: { up: tv.ail.up, down: tv.ail.down } }, 'deg', ['LG1', 'LG2'], 'สูง', false, '±2°'),
       rudder: L({ travel_deg: { left: tv.rud, right: tv.rud } }, 'deg', ['LG1', 'LG2'], 'สูง', false, '±2°'),
-      flap: L({ travel_deg: { up: 0, down: tv.flapFull }, positions: ['0', 'T/O (15°)', 'FULL (40°)'] }, 'deg', ['LG1', 'LG7'], 'กลาง', false, 'ไฟฟ้า; มุม T/O จาก [LG7]'),
+      flap: L({ travel_deg: { up: 0, down: tv.flapFull }, positions: [{ name: 'UP', flap_deg: 0 }, { name: 'T/O', flap_deg: 15 }, { name: 'FULL', flap_deg: tv.flapFull }] }, 'deg', ['LG1', 'LG7', 'LG3'], 'กลาง', false, 'ไฟฟ้า; ชื่อตำแหน่งตาม checklist ของ AFM [LG3] (D6); มุม T/O จาก [LG7]'),
       trim_tab: L({ travel_deg: { up: tv.stabTab.up, down: tv.stabTab.down }, rudder_tab: { left: tv.rudTab, right: tv.rudTab } }, 'deg', ['LG1', 'LG2'], 'สูง', false, ''),
     },
     trim: { kind: L('stabilator tab: manual wheel (+ electric optional); rudder tab: electric', '-', ['LG9', 'LH22'], 'กลาง', false, 'ล้อ trim ใหญ่ระหว่างที่นั่ง; trim ไฟฟ้าของ stabilator เป็นอุปกรณ์เลือกติด; สวิตช์ rudder trim ไฟฟ้าอยู่ซ้ายบนของคันบังคับ [LG9]'), rate_dps: E(1.0, 'deg/s', ['LG0'], 'สำหรับปุ่มของซิม') },
@@ -312,7 +324,7 @@ export function buildCard() {
     },
     tyre_main: { size: L({ size: '6.00-6' }, '-', ['LG2', 'LG6'], 'สูง', false, 'AFM p1-5') },
     tyre_nose: { size: L({ size: '5.00-5' }, '-', ['LG2', 'LG6'], 'สูง', false, 'AFM p1-5') },
-    brakes: { antiskid: L(0, 'bool', ['LG0'], 'กลาง', false, 'ไม่มี anti-skid (เครื่องเบา CS-23); toe brake ไฮดรอลิกที่ล้อหลัก (ค่าประมาณ ไม่ได้ยืนยันจาก AFM Section 7)') },
+    brakes: { antiskid: L(0, 'bool', ['LG0'], 'กลาง', false, 'ไม่มี anti-skid (เครื่องเบา CS-23); toe brake ไฮดรอลิกที่ล้อหลัก (ยังไม่ได้ยืนยันจาก AFM Section 7)') },
     steering: {
       mode: E({ type: 'pedal_linked', caster_with_diff_brake: true }, '-', ['LG0'], 'ล้อหน้าเลี้ยวด้วยแป้น rudder (ไม่ได้ยืนยันจาก AFM Section 7)'),
       pedal_max: E(15, 'deg', ['LG0'], 'ไม่พบ; ค่าทั่วไปของล้อหน้าที่ต่อกับแป้น rudder ของเครื่องเบา (±10–20°)'),
@@ -321,18 +333,23 @@ export function buildCard() {
 
   // ───────── wind, input, validation
   c.wind = { wake: { b0_over_b: L(0.7854, '-', ['LC10'], 'กลาง', false, 'π/4 ปีกวงรี') } };
-  c.input = { keyboard: { flap_notches: E(rd('lg_card.json')?.res?.stall ? Object.values(rd('lg_card.json').res.stall).map(s => s.f) : [0, r(fl.dCL0['15'] / fl.dCL0['40'], 3), 1], 'สัดส่วน AC.flaps', ['LG0'], '0 / T/O 15° / FULL 40° แปลงด้วย flapMap แบบ lift') } };
+  c.input = { keyboard: { flap_notches: E(rd('lg_card.json')?.res?.stall ? Object.values(rd('lg_card.json').res.stall).map(s => s.f) : [0, r(fl.dCL0['15'] / fl.dCL0['40'], 3), 1], 'สัดส่วน AC.flaps', ['LG0'], 'UP 0° / T/O 15° / FULL 40° แปลงด้วย flapMap แบบ lift') } };
   c.validation = {
     trim_targets: {
-      cruise: L({ ias_kt: 110, h_ft: 3000, gamma_deg: 0 }, 'kt, ft, deg', ['LG7', 'LG0'], 'กลาง', false, 'สภาพการทดสอบโหมดพลวัตของ [LG7] (110 kt); ความสูง 3,000 ft เป็นค่าประมาณ'),
+      cruise: L({ ias_kt: 110, h_ft: 3000, gamma_deg: 0 }, 'kt, ft, deg', ['LG7', 'LG0'], 'กลาง', true, 'ค่าประมาณเฉพาะความสูง: 110 kt (56.6 m/s) คือสภาพการทดสอบโหมดพลวัตของ [LG7]; ความสูง 3,000 ft (914 m) ไม่ระบุในสไลด์จึงเลือกเอง'),
       approach: L({ ias_kt: 70, h_m: 300, gamma_deg: -3 }, 'kt, m, deg', ['LG3'], 'กลาง', false, 'final แฟลป FULL ล้อลง'),
     },
     reference_modes: {
       flight_110kt: L({ sp: F.ft.modes.sp, ph: F.ft.modes.ph, dr: F.ft.modes.dr }, 'rad/s, -, s', ['LG7'], 'กลาง', false, 'วัดจากการทดสอบบิน 110 kt: short period ωn 3.41 ζ 0.40 CAP 1.009 (Level 1 Class I-B); phugoid T 27 s ζ 0.09; Dutch roll ωn 2.00 ζ 0.26 T 3.25 s; มวลและ CG ระหว่างทดสอบไม่ระบุในสไลด์'),
     },
-    takeoff_test: E({ flap: '15', VR_kt: 64, theta_deg: 12 }, 'kt CAS, deg', ['LG3', 'LG0'], 'VR 64 KIAS แฟลป T/O (≈ KCAS ตามตาราง stall แฟลป 15); θ หมุน 12° (ไม่พบ; ใกล้ θ ของ Vy climb 15° ในซิม, ดู out/lg_tune.json)'),
-    stall_test: E({ '0': 89, '15': 76, '40': 73 }, 'kt', ['LG0'], 'ความเร็วเริ่มต้น ≈ 1.35 V_S'),
+    takeoff_test: E({ flap: 'T/O', VR_kt: 64, theta_deg: 12 }, 'kt CAS, deg', ['LG3', 'LG0'], 'VR 64 KIAS แฟลป T/O (≈ KCAS ตามตาราง stall แฟลป T/O 15°); θ หมุน 12° (ไม่พบ; ใกล้ θ ของ Vy climb 15° ในซิม, ดู out/lg_tune.json)'),
+    stall_test: E({ UP: 89, 'T/O': 76, FULL: 73 }, 'kt', ['LG0'], 'ความเร็วเริ่มต้น ≈ 1.35 V_S'),
   };
+  // gap 18/20 (19 Nov 2026): validation.stick_force_targets — requirement band (the P2006T has control wheels/yokes [LG9]); the sim has no stick-force model
+  { const nA = card1180?.res?.modes?.cruise?.nAlpha;
+    if (nA) { const sb = stickForceBand({ nAlpha: nA, nL: 3.8, W_lb: F.MTOW / 0.45359237 });
+      c.validation.stick_force_targets = L({ controller: 'wheel', ...sb }, 'lbf/g, N/g, g/rad, lbf, lbf/kt, N/kt', ['R1:C12', 'LM3', 'LC14', 'LG1', 'LG9'], 'ต่ำ', true,
+        `ค่าประมาณ: ไม่ใช่ค่าที่วัดจาก P2006T แต่เป็นแถบเป้าหมายจากเกณฑ์ MIL-F-8785C Level 1 แบบ wheel (สูตรของ controls.requirements.mil8785c_fs_per_g_wheel_L1 รอบที่ 1 [R1:C12]: ขีดบน min(500/(n/α), 120) แต่ไม่ต่ำกว่า 120/(nL − 1), ขีดล่าง max(35/(nL − 1), 6)) ด้วย n/α ${sb.nAlpha_cruise_g_per_rad} g/rad ของบัตรที่ cruise 110 KCAS 3,000 ft MTOW 1,180 kg (lm_card) และ nL 3.8 (normal category [LG1]) กับพื้นขั้นต่ำจาก 14 CFR 23.155 แบบ wheel (แรงถึง limit load ≥ W/100 = ${sb.part23_155_force_lbf} lbf ⇒ ≥ ${sb.part23_155_min_gradient_lbf} lbf/g) [LM3]; แรงต่อ kt ขั้นต่ำ 1 lbf ต่อ 6 kt ตาม 14 CFR 25.173(c) ใช้เป็นแนวทาง [LC14]; P2006T ใช้คันบังคับแบบ yoke [LG9]; ซิมยังไม่มีแบบจำลองแรงที่คัน (T-LG-25)`); } }
 
   // ───────── _na
   const naNot = ['turboprop.*', 'turbofan.*', 'propeller.betaReverse.*', 'propeller.engineInterface.flightIdleShaftPower', 'propeller.engineInterface.rpmTransientLimit',
@@ -357,6 +374,8 @@ export function buildCard() {
   c._na = L([...naNot, ...naLater], '-', [], 'สูง', false,
     'ไม่ใช้กับแบบนี้ (กลุ่มแรก ' + naNot.length + ' รายการ): เครื่องลูกสูบ ไม่มี turboprop/turbofan, beta/reverse, transient limit แบบกังหัน; ไม่มี anti-skid; ไม่ใช่ Part 25; controls.reference_types และ wind.wake.leaders เป็นค่าของเครื่องโดยสาร; derived_check/tablesCheck/numerics/typicalModes/currentModel เป็นค่าของตัวซิมหรือเครื่องฝึกรอบที่ 1; otherSims เป็นของหัวข้อ 03 (ไม่มีโมเดล P2006T ใน JSBSim 1.3.3 แต่มีโมเดล FlightGear "Tecnam-P2006T" ใน FGMEMBERS บน GitHub สัญญาอนุญาต GPL-2.0 ที่หัวข้อ 03 ยังไม่ได้ตรวจ). '
     + 'เลื่อนไปทำเมื่อจำเป็น (กลุ่มที่สอง ' + naLater.length + ' รายการ): โมเดลแยกตัวหลัง stall, buffet, spin (ห้าม spin โดยเจตนา), strip wing, slipstream ละเอียด, รูปทรงใบพัดและ governor/feather ละเอียด, hinge moment และแรงที่คัน, ขาล้อ oleo ยาง และเบรกละเอียด ไม่มีข้อมูลสาธารณะของ P2006T; ถ้าต้องใช้ให้ยืมค่าบัตร 06 (DA42) หรือ 04 (C172S) ที่สเกลแล้วและติดป้ายค่าประมาณ (ดู §12.14)');
+  // D4 (19 Nov 2026): scope by category through lm_lib.expectedScope (gear → gear, propeller.* → propeller, others as round 1)
+  normaliseScopes(c);
   return { card, C };
 }
 

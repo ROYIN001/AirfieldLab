@@ -1,388 +1,475 @@
-[
- {
-  "id": "T-LO-01",
-  "cond": "level turn 90 KIAS (TAS), bank 25°",
-  "qty": "R (m)",
-  "exp": 468.8,
-  "tol": 1,
-  "got": 468.8,
-  "pass": true,
-  "src": "physics, LO0",
-  "cur": "–"
- },
- {
-  "id": "T-LO-02",
-  "cond": "c172s downwind 90 kt, bank 25°",
-  "qty": "D (m)",
-  "exp": 1337.6,
-  "tol": 1,
-  "got": 1337.6,
-  "pass": true,
-  "src": "LO3 p8-3 range; rule LO0 (est)",
-  "cur": "–"
- },
- {
-  "id": "T-LO-03",
-  "cond": "VTBD 21L, c172s, side L",
-  "qty": "east offset of downwind abeam threshold (m)",
-  "exp": 1173,
-  "tol": 2,
-  "got": 1173,
-  "pass": true,
-  "src": "LO13 AD 2.20 4.2 (east of 03R/21L)",
-  "cur": "–"
- },
- {
-  "id": "T-LO-04",
-  "cond": "VTBD 03R, c172s, side R",
-  "qty": "east offset of downwind abeam threshold (m)",
-  "exp": 1173,
-  "tol": 2,
-  "got": 1173,
-  "pass": true,
-  "src": "LO13 AD 2.20 4.2 (east of 03R/21L)",
-  "cur": "–"
- },
- {
-  "id": "T-LO-05",
-  "cond": "VTBD 21L, roll-out 400 ft, γ 3°, aim 308.2 m",
-  "qty": "F (m)",
-  "exp": 2018.1,
-  "tol": 1,
-  "got": 2018.1,
-  "pass": true,
-  "src": "LO4 p9-6 (3°), LO0",
-  "cur": "–"
- },
- {
-  "id": "T-LO-06",
-  "cond": "VTBD 21L, c172s, base at 45° (X_B = −D), final 3°",
-  "qty": "roll-out height (ft)",
-  "exp": 211,
-  "tol": 1,
-  "got": 211,
-  "pass": true,
-  "src": "LO3 p8-3 vs LO4 p9-6",
-  "cur": "roll-out < 300 ft → gate ไม่ผ่าน"
- },
- {
-  "id": "T-LO-07",
-  "cond": "19 types × 4 runways, default circuits",
-  "qty": "all waypoints within 5 NM of ARP (max NM)",
-  "exp": "true (2.85)",
-  "tol": 0,
-  "got": "true (2.85)",
-  "pass": true,
-  "src": "LO13 AD 2.17 (ATZ 5 NM)",
-  "cur": "–"
- },
- {
-  "id": "T-LO-08",
-  "cond": "VTBD 03R, c172s, ROC 730 fpm at 74 KIAS",
-  "qty": "x of crosswind turn (m) [= runway end]",
-  "exp": 3501,
-  "tol": 1,
-  "got": 3501,
-  "pass": true,
-  "src": "LO1, LO2 11.7",
-  "cur": "–"
- },
- {
-  "id": "T-LO-09",
-  "cond": "VTBD 21L, c172s, 800 → 400 ft",
-  "qty": "mean descent angle before final (°)",
-  "exp": 1.82,
-  "tol": 0.01,
-  "got": 1.82,
-  "pass": true,
-  "src": "LO0",
-  "cur": "–"
- },
- {
-  "id": "T-LO-10",
-  "cond": "GS 65 kt, γ 3°",
-  "qty": "sink (fpm) [rule 5×GS = 325]",
-  "exp": 345,
-  "tol": 1,
-  "got": 345,
-  "pass": true,
-  "src": "LO9 App 1 3.c",
-  "cur": "–"
- },
- {
-  "id": "T-LO-11",
-  "cond": "21L downwind track 028.75°, 90 kt, wind 090/10",
-  "qty": "crab (°) / GS (kt)",
-  "exp": "5.59 / 84.76",
-  "tol": 0,
-  "got": "5.59 / 84.76",
-  "pass": true,
-  "src": "LO3 p8-2, p8-4",
-  "cur": "–"
- },
- {
-  "id": "T-LO-12",
-  "cond": "c172s at 300 ft: 66 KIAS, −650 fpm, bank 3°, path 3.0°, flaps 30",
-  "qty": "gate result",
-  "exp": {
-   "ok": true,
-   "fails": []
+{
+ "run": "2026-11-19",
+ "sim": {
+  "at500": {
+   "gs": 98.2132933309062,
+   "vs": -521.2510386448836,
+   "ias": 95.00381405728788
   },
-  "tol": 0,
-  "got": {
-   "ok": true,
-   "fails": []
+  "gates": [
+   "g500",
+   "g200"
+  ]
+ },
+ "tests": [
+  {
+   "id": "T-LO-01",
+   "cond": "level turn 90 KIAS (TAS), bank 25°",
+   "qty": "R (m)",
+   "exp": 468.8,
+   "tol": 1,
+   "got": 468.8,
+   "pass": true,
+   "src": "physics, LO0",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีโหมดเลี้ยวระดับอัตโนมัติ)"
   },
-  "pass": true,
-  "src": "LO4 p9-6, LO8",
-  "cur": "–"
- },
- {
-  "id": "T-LO-13",
-  "cond": "same, 78 KIAS (Vapp + 13)",
-  "qty": "gate result",
-  "exp": {
-   "ok": false,
-   "fails": [
-    "spd"
-   ]
+  {
+   "id": "T-LO-02",
+   "cond": "c172s downwind 90 kt, bank 25°",
+   "qty": "D (m)",
+   "exp": 1337.6,
+   "tol": 1,
+   "got": 1337.6,
+   "pass": true,
+   "src": "LO3 p8-3 range; rule LO0 (est)",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีตัวสร้างวงจร)"
   },
-  "tol": 0,
-  "got": {
-   "ok": false,
-   "fails": [
-    "spd"
-   ]
+  {
+   "id": "T-LO-03",
+   "cond": "VTBD 21L, c172s, side L",
+   "qty": "east offset of downwind abeam threshold (m)",
+   "exp": 1173,
+   "tol": 2,
+   "got": 1173,
+   "pass": true,
+   "src": "LO13/LO39 AD 2.20 4.2 (east of 03R/21L)",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีตัวสร้างวงจร; ใช้ RWY_END ของ repo)"
   },
-  "pass": true,
-  "src": "LO4 p9-6 (+10/−5), LO36",
-  "cur": "–"
- },
- {
-  "id": "T-LO-14",
-  "cond": "same, −1,100 fpm",
-  "qty": "gate result",
-  "exp": {
-   "ok": false,
-   "fails": [
-    "sink"
-   ]
+  {
+   "id": "T-LO-04",
+   "cond": "VTBD 03R, c172s, side R",
+   "qty": "east offset of downwind abeam threshold (m)",
+   "exp": 1173,
+   "tol": 2,
+   "got": 1173,
+   "pass": true,
+   "src": "LO13/LO39 AD 2.20 4.2 (east of 03R/21L)",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีตัวสร้างวงจร; ใช้ RWY_END ของ repo)"
   },
-  "tol": 0,
-  "got": {
-   "ok": false,
-   "fails": [
-    "sink"
-   ]
+  {
+   "id": "T-LO-05",
+   "cond": "VTBD 21L, roll-out 400 ft, γ 3°, aim 308.2 m",
+   "qty": "F (m)",
+   "exp": 2018.1,
+   "tol": 1,
+   "got": 2018.1,
+   "pass": true,
+   "src": "LO4 p9-6 (3°), LO0",
+   "cur": "ไม่รองรับในซิมวันนี้ (ฉาก approach ของซิมเริ่มบน GS ที่ระยะคงที่)"
   },
-  "pass": true,
-  "src": "LO8 (≤ 1,000 fpm)",
-  "cur": "–"
- },
- {
-  "id": "T-LO-15",
-  "cond": "same, bank 20° (still in the final turn)",
-  "qty": "gate result",
-  "exp": {
-   "ok": false,
-   "fails": [
-    "bank"
-   ]
+  {
+   "id": "T-LO-06",
+   "cond": "VTBD 21L, c172s, base at 45° (X_B = −D), final 3°",
+   "qty": "roll-out height (ft)",
+   "exp": 211,
+   "tol": 1,
+   "got": 211,
+   "pass": true,
+   "src": "LO3 p8-3 vs LO4 p9-6",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีวงจรและประตู 300 ft)"
   },
-  "tol": 0,
-  "got": {
-   "ok": false,
-   "fails": [
-    "bank"
-   ]
+  {
+   "id": "T-LO-07",
+   "cond": "20 types × 4 runways, default circuits",
+   "qty": "largest waypoint distance from ARP (NM)",
+   "exp": 5,
+   "tol": "le",
+   "got": 2.85,
+   "pass": true,
+   "src": "LO13/LO39 AD 2.17 (ATZ 5 NM)",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีตัวสร้างวงจร)"
   },
-  "pass": true,
-  "src": "LO4 p9-6 (≤ 15°), LO18",
-  "cur": "–"
- },
- {
-  "id": "T-LO-16",
-  "cond": "same, path 3.6° (PAPI four white)",
-  "qty": "gate result",
-  "exp": {
-   "ok": false,
-   "fails": [
-    "path"
-   ]
+  {
+   "id": "T-LO-08",
+   "cond": "VTBD 03R, c172s, ROC 730 fpm at 74 KIAS",
+   "qty": "x of crosswind turn (m) [= runway end]",
+   "exp": 3501,
+   "tol": 1,
+   "got": 3501,
+   "pass": true,
+   "src": "LO1, LO2 11.7",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีฉากวิ่งขึ้นและวงจร)"
   },
-  "tol": 0,
-  "got": {
-   "ok": false,
-   "fails": [
-    "path"
-   ]
+  {
+   "id": "T-LO-09",
+   "cond": "VTBD 21L, c172s, 800 → 400 ft",
+   "qty": "mean descent angle before final (°)",
+   "exp": 1.82,
+   "tol": 0.01,
+   "got": 1.82,
+   "pass": true,
+   "src": "LO0",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีวงจร)"
   },
-  "pass": true,
-  "src": "LO8; PAPI 2.5–3.5° (repo)",
-  "cur": "–"
- },
- {
-  "id": "T-LO-17",
-  "cond": "da42ng 84 KIAS, flaps LDG, gear UP",
-  "qty": "gate result",
-  "exp": {
-   "ok": false,
-   "fails": [
-    "cfg"
-   ]
+  {
+   "id": "T-LO-10",
+   "cond": "GS 65 kt, γ 3°",
+   "qty": "sink (fpm) [rule 5×GS = 325]",
+   "exp": 345,
+   "tol": 1,
+   "got": 345,
+   "pass": true,
+   "src": "LO9 App 1 3.c",
+   "cur": "autoland ลมสงบ ที่ 500 ft: GS 98.2 kt, จม 521 fpm = 5.31 × GS (3° ให้ 521 fpm, ต่าง 0 %)"
   },
-  "tol": 0,
-  "got": {
-   "ok": false,
-   "fails": [
-    "cfg"
-   ]
+  {
+   "id": "T-LO-11",
+   "cond": "21L downwind track 028.75°, 90 kt, wind 090/10",
+   "qty": "crab (°) / GS (kt)",
+   "exp": [
+    5.59,
+    84.76
+   ],
+   "tol": [
+    0.01,
+    0.01
+   ],
+   "got": [
+    5.59,
+    84.76
+   ],
+   "pass": true,
+   "src": "LO3 p8-2, p8-4",
+   "cur": "ไม่รองรับในซิมวันนี้ (autopilot ไม่บินขา downwind)"
   },
-  "pass": true,
-  "src": "LO8, LO9 App 1 3.a",
-  "cur": "–"
- },
- {
-  "id": "T-LO-18",
-  "cond": "c172s 78 KIAS with gust factor 10 kt vs none",
-  "qty": "pass with gust / without",
-  "exp": "true / false",
-  "tol": 0,
-  "got": "true / false",
-  "pass": true,
-  "src": "LO5 p9-20 (½ gust), LO4",
-  "cur": "–"
- },
- {
-  "id": "T-LO-19",
-  "cond": "gate height: vfr_circuit / vmc_straight_in / imc",
-  "qty": "ft",
-  "exp": "300 / 500 / 1000",
-  "tol": 0,
-  "got": "300 / 500 / 1000",
-  "pass": true,
-  "src": "LO4 p9-6, LO8, LO9, LO18",
-  "cur": "–"
- },
- {
-  "id": "T-LO-20",
-  "cond": "AirfieldLab trainer Vref 88 / Vapp 95, 500 ft on GS/LOC, IAS 107 and 85 KIAS",
-  "qty": "current g500 / proposed gate (both speeds)",
-  "exp": "true,true / false,false",
-  "tol": 0,
-  "got": "true,true / false,false",
-  "pass": true,
-  "src": "src/20-flight.js 485–493; LO4 p9-6; LO36",
-  "cur": "ปัจจุบัน true,true (ช่อง Vref−5…+20 = 83–108)"
- },
- {
-  "id": "T-LO-21",
-  "cond": "items: c172s gear/carb, pa28 carb, da42 gear/prop/feather, c152 glide",
-  "qty": "present?",
-  "exp": "false,false,true,true,false,true,true",
-  "tol": 0,
-  "got": "false,false,true,true,false,true,true",
-  "pass": true,
-  "src": "LO0 (features from LO19–LO33, LT2)",
-  "cur": "–"
- },
- {
-  "id": "T-LO-22",
-  "cond": "c172s: before-landing items at abeam, landing clearance at base turn",
-  "qty": "late / missing",
-  "exp": "{\"missing\":[],\"late\":[\"landing_clearance\"]}",
-  "tol": 0,
-  "got": "{\"missing\":[],\"late\":[\"landing_clearance\"]}",
-  "pass": true,
-  "src": "LO17 p15, LO18 (checklist on downwind)",
-  "cur": "–"
- },
- {
-  "id": "T-LO-23",
-  "cond": "synthetic circuit trace (7 samples)",
-  "qty": "phases",
-  "exp": "parked,taxi,takeoff,after_takeoff,before_landing,final,after_landing",
-  "tol": 0,
-  "got": "parked,taxi,takeoff,after_takeoff,before_landing,final,after_landing",
-  "pass": true,
-  "src": "LO0",
-  "cur": "–"
- },
- {
-  "id": "T-LO-24",
-  "cond": "VTBD 21L c172s, no wind (lift-off → aim)",
-  "qty": "circuit time (min)",
-  "exp": 5.73,
-  "tol": 0.01,
-  "got": 5.73,
-  "pass": true,
-  "src": "LO0",
-  "cur": "–"
- },
- {
-  "id": "T-LO-25",
-  "cond": "c152 downwind (21L, east) vs runway 21R centreline",
-  "qty": "lateral distance (m) = D + runway spacing",
-  "exp": 1536,
-  "tol": 2,
-  "got": 1536,
-  "pass": true,
-  "src": "LO13; repo geometry",
-  "cur": "–"
- },
- {
-  "id": "T-LO-26",
-  "cond": "twins: base speed ≥ VYSE (AFH: not below VYSE until landing assured)",
-  "qty": "types violating",
-  "exp": "[]",
-  "tol": 0,
-  "got": "[]",
-  "pass": true,
-  "src": "LO7 p13-20",
-  "cur": "–"
- },
- {
-  "id": "T-LO-27",
-  "cond": "19 types × 4 runways: abeam → base → final turn → roll-out → aim",
-  "qty": "non-monotonic profiles",
-  "exp": "[]",
-  "tol": 0,
-  "got": "[]",
-  "pass": true,
-  "src": "LO3 p8-3 (descend from abeam), LO0",
-  "cur": "–"
- },
- {
-  "id": "T-LO-28",
-  "cond": "c172s Vapp 65, gust factor 10 kt (add 5), IAS 62",
-  "qty": "speed window (KIAS) / spd item",
-  "exp": "65–80 / false",
-  "tol": 0,
-  "got": "65–80 / false",
-  "pass": true,
-  "src": "LO5 p9-20; LO36 PA.IV.B.S7 (+10/−5 with gust factor applied)",
-  "cur": "–"
- },
- {
-  "id": "T-LO-29",
-  "cond": "trainer_r2 (V downwind 140 / abeam 120 / base 110 KIAS), 21L, 1,000 ft",
-  "qty": "D (m) = max(clamp(2R+400), R_b+R_f+200)",
-  "exp": 1931,
-  "tol": 1,
-  "got": 1931,
-  "pass": true,
-  "src": "LO3 p8-3; LO0 (est)",
-  "cur": "–"
- },
- {
-  "id": "T-LO-30",
-  "cond": "items mixture_rich / runup_mag / prop_high: da40_180 vs da40ng",
-  "qty": "present?",
-  "exp": "true,true,true / false,false,false",
-  "tol": 0,
-  "got": "true,true,true / false,false,false",
-  "pass": true,
-  "src": "LO0; features from LD1/LD6 (IO-360-M1A, MTV-12) and LD2 (AE300 FADEC)",
-  "cur": "–"
- }
-]
+  {
+   "id": "T-LO-12",
+   "cond": "c172s (Vapp 65) at 300 ft: 66 KIAS, −650 fpm, bank 3°, path 3.0°, flaps 30",
+   "qty": "gate result",
+   "exp": {
+    "ok": true,
+    "fails": []
+   },
+   "tol": "exact",
+   "got": {
+    "ok": true,
+    "fails": []
+   },
+   "pass": true,
+   "src": "LO4 p9-6, LO8",
+   "cur": "g500 ปัจจุบัน (AC.Vref = VREF บัตร 61): ผ่าน"
+  },
+  {
+   "id": "T-LO-13",
+   "cond": "same, 78 KIAS (Vapp + 13)",
+   "qty": "gate result",
+   "exp": {
+    "ok": false,
+    "fails": [
+     "spd"
+    ]
+   },
+   "tol": "exact",
+   "got": {
+    "ok": false,
+    "fails": [
+     "spd"
+    ]
+   },
+   "pass": true,
+   "src": "LO4 p9-6 (+10/−5), LO36",
+   "cur": "g500 ปัจจุบัน (AC.Vref = VREF บัตร 61): ผ่าน"
+  },
+  {
+   "id": "T-LO-14",
+   "cond": "same, −1,100 fpm",
+   "qty": "gate result",
+   "exp": {
+    "ok": false,
+    "fails": [
+     "sink"
+    ]
+   },
+   "tol": "exact",
+   "got": {
+    "ok": false,
+    "fails": [
+     "sink"
+    ]
+   },
+   "pass": true,
+   "src": "LO8 (≤ 1,000 fpm)",
+   "cur": "g500 ปัจจุบัน (AC.Vref = VREF บัตร 61): ไม่ผ่าน vs"
+  },
+  {
+   "id": "T-LO-15",
+   "cond": "same, bank 20° (still in the final turn)",
+   "qty": "gate result",
+   "exp": {
+    "ok": false,
+    "fails": [
+     "bank"
+    ]
+   },
+   "tol": "exact",
+   "got": {
+    "ok": false,
+    "fails": [
+     "bank"
+    ]
+   },
+   "pass": true,
+   "src": "LO4 p9-6 (≤ 15°), LO18",
+   "cur": "g500 ปัจจุบัน (AC.Vref = VREF บัตร 61): ผ่าน (ไม่มีข้อ bank)"
+  },
+  {
+   "id": "T-LO-16",
+   "cond": "same, path 3.6° (PAPI four white)",
+   "qty": "gate result",
+   "exp": {
+    "ok": false,
+    "fails": [
+     "path"
+    ]
+   },
+   "tol": "exact",
+   "got": {
+    "ok": false,
+    "fails": [
+     "path"
+    ]
+   },
+   "pass": true,
+   "src": "LO8; PAPI 2.5–3.5° (repo)",
+   "cur": "g500 ปัจจุบัน (AC.Vref = VREF บัตร 61): ไม่ผ่าน gs (GS +1.7 dot)"
+  },
+  {
+   "id": "T-LO-17",
+   "cond": "da42ng 84 KIAS, flaps LDG, gear UP",
+   "qty": "gate result",
+   "exp": {
+    "ok": false,
+    "fails": [
+     "cfg"
+    ]
+   },
+   "tol": "exact",
+   "got": {
+    "ok": false,
+    "fails": [
+     "cfg"
+    ]
+   },
+   "pass": true,
+   "src": "LO8, LO9 App 1 3.a",
+   "cur": "g500 ปัจจุบัน (AC.Vref = VREF บัตร 84): ไม่ผ่าน cfg"
+  },
+  {
+   "id": "T-LO-18",
+   "cond": "c172s 78 KIAS with gust factor 10 kt vs none",
+   "qty": "pass with gust / without",
+   "exp": "true / false",
+   "tol": "exact",
+   "got": "true / false",
+   "pass": true,
+   "src": "LO5 p9-20 (½ gust), LO4",
+   "cur": "g500 ปัจจุบัน: true / true (ไม่มีส่วนเพิ่ม gust)"
+  },
+  {
+   "id": "T-LO-19",
+   "cond": "gate height: vfr_circuit / vmc_straight_in / imc",
+   "qty": "ft",
+   "exp": [
+    300,
+    500,
+    1000
+   ],
+   "tol": [
+    0,
+    0,
+    0
+   ],
+   "got": [
+    300,
+    500,
+    1000
+   ],
+   "pass": true,
+   "src": "LO4 p9-6, LO8, LO9, LO18",
+   "cur": "ซิมวันนี้ตรวจ g500, g200 = 500 / 200 ft (ไม่มี 300 และ 1000)"
+  },
+  {
+   "id": "T-LO-20",
+   "cond": "AirfieldLab trainer Vref 88 / Vapp 95, 500 ft on GS/LOC, IAS 107 and 85 KIAS",
+   "qty": "current g500 / proposed gate (both speeds)",
+   "exp": "true,true / false,false",
+   "tol": "exact",
+   "got": "true,true / false,false",
+   "pass": true,
+   "src": "src/20-flight.js 485–493; LO4 p9-6; LO36",
+   "cur": "ปัจจุบัน true,true (ช่อง Vref−5…+20 = 83–108)"
+  },
+  {
+   "id": "T-LO-21",
+   "cond": "items: c172s gear/carb, pa28 carb, da42 gear/prop/feather, c152 glide",
+   "qty": "present?",
+   "exp": "false,false,true,true,false,true,true",
+   "tol": "exact",
+   "got": "false,false,true,true,false,true,true",
+   "pass": true,
+   "src": "LO0 (features from LO19–LO33, LT2)",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มี checklist)"
+  },
+  {
+   "id": "T-LO-22",
+   "cond": "c172s: before-landing items at abeam, landing clearance at base turn",
+   "qty": "late / missing",
+   "exp": "{\"missing\":[],\"late\":[\"landing_clearance\"]}",
+   "tol": "exact",
+   "got": "{\"missing\":[],\"late\":[\"landing_clearance\"]}",
+   "pass": true,
+   "src": "LO17 p15, LO18 (checklist on downwind)",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มี checklist)"
+  },
+  {
+   "id": "T-LO-23",
+   "cond": "synthetic circuit trace (7 samples)",
+   "qty": "phases",
+   "exp": "parked,taxi,takeoff,after_takeoff,before_landing,final,after_landing",
+   "tol": "exact",
+   "got": "parked,taxi,takeoff,after_takeoff,before_landing,final,after_landing",
+   "pass": true,
+   "src": "LO0",
+   "cur": "ไม่รองรับในซิมวันนี้ (ซิมมีเฉพาะ approach และ rollout)"
+  },
+  {
+   "id": "T-LO-24",
+   "cond": "VTBD 21L c172s, no wind (lift-off → aim)",
+   "qty": "circuit time (min)",
+   "exp": 5.73,
+   "tol": 0.01,
+   "got": 5.73,
+   "pass": true,
+   "src": "LO0",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีวงจร)"
+  },
+  {
+   "id": "T-LO-25",
+   "cond": "c152 downwind (21L, east) vs runway 21R centreline",
+   "qty": "lateral distance (m) = D + runway spacing",
+   "exp": 1536,
+   "tol": 2,
+   "got": 1536,
+   "pass": true,
+   "src": "LO13/LO39 AD 2.20 4.2; repo geometry",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีวงจร; ระยะห่างทางวิ่ง 395 m จาก RWY_END)"
+  },
+  {
+   "id": "T-LO-26",
+   "cond": "twins: base speed ≥ VYSE (AFH: not below VYSE until landing assured)",
+   "qty": "types violating",
+   "exp": "[]",
+   "tol": "exact",
+   "got": "[]",
+   "pass": true,
+   "src": "LO7 p13-20",
+   "cur": "ไม่รองรับในซิมวันนี้ (ซิมมีแบบเดียว เครื่องยนต์เดียว)"
+  },
+  {
+   "id": "T-LO-27",
+   "cond": "20 types × 4 runways: abeam → base → final turn → roll-out → aim",
+   "qty": "non-monotonic profiles",
+   "exp": "[]",
+   "tol": "exact",
+   "got": "[]",
+   "pass": true,
+   "src": "LO3 p8-3 (descend from abeam), LO0",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีวงจร)"
+  },
+  {
+   "id": "T-LO-28",
+   "cond": "c172s Vapp 65, gust factor 10 kt (add 5), IAS 62",
+   "qty": "speed window (KIAS) / spd item",
+   "exp": "65–80 / false",
+   "tol": "exact",
+   "got": "65–80 / false",
+   "pass": true,
+   "src": "LO5 p9-20; LO36 PA.IV.B.S7 (+10/−5 with gust factor applied)",
+   "cur": "g500 ปัจจุบัน (AC.Vref = VREF บัตร 61): ผ่าน (ไม่มีส่วนเพิ่ม gust)"
+  },
+  {
+   "id": "T-LO-29",
+   "cond": "trainer_r2 (V downwind 140 / abeam 120 / base 110 KIAS), 21L, 1,000 ft",
+   "qty": "D (m) = max(clamp(2R+400), R_b+R_f+200)",
+   "exp": 1931,
+   "tol": 1,
+   "got": 1931,
+   "pass": true,
+   "src": "LO3 p8-3; LO0 (est)",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีวงจร)"
+  },
+  {
+   "id": "T-LO-30",
+   "cond": "items mixture_rich / runup_mag / prop_high: da40_180 vs da40ng",
+   "qty": "present?",
+   "exp": "true,true,true / false,false,false",
+   "tol": "exact",
+   "got": "true,true,true / false,false,false",
+   "pass": true,
+   "src": "LO0; features from LD1/LD6 (IO-360-M1A, MTV-12) and LD2 (AE300 FADEC)",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มี checklist)"
+  },
+  {
+   "id": "T-LO-31",
+   "cond": "21 ids (incl. inheriting da42_vi): lo_lib final, procedures.stabilised.Vapp, procedures.pattern.final vs card speeds.VAPP_kt",
+   "qty": "mismatches > 0.5 kt (D1)",
+   "exp": "[]",
+   "tol": "exact",
+   "got": "[]",
+   "pass": true,
+   "src": "D1; cards 04–07, 10–13 (via lm_lib.loadType)",
+   "cur": "ซิมวันนี้: AC.Vapp 95 = Vapp ของ trainer_r2 95 (ตรง)"
+  },
+  {
+   "id": "T-LO-32",
+   "cond": "21 ids: flap names in procedures.{stabilised, pattern, go_around, short_field, soft_field}",
+   "qty": "names not in the card detents (D6)",
+   "exp": "[]",
+   "tol": "exact",
+   "got": "[]",
+   "pass": true,
+   "src": "D6; aero.flaps.detents of cards 04–07, 10–13",
+   "cur": "ไม่รองรับในซิมวันนี้ (แฟลปในซิมเป็นค่าต่อเนื่อง AC.flaps 0–1 ไม่มีชื่อ detent)"
+  },
+  {
+   "id": "T-LO-33",
+   "cond": "AIP AD 2 VTBD AIRAC 14 MAY / 9 JUL / 29 OCT 2026: TWR, GND, DEL, ATIS arr/dep (MHz); AD 2.20 items of the 21L hold-short warning and the clearance rule; AD 2.22 item of 250 kt",
+   "qty": "values per edition",
+   "exp": "ทั้ง 3 ฉบับ: 118.1 121.9/122.5 127.7 126.4 118.55 6.3 7.3 4.1.2",
+   "tol": "exact",
+   "got": "ทั้ง 3 ฉบับ: 118.1 121.9/122.5 127.7 126.4 118.55 6.3 7.3 4.1.2",
+   "pass": true,
+   "src": "LO39, LS20; lo_aip_check.mjs run 2026-11-19",
+   "cur": "ไม่รองรับในซิมวันนี้ (UI ไม่มีความถี่และวงจร; repo ใช้ AIRAC 14 MAY 2026)"
+  },
+  {
+   "id": "T-LO-34",
+   "cond": "AIP AD 2.22 same editions: training-area designator in 9.2, reporting points in the 8.5.2 table, training route out/back at 1,000 ft",
+   "qty": "designator, count, route found",
+   "exp": [
+    "D72 26 true",
+    "D72 26 true",
+    "D6A,D6B 26 true"
+   ],
+   "tol": "exact",
+   "got": [
+    "D72 26 true",
+    "D72 26 true",
+    "D6A,D6B 26 true"
+   ],
+   "pass": true,
+   "src": "LO39, LS20, LS37; lo_aip_check.mjs run 2026-11-19",
+   "cur": "ไม่รองรับในซิมวันนี้ (ไม่มีเส้นทาง VFR)"
+  }
+ ]
+}

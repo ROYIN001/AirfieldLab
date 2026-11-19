@@ -2,18 +2,12 @@
  "type": "c172s",
  "mass_kg": 1156.7,
  "travel": {
-  "used": "card",
+  "source": "card controls.surfaces.<s>.v.travel_deg via lm_card.travelOf (D2)",
   "card_rad": {
    "deUp": 0.48869,
    "deDn": 0.40143,
    "daMax": 0.30543,
    "drMax": 0.30945
-  },
-  "r1_rad": {
-   "deUp": 0.38397,
-   "deDn": 0.2618,
-   "daMax": 0.34907,
-   "drMax": 0.43633
   }
  },
  "tests": [
@@ -230,8 +224,8 @@
    "id": "T-LC-20",
    "cond": "ซิม linearise: cruise 110 KCAS 3,000 ft แฟลป 0 (Category B)",
    "qty": "short period ζ / ωn / CAP",
-   "expected": "ζ 0.30–2.00; ωn ใกล้ JSBSim c172x 6.5 rad/s ±30 % (cross-check)",
-   "tol": "-",
+   "expected": "ζ 0.30–2.00; ωn 6.5 rad/s (JSBSim c172x, cross-check); CAP ไม่ตัดสิน",
+   "tol": "ζ: ช่วงปิด 0.30–2.00 ส่วนเผื่อ 0; ωn: ±30 % (4.55–8.45 rad/s)",
    "unit": "- / rad/s / 1/s²",
    "origin": "MIL-F-8785C Level 1 Class I [R1:V7, R1:V10]; JSBSim c172x 100 KCAS ของรอบที่ 1 [R1:V15]",
    "current": "0.702 / 5.6 / 2.17",
@@ -242,7 +236,7 @@
    "cond": "เหมือน T-LC-20",
    "qty": "phugoid ζ / คาบ",
    "expected": "ζ ≥ 0.04; คาบ Lanchester π√2·V/g = 26.8 s (ข้อมูลประกอบ ไม่ใช้ตัดสิน)",
-   "tol": "-",
+   "tol": "ζ: ขีดล่างเดียว ส่วนเผื่อ 0; คาบ: ไม่ตัดสิน",
    "unit": "- / s",
    "origin": "MIL-F-8785C Level 1 [R1:V10, R1:V11]; JSBSim c172x 32 s [R1:V15]",
    "current": "0.196 / 33",
@@ -253,7 +247,7 @@
    "cond": "ซิม linearise: approach 67 KCAS 300 m แฟลป 30 γ −3° (Category C) และ cruise",
    "qty": "Dutch roll ωn / ζ / ζωn",
    "expected": "ζ ≥ 0.08, ζωn ≥ 0.15, ωn ≥ 1.0 (approach)",
-   "tol": "-",
+   "tol": "ขีดล่างเดียวทั้งสามค่า ส่วนเผื่อ 0; cruise แสดงอย่างเดียว",
    "unit": "rad/s / - / rad/s",
    "origin": "MIL-F-8785C Level 1 Class I Cat C [R1:V10]; NASA CR-2337 Cardinal ωn 1.6–2.1 [LC11]",
    "current": "approach 1.76 / 0.309 / 0.546; cruise 2.34 / 0.253",
@@ -264,7 +258,7 @@
    "cond": "เหมือน T-LC-22",
    "qty": "roll mode τR (approach / cruise)",
    "expected": "≤ 1.0 (Cat C) / ≤ 1.4 (Cat B)",
-   "tol": "-",
+   "tol": "ขีดบนเดียว ส่วนเผื่อ 0",
    "unit": "s",
    "origin": "MIL-F-8785C Table 5 [R1:V7, R1:V10]",
    "current": "0.222 / 0.13",
@@ -275,7 +269,7 @@
    "cond": "เหมือน T-LC-22",
    "qty": "spiral: เวลาเพิ่มเป็นสองเท่า T₂ (approach / cruise)",
    "expected": "T₂ ≥ 12 s (Cat C) / ≥ 20 s (Cat B)",
-   "tol": "-",
+   "tol": "ขีดล่างเดียว ส่วนเผื่อ 0; spiral ที่ลู่เข้าผ่านเสมอ",
    "unit": "s",
    "origin": "MIL-F-8785C Table 6 [R1:V7, R1:V10]",
    "current": "38.1 / เสถียร",
@@ -283,10 +277,10 @@
   },
   {
    "id": "T-LC-25",
-   "cond": "ลมขวาง 15 kt (demonstrated) ที่ 63.9 KCAS SL, wing-low ไม่มี crab: β = asin(15/V)",
+   "cond": "ลมขวาง 15 kt (demonstrated) ที่ 63.9 KCAS SL, wing-low ไม่มี crab: β = asin(15/63.9) = 13.6° (±0.1° จากการปัดเศษ)",
    "qty": "δr / δa / มุมเอียงที่ต้องใช้",
-   "expected": "β 13.6°; ขนาด δr ไม่เกิน 17.7°, δa ไม่เกิน 17.5°",
-   "tol": "-",
+   "expected": "ขนาด δr ≤ 17.7°, ขนาด δa ≤ 17.5° (travel เต็มของบัตร); φ แสดงอย่างเดียว",
+   "tol": "ขีดบนเดียวที่ travel เต็ม ส่วนเผื่อ 0°",
    "unit": "deg",
    "origin": "POH p4-5 [LC1]; travel จาก TCDS [LC3, LC6]; สมการ steady sideslip (Etkin) ใช้อนุพันธ์ของบัตร",
    "current": "δr 8 / δa 4.1 / φ 6.2",
@@ -307,8 +301,8 @@
    "id": "T-LC-27",
    "cond": "ใบพัด McCauley 1A170E/JHA7660 (76 in) BEM, SL ISA, คันเร่งสุด, ความเร็วศูนย์",
    "qty": "static rpm",
-   "expected": "2,300–2,400",
-   "tol": "-",
+   "expected": "2,350",
+   "tol": "±50 rpm (ช่วง 2,300–2,400 ของ TCDS)",
    "unit": "rpm",
    "origin": "TCDS IM.A.051 C.6 [LC3]; POH p2-5 [LC1]; lm_prop [LM0]; ซิมไม่มีใบพัด (T0 คงที่ 3,538 N)",
    "current": 2350,
@@ -319,7 +313,7 @@
    "cond": "BEM ใบพัดเดิม คันเร่งสุด 180 hp, SL ISA, 126 KTAS",
    "qty": "rpm ที่สมดุลกำลัง",
    "expected": "≤ 2,700 (rpm สูงสุด)",
-   "tol": "-",
+   "tol": "ขีดบนเดียว ส่วนเผื่อ 0",
    "unit": "rpm",
    "origin": "POH p2-5 [LC1]; lm_prop [LM0]",
    "current": "2790 (J 0.722)",
@@ -352,11 +346,55 @@
    "cond": "ซิม trim: 63.9 KCAS แฟลป 30 γ −3° ที่ 300 m, MTOW, CG อ้างอิง",
    "qty": "elevator ที่ต้องใช้ / ระยะเผื่อถึง travel ขึ้น 28°",
    "expected": "เผื่อ ≥ 10° ไว้ flare (เกณฑ์ภายใน ค่าประมาณ)",
-   "tol": "-",
+   "tol": "ขีดล่างเดียว ส่วนเผื่อ 0",
    "unit": "deg",
    "origin": "TCDS travel [LC3, LC6]; เกณฑ์ของผู้เขียน",
    "current": "de -9.7 / α 6.1 / θ 3.1 / thr 0.34",
    "pass": true
+  },
+  {
+   "id": "T-LC-32",
+   "cond": "ซิม linearise: บัตร c172s ที่ 1,115.8 kg (2,460 lb น้ำหนักทดสอบของ CR-2337), 69.5 KEAS (80 mph CAS), 4,000 ft ISA, แฟลป 0 และแฟลป 30",
+   "qty": "phugoid คาบ / ζ (แฟลป 0; แฟลป 30)",
+   "expected": "คาบ 18.3 s (4 รัน 17.6–19.4 s); ζ 0.044–0.061",
+   "tol": "คาบ ±20 % (14.6–22.0 s); ζ 0.02–0.12 (×0.5 ถึง ×2 ของช่วงที่วัด ค่าประมาณ เพราะเป็นเครื่องต่างแบบ)",
+   "unit": "s / -",
+   "origin": "NASA CR-2337 Table V (Cessna 177B Cardinal ไม่ใช่ C172) [LC11]",
+   "current": "แฟลป 0: 21 / 0.094; แฟลป 30: 21 / 0.118",
+   "pass": true
+  },
+  {
+   "id": "T-LC-33",
+   "cond": "เหมือน T-LC-32 แฟลป 0 ที่ 69.5 และ 104.3 KEAS (80 และ 120 mph CAS)",
+   "qty": "Dutch roll ωn / ζ (69.5; 104.3 KEAS)",
+   "expected": "ωn ≈ 1.60 / ≈ 2.1 rad/s; ζ > 0.5 / > 0.4",
+   "tol": "อัตราส่วนค่าจริง/บัตร ωn 0.90–1.45, ζ 0.60–1.40 [LM0 §01.3.4 ค่าประมาณ] → บัตรต้องได้ ωn 1.10–1.78 / 1.45–2.33 rad/s และ ζ ≥ 0.36 / ≥ 0.29",
+   "unit": "rad/s / -",
+   "origin": "NASA CR-2337 หน้า 26 (ข้อความ; รายงานบอกว่าการหน่วงสูงทำให้สกัดตัวเลขได้ไม่แม่น) [LC11]",
+   "current": "69.5: 1.58 / 0.271; 104.3: 2.27 / 0.254",
+   "pass": false
+  },
+  {
+   "id": "T-LC-34",
+   "cond": "ซิมเวลาจริง 240 Hz: trim ระดับแฟลป 0 ที่ 1,115.8 kg 4,000 ft, aileron เต็มทันที (อัตราของซิม 80°/s), rudder และ elevator ค้าง, ไม่มีลม",
+   "qty": "อัตราม้วนสูงสุด p_max (69.5; 104.3 KEAS)",
+   "expected": "34.7 / 54.5 °/s (เฉลี่ย 4 รัน ช่วง 33.2–35.9 / 53.8–54.7)",
+   "tol": "±25 % (ค่าประมาณ ผู้เขียนตั้ง: aileron ของ Cardinal ต่างจาก C172)",
+   "unit": "deg/s",
+   "origin": "NASA CR-2337 Table IV [LC11]",
+   "current": "47.4 / 73.3; ข้อมูลประกอบ: เวลาถึง 30° 0.9 / 0.62 s (วัด 1.02–1.41 / 0.70–0.74), pb/2V 0.12 / 0.123 (วัด 0.083–0.090 / 0.090–0.098), β ที่ 30° 8.7 / 5° (วัด 8.5–11 / 3–3.5)",
+   "pass": false
+  },
+  {
+   "id": "T-LC-35",
+   "cond": "ดึงคันบังคับใน turn หรือ pull-up ที่ cruise 110 KCAS 3,000 ft MTOW (n/α ของบัตร 14.5 g/rad)",
+   "qty": "แรงที่ wheel ต่อ g (Fs/g)",
+   "expected": "12.5–42.9 lbf/g (56–191 N/g)",
+   "tol": "ช่วงปิด ส่วนเผื่อ 0 (แถบเป้าหมายค่าประมาณ ไม่ใช่ค่าที่วัดจาก C172)",
+   "unit": "lbf/g",
+   "origin": "MIL-F-8785C Level 1 wheel [R1:C12]; 14 CFR 23.155 [LM3]; lc_cardfix.stickForceBand",
+   "current": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีแบบจำลองแรงที่คันบังคับ)",
+   "pass": null
   }
  ],
  "raw": {
@@ -748,6 +786,133 @@
     "ROC_fpm": 906.36,
     "Vbg_kt": 75.195,
     "LD": 11.559
+   },
+   "refModes": {
+    "mass_kg": 1115.8,
+    "cond": {
+     "lo": {
+      "keas": 69.5,
+      "h_ft": 4000
+     },
+     "hi": {
+      "keas": 104.3,
+      "h_ft": 4100
+     }
+    },
+    "card_lo": {
+     "sp": {
+      "wn": 3.6112,
+      "zeta": 0.70516,
+      "T": 2.4539
+     },
+     "ph": {
+      "wn": 0.30011,
+      "zeta": 0.093641,
+      "T": 21.029
+     },
+     "dr": {
+      "wn": 1.5779,
+      "zeta": 0.2714,
+      "T": 4.1372
+     },
+     "roll_tau": 0.20505,
+     "spiral": {
+      "lam": -0.0086682,
+      "t2": 79.965,
+      "grows": false
+     },
+     "nAlpha": 5.9786,
+     "CAP": 2.1813,
+     "trim": {
+      "V_kt": 73.758,
+      "alpha_deg": 7.2056,
+      "theta_deg": 7.2056,
+      "de_deg": -6.478,
+      "thr": 0.51178
+     }
+    },
+    "roll_card_lo": {
+     "t30_s": 0.9,
+     "pmax_dps": 47.369,
+     "beta30_deg": 8.7159,
+     "betaMax_deg": 21.023,
+     "pb2V": 0.11979,
+     "da_deg": 17.5,
+     "V_ktas": 73.758
+    },
+    "card_hi": {
+     "sp": {
+      "wn": 5.4051,
+      "zeta": 0.70294,
+      "T": 1.6344
+     },
+     "ph": {
+      "wn": 0.20134,
+      "zeta": 0.1831,
+      "T": 31.744
+     },
+     "dr": {
+      "wn": 2.2687,
+      "zeta": 0.2544,
+      "T": 2.8637
+     },
+     "roll_tau": 0.13487,
+     "spiral": {
+      "lam": -0.021355,
+      "t2": 32.458,
+      "grows": false
+     },
+     "nAlpha": 13.468,
+     "CAP": 2.1692,
+     "trim": {
+      "V_kt": 110.86,
+      "alpha_deg": 1.644,
+      "theta_deg": 1.644,
+      "de_deg": -2.2186,
+      "thr": 0.9994
+     }
+    },
+    "roll_card_hi": {
+     "t30_s": 0.625,
+     "pmax_dps": 73.28,
+     "beta30_deg": 5.0008,
+     "betaMax_deg": 13.814,
+     "pb2V": 0.12332,
+     "da_deg": 17.5,
+     "V_ktas": 110.86
+    },
+    "card_lo_f30": {
+     "sp": {
+      "wn": 3.614,
+      "zeta": 0.7044,
+      "T": 2.4493
+     },
+     "ph": {
+      "wn": 0.30085,
+      "zeta": 0.11834,
+      "T": 21.032
+     },
+     "dr": {
+      "wn": 1.8455,
+      "zeta": 0.2953,
+      "T": 3.5636
+     },
+     "roll_tau": 0.21397,
+     "spiral": {
+      "lam": 0.023885,
+      "t2": 29.02,
+      "grows": true
+     },
+     "nAlpha": 5.9799,
+     "CAP": 2.1842,
+     "trim": {
+      "V_kt": 73.758,
+      "alpha_deg": 3.8114,
+      "theta_deg": 3.8114,
+      "de_deg": -7.9033,
+      "thr": 0.61573
+     }
+    }
    }
   }
  }

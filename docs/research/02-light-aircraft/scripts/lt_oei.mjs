@@ -11,7 +11,7 @@
 //   (1) fly a hands-off engine cut at VYSE, (2) solve the 6-DOF OEI trim (β = 0 and φ = 5°) with lm_card.f9, (3) OEI climb.
 import fs from 'node:fs';
 import { loadType, val } from './lm_lib.mjs';
-import { loadSim, buildAC, applyAC, AC_R1, f9, solve, startTrimmed, trimThr, iasCas } from './lm_card.mjs';
+import { loadSim, buildAC, applyAC, f9, solve, startTrimmed, trimThr, iasCas } from './lm_card.mjs';
 const D2R = Math.PI / 180, R2D = 180 / Math.PI, KT = 0.514444, FT = 0.3048, G0 = 9.80665, RHO0 = 1.225;
 const r = (x, n = 4) => (x == null || !isFinite(x) ? null : +(+x).toPrecision(n));
 const geom = JSON.parse(fs.readFileSync(new URL('./out/lt_geom.json', import.meta.url), 'utf8'));
@@ -113,8 +113,8 @@ A.ceiling = {
 
 // ── Part B: current simulator with the test-only OEI wrapper ──
 const M = await loadSim();
-Object.assign(AC_R1, { deUp: 15.5 * D2R, deDn: 13 * D2R, daMax: 20 * D2R, drMax: 27 * D2R });   // lm_card travel-path workaround (see lt_run.mjs)
-const card = structuredClone(ng); if (card.aero?.legacy?.v) card.aero.legacy.v.Cma = -1.10;
+// control travel from the card (lm_card D2 fix); aero.legacy.Cma is the card value (−0.535 [LT15])
+const card = structuredClone(ng);
 const ac0 = buildAC(card, { mass: 1900 }), restore = applyAC(M, ac0);
 const orig = M.Aircraft.prototype.deriv;
 M.Aircraft.prototype.deriv = function (s, out, diag) {

@@ -103,18 +103,21 @@
     "training_mass": {
      "v": {
       "kg": 2123.8,
-      "BEW": 1725,
-      "crew": 190,
-      "fuel": 208.8
+      "empty_kg": 1725,
+      "crew_kg": 190,
+      "fuel_kg": 208.8,
+      "fuel_l": 259
      },
-     "u": "kg",
+     "u": "kg (fuel_l L)",
      "scope": "aircraft",
      "src": [
-      "LP27"
+      "LP27",
+      "LP13",
+      "LP2"
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: BEW + ครูและศิษย์ 2 × 95 kg (รวมร่มชูชีพและอุปกรณ์) + เชื้อเพลิงครึ่งถัง; การเทียบ TCDS/POH ใช้ --mass 2350"
+     "note": "ค่าประมาณ: empty_kg = airframe.weights.BEW_typical (1725 kg) + ครูและศิษย์ 2 × 95 kg (รวมร่มชูชีพและอุปกรณ์ ค่าประมาณ) + เชื้อเพลิงครึ่งถัง 259 L = 208.8 kg (0.806 kg/L ตาม TCDS); การเทียบ TCDS/POH ใช้ MTOW 2350 kg"
     }
    },
    "cg": {
@@ -1350,7 +1353,7 @@
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: มุมแฟลป 23°/50° และ VFE 150 kt จาก TCDS; CLmax ของ UP/LDG จากความเร็ว stall ของ PC-9 M; dCL0/dCD0/dCm0 และ CLmax ของ TO เป็นค่าประมาณ (dCL0 ของ LDG เท่ารอบที่ 1 = 0.55)"
+     "note": "ค่าประมาณ: ชื่อขั้น UP/TO/LDG ตามคู่มือ (D6); มุมแฟลป 23°/50° และ VFE 150 kt จาก TCDS; CLmax ของ UP/LDG จากความเร็ว stall ของ PC-9 M [LP2]; dCL0/dCD0/dCm0 และ CLmax ของ TO เป็นค่าประมาณ (dCL0 ของ LDG เท่ารอบที่ 1 = 0.55)"
     },
     "transition_time_s": {
      "v": 6,
@@ -1740,7 +1743,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: lm_legacy_fit โหมด static ที่ MTOW: polar ของซิม CD = CD0 + K(CL − 0.15)² จากการร่อน (L/D 11.3 ที่ 116.1 kt); aStall/aStallFlap แก้ให้ CLmax 1 g ตรง CLmax_target; ค่าอื่นจาก aero.static_long/flaps; polar from glide 116.1 KCAS E 11.3: CD0s 0.0353 Ks 0.0889; idle 0 (POH glide is at idle, windmilling); climb fit (static): target Vy 125.0 KCAS ROC 4090 fpm → T0 12014 N, Vc 78.8 m/s; WARNING eta 1.34 > 0.95: P too low for the sim's thrust law at this ROC"
+    "note": "ค่าประมาณ: lm_legacy_fit โหมด static ที่ MTOW: polar ของซิม CD = CD0 + K(CL − 0.15)² จากการร่อน (L/D 11.3 ที่ 116.1 kt); aStall/aStallFlap แก้ให้ CLmax 1 g ตรง CLmax_target; ค่าอื่นจาก aero.static_long/flaps; polar from glide 116.1 KCAS E 11.3: CD0s 0.0353 Ks 0.0889; idle 0 (POH glide is at idle, windmilling); climb fit (static): target Vy 136.0 KCAS ROC 4090 fpm → T0 12014 N, Vc 78.8 m/s; WARNING eta 1.34 > 0.95: P too low for the sim's thrust law at this ROC"
    }
   },
   "interference": {
@@ -1951,7 +1954,7 @@
     "diskDiameter": {
      "v": 2.438,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LP2"
      ],
@@ -2265,7 +2268,7 @@
       -0.05
      ],
      "u": "m FRD",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LP27"
      ],
@@ -2280,7 +2283,7 @@
       0
      ],
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LP27"
      ],
@@ -2293,7 +2296,7 @@
     "maxShaftPower": {
      "v": 708,
      "u": "kW",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "LP2"
      ],
@@ -2304,7 +2307,7 @@
     "rpmGoverned": {
      "v": 2000,
      "u": "rpm",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "LP2"
      ],
@@ -2315,7 +2318,7 @@
     "rpmTransientLimit": {
      "v": 2205,
      "u": "rpm",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "LP2"
      ],
@@ -2326,7 +2329,7 @@
     "gearRatio": {
      "v": 15.07,
      "u": "-",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "R1:P4"
      ],
@@ -2337,7 +2340,7 @@
     "flightIdleShaftPower": {
      "v": 20,
      "u": "kW",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "R1:params-trainer.json"
      ],
@@ -3140,7 +3143,7 @@
     "IreflectedEngine": {
      "v": 0,
      "u": "kg m2",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "R1:params-trainer.json"
      ],
@@ -3359,7 +3362,7 @@
     "install_loss_frac": {
      "v": 0,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "engine",
      "src": [
       "R1:E1"
      ],
@@ -3692,7 +3695,7 @@
     "spin": {
      "v": 1,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "engine",
      "src": [
       "LP2"
      ],
@@ -3707,7 +3710,7 @@
       0
      ],
      "u": "-",
-     "scope": "aircraft",
+     "scope": "engine",
      "src": [
       "LP27"
      ],
@@ -3891,8 +3894,8 @@
      "LP27"
     ],
     "conf": "กลาง",
-    "est": false,
-    "note": "ตำแหน่งดุมเป็นค่าประมาณ"
+    "est": true,
+    "note": "ค่าประมาณ: pos = interference.slipstream.hubPos (ระนาบใบพัดสมมติที่ 0.45 m DAT); แกนแรงขับตามแกนลำตัว (ไม่มีข้อมูล right/down thrust); รุ่นเครื่องยนต์และทิศหมุนใบพัดจาก TCDS"
    },
    "legacy": {
     "v": {
@@ -3909,7 +3912,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: T0 จากทฤษฎีโมเมนตัม FM 0.55 (lm_card); eta = Vc·T0/P ฟิตให้ ROC ของซิมที่ MTOW = 4090 fpm ที่ VY 125 kt; idle 0 เพราะ polar มาจากการร่อนแรงขับศูนย์; WARNING eta > 0.95"
+    "note": "ค่าประมาณ: T0 จากทฤษฎีโมเมนตัม FM 0.55 (lm_card); eta = Vc·T0/P ฟิตให้ ROC ของซิมที่ MTOW = 4090 fpm ที่ VY 136 kt; idle 0 เพราะ polar มาจากการร่อนแรงขับศูนย์; WARNING eta > 0.95"
    }
   },
   "speeds": {
@@ -3951,11 +3954,12 @@
     "u": "kt CAS",
     "scope": "aircraft",
     "src": [
-     "LP2"
+     "LP2",
+     "LP30"
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "VMO ถึง 15,000 ft; MMO 0.65"
+    "note": "VMO ถึง 15,000 ft; MMO 0.65; เครื่องเทอร์ไบน์ใช้ VMO/MMO แทน VNE/VNO ตาม 14 CFR 23.1505(c) [LP30] จึงไม่มี VNO (อยู่ใน _na)"
    },
    "VFE": {
     "v": {
@@ -3994,6 +3998,18 @@
     "note": "ค่าประมาณ: TCDS ไม่ระบุ VLE; ใช้ VLO"
    },
    "VREF_kt": {
+    "v": 85,
+    "u": "kt CAS",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LP2"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: 1.3 VS0 ที่มวลฝึก 2124 kg (D1): VS0 69 KCAS ที่ 2,350 kg [LP2] × √(2123.8/2,350) = 65.6 ⇒ 85.27; ที่ MTOW 89.7 kt"
+   },
+   "VAPP_kt": {
     "v": 90,
     "u": "kt CAS",
     "scope": "aircraft",
@@ -4002,18 +4018,19 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: 1.3 VS0 = 89.7 kt"
+    "note": "ค่าประมาณ: VREF + 5 kt ที่มวลฝึก 2124 kg แฟลป LDG ล้อลง (D1); แก้มวลเป็น MTOW ≈ 94.7 kt"
    },
-   "VAPP_kt": {
-    "v": 95,
+   "VX_kt": {
+    "v": 92,
     "u": "kt CAS",
     "scope": "aircraft",
     "src": [
-     "LP27"
+     "LP27",
+     "LP30"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: VREF + 5"
+    "note": "ค่าประมาณ: ไม่มีค่าสาธารณะ; lp_perf.mjs (ใบพัด BEM HC-D4N ของรอบที่ 1 + polar clean): มุมไต่สูงสุดของโมเดลที่ 76.25 kt ต่ำกว่า 1.2 VS1 จึงใช้ 1.2 VS1 = 92.4 kt ที่ MTOW ตาม 14 CFR 23.65(a)(4) [LP30] (γ 19.8° เทียบสูงสุด 20.4°); ที่มวลฝึก 87.84 kt"
    },
    "VR_kt": {
     "v": 78,
@@ -4027,15 +4044,16 @@
     "note": "ค่าประมาณ: ไม่มีค่าสาธารณะ; ≈ 1.05 × VS แฟลป TO (ประมาณ 74 kt)"
    },
    "VY_kt": {
-    "v": 125,
+    "v": 136,
     "u": "kt CAS",
     "scope": "aircraft",
     "src": [
-     "LP27"
+     "LP27",
+     "LP29"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ไม่มีค่าสาธารณะ; 140 KIAS ของ T-6 สเกล √(W/S)"
+    "note": "ค่าประมาณ: ไม่มีค่าสาธารณะ; lp_perf.mjs ให้ Vy 139.3 kt ที่ MTOW (138 ที่มวลฝึก) คูณ 0.977 ซึ่งเป็นอัตราส่วน VY 140 KIAS ของ T-6A [LP29] ต่อ Vy ของโมเดลเดียวกันที่ 6,300 lb (143.3) ⇒ 136 kt; ค่าเดิม 125 kt (สเกล √(W/S) จาก T-6) ต่ำไป; เส้น ROC แบน: ±10 kt เสีย ROC < 2 %"
    },
    "VG_kt": {
     "v": 116.1,
@@ -4079,6 +4097,20 @@
     "est": true,
     "note": "ค่าประมาณ: 14 CFR 23.207 (เท่ารอบที่ 1)"
    },
+   "stall_altitude_loss_ft": {
+    "v": 380,
+    "u": "ft",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LC2",
+     "LF1",
+     "LG5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไม่มีค่าใน TCDS/เอกสารสาธารณะ; สัดส่วน h/VS1² ของ POH เครื่องฝึกลูกสูบ (C172S 230 ft/53 KCAS [LC2], C152 160 ft/48 KCAS [LF1], P2006T 180 ft/66 KIAS [LG5]) เฉลี่ย 0.0642 ft/kt² (ช่วง 0.0413–0.0819) × VS1 77 kt CAS ที่ MTOW² ⇒ 380 ft (116 m; ช่วง 245–486 ft) สำหรับ stall ปีกระดับแล้วแก้แบบปกติ; ไม่รวม spin"
+   },
    "icao_approach_category": {
     "v": "A",
     "u": "-",
@@ -4089,6 +4121,48 @@
     "conf": "ต่ำ",
     "est": true,
     "note": "ค่าประมาณ: 1.3 VS0 = 89.7 kt (< 91 kt)"
+   },
+   "ias_cas": {
+    "v": {
+     "UP": [
+      [
+       50,
+       50
+      ],
+      [
+       320,
+       320
+      ]
+     ],
+     "TO": [
+      [
+       50,
+       50
+      ],
+      [
+       150,
+       150
+      ]
+     ],
+     "LDG": [
+      [
+       50,
+       50
+      ],
+      [
+       150,
+       150
+      ]
+     ]
+    },
+    "u": "kt IAS → kt CAS",
+    "scope": "aircraft",
+    "src": [
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไม่มีตาราง PEC (KIAS → KCAS) สาธารณะ ใช้ IAS = CAS ทุกแฟลป (identity) เพื่อให้ lm_card/lm_merge แปลงหน่วยได้; TCDS ของ Pilatus ให้ความเร็วเป็น KCAS บัตร pc9m/pc7mk2 จึงเก็บทุกค่าเป็น kt CAS; หัวข้อ 08/09 ที่อ้างเป็น KIAS ถือเท่ากันจนกว่าจะมี PEC"
    }
   },
   "performance": {
@@ -4102,7 +4176,37 @@
     ],
     "conf": "ต่ำ",
     "est": false,
-    "note": "best ROC ที่ระดับน้ำทะเล (โบรชัวร์/Jane's ไม่ระบุน้ำหนัก; ฟิสิกส์บอกว่าน่าจะเป็นน้ำหนักฝึกเบา ≈ 2,000–2,100 kg)"
+    "note": "best ROC ที่ระดับน้ำทะเล 20.8 m/s (โบรชัวร์/Jane's ไม่ระบุน้ำหนัก); โมเดลไต่ BEM ของ lp_perf.mjs ให้ 3674 fpm ที่ MTOW และ 4156 ที่มวลฝึก 2124 kg จึงน่าเป็นค่าที่น้ำหนักฝึก; ใช้เป็นเป้า fit ที่ MTOW ตามเดิม (ดู §07.13)"
+   },
+   "ROC_table": {
+    "v": {
+     "h_ft": 9,
+     "oat_C": [
+      15,
+      31,
+      35
+     ],
+     "ROC_fpm": [
+      4090,
+      4070,
+      4070
+     ],
+     "ROC_ms": [
+      20.8,
+      20.7,
+      20.7
+     ]
+    },
+    "u": "fpm (m/s)",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LP12",
+     "LP13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ความสูงสนาม VTBD 9 ft; ROC_SL_fpm (4090 fpm) × อัตราส่วน ROC ของโมเดลไต่ BEM (lp_perf.mjs) ที่ OAT นั้นต่อ 15 °C (กำลังเต็มเพราะ flat rating ถึง 37 °C); ไม่มีตาราง POH สาธารณะ; มวลเดียวกับ ROC_SL_fpm (ไม่ระบุ)"
    },
    "service_ceiling_ft": {
     "v": 25000,
@@ -4113,7 +4217,7 @@
     ],
     "conf": "สูง",
     "est": false,
-    "note": "ความสูงปฏิบัติการสูงสุด (Jane's ผ่าน Wikipedia ให้เพดาน 37,990 ft)"
+    "note": "ความสูงปฏิบัติการสูงสุด 7,620 m (Jane's ผ่าน Wikipedia ให้เพดาน 37,990 ft)"
    },
    "cruise_table": {
     "v": [
@@ -4135,7 +4239,7 @@
     ],
     "conf": "ต่ำ",
     "est": false,
-    "note": "max level speed ISA (ข้อความโบรชัวร์ที่เผยแพร่ซ้ำ)"
+    "note": "max level speed ISA (ข้อความโบรชัวร์ที่เผยแพร่ซ้ำ) 142/155 m/s"
    },
    "glide": {
     "v": {
@@ -4169,6 +4273,383 @@
     "conf": "กลาง",
     "est": false,
     "note": "endurance รวมสำรอง 100 nm"
+   },
+   "takeoff": {
+    "v": {
+     "ground_roll_m": 301,
+     "over50ft_m": 495
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไม่มีค่าสาธารณะ; lm_card runCard ที่ MTOW 2,350 kg ISA SL ลมสงบ ผิวแห้ง แฟลป TO VR 78 kt pitch 10° ด้วย aero.legacy/propulsion.legacy ของบัตร; วิธีเดียวกันกับ t6a ที่ 6,300 lb ให้วิ่งขึ้น 394/659 m เทียบ 427/610 m [LP29] (−8 %/+8 %); ลงจอด: ground roll เบรกปกติของ autoland 591 m เทียบ 579 m (+2 %) และระยะจาก 50 ft แบบเบรกเต็ม 721 m เทียบ 732 m (−1 %) (เบรกเต็มให้ ground roll −31 %, เบรกปกติให้ระยะรวม +25 % เพราะช่วงอากาศของซิม 324 m ยาวกว่าที่ [LP29] บอกเป็นนัย 153 m)"
+   },
+   "landing": {
+    "v": {
+     "ground_roll_m": 504,
+     "over50ft_m": 668
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไม่มีค่าสาธารณะ; lm_card autoland ที่ MTOW Vapp 95 kt แฟลป LDG: ground_roll_m จากเบรกปกติของ autoland, over50ft_m จากเบรกเต็ม (สองโหมดที่ตรงกับตัวเลข T-6A); วิธีเดียวกันกับ t6a ที่ 6,300 lb ให้วิ่งขึ้น 394/659 m เทียบ 427/610 m [LP29] (−8 %/+8 %); ลงจอด: ground roll เบรกปกติของ autoland 591 m เทียบ 579 m (+2 %) และระยะจาก 50 ft แบบเบรกเต็ม 721 m เทียบ 732 m (−1 %) (เบรกเต็มให้ ground roll −31 %, เบรกปกติให้ระยะรวม +25 % เพราะช่วงอากาศของซิม 324 m ยาวกว่าที่ [LP29] บอกเป็นนัย 153 m)"
+   },
+   "takeoff_table": {
+    "v": {
+     "mass_kg": 2350,
+     "h_ft": 9,
+     "oat_C": [
+      15,
+      31,
+      35
+     ],
+     "ground_roll_m": [
+      301,
+      328,
+      335
+     ],
+     "over50ft_m": [
+      495,
+      540,
+      551
+     ]
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ความสูงสนาม VTBD 9 ft; performance.takeoff × ตัวคูณวันร้อนของ lp_perf.mjs 1/(σ·T/T_ISA) = 1.001/1.091/1.114 (แรงขับ BEM ที่ 0.7 V_LOF, กำลังเต็มเพราะ flat rating); ไม่มีตาราง POH สาธารณะ; ฐาน 15 °C = performance.takeoff/landing ของบัตร (lm_card)"
+   },
+   "landing_table": {
+    "v": {
+     "mass_kg": 2350,
+     "h_ft": 9,
+     "oat_C": [
+      15,
+      31,
+      35
+     ],
+     "ground_roll_m": [
+      504,
+      532,
+      539
+     ],
+     "over50ft_m": [
+      668,
+      705,
+      715
+     ]
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ความสูงสนาม VTBD 9 ft; performance.landing × 1/σ = 1/1.056/1.07; ไม่มีตาราง POH สาธารณะ; ฐาน 15 °C = performance.takeoff/landing ของบัตร (lm_card)"
+   },
+   "tests": {
+    "v": [
+     {
+      "case": "T-LP-01",
+      "conditions": "MTOW 2,350 kg, 3,000 ft ISA, idle, แฟลป UP ล้อขึ้น, ลดความเร็ว 1 kt/s, ปีกระดับ",
+      "quantity": "V_SR 1 g (KEAS ≈ KCAS) = VS ของ TCDS/√0.95",
+      "expected": 79,
+      "tolerance": 1.5,
+      "unit": "kt",
+      "src": "[LP2] TCDS F 56-32 77 KCAS; [LM1] nz 0.95",
+      "current": 79,
+      "pass": true
+     },
+     {
+      "case": "T-LP-02",
+      "conditions": "เหมือนบน แฟลป LDG 50° ล้อลง",
+      "quantity": "V_SR 1 g",
+      "expected": 70.79,
+      "tolerance": 1.5,
+      "unit": "kt",
+      "src": "[LP2] 69 KCAS",
+      "current": 70.79,
+      "pass": true
+     },
+     {
+      "case": "T-LP-03",
+      "conditions": "เหมือนบน แฟลป UP",
+      "quantity": "Vmin/V_SR ของการทดสอบ 1 kt/s (สมมติฐาน POH → 1 g: √0.95 = 0.975)",
+      "expected": 0.975,
+      "tolerance": 0.01,
+      "unit": "-",
+      "src": "[LM1]",
+      "current": 0.938,
+      "pass": false
+     },
+     {
+      "case": "T-LP-04",
+      "conditions": "MTOW, SL ISA, กำลังเต็ม 708 kW, clean ล้อขึ้น",
+      "quantity": "ROC สูงสุด",
+      "expected": 4090,
+      "tolerance": 410,
+      "unit": "fpm",
+      "src": "[LP12][LP13] (น้ำหนักไม่ระบุ; conf ต่ำ)",
+      "current": 4126,
+      "pass": true
+     },
+     {
+      "case": "T-LP-05",
+      "conditions": "MTOW, 3,000 ft, แรงขับศูนย์, clean",
+      "quantity": "L/D ร่อนสูงสุด",
+      "expected": 11.3,
+      "tolerance": 1,
+      "unit": "-",
+      "src": "[LP16][LP19] polar คลาส T-6 (ค่าประมาณ)",
+      "current": 11.3,
+      "pass": true
+     },
+     {
+      "case": "T-LP-06",
+      "conditions": "MTOW, approach 95 kt แฟลป LDG ล้อลง γ −3° 300 m",
+      "quantity": "short-period ζ (MIL-F-8785C Class I Cat C Level 1: 0.35–1.30)",
+      "expected": 0.825,
+      "tolerance": 0.475,
+      "unit": "-",
+      "src": "[R1:C12]",
+      "current": 0.5785,
+      "pass": true
+     },
+     {
+      "case": "T-LP-07",
+      "conditions": "เหมือนบน",
+      "quantity": "CAP (Cat C Level 1: 0.16–3.6)",
+      "expected": 1.88,
+      "tolerance": 1.72,
+      "unit": "1/(g s²)",
+      "src": "[R1:C12]",
+      "current": 1.063,
+      "pass": true
+     },
+     {
+      "case": "T-LP-08",
+      "conditions": "cruise 200 kt 3,000 ft clean",
+      "quantity": "Dutch roll ζ (Class I Cat A Level 1 ≥ 0.19; Cat B/C ≥ 0.08)",
+      "expected": "≥ 0.08 (Cat A: ≥ 0.19)",
+      "tolerance": 0,
+      "unit": "-",
+      "src": "[R1:C12] (ผ่านเมื่อ ≥ 0.08)",
+      "current": 0.1643,
+      "pass": true
+     },
+     {
+      "case": "T-LP-09",
+      "conditions": "approach 95 kt แฟลป LDG",
+      "quantity": "roll mode τR (Level 1 ≤ 1.0 s)",
+      "expected": "0.05–1",
+      "tolerance": "ช่วง 0.05–1",
+      "unit": "s",
+      "src": "[R1:C12]",
+      "current": 0.3386,
+      "pass": true
+     },
+     {
+      "case": "T-LP-10",
+      "conditions": "approach 95 kt แฟลป LDG",
+      "quantity": "spiral: เวลาเพิ่มสองเท่าถ้าลู่ออก (Cat C Level 1 ≥ 12 s; ลู่เข้า = ผ่าน)",
+      "expected": "≥ 12",
+      "tolerance": "ช่วง ≥ 12",
+      "unit": "s",
+      "src": "[R1:C12]",
+      "current": 25.74,
+      "pass": true
+     },
+     {
+      "case": "T-LP-11",
+      "conditions": "approach 95 kt แฟลป LDG",
+      "quantity": "phugoid ζ (Level 1 ≥ 0.04)",
+      "expected": "≥ 0.04",
+      "tolerance": 0,
+      "unit": "-",
+      "src": "[R1:C12]",
+      "current": 0.1362,
+      "pass": true
+     },
+     {
+      "case": "T-LP-12",
+      "conditions": "cruise 200 kt, aileron เต็ม (เฉลี่ย 15.5°) ม้วนจาก 0°",
+      "quantity": "เวลาถึงมุมเอียง 60° (Class I Cat A Level 1 ≤ 1.3 s)",
+      "expected": "0–1.3",
+      "tolerance": "ช่วง 0–1.3",
+      "unit": "s",
+      "src": "[R1:C12][LP2]",
+      "current": 0.566,
+      "pass": true
+     },
+     {
+      "case": "T-LP-54",
+      "conditions": "MTOW SL ISA กำลังเต็ม clean ล้อขึ้น ที่ VX ของบัตร 92 kt",
+      "quantity": "γ ของซิมที่ VX ÷ γ สูงสุดของซิม (VX ของบัตรให้มุมไต่ใกล้สูงสุด)",
+      "expected": "0.95–1.0001",
+      "tolerance": "ช่วง 0.95–1.0001",
+      "unit": "-",
+      "src": "[LP27] lp_perf.mjs + 14 CFR 23.65(a)(4) [LP30]",
+      "current": 0.9943,
+      "pass": true
+     },
+     {
+      "case": "T-LP-58",
+      "conditions": "มวลฝึก 2124 kg แฟลป LDG (บัตร resolve แล้ว)",
+      "quantity": "VAPP − VREF ใน KCAS (D1: VAPP ≥ VREF)",
+      "expected": "≥ 0",
+      "tolerance": "ช่วง ≥ 0",
+      "unit": "kt",
+      "src": "[D1] schema-ext-r2 §5",
+      "current": 5,
+      "pass": true
+     },
+     {
+      "case": "T-LP-62",
+      "conditions": "stall ปีกระดับ idle แฟลป UP ที่ MTOW แล้วแก้แบบปกติ (ลดมุมปะทะ กำลังเต็ม ไต่กลับ)",
+      "quantity": "ความสูงที่เสีย",
+      "expected": 380,
+      "tolerance": 135,
+      "unit": "ft",
+      "src": "[LP27] ค่าประมาณ h/VS1² ของ [LC2][LF1][LG5]",
+      "current": "ไม่รองรับในซิมวันนี้ (lm_card ไม่มีการทดสอบแก้ stall)",
+      "pass": null
+     },
+     {
+      "case": "T-LP-66",
+      "conditions": "MTOW approach 95 kt แฟลป LDG ล้อลง; อนุพันธ์ lateral ของ FlightGear PC-9M [LB27] แทนของบัตร",
+      "quantity": "Dutch roll ωn FG ÷ บัตร (ช่วง K 1.5 ของคลาสที่ยังไม่ตรวจ)",
+      "expected": "0.75–1.55",
+      "tolerance": "ช่วง 0.75–1.55",
+      "unit": "-",
+      "src": "[LM0] 01-methods §01.3.4; [LB27]",
+      "current": 1.42,
+      "pass": true
+     },
+     {
+      "case": "T-LP-67",
+      "conditions": "เหมือนบน",
+      "quantity": "Dutch roll ζ FG ÷ บัตร",
+      "expected": "0.45–1.75",
+      "tolerance": "ช่วง 0.45–1.75",
+      "unit": "-",
+      "src": "[LM0] §01.3.4; [LB27]",
+      "current": 0.664,
+      "pass": true
+     },
+     {
+      "case": "T-LP-68",
+      "conditions": "เหมือนบน",
+      "quantity": "roll mode τR FG ÷ บัตร",
+      "expected": "0.55–2.1",
+      "tolerance": "ช่วง 0.55–2.1",
+      "unit": "-",
+      "src": "[LM0] §01.3.4; [LB27]",
+      "current": 1.01,
+      "pass": true
+     },
+     {
+      "case": "T-LP-69",
+      "conditions": "MTOW cruise 200 kt 3,000 ft clean; อนุพันธ์ lateral ของ FlightGear PC-9M [LB27] แทนของบัตร",
+      "quantity": "Dutch roll ωn FG ÷ บัตร (ช่วง K 1.5 ของคลาสที่ยังไม่ตรวจ)",
+      "expected": "0.75–1.55",
+      "tolerance": "ช่วง 0.75–1.55",
+      "unit": "-",
+      "src": "[LM0] 01-methods §01.3.4; [LB27]",
+      "current": 0.944,
+      "pass": true
+     },
+     {
+      "case": "T-LP-70",
+      "conditions": "เหมือนบน",
+      "quantity": "Dutch roll ζ FG ÷ บัตร",
+      "expected": "0.45–1.75",
+      "tolerance": "ช่วง 0.45–1.75",
+      "unit": "-",
+      "src": "[LM0] §01.3.4; [LB27]",
+      "current": 1.16,
+      "pass": true
+     },
+     {
+      "case": "T-LP-71",
+      "conditions": "เหมือนบน",
+      "quantity": "roll mode τR FG ÷ บัตร",
+      "expected": "0.55–2.1",
+      "tolerance": "ช่วง 0.55–2.1",
+      "unit": "-",
+      "src": "[LM0] §01.3.4; [LB27]",
+      "current": 0.996,
+      "pass": true
+     },
+     {
+      "case": "T-LP-72",
+      "conditions": "MTOW cruise 200 kt, อนุพันธ์ lateral ทั้งชุดของ FG (Clda 0.0991) aileron เฉลี่ย 15.5°",
+      "quantity": "เวลาถึงมุมเอียง 60° (Class I Cat A Level 1 ≤ 1.3 s)",
+      "expected": "0–1.3",
+      "tolerance": "ช่วง 0–1.3",
+      "unit": "s",
+      "src": "[R1:C12]; [LB27]",
+      "current": 1.078,
+      "pass": true
+     },
+     {
+      "case": "T-LP-73",
+      "conditions": "MTOW approach 95 kt แฟลป LDG, อนุพันธ์ lateral ทั้งชุดของ FG",
+      "quantity": "เวลาถึงมุมเอียง 30° (Class I Cat C Level 1 ≤ 1.3 s)",
+      "expected": "0–1.3",
+      "tolerance": "ช่วง 0–1.3",
+      "unit": "s",
+      "src": "[R1:C12]; [LB27]",
+      "current": 1.293,
+      "pass": true
+     },
+     {
+      "case": "T-LP-74",
+      "conditions": "MTOW 2350 kg cruise 200 kt 3,000 ft clean, nL +7 g (TCDS)",
+      "quantity": "แรงที่คันต่อ g (Fs/g) ของโมเดลแรงที่คันในอนาคต: แถบ MIL-F-8785C Level 1 centre stick ∩ 14 CFR 23.155(a)(2); โมเดล hinge ของรอบที่ 1 กับบัตรให้ 8.94 lbf/g (ค่าประมาณ)",
+      "expected": "5.83–10.5",
+      "tolerance": "ช่วง 5.83–10.5",
+      "unit": "lbf/g",
+      "src": "[R1:C12]; [LP30]; [LP1][LP2][LP5] nL",
+      "current": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีโมเดลแรงที่คัน)",
+      "pass": null
+     },
+     {
+      "case": "T-LP-75",
+      "conditions": "มวลฝึก 2124 kg, trim ด้วย tab ที่ approach 90 kt แฟลป LDG และ cruise 200 kt",
+      "quantity": "ความชันแรงที่คันต่อความเร็ว (ต้องดึงเมื่อช้ากว่าความเร็ว trim, > 0); โมเดล hinge ให้ 0.617 / 0.278 N/kt (ค่าประมาณ)",
+      "expected": "≥ 0",
+      "tolerance": "ช่วง ≥ 0",
+      "unit": "N/kt",
+      "src": "[R1:C12] MIL-F-8785C 3.2.1.1",
+      "current": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีโมเดลแรงที่คัน)",
+      "pass": null
+     }
+    ],
+    "u": "ตามแถว",
+    "scope": "aircraft",
+    "src": [
+     "LP27"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "แถวเดียวกับตาราง §07.12 (สร้างโดย lp_check.mjs); expected มาจากแหล่งใน src ของแต่ละแถว แถวที่ src เป็น LP27 คือเป้าที่หัวข้อนี้คำนวณเอง (est ของ leaf ต้นทางบอกไว้); current = ผลโมเดลวันนี้กับบัตรนี้ (lm_card) ณ วันที่รัน"
    }
   },
   "controls": {
@@ -4838,7 +5319,7 @@
    "layout": {
     "v": "tricycle_retract",
     "u": "-",
-    "scope": "aircraft",
+    "scope": "gear",
     "src": [
      "LP2"
     ],
@@ -4853,7 +5334,7 @@
      "VLE_kt": 150
     },
     "u": "s, kt",
-    "scope": "aircraft",
+    "scope": "gear",
     "src": [
      "LP2",
      "LP21"
@@ -4870,7 +5351,7 @@
       1.33
      ],
      "u": "m FRD",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LP27",
       "LP2"
@@ -4893,7 +5374,7 @@
       ]
      ],
      "u": "m FRD",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LP27",
       "LP2"
@@ -4905,7 +5386,7 @@
     "cg_height_parked": {
      "v": 1.25,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LP27"
      ],
@@ -5508,7 +5989,7 @@
     "antiskid": {
      "v": 0,
      "u": "bool",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LP2"
      ],
@@ -5523,7 +6004,7 @@
       "type": "castering_diff_brake"
      },
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LP27"
      ],
@@ -5534,7 +6015,7 @@
     "pedal_max": {
      "v": 0,
      "u": "deg",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:G19",
       "LP27"
@@ -5546,7 +6027,7 @@
     "caster_max": {
      "v": 45,
      "u": "deg",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:params-trainer.json"
      ],
@@ -5557,7 +6038,7 @@
     "steer_rate": {
      "v": 60,
      "u": "deg/s",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:params-trainer.json"
      ],
@@ -5568,7 +6049,7 @@
     "shimmy_lag": {
      "v": 0.05,
      "u": "s",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:params-trainer.json"
      ],
@@ -5586,7 +6067,7 @@
       "mps": 3.048
      },
      "u": "fps",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:G3",
       "LP27"
@@ -5598,7 +6079,7 @@
     "part23_wing_lift_ratio": {
      "v": 0.667,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:G3",
       "R1:G4"
@@ -5613,7 +6094,7 @@
       "ground_reaction": 2
      },
      "u": "g",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:G3"
      ],
@@ -5624,7 +6105,7 @@
     "part23_reserve_drop_factor": {
      "v": 1.44,
      "u": "x drop height",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:G5"
      ],
@@ -5762,7 +6243,7 @@
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: VAPP 95 kt แฟลป LDG ล้อลง γ −3° 300 m"
+     "note": "ค่าประมาณ: ความเร็วทดสอบ 95 kt ที่ MTOW = speeds.VAPP_kt 90 kt ที่มวลฝึกแก้มวลเป็น MTOW (94.7) แฟลป LDG ล้อลง γ −3° 300 m"
     }
    },
    "takeoff_test": {
@@ -5794,8 +6275,8 @@
       "glideLD_idle": 11.3,
       "TO_groundRoll_m": 301,
       "TO_50ft_m": 495,
-      "LDG_50ft_maxBrake_m": 674,
-      "LDG_50ft_asIs_m": 848
+      "LDG_50ft_maxBrake_m": 668,
+      "LDG_50ft_asIs_m": 837
      },
      "u": "kt, fpm, -, m",
      "scope": "aircraft",
@@ -5804,8 +6285,8 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: โมเดลวันนี้ (src/ @ cabf0f0) + aero.legacy/propulsion.legacy ของบัตรนี้ ที่ 2350 kg ISA ลมสงบ (lm_card runCard); ความเร็ว KEAS ของซิม; ใช้เป็น regression ไม่ใช่ค่าจริง"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): โมเดลวันนี้ (src/ @ cabf0f0) + aero.legacy/propulsion.legacy ของบัตรนี้ ที่ 2350 kg ISA ลมสงบ (lm_card runCard); ความเร็ว KEAS ของซิม; VREF/VAPP ของบัตร (มวลฝึก) แก้มวลเป็น 89/95 kt; ใช้เป็น regression ไม่ใช่ค่าจริงของเครื่อง"
     },
     "approach": {
      "v": {
@@ -5833,8 +6314,8 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: IAS 95 kt แฟลปสุด ล้อลง 300 m γ −3° ที่ 2350 kg"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): IAS 95 kt แฟลปสุด ล้อลง 300 m γ −3° ที่ 2350 kg"
     },
     "cruise": {
      "v": {
@@ -5862,9 +6343,164 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: IAS 200 kt clean 3,000 ft ระดับ ที่ 2350 kg"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): IAS 200 kt clean 3,000 ft ระดับ ที่ 2350 kg"
     }
+   },
+   "derivative_check_fg": {
+    "v": {
+     "ref": "FlightGear PC-9M (FGMEMBERS 8cf7c87) วัดโดยหัวข้อ 03 [LB27]",
+     "mass_kg": 2350,
+     "approach": {
+      "cond": "95 kt แฟลป LDG ล้อลง",
+      "card": {
+       "dr_wn": 1.797,
+       "dr_zeta": 0.1786,
+       "tauR_s": 0.3386,
+       "spiral_t2_s": 25.74,
+       "spiral_divergent": true,
+       "roll_t_s": 0.727,
+       "roll_phi_deg": 30,
+       "pss_dps": 70.22,
+       "Clda": 0.2307,
+       "daMax_deg": 15.5
+      },
+      "fg": {
+       "dr_wn": 2.557,
+       "dr_zeta": 0.1186,
+       "tauR_s": 0.3408,
+       "spiral_t2_s": 9.334,
+       "spiral_divergent": true,
+       "roll_t_s": 1.293,
+       "roll_phi_deg": 30,
+       "pss_dps": 31.28,
+       "Clda": 0.0991,
+       "daMax_deg": 15.5
+      },
+      "ratio": {
+       "dr_wn": 1.42,
+       "dr_zeta": 0.664,
+       "tauR": 1.01
+      }
+     },
+     "cruise": {
+      "cond": "200 kt 3,000 ft clean",
+      "card": {
+       "dr_wn": 3.461,
+       "dr_zeta": 0.1582,
+       "tauR_s": 0.1671,
+       "spiral_t2_s": 118.3,
+       "spiral_divergent": false,
+       "roll_t_s": 0.568,
+       "roll_phi_deg": 60,
+       "pss_dps": 147.9,
+       "Clda": 0.2267,
+       "daMax_deg": 15.5
+      },
+      "fg": {
+       "dr_wn": 3.268,
+       "dr_zeta": 0.1838,
+       "tauR_s": 0.1665,
+       "spiral_t2_s": 32.88,
+       "spiral_divergent": false,
+       "roll_t_s": 1.078,
+       "roll_phi_deg": 60,
+       "pss_dps": 65.86,
+       "Clda": 0.0991,
+       "daMax_deg": 15.5
+      },
+      "ratio": {
+       "dr_wn": 0.944,
+       "dr_zeta": 1.16,
+       "tauR": 0.996
+      }
+     },
+     "band_unvalidated": {
+      "dr_wn": [
+       0.75,
+       1.55
+      ],
+      "dr_zeta": [
+       0.45,
+       1.75
+      ],
+      "tauR": [
+       0.55,
+       2.1
+      ]
+     }
+    },
+    "u": "rad/s, -, s",
+    "scope": "aircraft",
+    "src": [
+     "LB27",
+     "LP26",
+     "LM0",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณทั้งสองฝั่ง: ซิมวันนี้กับอนุพันธ์ lateral-directional ของบัตร (lm_derivs) เทียบกับชุดที่วัดจากโมเดล FlightGear (ไม่ใช่ข้อมูลบินจริง; โมเดลอ้าง DSTO-TR-0479 บางส่วน) ที่ MTOW config ตรงกับเงื่อนไข; อัตราส่วน FG/บัตร เทียบช่วง K 1.5 ของ 01-methods §01.3.4 (เครื่องเทอร์โบพร็อปยังไม่ผ่านการตรวจสูตร); ใช้เป็นการตรวจความไว ไม่ได้แทนค่าของบัตร"
+   },
+   "stick_force_targets": {
+    "v": {
+     "band": {
+      "controller": "centre_stick",
+      "nL": 7,
+      "W_lb": 5181,
+      "nAlpha_cruise_g_per_rad": 22.86,
+      "mil_L1_centre_stick_lbf_per_g": {
+       "min": 3.5,
+       "max": 10.5
+      },
+      "part23_155_force_lbf": 35,
+      "part23_155_min_lbf_per_g": 5.83,
+      "fs_per_g_lbf": {
+       "min": 5.83,
+       "max": 10.5
+      },
+      "fs_per_g_N": {
+       "min": 25.9,
+       "max": 46.7
+      }
+     },
+     "hinge_model": {
+      "mass_kg": 2123.8,
+      "at_kt": {
+       "approach": 90,
+       "cruise": 200
+      },
+      "Fs_per_g_N": {
+       "approach": 37.4,
+       "cruise": 36.8
+      },
+      "grad_N_per_kt": {
+       "approach": 0.617,
+       "cruise": 0.278
+      },
+      "SM_fixed": 0.153,
+      "SM_free": 0.103,
+      "mtow": {
+       "mass_kg": 2350,
+       "Fs_per_g_N_cruise": 39.8,
+       "Fs_per_g_lbf_cruise": 8.94,
+       "pull_to_nL_lbf": 53.6
+      }
+     }
+    },
+    "u": "lbf/g, N/g, N/kt, g/rad, MAC",
+    "scope": "aircraft",
+    "src": [
+     "R1:C12",
+     "LP30",
+     "LP1",
+     "LP2",
+     "LP5",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: band คือแถบเป้าหมายจากเกณฑ์ ไม่ใช่ค่าวัดของเครื่องจริง — MIL-F-8785C Level 1 แบบ centre stick [R1:C12] ขีดบน max(min(240/(n/α), 28), 56/(nL − 1)) ขีดล่าง max(21/(nL − 1), 3) lbf/g ด้วย n/α 22.86 g/rad ที่ cruise 200 kt 3,000 ft MTOW และ nL +7.0 g (acrobatic ตาม TCDS [LP1][LP2][LP5]) ร่วมกับ 14 CFR 23.155(a)(2) แบบ stick: แรงถึง nL ≥ max(W/140, 15 lb) ไม่ต้องเกิน 35 lb = 35 lbf ⇒ ≥ 5.83 lbf/g [LP30]; hinge_model คือสมการ elevator แบบ reversible ของรอบที่ 1 §6 กับ controls.pitch.* ของบัตร (ค่าคลาสของรอบที่ 1) ที่มวลฝึก: Fs/g 37.4 N (approach 90 kt) / 36.8 N (cruise) ความชัน 0.617 / 0.278 N/kt; ที่ MTOW แรงดึงถึง 7 g 53.6 lbf อยู่ในแถบ; ซิมวันนี้ไม่มีโมเดลแรงที่คัน"
    }
   },
   "input": {
@@ -5887,7 +6523,7 @@
       1
      ],
      "u": "-",
-     "scope": "sim",
+     "scope": "aircraft",
      "src": [
       "LP27"
      ],
@@ -5928,6 +6564,8 @@
     "otherSims.geofs.*",
     "otherSims.airfieldlab.*",
     "turboprop.reference_engines.PT6A-68",
+    "speeds.VNO_kt",
+    "speeds.crosswind_demonstrated_kt",
     "turboprop.reference_engines.PT6A-60A",
     "turboprop.reference_engines.PT6A-52",
     "turboprop.reference_engines.PT6A-68B_C_D_T"
@@ -5937,7 +6575,7 @@
    "src": [],
    "conf": "สูง",
    "est": false,
-   "note": "ไม่ใช้กับแบบนี้: turbofan.* (เครื่องเทอร์โบพร็อป); part25_* และ cfr25_* (ใบรับรอง FAR 23); controls.reference_types/typicalModes/wake.leaders (ค่าอ้างอิงรวมของรอบที่ 1 ไม่ใช่ค่ารายแบบ); numerics.contact.* (ของซิม); table_clean และ pitch.derived_check (ผลคำนวณของเครื่องฝึกรอบที่ 1); betaReverse/beta_reverse และ antiskid (ไม่มีระบบนี้); currentModel.approach95/cruise155 (เงื่อนไขของรอบที่ 1; ใช้ validation.currentModel.approach/cruise แทน); otherSims.* (หัวข้อ 03 เป็นเจ้าของ ส่วนที่เหลือเป็นค่าของ C172/โมเดลอื่น); reference_engines ของเครื่องยนต์ที่แบบนี้ไม่ใช้"
+   "note": "ไม่ใช้กับแบบนี้: turbofan.* (เครื่องเทอร์โบพร็อป); part25_* และ cfr25_* (ใบรับรอง FAR 23); controls.reference_types/typicalModes/wake.leaders (ค่าอ้างอิงรวมของรอบที่ 1 ไม่ใช่ค่ารายแบบ); numerics.contact.* (ของซิม); table_clean และ pitch.derived_check (ผลคำนวณของเครื่องฝึกรอบที่ 1); betaReverse/beta_reverse และ antiskid (ไม่มีระบบนี้); currentModel.approach95/cruise155 (เงื่อนไขของรอบที่ 1; ใช้ validation.currentModel.approach/cruise แทน); otherSims.* (หัวข้อ 03 เป็นเจ้าของ ส่วนที่เหลือเป็นค่าของ C172/โมเดลอื่น); reference_engines ของเครื่องยนต์ที่แบบนี้ไม่ใช้; speeds.VNO_kt (เครื่องเทอร์ไบน์ใช้ VMO/MMO แทน VNE/VNO ตาม 14 CFR 23.1505(c) [LP30]; VMO อยู่ใน speeds.VNE_kt); speeds.crosswind_demonstrated_kt (ไม่มีค่าสาธารณะของ PC-9 M และ PC-7 MkII ใน TCDS หรือ fact sheet; เกณฑ์ใบรับรองขั้นต่ำ 0.2 VS0 = 13.8 kt ตาม 14 CFR 23.233(a) [LP30] ไม่ใช่ค่าที่สาธิต)"
   }
  },
  "t6a": {
@@ -6050,18 +6688,21 @@
     "training_mass": {
      "v": {
       "kg": 2574.6,
-      "BEW": 2135.1,
-      "crew": 190,
-      "fuel": 249.5
+      "empty_kg": 2135.1,
+      "crew_kg": 190,
+      "fuel_kg": 249.5,
+      "fuel_l": 312
      },
-     "u": "kg",
+     "u": "kg (fuel_l L)",
      "scope": "aircraft",
      "src": [
-      "LP27"
+      "LP27",
+      "LP14",
+      "LP21"
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: BEW + ครูและศิษย์ 2 × 95 kg (รวมร่มชูชีพและอุปกรณ์) + เชื้อเพลิงครึ่งถัง; การเทียบ TCDS/POH ใช้ --mass 2948.4"
+     "note": "ค่าประมาณ: empty_kg = airframe.weights.BEW_typical (2135.1 kg) + ครูและศิษย์ 2 × 95 kg (รวมร่มชูชีพและอุปกรณ์ ค่าประมาณ) + เชื้อเพลิงครึ่งถัง 312 L = 249.5 kg (Jet A 0.80 kg/L); การเทียบ TCDS/POH ใช้ MTOW 2948.4 kg"
     }
    },
    "cg": {
@@ -7139,19 +7780,19 @@
     },
     "CLmax_target": {
      "v": {
-      "UP": 1.3984,
-      "LDG": 1.7414
+      "UP": 1.5003,
+      "LDG": 1.8423
      },
      "u": "-",
      "scope": "aircraft",
      "src": [
-      "LP2",
+      "LP29",
       "LM1",
       "LP27"
      ],
-     "conf": "ต่ำ",
+     "conf": "กลาง",
      "est": true,
-     "note": "ค่าประมาณ: ไม่มีความเร็ว stall สาธารณะของ T-6; ใช้ CLmax 1 g ของ PC-9 M (ปีกตระกูลเดียวกัน) ⇒ VS1/VS0 86.3/77.3 KCAS ที่ 6,500 lb"
+     "note": "ค่าประมาณ: จาก VS1/VS0 82/74 KIAS ที่ 6,300 lb ISA SL [LP29] โดยถือ KIAS = KCAS (ไม่มี PEC สาธารณะ ดู speeds.ias_cas) และนิยามความเร็วต่ำสุด nz 0.95 ⇒ CL ปรากฏ 1.5793/1.9392; แทนค่าเดิมที่ยืม CLmax ของ PC-9 M (1.3984/1.7414) (ตรวจความครบถ้วน 19 พ.ย. 2026)"
     },
     "alpha_star_neg": {
      "v": {
@@ -7229,8 +7870,8 @@
     },
     "alpha_star": {
      "v": {
-      "clean": 17.68,
-      "landing": 15.83
+      "clean": 18.99,
+      "landing": 17.11
      },
      "u": "deg",
      "scope": "aircraft",
@@ -7244,8 +7885,8 @@
     },
     "alpha_CLmax": {
      "v": {
-      "clean": 14.88,
-      "landing": 12.76
+      "clean": 16.12,
+      "landing": 13.98
      },
      "u": "deg",
      "scope": "aircraft",
@@ -7255,7 +7896,7 @@
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: α ที่ CL ของซิม (trim, นอก ground effect) สูงสุด; CLmax 1.399/1.741"
+     "note": "ค่าประมาณ: α ที่ CL ของซิม (trim, นอก ground effect) สูงสุด; CLmax 1.501/1.842"
     }
    },
    "flaps": {
@@ -7268,7 +7909,7 @@
        "dCL0": 0,
        "dCD0": 0,
        "dCm0": 0,
-       "CLmax": 1.3984
+       "CLmax": 1.5003
       },
       {
        "name": "TO",
@@ -7277,7 +7918,7 @@
        "dCL0": 0.3,
        "dCD0": 0.02,
        "dCm0": -0.05,
-       "CLmax": 1.5999
+       "CLmax": 1.7013
       },
       {
        "name": "LDG",
@@ -7286,19 +7927,19 @@
        "dCL0": 0.55,
        "dCD0": 0.06,
        "dCm0": -0.1,
-       "CLmax": 1.7414
+       "CLmax": 1.8423
       }
      ],
      "u": "-",
      "scope": "aircraft",
      "src": [
       "LP5",
-      "LP2",
+      "LP29",
       "LP27"
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: มุมแฟลป 23°/50° และ VFE 150 kt จาก TCDS; CLmax ของ UP/LDG จากความเร็ว stall ของ PC-9 M; dCL0/dCD0/dCm0 และ CLmax ของ TO เป็นค่าประมาณ (dCL0 ของ LDG เท่ารอบที่ 1 = 0.55)"
+     "note": "ค่าประมาณ: ชื่อขั้น UP/TO/LDG ตามคู่มือ (D6); มุมแฟลป 23°/50° และ VFE 150 kt จาก TCDS; CLmax ของ UP/LDG จากความเร็ว stall ของ T-6A [LP29]; dCL0/dCD0/dCm0 และ CLmax ของ TO เป็นค่าประมาณ (dCL0 ของ LDG เท่ารอบที่ 1 = 0.55)"
     },
     "transition_time_s": {
      "v": 6,
@@ -7557,8 +8198,8 @@
     },
     "alpha_warn_5kt": {
      "v": {
-      "clean": 11.52,
-      "landing": 8.511
+      "clean": 12.51,
+      "landing": 9.472
      },
      "u": "deg",
      "scope": "aircraft",
@@ -7572,8 +8213,8 @@
     },
     "alpha_warn_design": {
      "v": {
-      "clean": 10.92,
-      "landing": 7.7
+      "clean": 11.85,
+      "landing": 8.595
      },
      "u": "deg",
      "scope": "aircraft",
@@ -7690,8 +8331,8 @@
      "Cm0": 0.045,
      "Cma": -0.869,
      "Cmflap": -0.1,
-     "aStall": 17.68,
-     "aStallFlap": -1.85
+     "aStall": 18.99,
+     "aStallFlap": -1.88
     },
     "u": "-, 1/rad, deg",
     "scope": "aircraft",
@@ -7915,7 +8556,7 @@
     "diskDiameter": {
      "v": 2.4638,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LP5"
      ],
@@ -8228,7 +8869,7 @@
       -0.05
      ],
      "u": "m FRD",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LP27"
      ],
@@ -8243,7 +8884,7 @@
       0
      ],
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LP27"
      ],
@@ -8256,7 +8897,7 @@
     "maxShaftPower": {
      "v": 820.3,
      "u": "kW",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "LP5"
      ],
@@ -8267,7 +8908,7 @@
     "rpmGoverned": {
      "v": 2000,
      "u": "rpm",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "LP5"
      ],
@@ -8278,7 +8919,7 @@
     "rpmTransientLimit": {
      "v": 2200,
      "u": "rpm",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "LP5"
      ],
@@ -8289,7 +8930,7 @@
     "gearRatio": {
      "v": 15.07,
      "u": "-",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "R1:P4"
      ],
@@ -8300,7 +8941,7 @@
     "flightIdleShaftPower": {
      "v": 20,
      "u": "kW",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "R1:params-trainer.json"
      ],
@@ -9103,7 +9744,7 @@
     "IreflectedEngine": {
      "v": 0,
      "u": "kg m2",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "R1:params-trainer.json"
      ],
@@ -9322,7 +9963,7 @@
     "install_loss_frac": {
      "v": 0,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "engine",
      "src": [
       "R1:E1"
      ],
@@ -9656,7 +10297,7 @@
     "spin": {
      "v": 1,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "engine",
      "src": [
       "LP5"
      ],
@@ -9671,7 +10312,7 @@
       0
      ],
      "u": "-",
-     "scope": "aircraft",
+     "scope": "engine",
      "src": [
       "LP27"
      ],
@@ -9853,8 +10494,8 @@
      "LP27"
     ],
     "conf": "กลาง",
-    "est": false,
-    "note": "ตำแหน่งดุมเป็นค่าประมาณ"
+    "est": true,
+    "note": "ค่าประมาณ: pos = interference.slipstream.hubPos (ระนาบใบพัดสมมติที่ 0.45 m DAT); แกนแรงขับตามแกนลำตัว (ไม่มีข้อมูล right/down thrust); รุ่นเครื่องยนต์และทิศหมุนใบพัดจาก TCDS"
    },
    "legacy": {
     "v": {
@@ -9876,51 +10517,64 @@
   },
   "speeds": {
    "VS1_kt": {
-    "v": 86.3,
-    "u": "kt CAS",
+    "v": 82,
+    "u": "kt IAS",
     "scope": "aircraft",
     "src": [
-     "LP2",
-     "LP27"
+     "LP29"
     ],
-    "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: ไม่มีค่าสาธารณะ; CL ของ PC-9 M ที่ 6,500 lb (ความเร็วต่ำสุดแบบ POH) ⇒ ตรวจไขว้: 1.3 VS0 = 100.5 kt ≈ final 100–110 KIAS และ on-speed AOA = 1.3 Vs [LP20][LP21]; JSBSim t6texan2 82.4 KCAS ที่ 6,000 lb"
+    "conf": "กลาง",
+    "est": false,
+    "note": "แฟลป UP ล้อขึ้น idle ที่ 6,300 lb (2,858 kg) ISA SL: ตารางสเปกของผู้ผลิตใน AOPA Pilot (ส.ค. 1997) [LP29] (ผลคำนวณของผู้ผลิต); ที่ MTOW 6,500 lb = 83.3 kt (สเกล √W); ค่าเดิมของบัตรจาก CL ของ PC-9 M = 84.9 kt ที่ 6,300 lb; JSBSim t6texan2 82.4 KCAS ที่ 6,000 lb"
    },
    "VS0_kt": {
-    "v": 77.3,
-    "u": "kt CAS",
+    "v": 74,
+    "u": "kt IAS",
     "scope": "aircraft",
     "src": [
-     "LP2",
-     "LP27"
+     "LP29"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "แฟลป LDG ล้อลง idle ที่ 6,300 lb ISA SL [LP29]; ที่ MTOW 6,500 lb = 75.2 kt (สเกล √W); ค่าเดิมจาก CL ของ PC-9 M = 76.1 kt ที่ 6,300 lb"
+   },
+   "VX_kt": {
+    "v": 100,
+    "u": "kt IAS",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LP30",
+     "LP29"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: แฟลป LDG ล้อลง idle; วิธีเดียวกับ VS1"
+    "note": "ค่าประมาณ: ไม่มีค่าสาธารณะ; lp_perf.mjs (ใบพัด BEM ของรอบที่ 1 + polar clean): มุมไต่สูงสุดของโมเดลที่ 89.5 kt ต่ำกว่า 1.2 VS1 จึงใช้ 1.2 VS1 = 99.95 kt ที่ MTOW ตาม 14 CFR 23.65(a)(4) [LP30] (γ 15.7° เทียบสูงสุด 15.9°); ที่มวลฝึก 93.4 kt; IAS = CAS"
    },
    "VR_kt": {
     "v": 85,
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
+     "LP29",
      "LP15"
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "takeoff 85 KIAS แฟลป TO pitch 7–10° (ตารางความเร็วทั่วไปของคู่มือฝึก; ค่าโดยประมาณตามน้ำหนัก)"
+    "note": "VR 85 KIAS ที่ 6,300 lb [LP29]; คู่มือฝึก: takeoff 85 KIAS แฟลป TO pitch 7–10° [LP15]"
    },
    "VY_kt": {
     "v": 140,
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
+     "LP29",
      "LP15",
      "LP20"
     ],
-    "conf": "ต่ำ",
+    "conf": "กลาง",
     "est": false,
-    "note": "climbout 140 KIAS (เทคนิคไต่ 140/160/180 KIAS); ไม่ใช่ Vy จากกราฟ POH"
+    "note": "VY 140 KIAS ที่ 6,300 lb ISA SL ในตารางสเปกของผู้ผลิต [LP29]; คู่มือฝึกใช้ 140 KIAS เป็นความเร็วไต่หลังขึ้น (140/160/180 KIAS) [LP15][LP20]; โมเดลไต่ BEM ของ lp_perf.mjs ให้ Vy 143.3 kt ที่ 6,300 lb (+3.3 kt)"
    },
    "VG_kt": {
     "v": 125,
@@ -9936,16 +10590,17 @@
     "note": "best glide clean (ใบพัด feather จำลองด้วย torque 4–6 %); ล้อลง 105 KIAS"
    },
    "VREF_kt": {
-    "v": 100,
-    "u": "kt CAS",
+    "v": 91,
+    "u": "kt IAS",
     "scope": "aircraft",
     "src": [
      "LP27",
+     "LP29",
      "LP21"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: 1.3 VS0 = on-speed AOA ที่ MTOW; ที่ 6,000 lb 96.6 kt"
+    "note": "ค่าประมาณ: 1.3 VS0 ที่มวลฝึก 2575 kg (D1): VS0 74 KIAS ที่ 6,300 lb [LP29] × √(2574.6/2857.6) = 70.24 kt ⇒ 91.31; on-speed AOA = 1.3 Vs [LP21]; ที่ MTOW 6,500 lb = 97.8 kt; kt IAS = kt CAS (speeds.ias_cas)"
    },
    "VAPP_kt": {
     "v": 100,
@@ -9953,11 +10608,12 @@
     "scope": "aircraft",
     "src": [
      "LP20",
+     "LP29",
      "LP23"
     ],
-    "conf": "ต่ำ",
+    "conf": "กลาง",
     "est": false,
-    "note": "final แฟลป LDG 100 KIAS (แฟลป TO 105, ไม่มีแฟลป 110) จาก flashcard; คู่มือ ATC ให้ approach speed เฉลี่ย 110 kt; touchdown 80–95 KIAS; ลดราว 1 kt ต่อเชื้อเพลิง 100 lb ที่ใช้ไป [LP21]"
+    "note": "final แฟลป LDG 100 KIAS (flashcard [LP20]; รายงานบินของ AOPA \"100 on final\" [LP29]) ไม่ระบุมวล บัตรใช้เป็นค่าที่มวลฝึก 2575 kg (D1; VAPP/VREF = 1.095); แฟลป TO 105, ไม่มีแฟลป 110 KIAS [LP20]; คู่มือ ATC: approach เฉลี่ย 110 kt [LP23]; ลดราว 1 kt ต่อเชื้อเพลิง 100 lb ที่ใช้ไป [LP21]; แก้มวลเป็น MTOW ≈ 107 kt; kt IAS = kt CAS (speeds.ias_cas)"
    },
    "VA_kt": {
     "v": 227,
@@ -9977,22 +10633,12 @@
     "scope": "aircraft",
     "src": [
      "LP5",
-     "LP18"
+     "LP18",
+     "LP30"
     ],
     "conf": "สูง",
     "est": false,
-    "note": "VMO 316 KIAS / MMO 0.67"
-   },
-   "VNO_kt": {
-    "v": 195,
-    "u": "kt IAS",
-    "scope": "aircraft",
-    "src": [
-     "LP20"
-    ],
-    "conf": "ต่ำ",
-    "est": false,
-    "note": "max turbulence penetration 195 KIAS (ไม่ใช่ VNO ตามนิยาม FAR 23)"
+    "note": "VMO 316 KIAS / MMO 0.67; เครื่องเทอร์ไบน์ใช้ VMO/MMO แทน VNE/VNO ตาม 14 CFR 23.1505(c) [LP30] จึงไม่มี VNO (อยู่ใน _na); max turbulence penetration 195 KIAS [LP20] เป็นค่าการปฏิบัติ ไม่ใช่ VNO"
    },
    "VFE": {
     "v": {
@@ -10003,7 +10649,8 @@
     "scope": "aircraft",
     "src": [
      "LP5",
-     "LP18"
+     "LP18",
+     "LP29"
     ],
     "conf": "สูง",
     "est": false,
@@ -10014,7 +10661,8 @@
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
-     "LP5"
+     "LP5",
+     "LP29"
     ],
     "conf": "สูง",
     "est": false,
@@ -10025,7 +10673,8 @@
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
-     "LP18"
+     "LP18",
+     "LP29"
     ],
     "conf": "สูง",
     "est": false,
@@ -10035,28 +10684,32 @@
     "v": {
      "mass_lb": [
       6000,
+      6300,
       6500,
       6900
      ],
      "UP": [
-      82.9,
-      86.3,
-      88.9
+      80,
+      82,
+      83.3,
+      85.8
      ],
      "LDG": [
-      74.3,
-      77.3,
-      79.6
+      72.2,
+      74,
+      75.2,
+      77.4
      ]
     },
-    "u": "kt CAS",
+    "u": "kt IAS",
     "scope": "aircraft",
     "src": [
+     "LP29",
      "LP27"
     ],
-    "conf": "ต่ำ",
+    "conf": "กลาง",
     "est": true,
-    "note": "ค่าประมาณ: สเกล √W จาก VS1/VS0 ประมาณ"
+    "note": "ค่าประมาณ: แถว 6,300 lb = 82/74 KIAS จาก [LP29] (ข้อเท็จจริง); น้ำหนักอื่นสเกล √W; ปีกระดับ idle; ไม่มีตารางตามมุมเอียงสาธารณะ (ที่มุมเอียง φ คูณ 1/√cos φ)"
    },
    "stall_warning_margin_kt": {
     "v": [
@@ -10073,28 +10726,84 @@
     "est": false,
     "note": "stick shaker"
    },
+   "stall_altitude_loss_ft": {
+    "v": 450,
+    "u": "ft",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LC2",
+     "LF1",
+     "LG5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไม่มีค่าใน TCDS/เอกสารสาธารณะ; สัดส่วน h/VS1² ของ POH เครื่องฝึกลูกสูบ (C172S 230 ft/53 KCAS [LC2], C152 160 ft/48 KCAS [LF1], P2006T 180 ft/66 KIAS [LG5]) เฉลี่ย 0.0642 ft/kt² (ช่วง 0.0413–0.0819) × VS1 83.3 kt IAS ที่ MTOW² ⇒ 450 ft (137 m; ช่วง 287–568 ft) สำหรับ stall ปีกระดับแล้วแก้แบบปกติ; ไม่รวม spin"
+   },
    "crosswind_demonstrated_kt": {
-    "v": 25,
+    "v": 24,
     "u": "kt",
     "scope": "aircraft",
     "src": [
-     "LP18",
-     "LP20"
+     "LP29"
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "ขีดจำกัดการปฏิบัติ (ไม่ใช่ demonstrated): แห้ง 25, เปียก 10, น้ำแข็ง 5, touch-and-go 20; ลมท้ายวิ่งขึ้น 10 kt"
+    "note": "maximum demonstrated crosswind 24 kt ในตารางสเปกของผู้ผลิต (6,300 lb) [LP29]; ขีดจำกัดการปฏิบัติของผู้ใช้ (แห้ง 25 kt, เปียก 10, น้ำแข็ง 5, touch-and-go 20, ลมท้ายวิ่งขึ้น 10) [LP18] ย้ายไปหัวข้อ 08 ops.crosswind_limits"
    },
    "icao_approach_category": {
     "v": "B",
     "u": "-",
     "scope": "aircraft",
     "src": [
+     "LP27",
+     "LP29"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: 1.3 VS0 ที่ MTOW 6,500 lb = 1.3 × 75.2 = 97.8 kt (91–120 kt)"
+   },
+   "ias_cas": {
+    "v": {
+     "UP": [
+      [
+       50,
+       50
+      ],
+      [
+       320,
+       320
+      ]
+     ],
+     "TO": [
+      [
+       50,
+       50
+      ],
+      [
+       150,
+       150
+      ]
+     ],
+     "LDG": [
+      [
+       50,
+       50
+      ],
+      [
+       150,
+       150
+      ]
+     ]
+    },
+    "u": "kt IAS → kt CAS",
+    "scope": "aircraft",
+    "src": [
      "LP27"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: 1.3 VS0 = 100.5 kt (91–120 kt)"
+    "note": "ค่าประมาณ: ไม่มีตาราง PEC (KIAS → KCAS) สาธารณะ ใช้ IAS = CAS ทุกแฟลป (identity) เพื่อให้ lm_card/lm_merge แปลงหน่วยได้; ความเร็วทุกค่าของบัตร t6a/t6c เป็น kt IAS; VS 82/74 KIAS ของ [LP29] ต่ำกว่าค่าที่คิดจาก CL ของ PC-9 M ราว 3 kt (84.9/76.1 kt ที่ 6,300 lb) ซึ่งอาจเป็น PEC ของ T-6 ที่ความเร็วต่ำ (ยังไม่ยืนยัน)"
    }
   },
   "performance": {
@@ -10107,7 +10816,36 @@
     ],
     "conf": "ต่ำ",
     "est": false,
-    "note": "climb rate เฉลี่ยในคู่มือ ATC (ไม่ระบุน้ำหนัก/ความเร็ว); GlobalSecurity: initial ROC > 4,500 fpm (ไม่ระบุน้ำหนัก) [LP22]; ฟิสิกส์ที่ MTOW η 0.8 ให้ราว 3,100"
+    "note": "climb rate เฉลี่ยในคู่มือ ATC (ไม่ระบุน้ำหนัก/ความเร็ว) ใช้เป็นเป้า fit ที่ MTOW (15.7 m/s); ตารางสเปกของผู้ผลิต 1997: 4,000 fpm (20.3 m/s) ที่ 6,300 lb SL ISA [LP29] (ผู้เขียนบินได้เฉลี่ยราว 3,600 fpm ถึง 15,000 ft); GlobalSecurity: initial > 4,500 fpm [LP22]; โมเดลไต่ BEM ของ lp_perf.mjs (ไม่ fit) ให้ 3165 fpm ที่ MTOW และ 3299 ที่ 6,300 lb — ค่า 4,000 ต้องการกำลังส่วนเกินมากกว่าโมเดล 21 % (ดู §07.13)"
+   },
+   "ROC_table": {
+    "v": {
+     "h_ft": 9,
+     "oat_C": [
+      15,
+      31,
+      35
+     ],
+     "ROC_fpm": [
+      3100,
+      3090,
+      3080
+     ],
+     "ROC_ms": [
+      15.7,
+      15.7,
+      15.7
+     ]
+    },
+    "u": "fpm (m/s)",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LP23"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ความสูงสนาม VTBD 9 ft; ROC_SL_fpm (3100 fpm) × อัตราส่วน ROC ของโมเดลไต่ BEM (lp_perf.mjs) ที่ OAT นั้นต่อ 15 °C (กำลังเต็มเพราะ flat rating ถึง 46 °C); ไม่มีตาราง POH สาธารณะ; มวล MTOW"
    },
    "service_ceiling_ft": {
     "v": 31000,
@@ -10119,7 +10857,7 @@
     ],
     "conf": "สูง",
     "est": false,
-    "note": "ความสูงปฏิบัติการสูงสุด"
+    "note": "ความสูงปฏิบัติการสูงสุด (9,449 m); ตารางสเปก 1997 ให้ service ceiling 35,000 ft [LP29]"
    },
    "cruise_table": {
     "v": [
@@ -10129,6 +10867,14 @@
       "power": "max",
       "mass_lb": 6000,
       "src": "LB16"
+     },
+     {
+      "h_ft": 0,
+      "ktas": 310,
+      "power": "max",
+      "mass_lb": 6300,
+      "src": "LP29",
+      "note": "max level speed SL ผลคำนวณของผู้ผลิต 1997 ขัดกับ 270 KTAS ของ fact sheet"
      },
      {
       "h_ft": null,
@@ -10141,11 +10887,12 @@
     "scope": "aircraft",
     "src": [
      "LB16",
+     "LP29",
      "LP14"
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "ความเร็วสูงสุดบินระดับ 270 KTAS ที่ 1,000 ft"
+    "note": "ความเร็วสูงสุดบินระดับ 270 KTAS (139 m/s) ที่ 1,000 ft [LB16] ใช้ fit polar clean ใน lp_perf.mjs; 310 kt ของ [LP29] สูงกว่า 15 % (ดู §07.13)"
    },
    "glide": {
     "v": {
@@ -10166,32 +10913,96 @@
    },
    "takeoff": {
     "v": {
-     "ground_roll_m": null,
-     "over50ft_m": null,
-     "distance_ft": 1775
+     "ground_roll_m": 427,
+     "over50ft_m": 610,
+     "mass_kg": 2857.6
     },
-    "u": "m, ft",
+    "u": "m",
     "scope": "aircraft",
     "src": [
+     "LP29",
      "LP22"
     ],
-    "conf": "ต่ำ",
+    "conf": "กลาง",
     "est": false,
-    "note": "takeoff distance 1,775 ft ที่ระดับน้ำทะเล (ไม่ระบุนิยาม/น้ำหนัก)"
+    "note": "1,400 / 2,000 ft ที่ 6,300 lb ISA SL ลมสงบ แฟลป TO (ตารางสเปกของผู้ผลิต [LP29]); สเกลเป็น MTOW 6,500 lb ด้วย (W/W0)² ⇒ 455 / 649 m (performance.takeoff_table); takeoff distance 1,775 ft (541 m) ของ [LP22] ไม่ระบุนิยามและน้ำหนัก"
    },
    "landing": {
     "v": {
-     "min_runway_ft": 4000,
-     "rule": "ground roll + 500 ft หรือ 4,000 ft"
+     "ground_roll_m": 579,
+     "over50ft_m": 732,
+     "mass_kg": 2857.6,
+     "min_runway_rule": "ground roll + 500 ft หรือ 4,000 ft"
     },
-    "u": "ft",
+    "u": "m",
     "scope": "aircraft",
     "src": [
+     "LP29",
      "LP18"
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "เกณฑ์ความยาวทางวิ่งขั้นต่ำของผู้ใช้ ไม่ใช่ระยะลงจอดจาก POH"
+    "note": "1,900 / 2,400 ft ที่ 6,300 lb ISA SL ลมสงบ แฟลป LDG [LP29]; เกณฑ์ความยาวทางวิ่งขั้นต่ำของผู้ใช้ ground roll + 500 ft หรือ 4,000 ft (1,219 m) [LP18] ไม่ใช่ระยะ POH"
+   },
+   "takeoff_table": {
+    "v": {
+     "mass_kg": 2948.4,
+     "h_ft": 9,
+     "oat_C": [
+      15,
+      31,
+      35
+     ],
+     "ground_roll_m": [
+      455,
+      495,
+      505
+     ],
+     "over50ft_m": [
+      650,
+      707,
+      721
+     ]
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LP29",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: จุด 15 °C = [LP29] (6,300 lb) × (6,500/6,300)²; 31/35 °C คูณตัวคูณวันร้อนของ lp_perf.mjs 1/(σ·T/T_ISA) = 1.001/1.088/1.11 (แรงขับ BEM ที่ 0.7 V_LOF, กำลังเต็มเพราะ flat rating); ไม่มีตาราง POH สาธารณะ"
+   },
+   "landing_table": {
+    "v": {
+     "mass_kg": 2948.4,
+     "h_ft": 9,
+     "oat_C": [
+      15,
+      31,
+      35
+     ],
+     "ground_roll_m": [
+      597,
+      631,
+      639
+     ],
+     "over50ft_m": [
+      755,
+      798,
+      808
+     ]
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LP29",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: จุด 15 °C = [LP29] (6,300 lb) × 6,500/6,300 (V² ∝ W); 31/35 °C คูณ 1/σ = 1/1.056/1.07 (ความเร็วจริงสูงขึ้นที่ IAS เท่าเดิม); ไม่มีตาราง POH สาธารณะ"
    },
    "fuel": {
     "v": {
@@ -10208,7 +11019,250 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": ""
+    "note": "499 kg, 362 kg/h, 1,667 km"
+   },
+   "tests": {
+    "v": [
+     {
+      "case": "T-LP-18",
+      "conditions": "MTOW 6,500 lb (2,948 kg), 3,000 ft ISA, idle, แฟลป UP ล้อขึ้น, 1 kt/s",
+      "quantity": "V_SR 1 g = VS/√0.95 (VS 82 KIAS ที่ 6,300 lb สเกล √W เป็น 83.3 kt; IAS = CAS)",
+      "expected": 85.46,
+      "tolerance": 1.5,
+      "unit": "kt",
+      "src": "[LP29] ตารางสเปกของผู้ผลิต + สเกลมวล [LP27]",
+      "current": 85.45,
+      "pass": true
+     },
+     {
+      "case": "T-LP-19",
+      "conditions": "เหมือนบน แฟลป LDG ล้อลง",
+      "quantity": "V_SR 1 g (VS0 74 KIAS ที่ 6,300 lb ⇒ 75.2 kt ที่ MTOW)",
+      "expected": 77.15,
+      "tolerance": 1.5,
+      "unit": "kt",
+      "src": "[LP29] + [LP27]",
+      "current": 77.12,
+      "pass": true
+     },
+     {
+      "case": "T-LP-20",
+      "conditions": "MTOW, 3,000 ft, แรงขับศูนย์ (ใบพัด feather จำลอง), clean",
+      "quantity": "L/D ร่อนสูงสุด",
+      "expected": 11.3,
+      "tolerance": 1.5,
+      "unit": "-",
+      "src": "[LP16][LP19]",
+      "current": 11.3,
+      "pass": true
+     },
+     {
+      "case": "T-LP-21",
+      "conditions": "เหมือนบน",
+      "quantity": "ความเร็วร่อนดีที่สุด Vbg",
+      "expected": 130.1,
+      "tolerance": 6,
+      "unit": "kt",
+      "src": "[LP16][LP19] 125 KIAS ที่ ~6,000 lb สเกลเป็น MTOW",
+      "current": 129.8,
+      "pass": true
+     },
+     {
+      "case": "T-LP-22",
+      "conditions": "MTOW, SL ISA, 820 kW, clean",
+      "quantity": "ROC สูงสุด",
+      "expected": 3100,
+      "tolerance": 465,
+      "unit": "fpm",
+      "src": "[LP23] (±15 %, conf ต่ำ)",
+      "current": 3134,
+      "pass": true
+     },
+     {
+      "case": "T-LP-23",
+      "conditions": "น้ำหนักฝึก 2575 kg (ค่าประมาณ), 3,000 ft, บินระดับ 150 KIAS clean",
+      "quantity": "thr ของซิม ≈ สัดส่วน torque",
+      "expected": 0.32,
+      "tolerance": 0.12,
+      "unit": "-",
+      "src": "[LP15] ตารางบินระดับ",
+      "current": 0.2988,
+      "pass": true
+     },
+     {
+      "case": "T-LP-24",
+      "conditions": "เหมือนบน",
+      "quantity": "pitch θ",
+      "expected": 2,
+      "tolerance": 1.5,
+      "unit": "deg",
+      "src": "[LP15]",
+      "current": 1.936,
+      "pass": true
+     },
+     {
+      "case": "T-LP-25",
+      "conditions": "น้ำหนักฝึก 2575 kg (ค่าประมาณ), 3,000 ft, บินระดับ 200 KIAS clean",
+      "quantity": "thr ของซิม ≈ สัดส่วน torque",
+      "expected": 0.53,
+      "tolerance": 0.12,
+      "unit": "-",
+      "src": "[LP15] ตารางบินระดับ",
+      "current": 0.5529,
+      "pass": true
+     },
+     {
+      "case": "T-LP-26",
+      "conditions": "เหมือนบน",
+      "quantity": "pitch θ",
+      "expected": 0,
+      "tolerance": 1.5,
+      "unit": "deg",
+      "src": "[LP15]",
+      "current": -0.3131,
+      "pass": true
+     },
+     {
+      "case": "T-LP-27",
+      "conditions": "น้ำหนักฝึก 2575 kg (ค่าประมาณ), 3,000 ft, บินระดับ 250 KIAS clean",
+      "quantity": "thr ของซิม ≈ สัดส่วน torque",
+      "expected": 0.93,
+      "tolerance": 0.12,
+      "unit": "-",
+      "src": "[LP15] ตารางบินระดับ",
+      "current": 1.007,
+      "pass": true
+     },
+     {
+      "case": "T-LP-28",
+      "conditions": "เหมือนบน",
+      "quantity": "pitch θ",
+      "expected": -2,
+      "tolerance": 1.5,
+      "unit": "deg",
+      "src": "[LP15]",
+      "current": -1.356,
+      "pass": true
+     },
+     {
+      "case": "T-LP-29",
+      "conditions": "6,300 lb (2,858 kg) SL ISA ลมสงบ ผิวแห้ง, แฟลป TO, VR 85 KIAS, pitch 8.5°",
+      "quantity": "ระยะวิ่งขึ้นถึง 50 ft (2,000 ft; เดิมเทียบ 1,775 ft ของ [LP22] ที่นิยามไม่ชัด)",
+      "expected": 610,
+      "tolerance": 122,
+      "unit": "m",
+      "src": "[LP29] ผลคำนวณของผู้ผลิต (±20 %)",
+      "current": 659,
+      "pass": true
+     },
+     {
+      "case": "T-LP-50",
+      "conditions": "6,300 lb SL ISA ลมสงบ ผิวแห้ง, แฟลป TO, VR 85 KIAS, pitch 8.5°",
+      "quantity": "ระยะวิ่งบนพื้น (ground roll 1,400 ft)",
+      "expected": 427,
+      "tolerance": 85,
+      "unit": "m",
+      "src": "[LP29] (±20 %)",
+      "current": 394,
+      "pass": true
+     },
+     {
+      "case": "T-LP-51",
+      "conditions": "6,300 lb SL ISA ลมสงบ, autoland แฟลป LDG Vapp 105 kt (100 KIAS แก้มวล), เบรกปกติของ autoland",
+      "quantity": "ระยะวิ่งบนพื้นหลังแตะ (1,900 ft)",
+      "expected": 579,
+      "tolerance": 116,
+      "unit": "m",
+      "src": "[LP29] (±20 %)",
+      "current": 591,
+      "pass": true
+     },
+     {
+      "case": "T-LP-52",
+      "conditions": "เหมือนบน แต่เบรกเต็มหลังแตะพื้น",
+      "quantity": "ระยะลงจอดจาก 50 ft (2,400 ft)",
+      "expected": 732,
+      "tolerance": 146,
+      "unit": "m",
+      "src": "[LP29] (±20 %)",
+      "current": 721,
+      "pass": true
+     },
+     {
+      "case": "T-LP-53",
+      "conditions": "6,300 lb SL ISA กำลังเต็ม clean ล้อขึ้น",
+      "quantity": "Vy (KEAS ของซิม ≈ KIAS)",
+      "expected": 140,
+      "tolerance": 10,
+      "unit": "kt",
+      "src": "[LP29] VY 140 KIAS",
+      "current": 139.9,
+      "pass": true
+     },
+     {
+      "case": "T-LP-56",
+      "conditions": "MTOW SL ISA กำลังเต็ม clean ล้อขึ้น ที่ VX ของบัตร 100 kt",
+      "quantity": "γ ของซิมที่ VX ÷ γ สูงสุดของซิม (VX ของบัตรให้มุมไต่ใกล้สูงสุด)",
+      "expected": "0.95–1.0001",
+      "tolerance": "ช่วง 0.95–1.0001",
+      "unit": "-",
+      "src": "[LP27] lp_perf.mjs + 14 CFR 23.65(a)(4) [LP30]",
+      "current": 0.9922,
+      "pass": true
+     },
+     {
+      "case": "T-LP-60",
+      "conditions": "มวลฝึก 2575 kg แฟลป LDG (บัตร resolve แล้ว)",
+      "quantity": "VAPP − VREF ใน KCAS (D1: VAPP ≥ VREF)",
+      "expected": "≥ 0",
+      "tolerance": "ช่วง ≥ 0",
+      "unit": "kt",
+      "src": "[D1] schema-ext-r2 §5",
+      "current": 9,
+      "pass": true
+     },
+     {
+      "case": "T-LP-64",
+      "conditions": "stall ปีกระดับ idle แฟลป UP ที่ MTOW แล้วแก้แบบปกติ (ลดมุมปะทะ กำลังเต็ม ไต่กลับ)",
+      "quantity": "ความสูงที่เสีย",
+      "expected": 450,
+      "tolerance": 163,
+      "unit": "ft",
+      "src": "[LP27] ค่าประมาณ h/VS1² ของ [LC2][LF1][LG5]",
+      "current": "ไม่รองรับในซิมวันนี้ (lm_card ไม่มีการทดสอบแก้ stall)",
+      "pass": null
+     },
+     {
+      "case": "T-LP-78",
+      "conditions": "MTOW 2948 kg cruise 200 kt 3,000 ft clean, nL +7 g (TCDS)",
+      "quantity": "แรงที่คันต่อ g (Fs/g) ของโมเดลแรงที่คันในอนาคต: แถบ MIL-F-8785C Level 1 centre stick ∩ 14 CFR 23.155(a)(2); โมเดล hinge ของรอบที่ 1 กับบัตรให้ 12.5 lbf/g (ค่าประมาณ)",
+      "expected": "5.83–13.2",
+      "tolerance": "ช่วง 5.83–13.2",
+      "unit": "lbf/g",
+      "src": "[R1:C12]; [LP30]; [LP1][LP2][LP5] nL",
+      "current": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีโมเดลแรงที่คัน)",
+      "pass": null
+     },
+     {
+      "case": "T-LP-79",
+      "conditions": "มวลฝึก 2575 kg, trim ด้วย tab ที่ approach 100 kt แฟลป LDG และ cruise 200 kt",
+      "quantity": "ความชันแรงที่คันต่อความเร็ว (ต้องดึงเมื่อช้ากว่าความเร็ว trim, > 0); โมเดล hinge ให้ 0.809 / 0.405 N/kt (ค่าประมาณ)",
+      "expected": "≥ 0",
+      "tolerance": "ช่วง ≥ 0",
+      "unit": "N/kt",
+      "src": "[R1:C12] MIL-F-8785C 3.2.1.1",
+      "current": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีโมเดลแรงที่คัน)",
+      "pass": null
+     }
+    ],
+    "u": "ตามแถว",
+    "scope": "aircraft",
+    "src": [
+     "LP27"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "แถวเดียวกับตาราง §07.12 (สร้างโดย lp_check.mjs); expected มาจากแหล่งใน src ของแต่ละแถว แถวที่ src เป็น LP27 คือเป้าที่หัวข้อนี้คำนวณเอง (est ของ leaf ต้นทางบอกไว้); current = ผลโมเดลวันนี้กับบัตรนี้ (lm_card) ณ วันที่รัน"
    }
   },
   "controls": {
@@ -10878,7 +11932,7 @@
    "layout": {
     "v": "tricycle_retract",
     "u": "-",
-    "scope": "aircraft",
+    "scope": "gear",
     "src": [
      "LP5"
     ],
@@ -10893,7 +11947,7 @@
      "VLE_kt": 150
     },
     "u": "s, kt",
-    "scope": "aircraft",
+    "scope": "gear",
     "src": [
      "LP21",
      "LP5"
@@ -10910,7 +11964,7 @@
       1.33
      ],
      "u": "m FRD",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LP27",
       "LP5"
@@ -10933,7 +11987,7 @@
       ]
      ],
      "u": "m FRD",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LP27",
       "LP5"
@@ -10945,7 +11999,7 @@
     "cg_height_parked": {
      "v": 1.25,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LP27"
      ],
@@ -11549,7 +12603,7 @@
     "antiskid": {
      "v": 0,
      "u": "bool",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LP5"
      ],
@@ -11566,7 +12620,7 @@
       "caster_with_diff_brake": true
      },
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LP28",
       "LP20",
@@ -11579,7 +12633,7 @@
     "pedal_max": {
      "v": 12,
      "u": "deg",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LP28",
       "LP20"
@@ -11591,7 +12645,7 @@
     "caster_max": {
      "v": 80,
      "u": "deg",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LP21"
      ],
@@ -11602,7 +12656,7 @@
     "steer_rate": {
      "v": 60,
      "u": "deg/s",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:params-trainer.json"
      ],
@@ -11613,7 +12667,7 @@
     "shimmy_lag": {
      "v": 0.05,
      "u": "s",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:params-trainer.json"
      ],
@@ -11631,7 +12685,7 @@
       "mps": 3.048
      },
      "u": "fps",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:G3",
       "LP27"
@@ -11643,7 +12697,7 @@
     "part23_wing_lift_ratio": {
      "v": 0.667,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:G3",
       "R1:G4"
@@ -11658,7 +12712,7 @@
       "ground_reaction": 2
      },
      "u": "g",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:G3"
      ],
@@ -11669,7 +12723,7 @@
     "part23_reserve_drop_factor": {
      "v": 1.44,
      "u": "x drop height",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "R1:G5"
      ],
@@ -11728,7 +12782,7 @@
    },
    "fFactor": {
     "trainerExcessTW": {
-     "v": 0.1794,
+     "v": 0.1663,
      "u": "-",
      "scope": "aircraft",
      "src": [
@@ -11737,7 +12791,7 @@
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: (Tmax − D)/W ที่ Vapp 100 kt แฟลปสุด ล้อลง ISA+16 ระดับน้ำทะเล ด้วยกฎแรงขับของซิมและ legacy ของบัตรนี้ (นิยามรอบที่ 1)"
+     "note": "ค่าประมาณ: (Tmax − D)/W ที่ Vapp 107 kt แฟลปสุด ล้อลง ISA+16 ระดับน้ำทะเล ด้วยกฎแรงขับของซิมและ legacy ของบัตรนี้ (นิยามรอบที่ 1)"
     }
    }
   },
@@ -11809,7 +12863,7 @@
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: final แฟลป LDG 100 KIAS [LP20] γ −3° 300 m"
+     "note": "ค่าประมาณ: final แฟลป LDG 100 KIAS [LP20] γ −3° 300 m (จุดทดสอบที่ MTOW คงเดิม; speeds.VAPP_kt 100 KIAS เป็นค่าที่มวลฝึก)"
     }
    },
    "takeoff_test": {
@@ -11830,10 +12884,10 @@
    "currentModel": {
     "performance": {
      "v": {
-      "VSR_clean_kt": 88.52,
-      "Vmin_clean_kt": 82.79,
-      "VSR_full_kt": 79.33,
-      "Vmin_full_kt": 73.78,
+      "VSR_clean_kt": 85.45,
+      "Vmin_clean_kt": 79.88,
+      "VSR_full_kt": 77.12,
+      "Vmin_full_kt": 71.85,
       "Vy_SL_kt": 140.6,
       "ROCmax_SL_fpm": 3134,
       "glideLD_zeroThrust": 11.3,
@@ -11841,8 +12895,8 @@
       "glideLD_idle": 11.3,
       "TO_groundRoll_m": 408,
       "TO_50ft_m": 688,
-      "LDG_50ft_maxBrake_m": 769,
-      "LDG_50ft_asIs_m": 992
+      "LDG_50ft_maxBrake_m": 727,
+      "LDG_50ft_asIs_m": 925
      },
      "u": "kt, fpm, -, m",
      "scope": "aircraft",
@@ -11851,8 +12905,8 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: โมเดลวันนี้ (src/ @ cabf0f0) + aero.legacy/propulsion.legacy ของบัตรนี้ ที่ 2948.3 kg ISA ลมสงบ (lm_card runCard); ความเร็ว KEAS ของซิม; ใช้เป็น regression ไม่ใช่ค่าจริง"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): โมเดลวันนี้ (src/ @ cabf0f0) + aero.legacy/propulsion.legacy ของบัตรนี้ ที่ 2948.3 kg ISA ลมสงบ (lm_card runCard); ความเร็ว KEAS ของซิม; VREF/VAPP ของบัตร (มวลฝึก) แก้มวลเป็น 97/107 kt; ใช้เป็น regression ไม่ใช่ค่าจริงของเครื่อง"
     },
     "approach": {
      "v": {
@@ -11869,7 +12923,7 @@
       "spiral_t2_s": 22.31,
       "spiral_divergent": true,
       "trim_alpha_deg": 3.705,
-      "trim_theta_deg": 0.7049,
+      "trim_theta_deg": 0.7048,
       "trim_de_deg": -5.082,
       "trim_thr": 0.3459
      },
@@ -11880,8 +12934,8 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: IAS 100 kt แฟลปสุด ล้อลง 300 m γ −3° ที่ 2948.3 kg"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): IAS 100 kt แฟลปสุด ล้อลง 300 m γ −3° ที่ 2948.3 kg"
     },
     "cruise": {
      "v": {
@@ -11909,9 +12963,69 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: IAS 200 kt clean 3,000 ft ระดับ ที่ 2948.3 kg"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): IAS 200 kt clean 3,000 ft ระดับ ที่ 2948.3 kg"
     }
+   },
+   "stick_force_targets": {
+    "v": {
+     "band": {
+      "controller": "centre_stick",
+      "nL": 7,
+      "W_lb": 6500,
+      "nAlpha_cruise_g_per_rad": 18.21,
+      "mil_L1_centre_stick_lbf_per_g": {
+       "min": 3.5,
+       "max": 13.2
+      },
+      "part23_155_force_lbf": 35,
+      "part23_155_min_lbf_per_g": 5.83,
+      "fs_per_g_lbf": {
+       "min": 5.83,
+       "max": 13.2
+      },
+      "fs_per_g_N": {
+       "min": 25.9,
+       "max": 58.6
+      }
+     },
+     "hinge_model": {
+      "mass_kg": 2574.6,
+      "at_kt": {
+       "approach": 100,
+       "cruise": 200
+      },
+      "Fs_per_g_N": {
+       "approach": 50.1,
+       "cruise": 49.5
+      },
+      "grad_N_per_kt": {
+       "approach": 0.809,
+       "cruise": 0.405
+      },
+      "SM_fixed": 0.174,
+      "SM_free": 0.125,
+      "mtow": {
+       "mass_kg": 2948.3,
+       "Fs_per_g_N_cruise": 55.4,
+       "Fs_per_g_lbf_cruise": 12.5,
+       "pull_to_nL_lbf": 75
+      }
+     }
+    },
+    "u": "lbf/g, N/g, N/kt, g/rad, MAC",
+    "scope": "aircraft",
+    "src": [
+     "R1:C12",
+     "LP30",
+     "LP1",
+     "LP2",
+     "LP5",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: band คือแถบเป้าหมายจากเกณฑ์ ไม่ใช่ค่าวัดของเครื่องจริง — MIL-F-8785C Level 1 แบบ centre stick [R1:C12] ขีดบน max(min(240/(n/α), 28), 56/(nL − 1)) ขีดล่าง max(21/(nL − 1), 3) lbf/g ด้วย n/α 18.21 g/rad ที่ cruise 200 kt 3,000 ft MTOW และ nL +7.0 g (acrobatic ตาม TCDS [LP1][LP2][LP5]) ร่วมกับ 14 CFR 23.155(a)(2) แบบ stick: แรงถึง nL ≥ max(W/140, 15 lb) ไม่ต้องเกิน 35 lb = 35 lbf ⇒ ≥ 5.83 lbf/g [LP30]; hinge_model คือสมการ elevator แบบ reversible ของรอบที่ 1 §6 กับ controls.pitch.* ของบัตร (ค่าคลาสของรอบที่ 1) ที่มวลฝึก: Fs/g 50.1 N (approach 100 kt) / 49.5 N (cruise) ความชัน 0.809 / 0.405 N/kt; ที่ MTOW แรงดึงถึง 7 g 75 lbf อยู่ในแถบ; ซิมวันนี้ไม่มีโมเดลแรงที่คัน"
    }
   },
   "input": {
@@ -11934,7 +13048,7 @@
       1
      ],
      "u": "-",
-     "scope": "sim",
+     "scope": "aircraft",
      "src": [
       "LP27"
      ],
@@ -11975,6 +13089,7 @@
     "otherSims.geofs.*",
     "otherSims.airfieldlab.*",
     "turboprop.reference_engines.PT6A-62",
+    "speeds.VNO_kt",
     "turboprop.reference_engines.PT6A-60A",
     "turboprop.reference_engines.PT6A-52",
     "turboprop.reference_engines.PT6A-68B_C_D_T"
@@ -11984,7 +13099,7 @@
    "src": [],
    "conf": "สูง",
    "est": false,
-   "note": "ไม่ใช้กับแบบนี้: turbofan.* (เครื่องเทอร์โบพร็อป); part25_* และ cfr25_* (ใบรับรอง FAR 23); controls.reference_types/typicalModes/wake.leaders (ค่าอ้างอิงรวมของรอบที่ 1 ไม่ใช่ค่ารายแบบ); numerics.contact.* (ของซิม); table_clean และ pitch.derived_check (ผลคำนวณของเครื่องฝึกรอบที่ 1); betaReverse/beta_reverse และ antiskid (ไม่มีระบบนี้); currentModel.approach95/cruise155 (เงื่อนไขของรอบที่ 1; ใช้ validation.currentModel.approach/cruise แทน); otherSims.* (หัวข้อ 03 เป็นเจ้าของ ส่วนที่เหลือเป็นค่าของ C172/โมเดลอื่น); reference_engines ของเครื่องยนต์ที่แบบนี้ไม่ใช้"
+   "note": "ไม่ใช้กับแบบนี้: turbofan.* (เครื่องเทอร์โบพร็อป); part25_* และ cfr25_* (ใบรับรอง FAR 23); controls.reference_types/typicalModes/wake.leaders (ค่าอ้างอิงรวมของรอบที่ 1 ไม่ใช่ค่ารายแบบ); numerics.contact.* (ของซิม); table_clean และ pitch.derived_check (ผลคำนวณของเครื่องฝึกรอบที่ 1); betaReverse/beta_reverse และ antiskid (ไม่มีระบบนี้); currentModel.approach95/cruise155 (เงื่อนไขของรอบที่ 1; ใช้ validation.currentModel.approach/cruise แทน); otherSims.* (หัวข้อ 03 เป็นเจ้าของ ส่วนที่เหลือเป็นค่าของ C172/โมเดลอื่น); reference_engines ของเครื่องยนต์ที่แบบนี้ไม่ใช้; speeds.VNO_kt (เครื่องเทอร์ไบน์ใช้ VMO/MMO แทน VNE/VNO ตาม 14 CFR 23.1505(c) [LP30]; VMO อยู่ใน speeds.VNE_kt)"
   }
  },
  "pc7mk2": {
@@ -12090,18 +13205,21 @@
     "training_mass": {
      "v": {
       "kg": 2068.8,
-      "BEW": 1670,
-      "crew": 190,
-      "fuel": 208.8
+      "empty_kg": 1670,
+      "crew_kg": 190,
+      "fuel_kg": 208.8,
+      "fuel_l": 259
      },
-     "u": "kg",
+     "u": "kg (fuel_l L)",
      "scope": "aircraft",
      "src": [
-      "LP27"
+      "LP27",
+      "LP9",
+      "LP1"
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: BEW + 2 × 95 kg + เชื้อเพลิงครึ่งถัง; เทียบ TCDS ใช้ --mass 2250"
+     "note": "ค่าประมาณ: empty_kg = airframe.weights.BEW_typical (1670 kg) + ครูและศิษย์ 2 × 95 kg (รวมร่มชูชีพและอุปกรณ์ ค่าประมาณ) + เชื้อเพลิงครึ่งถัง 259 L = 208.8 kg (0.806 kg/L); การเทียบ TCDS/POH ใช้ MTOW 2250 kg"
     }
    },
    "cg": {
@@ -12252,7 +13370,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: lm_legacy_fit โหมด static ที่ MTOW: polar ของซิม CD = CD0 + K(CL − 0.15)² จากการร่อน (L/D 11.3 ที่ 113.6 kt); aStall/aStallFlap แก้ให้ CLmax 1 g ตรง CLmax_target; ค่าอื่นจาก aero.static_long/flaps; polar from glide 113.6 KCAS E 11.3: CD0s 0.0353 Ks 0.0889; idle 0 (POH glide is at idle, windmilling); climb fit (static): target Vy 120.0 KCAS ROC 2840 fpm → T0 9805 N, Vc 64.5 m/s; WARNING eta 1.21 > 0.95: P too low for the sim's thrust law at this ROC"
+    "note": "ค่าประมาณ: lm_legacy_fit โหมด static ที่ MTOW: polar ของซิม CD = CD0 + K(CL − 0.15)² จากการร่อน (L/D 11.3 ที่ 113.6 kt); aStall/aStallFlap แก้ให้ CLmax 1 g ตรง CLmax_target; ค่าอื่นจาก aero.static_long/flaps; polar from glide 113.6 KCAS E 11.3: CD0s 0.0353 Ks 0.0889; idle 0 (POH glide is at idle, windmilling); climb fit (static): target Vy 136.0 KCAS ROC 2840 fpm → T0 9805 N, Vc 64.5 m/s; WARNING eta 1.21 > 0.95: P too low for the sim's thrust law at this ROC"
    },
    "stall_warning": {
     "alpha_warn_5kt": {
@@ -12333,18 +13451,19 @@
     "note": "VMO ถึง 15,000 ft; MMO 0.60; fact sheet: 300 KCAS"
    },
    "VREF_kt": {
-    "v": 87,
+    "v": 84,
     "u": "kt CAS",
     "scope": "aircraft",
     "src": [
-     "LP27"
+     "LP27",
+     "LP9"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: 1.3 VS0 = 87.1"
+    "note": "ค่าประมาณ: 1.3 VS0 ที่มวลฝึก 2069 kg (D1): VS0 67 KCAS ที่ 2,250 kg [LP9] × √(2068.8/2,250) = 64.25 ⇒ 83.52; ที่ MTOW 87.1 kt"
    },
    "VAPP_kt": {
-    "v": 92,
+    "v": 89,
     "u": "kt CAS",
     "scope": "aircraft",
     "src": [
@@ -12352,7 +13471,19 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: VREF + 5"
+    "note": "ค่าประมาณ: VREF + 5 kt ที่มวลฝึก แฟลป LDG ล้อลง (D1); แก้มวลเป็น MTOW ≈ 92.8 kt"
+   },
+   "VX_kt": {
+    "v": 90,
+    "u": "kt CAS",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LP30"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไม่มีค่าสาธารณะ; lp_perf.mjs: มุมไต่สูงสุดของโมเดลที่ 75 kt ≤ 1.2 VS1 จึงใช้ 1.2 VS1 = 90 kt ที่ MTOW ตาม 14 CFR 23.65(a)(4) [LP30] (γ 15.4° เทียบสูงสุด 16°); ที่มวลฝึก 86.3 kt"
    },
    "VR_kt": {
     "v": 76,
@@ -12366,15 +13497,16 @@
     "note": "ค่าประมาณ: ไม่มีค่าสาธารณะ"
    },
    "VY_kt": {
-    "v": 120,
+    "v": 136,
     "u": "kt CAS",
     "scope": "aircraft",
     "src": [
-     "LP27"
+     "LP27",
+     "LP29"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ไม่มีค่าสาธารณะ; ค่าประมาณจากกำลังต่ำกว่า PC-9 M"
+    "note": "ค่าประมาณ: ไม่มีค่าสาธารณะ; lp_perf.mjs ให้ Vy 139.3 kt ที่ MTOW × 0.977 (อัตราส่วน VY ของ T-6A [LP29] ต่อโมเดลเดียวกัน) ⇒ 136 kt; ค่าเดิม 120 kt (เดาจากกำลังที่ต่ำกว่า) ต่ำไป; เส้น ROC แบน"
    },
    "VG_kt": {
     "v": 113.6,
@@ -12401,7 +13533,21 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "น้ำหนักสมมติ"
+    "note": "fact sheet ไม่ระบุน้ำหนัก บัตรถือว่าเป็น MTOW 2,250 kg"
+   },
+   "stall_altitude_loss_ft": {
+    "v": 360,
+    "u": "ft",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LC2",
+     "LF1",
+     "LG5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: วิธีเดียวกับ pc9m: 0.0642 ft/kt² × (VS1 75 KCAS)² = 360 ft (110 m; ช่วง 232–461 ft)"
    },
    "icao_approach_category": {
     "v": "A",
@@ -12425,35 +13571,36 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "ISA SL (น้ำหนักไม่ระบุ สมมติ 2,250 kg)"
+    "note": "ISA SL 14.4 m/s (fact sheet ไม่ระบุน้ำหนัก บัตรถือว่าเป็น MTOW 2,250 kg); โมเดลไต่ BEM ของ lp_perf.mjs ให้ 2726 fpm ที่ MTOW (-4 %)"
    },
-   "takeoff": {
+   "ROC_table": {
     "v": {
-     "ground_roll_m": null,
-     "over50ft_m": 415
+     "h_ft": 9,
+     "oat_C": [
+      15,
+      31,
+      35
+     ],
+     "ROC_fpm": [
+      2840,
+      2850,
+      2850
+     ],
+     "ROC_ms": [
+      14.4,
+      14.5,
+      14.5
+     ]
     },
-    "u": "m",
+    "u": "fpm (m/s)",
     "scope": "aircraft",
     "src": [
-     "LP9"
+     "LP9",
+     "LP27"
     ],
-    "conf": "กลาง",
-    "est": false,
-    "note": "ISA SL ถึง 50 ft (1,360 ft)"
-   },
-   "landing": {
-    "v": {
-     "ground_roll_m": null,
-     "over50ft_m": 674
-    },
-    "u": "m",
-    "scope": "aircraft",
-    "src": [
-     "LP9"
-    ],
-    "conf": "กลาง",
-    "est": false,
-    "note": "ISA SL จาก 50 ft (2,210 ft)"
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ความสูงสนาม VTBD 9 ft; 2,840 fpm × อัตราส่วน ROC ของโมเดลไต่ BEM (lp_perf.mjs) ที่ OAT นั้นต่อ 15 °C (PT6A-25C flat rated กว้าง กำลังเต็ม); ไม่มีตาราง POH สาธารณะ"
    },
    "cruise_table": {
     "v": [
@@ -12475,7 +13622,7 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "max level cruise"
+    "note": "max level cruise 124/129 m/s"
    },
    "glide": {
     "v": {
@@ -12506,6 +13653,222 @@
     "conf": "กลาง",
     "est": false,
     "note": ""
+   },
+   "takeoff": {
+    "v": {
+     "ground_roll_m": 257,
+     "over50ft_m": 415
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LP9",
+     "LM0",
+     "LP27"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ: over50ft_m 415 m (1,360 ft) ISA SL จาก fact sheet [LP9] (ไม่ระบุน้ำหนัก บัตรถือว่าเป็น MTOW); ground_roll_m = 415 × สัดส่วน ground roll/ระยะถึง 50 ft ของ lm_card ที่ MTOW (337/543 m = 0.62); lm_card ให้ระยะถึง 50 ft ยาวกว่า fact sheet +31 % (ดู §07.9)"
+   },
+   "landing": {
+    "v": {
+     "ground_roll_m": 504,
+     "over50ft_m": 674
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LP9",
+     "LM0",
+     "LP27"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ: over50ft_m 674 m (2,210 ft) ISA SL จาก 50 ft [LP9]; ground_roll_m = 674 × สัดส่วน ground roll เบรกปกติ / ระยะจาก 50 ft เบรกเต็ม ของ lm_card ที่ MTOW (492/657 m = 0.748; วิธีเดียวกับ pc9m)"
+   },
+   "takeoff_table": {
+    "v": {
+     "mass_kg": 2250,
+     "h_ft": 9,
+     "oat_C": [
+      15,
+      31,
+      35
+     ],
+     "ground_roll_m": [
+      257,
+      279,
+      284
+     ],
+     "over50ft_m": [
+      415,
+      450,
+      459
+     ]
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LP9",
+     "LM0",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ความสูงสนาม VTBD 9 ft; performance.takeoff × ตัวคูณวันร้อนของ lp_perf.mjs 1/(σ·T/T_ISA) = 1/1.085/1.107 (แรงขับ BEM ที่ 0.7 V_LOF, กำลังเต็มเพราะ flat rating); ไม่มีตาราง POH สาธารณะ; ฐาน 15 °C = performance.takeoff/landing ของบัตร ([LP9] + สัดส่วนจาก lm_card)"
+   },
+   "landing_table": {
+    "v": {
+     "mass_kg": 2250,
+     "h_ft": 9,
+     "oat_C": [
+      15,
+      31,
+      35
+     ],
+     "ground_roll_m": [
+      504,
+      532,
+      539
+     ],
+     "over50ft_m": [
+      674,
+      712,
+      721
+     ]
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LP9",
+     "LM0",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ความสูงสนาม VTBD 9 ft; performance.landing × 1/σ = 1/1.056/1.07; ไม่มีตาราง POH สาธารณะ; ฐาน 15 °C = performance.takeoff/landing ของบัตร ([LP9] + สัดส่วนจาก lm_card)"
+   },
+   "tests": {
+    "v": [
+     {
+      "case": "T-LP-13",
+      "conditions": "MTOW 2,250 kg, 3,000 ft ISA, idle, แฟลป UP ล้อขึ้น, 1 kt/s",
+      "quantity": "V_SR 1 g = VS/√0.95",
+      "expected": 76.95,
+      "tolerance": 1.5,
+      "unit": "kt",
+      "src": "[LP9] fact sheet 75 KCAS (น้ำหนักสมมติ)",
+      "current": 76.94,
+      "pass": true
+     },
+     {
+      "case": "T-LP-14",
+      "conditions": "เหมือนบน แฟลป LDG ล้อลง",
+      "quantity": "V_SR 1 g",
+      "expected": 68.74,
+      "tolerance": 1.5,
+      "unit": "kt",
+      "src": "[LP9] 67 KCAS",
+      "current": 68.72,
+      "pass": true
+     },
+     {
+      "case": "T-LP-15",
+      "conditions": "MTOW, SL ISA, 522 kW, clean",
+      "quantity": "ROC สูงสุด",
+      "expected": 2840,
+      "tolerance": 284,
+      "unit": "fpm",
+      "src": "[LP9]",
+      "current": 2869,
+      "pass": true
+     },
+     {
+      "case": "T-LP-16",
+      "conditions": "MTOW, SL ISA ลมสงบ ผิวแห้ง, แฟลป TO, VR 76 kt (ค่าประมาณ), pitch 10°",
+      "quantity": "ระยะวิ่งขึ้นถึง 50 ft",
+      "expected": 415,
+      "tolerance": 62,
+      "unit": "m",
+      "src": "[LP9] (±15 %)",
+      "current": 543,
+      "pass": false
+     },
+     {
+      "case": "T-LP-17",
+      "conditions": "MTOW, SL ISA ลมสงบ, autoland แฟลป LDG, เบรกเต็มหลังแตะพื้น",
+      "quantity": "ระยะลงจอดจาก 50 ft",
+      "expected": 674,
+      "tolerance": 101,
+      "unit": "m",
+      "src": "[LP9] (±15 %)",
+      "current": 657,
+      "pass": true
+     },
+     {
+      "case": "T-LP-55",
+      "conditions": "MTOW SL ISA กำลังเต็ม clean ล้อขึ้น ที่ VX ของบัตร 90 kt",
+      "quantity": "γ ของซิมที่ VX ÷ γ สูงสุดของซิม (VX ของบัตรให้มุมไต่ใกล้สูงสุด)",
+      "expected": "0.95–1.0001",
+      "tolerance": "ช่วง 0.95–1.0001",
+      "unit": "-",
+      "src": "[LP27] lp_perf.mjs + 14 CFR 23.65(a)(4) [LP30]",
+      "current": 0.9941,
+      "pass": true
+     },
+     {
+      "case": "T-LP-59",
+      "conditions": "มวลฝึก 2069 kg แฟลป LDG (บัตร resolve แล้ว)",
+      "quantity": "VAPP − VREF ใน KCAS (D1: VAPP ≥ VREF)",
+      "expected": "≥ 0",
+      "tolerance": "ช่วง ≥ 0",
+      "unit": "kt",
+      "src": "[D1] schema-ext-r2 §5",
+      "current": 5,
+      "pass": true
+     },
+     {
+      "case": "T-LP-63",
+      "conditions": "stall ปีกระดับ idle แฟลป UP ที่ MTOW แล้วแก้แบบปกติ (ลดมุมปะทะ กำลังเต็ม ไต่กลับ)",
+      "quantity": "ความสูงที่เสีย",
+      "expected": 360,
+      "tolerance": 128,
+      "unit": "ft",
+      "src": "[LP27] ค่าประมาณ h/VS1² ของ [LC2][LF1][LG5]",
+      "current": "ไม่รองรับในซิมวันนี้ (lm_card ไม่มีการทดสอบแก้ stall)",
+      "pass": null
+     },
+     {
+      "case": "T-LP-76",
+      "conditions": "MTOW 2250 kg cruise 200 kt 3,000 ft clean, nL +7 g (TCDS)",
+      "quantity": "แรงที่คันต่อ g (Fs/g) ของโมเดลแรงที่คันในอนาคต: แถบ MIL-F-8785C Level 1 centre stick ∩ 14 CFR 23.155(a)(2); โมเดล hinge ของรอบที่ 1 กับบัตรให้ 8.64 lbf/g (ค่าประมาณ)",
+      "expected": "5.83–10.1",
+      "tolerance": "ช่วง 5.83–10.1",
+      "unit": "lbf/g",
+      "src": "[R1:C12]; [LP30]; [LP1][LP2][LP5] nL",
+      "current": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีโมเดลแรงที่คัน)",
+      "pass": null
+     },
+     {
+      "case": "T-LP-77",
+      "conditions": "มวลฝึก 2069 kg, trim ด้วย tab ที่ approach 89 kt แฟลป LDG และ cruise 200 kt",
+      "quantity": "ความชันแรงที่คันต่อความเร็ว (ต้องดึงเมื่อช้ากว่าความเร็ว trim, > 0); โมเดล hinge ให้ 0.608 / 0.27 N/kt (ค่าประมาณ)",
+      "expected": "≥ 0",
+      "tolerance": "ช่วง ≥ 0",
+      "unit": "N/kt",
+      "src": "[R1:C12] MIL-F-8785C 3.2.1.1",
+      "current": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีโมเดลแรงที่คัน)",
+      "pass": null
+     }
+    ],
+    "u": "ตามแถว",
+    "scope": "aircraft",
+    "src": [
+     "LP27"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "แถวเดียวกับตาราง §07.12 (สร้างโดย lp_check.mjs); expected มาจากแหล่งใน src ของแต่ละแถว แถวที่ src เป็น LP27 คือเป้าที่หัวข้อนี้คำนวณเอง (est ของ leaf ต้นทางบอกไว้); current = ผลโมเดลวันนี้กับบัตรนี้ (lm_card) ณ วันที่รัน"
    }
   },
   "propulsion": {
@@ -12535,8 +13898,8 @@
      "LP27"
     ],
     "conf": "กลาง",
-    "est": false,
-    "note": "ตำแหน่งดุมเป็นค่าประมาณ"
+    "est": true,
+    "note": "ค่าประมาณ: pos จาก CG อ้างอิงของ pc9m กับระนาบใบพัดสมมติที่ 0.45 m DAT; รุ่นเครื่องยนต์และทิศหมุนจาก TCDS F 56-25"
    },
    "legacy": {
     "v": {
@@ -12553,7 +13916,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: T0 จากทฤษฎีโมเมนตัม FM 0.55 (lm_card); eta = Vc·T0/P ฟิตให้ ROC ของซิมที่ MTOW = 2840 fpm ที่ VY 120 kt; idle 0 เพราะ polar มาจากการร่อนแรงขับศูนย์; WARNING eta > 0.95"
+    "note": "ค่าประมาณ: T0 จากทฤษฎีโมเมนตัม FM 0.55 (lm_card); eta = Vc·T0/P ฟิตให้ ROC ของซิมที่ MTOW = 2840 fpm ที่ VY 136 kt; idle 0 เพราะ polar มาจากการร่อนแรงขับศูนย์; WARNING eta > 0.95"
    }
   },
   "propeller": {
@@ -12574,7 +13937,7 @@
     "maxShaftPower": {
      "v": 522,
      "u": "kW",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "LP1"
      ],
@@ -12585,7 +13948,7 @@
     "rpmGoverned": {
      "v": 2040,
      "u": "rpm",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "LP1"
      ],
@@ -12596,7 +13959,7 @@
     "rpmTransientLimit": {
      "v": 2205,
      "u": "rpm",
-     "scope": "engine",
+     "scope": "propeller",
      "src": [
       "LP1"
      ],
@@ -12782,7 +14145,7 @@
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: VAPP 92 kt (ค่าประมาณ) แฟลป LDG ล้อลง γ −3° 300 m"
+     "note": "ค่าประมาณ: ความเร็วทดสอบ 92 kt ที่ MTOW ≈ speeds.VAPP_kt 89 kt ที่มวลฝึกแก้มวลเป็น MTOW (92.8) แฟลป LDG ล้อลง γ −3° 300 m"
     }
    },
    "takeoff_test": {
@@ -12814,8 +14177,8 @@
       "glideLD_idle": 11.3,
       "TO_groundRoll_m": 337,
       "TO_50ft_m": 543,
-      "LDG_50ft_maxBrake_m": 652,
-      "LDG_50ft_asIs_m": 813
+      "LDG_50ft_maxBrake_m": 657,
+      "LDG_50ft_asIs_m": 823
      },
      "u": "kt, fpm, -, m",
      "scope": "aircraft",
@@ -12824,8 +14187,8 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: โมเดลวันนี้ (src/ @ cabf0f0) + aero.legacy/propulsion.legacy ของบัตรนี้ ที่ 2250 kg ISA ลมสงบ (lm_card runCard); ความเร็ว KEAS ของซิม; ใช้เป็น regression ไม่ใช่ค่าจริง"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): โมเดลวันนี้ (src/ @ cabf0f0) + aero.legacy/propulsion.legacy ของบัตรนี้ ที่ 2250 kg ISA ลมสงบ (lm_card runCard); ความเร็ว KEAS ของซิม; VREF/VAPP ของบัตร (มวลฝึก) แก้มวลเป็น 88/93 kt; ใช้เป็น regression ไม่ใช่ค่าจริงของเครื่อง"
     },
     "approach": {
      "v": {
@@ -12853,8 +14216,8 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: IAS 92 kt แฟลปสุด ล้อลง 300 m γ −3° ที่ 2250 kg"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): IAS 92 kt แฟลปสุด ล้อลง 300 m γ −3° ที่ 2250 kg"
     },
     "cruise": {
      "v": {
@@ -12882,15 +14245,75 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: IAS 200 kt clean 3,000 ft ระดับ ที่ 2250 kg"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): IAS 200 kt clean 3,000 ft ระดับ ที่ 2250 kg"
     }
+   },
+   "stick_force_targets": {
+    "v": {
+     "band": {
+      "controller": "centre_stick",
+      "nL": 7,
+      "W_lb": 4960,
+      "nAlpha_cruise_g_per_rad": 23.87,
+      "mil_L1_centre_stick_lbf_per_g": {
+       "min": 3.5,
+       "max": 10.1
+      },
+      "part23_155_force_lbf": 35,
+      "part23_155_min_lbf_per_g": 5.83,
+      "fs_per_g_lbf": {
+       "min": 5.83,
+       "max": 10.1
+      },
+      "fs_per_g_N": {
+       "min": 25.9,
+       "max": 44.7
+      }
+     },
+     "hinge_model": {
+      "mass_kg": 2068.8,
+      "at_kt": {
+       "approach": 89,
+       "cruise": 200
+      },
+      "Fs_per_g_N": {
+       "approach": 36.6,
+       "cruise": 36.1
+      },
+      "grad_N_per_kt": {
+       "approach": 0.608,
+       "cruise": 0.27
+      },
+      "SM_fixed": 0.153,
+      "SM_free": 0.103,
+      "mtow": {
+       "mass_kg": 2250,
+       "Fs_per_g_N_cruise": 38.4,
+       "Fs_per_g_lbf_cruise": 8.64,
+       "pull_to_nL_lbf": 51.8
+      }
+     }
+    },
+    "u": "lbf/g, N/g, N/kt, g/rad, MAC",
+    "scope": "aircraft",
+    "src": [
+     "R1:C12",
+     "LP30",
+     "LP1",
+     "LP2",
+     "LP5",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: band คือแถบเป้าหมายจากเกณฑ์ ไม่ใช่ค่าวัดของเครื่องจริง — MIL-F-8785C Level 1 แบบ centre stick [R1:C12] ขีดบน max(min(240/(n/α), 28), 56/(nL − 1)) ขีดล่าง max(21/(nL − 1), 3) lbf/g ด้วย n/α 23.87 g/rad ที่ cruise 200 kt 3,000 ft MTOW และ nL +7.0 g (acrobatic ตาม TCDS [LP1][LP2][LP5]) ร่วมกับ 14 CFR 23.155(a)(2) แบบ stick: แรงถึง nL ≥ max(W/140, 15 lb) ไม่ต้องเกิน 35 lb = 35 lbf ⇒ ≥ 5.83 lbf/g [LP30]; hinge_model คือสมการ elevator แบบ reversible ของรอบที่ 1 §6 กับ controls.pitch.* ของบัตร (ค่าคลาสของรอบที่ 1) ที่มวลฝึก: Fs/g 36.6 N (approach 89 kt) / 36.1 N (cruise) ความชัน 0.608 / 0.27 N/kt; ที่ MTOW แรงดึงถึง 7 g 51.8 lbf อยู่ในแถบ; ซิมวันนี้ไม่มีโมเดลแรงที่คัน"
    }
   },
   "wind": {
    "fFactor": {
     "trainerExcessTW": {
-     "v": 0.1748,
+     "v": 0.1727,
      "u": "-",
      "scope": "aircraft",
      "src": [
@@ -12899,7 +14322,7 @@
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: (Tmax − D)/W ที่ Vapp 92 kt แฟลปสุด ล้อลง ISA+16 ระดับน้ำทะเล ด้วยกฎแรงขับของซิมและ legacy ของบัตรนี้ (นิยามรอบที่ 1)"
+     "note": "ค่าประมาณ: (Tmax − D)/W ที่ Vapp 93 kt แฟลปสุด ล้อลง ISA+16 ระดับน้ำทะเล ด้วยกฎแรงขับของซิมและ legacy ของบัตรนี้ (นิยามรอบที่ 1)"
     }
    }
   }
@@ -13009,18 +14432,21 @@
     "training_mass": {
      "v": {
       "kg": 2775.5,
-      "BEW": 2336,
-      "crew": 190,
-      "fuel": 249.5
+      "empty_kg": 2336,
+      "crew_kg": 190,
+      "fuel_kg": 249.5,
+      "fuel_l": 312
      },
-     "u": "kg",
+     "u": "kg (fuel_l L)",
      "scope": "aircraft",
      "src": [
-      "LP27"
+      "LP27",
+      "LP8",
+      "LP21"
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: BEW + 2 × 95 kg + เชื้อเพลิงครึ่งถัง; เทียบใช้ --mass 3129.8"
+     "note": "ค่าประมาณ: empty_kg = airframe.weights.BEW_typical (2336 kg) + ครูและศิษย์ 2 × 95 kg (รวมร่มชูชีพและอุปกรณ์ ค่าประมาณ) + เชื้อเพลิงครึ่งถัง 312 L = 249.5 kg (Jet A 0.80 kg/L); การเทียบ TCDS/POH ใช้ MTOW 3129.8 kg"
     }
    },
    "cg": {
@@ -13104,39 +14530,79 @@
   },
   "speeds": {
    "VS1_kt": {
-    "v": 88.9,
-    "u": "kt CAS",
+    "v": 85.8,
+    "u": "kt IAS",
     "scope": "aircraft",
     "src": [
-     "LP2",
+     "LP29",
      "LP27"
     ],
-    "conf": "ต่ำ",
+    "conf": "กลาง",
     "est": true,
-    "note": "ค่าประมาณ: CL ของ PC-9 M ที่ 6,900 lb"
+    "note": "ค่าประมาณ: 82 KIAS ที่ 6,300 lb [LP29] สเกล √W เป็น MTOW 6,900 lb"
    },
    "VS0_kt": {
-    "v": 79.7,
-    "u": "kt CAS",
+    "v": 77.4,
+    "u": "kt IAS",
     "scope": "aircraft",
     "src": [
-     "LP2",
+     "LP29",
      "LP27"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ: 74 KIAS ที่ 6,300 lb [LP29] สเกล √W เป็น MTOW 6,900 lb"
+   },
+   "VX_kt": {
+    "v": 103,
+    "u": "kt IAS",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LP30"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: เหมือนกัน"
+    "note": "ค่าประมาณ: lp_perf.mjs: 1.2 VS1 ที่ MTOW 6,900 lb = 103 kt (มุมไต่สูงสุดของโมเดลที่ 93.25 kt) ตาม 14 CFR 23.65(a)(4) [LP30]; ที่มวลฝึก 96.98 kt"
    },
    "VREF_kt": {
-    "v": 104,
-    "u": "kt CAS",
+    "v": 95,
+    "u": "kt IAS",
     "scope": "aircraft",
     "src": [
-     "LP27"
+     "LP27",
+     "LP29"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: 1.3 VS0"
+    "note": "ค่าประมาณ: 1.3 VS0 ที่มวลฝึก 2776 kg (D1): 74 KIAS ที่ 6,300 lb [LP29] × √(2775.5/2857.6) = 72.93 ⇒ 94.81; ที่ MTOW 100.6 kt"
+   },
+   "VAPP_kt": {
+    "v": 104,
+    "u": "kt IAS",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LP20",
+     "LP31"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: final 100 KIAS ของ T-6A [LP20] × √(2775.5/2574.6) = 103.83 ที่มวลฝึก (D1; VAPP/VREF = 1.097); รายงานบิน T-6C ของ AOPA 2021: short final 110 KIAS, touchdown 100 [LP31]; แก้มวลเป็น MTOW ≈ 110.4 kt"
+   },
+   "stall_altitude_loss_ft": {
+    "v": 470,
+    "u": "ft",
+    "scope": "aircraft",
+    "src": [
+     "LP27",
+     "LC2",
+     "LF1",
+     "LG5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: วิธีเดียวกับ t6a: 0.0642 ft/kt² × (VS1 85.8 kt ที่ MTOW)² = 470 ft (143 m)"
    },
    "icao_approach_category": {
     "v": "B",
@@ -13147,10 +14613,140 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: 1.3 VS0 = 103.6 kt"
+    "note": "ค่าประมาณ: 1.3 VS0 ที่ MTOW = 100.6 kt"
    }
   },
   "performance": {
+   "ROC_SL_fpm": {
+    "v": 2860,
+    "u": "fpm",
+    "scope": "aircraft",
+    "src": [
+     "LP23",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: 3,100 fpm ของ t6a (MTOW 6,500 lb) × อัตราส่วน ROC ของโมเดลไต่ BEM (lp_perf.mjs) ที่ 6,900/6,500 lb (2917/3165) = 2860 fpm (14.5 m/s); ค่าเดิม 2,850 (ลด 8 % ตามน้ำหนัก); รายงาน AOPA 2021 เห็น 4,000 fpm ไม่ทราบน้ำหนัก [LP31]"
+   },
+   "ROC_table": {
+    "v": {
+     "h_ft": 9,
+     "oat_C": [
+      15,
+      31,
+      35
+     ],
+     "ROC_fpm": [
+      2860,
+      2850,
+      2840
+     ],
+     "ROC_ms": [
+      14.5,
+      14.5,
+      14.4
+     ]
+    },
+    "u": "fpm (m/s)",
+    "scope": "aircraft",
+    "src": [
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ความสูงสนาม VTBD 9 ft MTOW; ROC_SL_fpm × อัตราส่วน ROC ของ lp_perf.mjs ที่ OAT นั้นต่อ 15 °C"
+   },
+   "takeoff": {
+    "v": {
+     "ground_roll_m": 512,
+     "over50ft_m": 732
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LP29",
+     "LP27"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ: 1,400 / 2,000 ft ของ T-6A ที่ 6,300 lb [LP29] × (6,900/6,300)² (แรงขับเท่ากัน) ที่ MTOW 6,900 lb ISA SL"
+   },
+   "landing": {
+    "v": {
+     "ground_roll_m": 634,
+     "over50ft_m": 802
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LP29",
+     "LP27"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ: 1,900 / 2,400 ft ของ T-6A ที่ 6,300 lb [LP29] × 6,900/6,300 (V² ∝ W) ที่ MLW 6,900 lb ISA SL"
+   },
+   "takeoff_table": {
+    "v": {
+     "mass_kg": 3129.8,
+     "h_ft": 9,
+     "oat_C": [
+      15,
+      31,
+      35
+     ],
+     "ground_roll_m": [
+      513,
+      557,
+      569
+     ],
+     "over50ft_m": [
+      732,
+      796,
+      812
+     ]
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LP29",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: performance.takeoff × ตัวคูณวันร้อนของ lp_perf.mjs 1.001/1.088/1.11"
+   },
+   "landing_table": {
+    "v": {
+     "mass_kg": 3129.8,
+     "h_ft": 9,
+     "oat_C": [
+      15,
+      31,
+      35
+     ],
+     "ground_roll_m": [
+      634,
+      670,
+      679
+     ],
+     "over50ft_m": [
+      802,
+      847,
+      858
+     ]
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LP29",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: performance.landing × 1/σ = 1/1.056/1.07"
+   },
    "fuel": {
     "v": {
      "usable_L": 681.37,
@@ -13167,18 +14763,6 @@
     "est": false,
     "note": "range ไม่มีถังภายนอก 884 nm; ferry (ถัง 2 ใบ) 1,382 nm; usable_L = 2 × 90 gal ตาม TCDS ข้อ A.III.9.1 (ข้อ A.III.2 ให้ 1,100 lb ดู t6a.airframe.weights.max_fuel_usable)"
    },
-   "ROC_SL_fpm": {
-    "v": 2850,
-    "u": "fpm",
-    "scope": "aircraft",
-    "src": [
-     "LP23",
-     "LP27"
-    ],
-    "conf": "ต่ำ",
-    "est": true,
-    "note": "ค่าประมาณ: 3,100 fpm ของ T-6A ลดตามน้ำหนัก 6,900/6,500 (excess power ลด ~8 %)"
-   },
    "glide": {
     "v": {
      "speed_kt": 134,
@@ -13194,6 +14778,95 @@
     "conf": "ต่ำ",
     "est": true,
     "note": "ค่าประมาณ: polar ของ T-6A; ความเร็วสเกล √(6,900/6,500)"
+   },
+   "tests": {
+    "v": [
+     {
+      "case": "T-LP-30",
+      "conditions": "MTOW 6,900 lb (3,130 kg), 3,000 ft, idle, แฟลป LDG ล้อลง, 1 kt/s",
+      "quantity": "V_SR 1 g (VS0 74 KIAS ที่ 6,300 lb [LP29] สเกล √W ⇒ 77.4 kt)",
+      "expected": 79.41,
+      "tolerance": 1.5,
+      "unit": "kt",
+      "src": "[LP29] + สเกลมวล [LP27] (ค่าประมาณ)",
+      "current": 79.46,
+      "pass": true
+     },
+     {
+      "case": "T-LP-31",
+      "conditions": "1.3 VS0 ที่ MTOW",
+      "quantity": "ICAO approach category B (91–120 kt)",
+      "expected": "91–120",
+      "tolerance": "ช่วง 91–120",
+      "unit": "kt",
+      "src": "[LP27] ICAO Doc 8168",
+      "current": 100.6,
+      "pass": true
+     },
+     {
+      "case": "T-LP-57",
+      "conditions": "MTOW SL ISA กำลังเต็ม clean ล้อขึ้น ที่ VX ของบัตร 103 kt",
+      "quantity": "γ ของซิมที่ VX ÷ γ สูงสุดของซิม (VX ของบัตรให้มุมไต่ใกล้สูงสุด)",
+      "expected": "0.95–1.0001",
+      "tolerance": "ช่วง 0.95–1.0001",
+      "unit": "-",
+      "src": "[LP27] lp_perf.mjs + 14 CFR 23.65(a)(4) [LP30]",
+      "current": 0.9944,
+      "pass": true
+     },
+     {
+      "case": "T-LP-61",
+      "conditions": "มวลฝึก 2776 kg แฟลป LDG (บัตร resolve แล้ว)",
+      "quantity": "VAPP − VREF ใน KCAS (D1: VAPP ≥ VREF)",
+      "expected": "≥ 0",
+      "tolerance": "ช่วง ≥ 0",
+      "unit": "kt",
+      "src": "[D1] schema-ext-r2 §5",
+      "current": 9,
+      "pass": true
+     },
+     {
+      "case": "T-LP-65",
+      "conditions": "stall ปีกระดับ idle แฟลป UP ที่ MTOW แล้วแก้แบบปกติ (ลดมุมปะทะ กำลังเต็ม ไต่กลับ)",
+      "quantity": "ความสูงที่เสีย",
+      "expected": 470,
+      "tolerance": 166,
+      "unit": "ft",
+      "src": "[LP27] ค่าประมาณ h/VS1² ของ [LC2][LF1][LG5]",
+      "current": "ไม่รองรับในซิมวันนี้ (lm_card ไม่มีการทดสอบแก้ stall)",
+      "pass": null
+     },
+     {
+      "case": "T-LP-80",
+      "conditions": "MTOW 3130 kg cruise 200 kt 3,000 ft clean, nL +7 g (TCDS)",
+      "quantity": "แรงที่คันต่อ g (Fs/g) ของโมเดลแรงที่คันในอนาคต: แถบ MIL-F-8785C Level 1 centre stick ∩ 14 CFR 23.155(a)(2); โมเดล hinge ของรอบที่ 1 กับบัตรให้ 13.1 lbf/g (ค่าประมาณ)",
+      "expected": "5.83–14",
+      "tolerance": "ช่วง 5.83–14",
+      "unit": "lbf/g",
+      "src": "[R1:C12]; [LP30]; [LP1][LP2][LP5] nL",
+      "current": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีโมเดลแรงที่คัน)",
+      "pass": null
+     },
+     {
+      "case": "T-LP-81",
+      "conditions": "มวลฝึก 2776 kg, trim ด้วย tab ที่ approach 104 kt แฟลป LDG และ cruise 200 kt",
+      "quantity": "ความชันแรงที่คันต่อความเร็ว (ต้องดึงเมื่อช้ากว่าความเร็ว trim, > 0); โมเดล hinge ให้ 0.839 / 0.436 N/kt (ค่าประมาณ)",
+      "expected": "≥ 0",
+      "tolerance": "ช่วง ≥ 0",
+      "unit": "N/kt",
+      "src": "[R1:C12] MIL-F-8785C 3.2.1.1",
+      "current": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีโมเดลแรงที่คัน)",
+      "pass": null
+     }
+    ],
+    "u": "ตามแถว",
+    "scope": "aircraft",
+    "src": [
+     "LP27"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "แถวเดียวกับตาราง §07.12 (สร้างโดย lp_check.mjs); expected มาจากแหล่งใน src ของแต่ละแถว แถวที่ src เป็น LP27 คือเป้าที่หัวข้อนี้คำนวณเอง (est ของ leaf ต้นทางบอกไว้); current = ผลโมเดลวันนี้กับบัตรนี้ (lm_card) ณ วันที่รัน"
    }
   },
   "propulsion": {
@@ -13223,13 +14896,13 @@
      "LP27"
     ],
     "conf": "กลาง",
-    "est": false,
-    "note": "PT6A-68A ตาม product card"
+    "est": true,
+    "note": "ค่าประมาณ: pos จาก CG อ้างอิงของ t6a กับระนาบใบพัดสมมติที่ 0.45 m DAT; รุ่นเครื่องยนต์ PT6A-68A ตาม product card [LP8]"
    },
    "legacy": {
     "v": {
      "P": 820300,
-     "eta": 1.047,
+     "eta": 1.051,
      "T0": 13347,
      "idle": 0
     },
@@ -13241,7 +14914,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: T0 จากทฤษฎีโมเมนตัม FM 0.55 (lm_card); eta = Vc·T0/P ฟิตให้ ROC ของซิมที่ MTOW = 2850 fpm ที่ VY 140 kt; idle 0 เพราะ polar มาจากการร่อนแรงขับศูนย์; WARNING eta > 0.95"
+    "note": "ค่าประมาณ: T0 จากทฤษฎีโมเมนตัม FM 0.55 (lm_card); eta = Vc·T0/P ฟิตให้ ROC ของซิมที่ MTOW = 2860 fpm ที่ VY 140 kt; idle 0 เพราะ polar มาจากการร่อนแรงขับศูนย์; WARNING eta > 0.95"
    }
   },
   "aero": {
@@ -13257,8 +14930,8 @@
      "Cm0": 0.045,
      "Cma": -0.869,
      "Cmflap": -0.1,
-     "aStall": 17.68,
-     "aStallFlap": -1.85
+     "aStall": 18.99,
+     "aStallFlap": -1.88
     },
     "u": "-, 1/rad, deg",
     "scope": "aircraft",
@@ -13271,13 +14944,13 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: lm_legacy_fit โหมด static ที่ MTOW: polar ของซิม CD = CD0 + K(CL − 0.15)² จากการร่อน (L/D 11.3 ที่ 134 kt); aStall/aStallFlap แก้ให้ CLmax 1 g ตรง CLmax_target; ค่าอื่นจาก aero.static_long/flaps; polar from glide 134.0 KCAS E 11.3: CD0s 0.0353 Ks 0.0889; idle 0 (POH glide is at idle, windmilling); climb fit (static): target Vy 140.0 KCAS ROC 2850 fpm → T0 13347 N, Vc 64.3 m/s; WARNING eta 1.05 > 0.95: P too low for the sim's thrust law at this ROC"
+    "note": "ค่าประมาณ: lm_legacy_fit โหมด static ที่ MTOW: polar ของซิม CD = CD0 + K(CL − 0.15)² จากการร่อน (L/D 11.3 ที่ 134 kt); aStall/aStallFlap แก้ให้ CLmax 1 g ตรง CLmax_target; ค่าอื่นจาก aero.static_long/flaps; polar from glide 134.0 KCAS E 11.3: CD0s 0.0353 Ks 0.0889; idle 0 (POH glide is at idle, windmilling); climb fit (static): target Vy 140.0 KCAS ROC 2860 fpm → T0 13347 N, Vc 64.6 m/s; WARNING eta 1.05 > 0.95: P too low for the sim's thrust law at this ROC"
    },
    "static_long": {
     "alpha_star": {
      "v": {
-      "clean": 17.68,
-      "landing": 15.83
+      "clean": 18.99,
+      "landing": 17.11
      },
      "u": "deg",
      "scope": "aircraft",
@@ -13291,8 +14964,8 @@
     },
     "alpha_CLmax": {
      "v": {
-      "clean": 14.88,
-      "landing": 12.76
+      "clean": 16.12,
+      "landing": 13.98
      },
      "u": "deg",
      "scope": "aircraft",
@@ -13302,14 +14975,14 @@
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: α ที่ CL ของซิม (trim, นอก ground effect) สูงสุด; CLmax 1.399/1.741"
+     "note": "ค่าประมาณ: α ที่ CL ของซิม (trim, นอก ground effect) สูงสุด; CLmax 1.501/1.842"
     }
    },
    "stall_warning": {
     "alpha_warn_5kt": {
      "v": {
-      "clean": 11.57,
-      "landing": 8.573
+      "clean": 12.56,
+      "landing": 9.539
      },
      "u": "deg",
      "scope": "aircraft",
@@ -13323,8 +14996,8 @@
     },
     "alpha_warn_design": {
      "v": {
-      "clean": 10.98,
-      "landing": 7.781
+      "clean": 11.92,
+      "landing": 8.682
      },
      "u": "deg",
      "scope": "aircraft",
@@ -13342,19 +15015,19 @@
    "currentModel": {
     "performance": {
      "v": {
-      "VSR_clean_kt": 91.21,
-      "Vmin_clean_kt": 85.85,
-      "VSR_full_kt": 81.74,
-      "Vmin_full_kt": 75.98,
-      "Vy_SL_kt": 142,
-      "ROCmax_SL_fpm": 2883,
+      "VSR_clean_kt": 88.05,
+      "Vmin_clean_kt": 82.61,
+      "VSR_full_kt": 79.46,
+      "Vmin_full_kt": 73.93,
+      "Vy_SL_kt": 142.1,
+      "ROCmax_SL_fpm": 2892,
       "glideLD_zeroThrust": 11.3,
       "Vbg_kt": 133.7,
       "glideLD_idle": 11.3,
       "TO_groundRoll_m": 436,
-      "TO_50ft_m": 754,
-      "LDG_50ft_maxBrake_m": 812,
-      "LDG_50ft_asIs_m": 1060
+      "TO_50ft_m": 753,
+      "LDG_50ft_maxBrake_m": 760,
+      "LDG_50ft_asIs_m": 979
      },
      "u": "kt, fpm, -, m",
      "scope": "aircraft",
@@ -13363,17 +15036,17 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: โมเดลวันนี้ (src/ @ cabf0f0) + aero.legacy/propulsion.legacy ของบัตรนี้ ที่ 3129.8 kg ISA ลมสงบ (lm_card runCard); ความเร็ว KEAS ของซิม; ใช้เป็น regression ไม่ใช่ค่าจริง"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): โมเดลวันนี้ (src/ @ cabf0f0) + aero.legacy/propulsion.legacy ของบัตรนี้ ที่ 3129.8 kg ISA ลมสงบ (lm_card runCard); ความเร็ว KEAS ของซิม; VREF/VAPP ของบัตร (มวลฝึก) แก้มวลเป็น 101/110 kt; ใช้เป็น regression ไม่ใช่ค่าจริงของเครื่อง"
     },
     "approach": {
      "v": {
       "sp_wn": 2.192,
-      "sp_zeta": 0.4938,
+      "sp_zeta": 0.4939,
       "CAP": 1.12,
       "nAlpha": 4.288,
       "ph_T_s": 25.94,
-      "ph_zeta": 0.1355,
+      "ph_zeta": 0.1354,
       "dr_wn": 1.638,
       "dr_zeta": 0.1563,
       "dr_zetaWn": 0.256,
@@ -13383,7 +15056,7 @@
       "trim_alpha_deg": 4.496,
       "trim_theta_deg": 1.496,
       "trim_de_deg": -5.63,
-      "trim_thr": 0.3661
+      "trim_thr": 0.3656
      },
      "u": "rad/s, -, s, deg",
      "scope": "aircraft",
@@ -13392,8 +15065,8 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: IAS 100 kt แฟลปสุด ล้อลง 300 m γ −3° ที่ 3129.8 kg"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): IAS 100 kt แฟลปสุด ล้อลง 300 m γ −3° ที่ 3129.8 kg"
     },
     "cruise": {
      "v": {
@@ -13402,7 +15075,7 @@
       "CAP": 1.11,
       "nAlpha": 17.15,
       "ph_T_s": 53.06,
-      "ph_zeta": 0.1269,
+      "ph_zeta": 0.1268,
       "dr_wn": 3.153,
       "dr_zeta": 0.1351,
       "dr_zetaWn": 0.4259,
@@ -13412,7 +15085,7 @@
       "trim_alpha_deg": 0.3112,
       "trim_theta_deg": 0.3112,
       "trim_de_deg": 1.841,
-      "trim_thr": 0.5709
+      "trim_thr": 0.5693
      },
      "u": "rad/s, -, s, deg",
      "scope": "aircraft",
@@ -13421,15 +15094,75 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: IAS 200 kt clean 3,000 ft ระดับ ที่ 3129.8 kg"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): IAS 200 kt clean 3,000 ft ระดับ ที่ 3129.8 kg"
     }
+   },
+   "stick_force_targets": {
+    "v": {
+     "band": {
+      "controller": "centre_stick",
+      "nL": 7,
+      "W_lb": 6900,
+      "nAlpha_cruise_g_per_rad": 17.15,
+      "mil_L1_centre_stick_lbf_per_g": {
+       "min": 3.5,
+       "max": 14
+      },
+      "part23_155_force_lbf": 35,
+      "part23_155_min_lbf_per_g": 5.83,
+      "fs_per_g_lbf": {
+       "min": 5.83,
+       "max": 14
+      },
+      "fs_per_g_N": {
+       "min": 25.9,
+       "max": 62.2
+      }
+     },
+     "hinge_model": {
+      "mass_kg": 2775.5,
+      "at_kt": {
+       "approach": 104,
+       "cruise": 200
+      },
+      "Fs_per_g_N": {
+       "approach": 53.2,
+       "cruise": 52.7
+      },
+      "grad_N_per_kt": {
+       "approach": 0.839,
+       "cruise": 0.436
+      },
+      "SM_fixed": 0.174,
+      "SM_free": 0.125,
+      "mtow": {
+       "mass_kg": 3129.8,
+       "Fs_per_g_N_cruise": 58.3,
+       "Fs_per_g_lbf_cruise": 13.1,
+       "pull_to_nL_lbf": 78.6
+      }
+     }
+    },
+    "u": "lbf/g, N/g, N/kt, g/rad, MAC",
+    "scope": "aircraft",
+    "src": [
+     "R1:C12",
+     "LP30",
+     "LP1",
+     "LP2",
+     "LP5",
+     "LP27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: band คือแถบเป้าหมายจากเกณฑ์ ไม่ใช่ค่าวัดของเครื่องจริง — MIL-F-8785C Level 1 แบบ centre stick [R1:C12] ขีดบน max(min(240/(n/α), 28), 56/(nL − 1)) ขีดล่าง max(21/(nL − 1), 3) lbf/g ด้วย n/α 17.15 g/rad ที่ cruise 200 kt 3,000 ft MTOW และ nL +7.0 g (acrobatic ตาม TCDS [LP1][LP2][LP5]) ร่วมกับ 14 CFR 23.155(a)(2) แบบ stick: แรงถึง nL ≥ max(W/140, 15 lb) ไม่ต้องเกิน 35 lb = 35 lbf ⇒ ≥ 5.83 lbf/g [LP30]; hinge_model คือสมการ elevator แบบ reversible ของรอบที่ 1 §6 กับ controls.pitch.* ของบัตร (ค่าคลาสของรอบที่ 1) ที่มวลฝึก: Fs/g 53.2 N (approach 104 kt) / 52.7 N (cruise) ความชัน 0.839 / 0.436 N/kt; ที่ MTOW แรงดึงถึง 7 g 78.6 lbf อยู่ในแถบ; ซิมวันนี้ไม่มีโมเดลแรงที่คัน"
    }
   },
   "wind": {
    "fFactor": {
     "trainerExcessTW": {
-     "v": 0.1585,
+     "v": 0.1424,
      "u": "-",
      "scope": "aircraft",
      "src": [
@@ -13438,7 +15171,7 @@
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: (Tmax − D)/W ที่ Vapp 100 kt แฟลปสุด ล้อลง ISA+16 ระดับน้ำทะเล ด้วยกฎแรงขับของซิมและ legacy ของบัตรนี้ (นิยามรอบที่ 1)"
+     "note": "ค่าประมาณ: (Tmax − D)/W ที่ Vapp 110 kt แฟลปสุด ล้อลง ISA+16 ระดับน้ำทะเล ด้วยกฎแรงขับของซิมและ legacy ของบัตรนี้ (นิยามรอบที่ 1)"
     }
    }
   }
@@ -13500,6 +15233,44 @@
      "note": "รอบที่ 1: aero.static_long.CLmax_target = {\"clean\":1.355,\"landing\":1.657}; ใช้ CLmax 1 g ของ PC-9 M จาก TCDS (ปีกและพื้นที่ปีกเท่ากัน) ⇒ VS1/VS0 1 g ที่ 2,250 kg = 77.28/69.25 KCAS; คีย์ clean/landing ตามรอบที่ 1 (แฟลปต่อเนื่อง)"
     }
    },
+   "flaps": {
+    "detents": {
+     "v": [
+      {
+       "name": "UP",
+       "flap_deg": 0,
+       "dCL0": 0,
+       "dCD0": 0,
+       "dCm0": 0
+      },
+      {
+       "name": "TO",
+       "flap_deg": 20,
+       "dCL0": 0.275,
+       "dCD0": 0.025,
+       "dCm0": -0.05
+      },
+      {
+       "name": "LDG",
+       "flap_deg": 40,
+       "dCL0": 0.55,
+       "dCD0": 0.05,
+       "dCm0": -0.1
+      }
+     ],
+     "u": "-",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19",
+      "LP1",
+      "LP2",
+      "LP27"
+     ],
+     "conf": "ต่ำ",
+     "est": true,
+     "note": "ค่าประมาณ: รอบที่ 1: aero.flaps.detents = \"UP 0° / LDG 40° (dCL0 0.55, dCD0 0.05, dCm0 −0.1)\"; เพิ่มขั้น TO ที่ AC.flaps 0.5 (= notch \"T-O\" ของแป้นพิมพ์รอบที่ 1) ให้ชื่อขั้นตรงกับหัวข้อ 09 (D6) และคลาส PC-7/PC-9/T-6 (UP/TO/LDG [LP1][LP2]); มุม 20° และ dCL0/dCD0/dCm0 ของ TO เป็นครึ่งทางของ LDG; ขั้น UP/LDG เท่าเดิม"
+    }
+   },
    "derivatives": {
     "Clda": {
      "v": 0.21,
@@ -13549,15 +15320,16 @@
     "note": "ค่าประมาณ: รอบที่ 1: AC.Vs0 = 71; VS0 ตามนิยาม POH/TCDS (ความเร็วต่ำสุดของการทดสอบ 1 kt/s, 14 CFR 23.49 เดิม) ที่ 2,250 kg = V_SR 1 g 69.25 × √0.95 จาก CLmax ของ PC-9 M (= 69 KCAS ของ PC-9 M สเกล √(2,250/2,350); PC-7 MkII 67 KCAS [LP9]); speeds.VREF_kt 88 kt ของรอบที่ 1 คงเดิม เพราะ 1.3 × 67.5 = 87.8 kt (ตรวจทาน: ข้อเสนอเดิม 90 kt ใช้ V_SR 1 g ผิดนิยาม)"
    },
    "VY_kt": {
-    "v": 125,
+    "v": 136,
     "u": "kt CAS",
     "scope": "aircraft",
     "src": [
+     "LP29",
      "LP27"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: เป้าใหม่ (ซิมวันนี้ 128.8 kt)"
+    "note": "ค่าประมาณ: เป้าใหม่ (ซิมวันนี้ 128.8 kt): ค่าคลาสเท่า speeds.VY_kt ของ pc9m = Vy ของโมเดลไต่ BEM (lp_perf.mjs) 139.3 kt × 0.977 (อัตราส่วน VY 140 KIAS ของ T-6A [LP29] ต่อโมเดล) ⇒ 136 kt; Vy ของโมเดลแทบไม่ขึ้นกับมวล (138 kt ที่ 2,124 kg) จึงใช้ที่ 2,250 kg ได้; ฉบับก่อน 125 kt (สเกล √(W/S) จาก T-6) ต่ำไป; legacy fit แบบ static fit ROC สูงสุดอย่างเดียว ค่านี้จึงไม่เปลี่ยนผลของซิม (Vy ของซิม 139 kt)"
    }
   },
   "airframe": {
@@ -13727,6 +15499,117 @@
     "conf": "ต่ำ",
     "est": true,
     "note": "ค่าประมาณ: เป้าใหม่ (ซิมวันนี้ 3,225 fpm) จาก PC-7 MkII 2,840 fpm ที่ 522 kW และ PC-9 4,090 fpm สเกลด้วยกำลังส่วนเกินที่ 2,250 kg 700 kW ⇒ 3,900–4,200"
+   },
+   "tests": {
+    "v": [
+     {
+      "case": "T-LP-41",
+      "conditions": "ข้อเสนอ 2,250 kg, 3,000 ft, แรงขับศูนย์",
+      "quantity": "L/D ร่อนสูงสุด",
+      "expected": "9.8–13.18",
+      "tolerance": "ช่วง 9.8–13.18",
+      "unit": "-",
+      "src": "[LP16][LP19]",
+      "current": 11.3,
+      "pass": true
+     },
+     {
+      "case": "T-LP-42",
+      "conditions": "ข้อเสนอ 2,250 kg, SL ISA",
+      "quantity": "ROC สูงสุด",
+      "expected": 4000,
+      "tolerance": 200,
+      "unit": "fpm",
+      "src": "[LP27] เป้าคลาส",
+      "current": 4035,
+      "pass": true
+     },
+     {
+      "case": "T-LP-43",
+      "conditions": "ข้อเสนอ 2,250 kg, แฟลปสุด idle 1 kt/s",
+      "quantity": "VSR แฟลปสุด",
+      "expected": 69.25,
+      "tolerance": 1,
+      "unit": "kt",
+      "src": "[LP2]",
+      "current": 69.25,
+      "pass": true
+     },
+     {
+      "case": "T-LP-44",
+      "conditions": "ข้อเสนอ, Vref 88 kt (คงเดิม)",
+      "quantity": "Vref / VS0 แบบ POH (VS0 = V_SR แฟลปสุดของซิม × √0.95) (≥ 1.3)",
+      "expected": "1.29–1.4",
+      "tolerance": "ช่วง 1.29–1.4",
+      "unit": "-",
+      "src": "[LM25][LM1]",
+      "current": 1.304,
+      "pass": true
+     },
+     {
+      "case": "T-LP-45",
+      "conditions": "ข้อเสนอ approach 95 kt แฟลปสุด",
+      "quantity": "roll mode τR (≤ 1.0 s)",
+      "expected": "0.05–1",
+      "tolerance": "ช่วง 0.05–1",
+      "unit": "s",
+      "src": "[R1:C12]",
+      "current": 0.3042,
+      "pass": true
+     },
+     {
+      "case": "T-LP-46",
+      "conditions": "ข้อเสนอ แฟลปสุด ล้อลง ISA+16 ที่ Vapp",
+      "quantity": "excess T/W (รอบที่ 1 = 0.218)",
+      "expected": "0.15–0.3",
+      "tolerance": "ช่วง 0.15–0.3",
+      "unit": "-",
+      "src": "[R1] นิยาม wind.fFactor.trainerExcessTW",
+      "current": 0.2651,
+      "pass": true
+     },
+     {
+      "case": "T-LP-47",
+      "conditions": "ข้อเสนอ, SL ISA ลมสงบ, flap 0, VR ของ fixture",
+      "quantity": "ระยะวิ่งขึ้นถึง 50 ft (คลาสที่ 700 kW: PC-7 MkII 415 m × (522/700)^(2/3) = 341 m, ค่าประมาณจาก lp_review.mjs)",
+      "expected": 341,
+      "tolerance": 68,
+      "unit": "m",
+      "src": "[LP9] + สเกลแรงขับสถิต (±20 %)",
+      "current": 556,
+      "pass": false
+     },
+     {
+      "case": "T-LP-48",
+      "conditions": "ข้อเสนอ Ixx 3,700 kg m², 2,250 kg",
+      "quantity": "Rx = √(Ixx/m)/(b/2) (ช่วงคลาส 0.219–0.303)",
+      "expected": "0.219–0.303",
+      "tolerance": "ช่วง 0.219–0.303",
+      "unit": "-",
+      "src": "[LM15]",
+      "current": 0.2514,
+      "pass": true
+     },
+     {
+      "case": "T-LP-49",
+      "conditions": "ข้อเสนอ gear.legacy",
+      "quantity": "ระยะ track ล้อหลัก (คลาส 2.54 m ± 0.10)",
+      "expected": "2.44–2.64",
+      "tolerance": "ช่วง 2.44–2.64",
+      "unit": "m",
+      "src": "[LP5][LP10]",
+      "current": 2.54,
+      "pass": true
+     }
+    ],
+    "u": "ตามแถว",
+    "scope": "aircraft",
+    "src": [
+     "LP27"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "แถวเดียวกับตาราง §07.12 (สร้างโดย lp_check.mjs); expected มาจากแหล่งใน src ของแต่ละแถว แถวที่ src เป็น LP27 คือเป้าที่หัวข้อนี้คำนวณเอง (est ของ leaf ต้นทางบอกไว้); current = ผลโมเดลวันนี้กับบัตรนี้ (lm_card) ณ วันที่รัน"
    }
   },
   "validation": {
@@ -13754,8 +15637,8 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: รอบที่ 1: validation.currentModel.performance = {\"VSR_flaps1_kt\":71.9,\"VCLmax_flaps1_kt\":70,\"VSR_clean_kt\":79.6,\"Vy_SL_kt\":128,\"ROCmax_SL_fpm\":3225,\"glideLD_zeroThrust\":16.5,\"glideLD_idle\":21.7,\"TO_groundRoll_flaps0_m\":358,\"TO_50ft_flaps0_m\":590,\"LDG_50ft_maxBrake_m\":714}; ผลของโมเดลวันนี้กับข้อเสนอนี้ที่ 2,250 kg (regression)"
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): รอบที่ 1: validation.currentModel.performance = {\"VSR_flaps1_kt\":71.9,\"VCLmax_flaps1_kt\":70,\"VSR_clean_kt\":79.6,\"Vy_SL_kt\":128,\"ROCmax_SL_fpm\":3225,\"glideLD_zeroThrust\":16.5,\"glideLD_idle\":21.7,\"TO_groundRoll_flaps0_m\":358,\"TO_50ft_flaps0_m\":590,\"LDG_50ft_maxBrake_m\":714}; ผลของโมเดลวันนี้กับข้อเสนอนี้ที่ 2,250 kg (regression)"
     },
     "approach": {
      "v": {
@@ -13783,8 +15666,8 @@
       "LP27"
      ],
      "conf": "สูง",
-     "est": true,
-     "note": "ค่าประมาณ: เทียบ รอบที่ 1: validation.currentModel.approach95 = \"sp 2.221/0.578, DR 1.611/0.139, τR 0.218 s\""
+     "est": false,
+     "note": "ผลวัดตรงจากซิม (ไม่ใช่ค่าประมาณ): เทียบ รอบที่ 1: validation.currentModel.approach95 = \"sp 2.221/0.578, DR 1.611/0.139, τR 0.218 s\""
     }
    }
   }

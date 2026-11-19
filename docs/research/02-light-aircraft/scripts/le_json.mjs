@@ -8,6 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compute, POH, OLD } from './le_calc.mjs';
 import { PROPS } from './lm_prop.mjs';
+import { normaliseScopes, readOut, testsLeaf, stickForceBand } from './lc_cardfix.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const TOPIC = path.join(HERE, '..', '10-c172r.md');
@@ -15,6 +16,7 @@ const r = (x, d = 3) => +(+x).toFixed(d);
 const L = (v, u, src, conf, est, note, scope = 'aircraft') => ({ v, u, scope, src, conf, est, note });
 const C = compute();
 let FIT = null;
+const LET = readOut('le_tests.json');   // gap 16/18 (19 Nov 2026): rows of the T-LE table and the card's n/α (run le_tests.mjs first)
 try { FIT = JSON.parse(fs.readFileSync(path.join(HERE, 'out', 'le_legacy.json'), 'utf8')); } catch { /* first pass: no fit yet */ }
 
 const blocks = [];
@@ -43,7 +45,9 @@ add('รุ่นย่อย, _na, airframe', {
       BEW_typical: L(C.geom.BEW_kg, 'kg', ['LE2'], 'กลาง', false, `1,639 lb standard empty weight (IM p ii, Feb 2000); 172guide ให้ 1,699 lb (${C.geom.BEW_alt_kg} kg) น่าจะเป็นฉบับปรับปรุงที่อุปกรณ์มากขึ้น ต่างกันรายลำ`),
       max_fuel_usable: L(C.geom.fuel_usable_kg, 'kg', ['LE1', 'LE2'], 'สูง', false, `53 US gal ใช้ได้ (${C.geom.fuel_usable_L} L) จาก 56 gal ที่ 6.0 lb/gal; ถังปีก 2 × 28 gal ที่ 48.0 in DAT`),
       useful_load: L(C.geom.useful_kg, 'kg', ['LE2'], 'กลาง', false, '818 lb (IM p ii); utility 468 lb; 172guide 758 lb'),
-      training_mass: L(C.training.total_kg, 'kg', ['LE0', 'LE2'], 'ต่ำ', true, `ค่าประมาณ (กฎเดียวกับ c172s): BEW 743.4 kg + ครู 85 kg + ศิษย์ 75 kg + เชื้อเพลิง 35 gal (95.3 kg) = ${C.training.total_kg} kg (${C.training.total_lb} lb); การเทียบ POH ใช้ --mass ${C.geom.MTOW_kg}`),
+      // D3 (19 Nov 2026): object {kg, empty_kg, crew_kg, fuel_kg, fuel_l}; empty_kg = BEW_typical
+      training_mass: L({ kg: C.training.total_kg, empty_kg: C.training.BEW_kg, crew_kg: C.training.crew_kg, fuel_kg: C.training.fuel_kg, fuel_l: r(35 * 3.785411784, 1) }, 'kg (fuel_l: L)', ['LE0', 'LE2'], 'ต่ำ', true,
+        `ค่าประมาณ (กฎเดียวกับ c172s): empty_kg = BEW_typical ${C.training.BEW_kg} kg (IM p ii) + ครู 85 kg + ศิษย์ 75 kg + เชื้อเพลิง 35 US gal (132.5 L, 95.3 kg ที่ 6 lb/gal) = ${C.training.total_kg} kg (${C.training.total_lb} lb); การเทียบ POH ใช้ --mass ${C.geom.MTOW_kg}`),
     },
     cg: {
       envelope: L(C.cg.normal, 'kg, m DAT', ['LE1', 'LE2'], 'สูง', false, `normal: หน้า 35.0 in (${C.cg.normal_pctMAC.fwd_low} %MAC) ที่ ≤1,950 lb เชิงเส้นถึง 40.0 in (${C.cg.normal_pctMAC.fwd_mtow} %MAC) ที่ 2,450 lb; หลัง 47.3 in (${C.cg.normal_pctMAC.aft} %MAC) ทุกน้ำหนัก; utility หน้า 36.5 in ที่ 2,100 lb (POH 172RPHUS หรือ 172RPHAUS-00..-03) หรือ 37.5 in ที่ 2,200 lb (172RPHAUS-04 ขึ้นไปหรือ 172RPHBUS) หลัง 40.5 in; datum = ผิวหน้าส่วนล่างของ firewall, LEMAC 25.9 in, MAC 58.8 in (เท่ากับ 172S) · CG อ้างอิงของบัตร 42.0 in (27.4 %MAC) สืบทอดจาก c172s และอยู่ในช่วงทุกน้ำหนัก`),
@@ -81,9 +85,9 @@ add('speeds', { speeds: {
   VX_kt: L(60, 'kt IAS', ['LE2'], 'สูง', false, 'SL (62 KCAS); 65 KIAS ที่ 10,000 ft (IM p4-5)'),
   VY_kt: L(79, 'kt IAS', ['LE2', 'LE3'], 'สูง', false, `SL (${C.speedsCAS.VY_79} KCAS); 71 KIAS ที่ 10,000 ft; ตาราง Fig 5-6 ลดจาก 79 ถึง 69 KIAS ที่ 12,000 ft`),
   VR_kt: L(51, 'kt IAS', ['LE3'], 'สูง', false, `short field แฟลป 10 lift-off 51 KIAS (${C.speedsCAS.VR_51_f10} KCAS) และ 57 KIAS ที่ 50 ft (Fig 5-5); normal takeoff ยกล้อหน้าที่ 55 KIAS (IM p4-15)`),
-  VAPP_kt: L(65, 'kt IAS', ['LE2'], 'กลาง', false, `normal approach แฟลป 30 60–70 KIAS ใช้กลางช่วง (${C.speedsCAS.VAPP_65_f30} KCAS); แฟลปขึ้น 65–75 KIAS`),
+  VAPP_kt: L(65, 'kt IAS', ['LE2'], 'กลาง', false, `D1 (บัตรเป็นเจ้าของ; 08 ops.final และ 09 Vapp อ้างค่านี้): normal approach แฟลป 30 60–70 KIAS (IM p4-5) ใช้กลางช่วง 65 KIAS = ${C.speedsCAS.VAPP_65_f30} KCAS (${r(C.speedsCAS.VAPP_65_f30 * 0.514444, 1)} m/s); IM บอกว่าความเร็วในหัวข้อ 4 อิงน้ำหนักสูงสุด 2,450 lb และใช้ได้กับทุกน้ำหนักที่ต่ำกว่า จึงเป็นค่าเดียวกันที่ training_mass ${C.training.total_kg} kg; VAPP ≥ VREF 62 KIAS; แฟลปขึ้น 65–75 KIAS`),
   VAPP_short_kt: L(62, 'kt IAS', ['LE2', 'LE3'], 'สูง', false, `short field แฟลป 30 (${C.speedsCAS.VREF_62_f30} KCAS)`),
-  VREF_kt: L(62, 'kt IAS', ['LE3'], 'สูง', false, 'ความเร็วที่ 50 ft ของ Fig 5-11 (short field แฟลป 30); แฟลปขึ้น +7 KIAS'),
+  VREF_kt: L(62, 'kt IAS', ['LE3', 'LE2'], 'สูง', false, `D1: ความเร็วที่ 50 ft ของ Fig 5-11 (short field แฟลป 30) 62 KIAS = ${C.speedsCAS.VREF_62_f30} KCAS ที่ 2,450 lb ใช้ค่าเดียวกันที่ training_mass ${C.training.total_kg} kg ตามที่ IM ให้ใช้กับทุกน้ำหนักที่ต่ำกว่า; ข้อมูลประกอบ: 1.3 VS0 ที่ training_mass (VS0 47 KCAS × √(m/MTOW)) = ${r(1.3 * 47 * Math.sqrt(C.training.total_kg / C.geom.MTOW_kg), 1)} KCAS; แฟลปขึ้น +7 KIAS`),
   VG_kt: L(65, 'kt IAS', ['LE2', 'LE3'], 'สูง', false, `2,450 lb แฟลปขึ้น (${C.speedsCAS.VG_65} KCAS) IM p3-3, Fig 3-1`),
   VA_kt: L({ 1600: 82, 2000: 92, 2450: 99 }, 'kt IAS', ['LE2', 'LE1'], 'สูง', false, 'lb → KIAS (KCAS 82/91/97) IM p2-4; TCDS 99 KIAS (97 KCAS)'),
   VNO_kt: L(129, 'kt IAS', ['LE2', 'LE1'], 'สูง', false, '126 KCAS'),
@@ -113,19 +117,9 @@ add('performance', { performance: {
   landing_table: L({ axes: { PA_ft: POH.ldg.PA, OAT_C: POH.ldg.OAT }, roll_ft: POH.ldg.roll, total50_ft: POH.ldg.total }, 'ft', ['LE3'], 'กลาง', false, `Fig 5-11 2,450 lb แฟลป 30 62 KIAS (p5-21); null = OCR อ่านไม่ได้; ลมหน้า −10 %/9 kt, ลมหลัง +10 %/2 kt, หญ้าแห้ง +45 % ของ ground roll, แฟลปขึ้น +7 KIAS และ +35 %; VTBD 35 °C: ${C.hot[35].ldg_roll_ft} / ${C.hot[35].ldg_50_ft} ft`),
   fuel: L({ usable_L: C.geom.fuel_usable_L, usable_kg: C.geom.fuel_usable_kg, range_80pct_8000ft_nm: 580, endurance_80pct_h: 4.8, range_60pct_10000ft_nm: 687, endurance_60pct_h: 6.6, bsfc_g_per_kWh: C.bsfc.g_per_kWh }, 'L, kg, NM, h, g/kWh', ['LE2', 'LE3', 'LE0'], 'สูง', false,
     `p ii: 53 gal ใช้ได้ เครื่องติด speed fairing (ระยะเปลี่ยนตาม); ระยะรวมเชื้อเพลิง start/taxi/takeoff/climb และสำรอง 45 นาที ตาม Fig 5-9 p5-19; BSFC เฉลี่ย ${C.bsfc.lb_per_hp_h} lb/(hp h) จาก ${C.bsfc.n} จุดของ Fig 5-8 ทั้งสองแผ่น (คำนวณ)`),
-  tests: L([
-    { id: 'T-LE-05', case: 'stall_f0', conditions: '2,450 lb, CG หน้าสุด, idle, แฟลป 0, ปีกระดับ, ลด 1 kt/s', quantity: 'VS1 KCAS (Vmin)', expected: 52, tolerance: 3 },
-    { id: 'T-LE-06', case: 'stall_f10', conditions: 'เหมือน stall_f0 แฟลป 10', quantity: 'VS KCAS', expected: 50, tolerance: 3 },
-    { id: 'T-LE-07', case: 'stall_f30', conditions: 'เหมือน stall_f0 แฟลป 30', quantity: 'VS0 KCAS', expected: 47, tolerance: 3 },
-    { id: 'T-LE-08', case: 'climb_SL', conditions: '2,450 lb, SL ISA, คันเร่งเต็ม, แฟลป 0', quantity: 'ROC สูงสุด fpm / Vy KCAS', expected: [720, 78.1], tolerance: [100, 3] },
-    { id: 'T-LE-10', case: 'climb_8000', conditions: '2,450 lb, 8,000 ft ISA, คันเร่งเต็ม, แฟลป 0', quantity: 'ROC สูงสุด fpm', expected: C.rocISA[4][2], tolerance: 100 },
-    { id: 'T-LE-11', case: 'glide', conditions: '2,450 lb, 3,000 ft ISA, แรงขับศูนย์, แฟลป 0', quantity: 'VG KCAS / L/D (ค่าประมาณ)', expected: [C.speedsCAS.VG_65, C.glide.E], tolerance: [3, 0.5] },
-    { id: 'T-LE-12/13', case: 'takeoff_SL', conditions: 'short field แฟลป 10, 2,450 lb, SL 15 °C, ลมสงบ, ทางแห้ง', quantity: 'ground roll m / ถึง 50 ft m', expected: [C.hot[15].to_roll_m, C.hot[15].to_50_m], tolerance: ['5 %', '10 %'] },
-    { id: 'T-LE-14', case: 'takeoff_VTBD_35C', conditions: 'เหมือน takeoff_SL แต่ OAT 35 °C', quantity: 'ground roll m / ถึง 50 ft m', expected: [C.hot[35].to_roll_m, C.hot[35].to_50_m], tolerance: ['10 %', '10 %'] },
-    { id: 'T-LE-15/16', case: 'landing_SL', conditions: 'short field แฟลป 30, 62 KIAS ที่ 50 ft, power off, เบรกสุด, 2,450 lb, SL 15 °C', quantity: 'ถึงหยุดจาก 50 ft m / ground roll m', expected: [C.hot[15].ldg_50_m, C.hot[15].ldg_roll_m], tolerance: ['10 %', '10 %'] },
-    { id: 'T-LE-17', case: 'vmax_SL', conditions: '2,450 lb, SL ISA, คันเร่งเต็ม, บินระดับ (มี speed fairing)', quantity: 'KTAS', expected: 123, tolerance: 3 },
-    { id: 'T-LE-18', case: 'cruise_8000_80pct', conditions: '2,450 lb, 8,000 ft ISA, 2,400 rpm 80 % (มี speed fairing)', quantity: 'KTAS ที่กำลังนี้ (ซิมวันนี้ตรวจว่าคันเร่ง ≤ 1)', expected: 122, tolerance: 3 },
-  ], '-', ['LE2', 'LE3', 'LE0'], 'สูง', false, 'จุดเป้าจาก POH สำหรับเทสต์อัตโนมัติ (รายละเอียดและผลของซิมวันนี้ใน §10.12); expected ตามลำดับ quantity; tolerance เป็นหน่วยเดียวกับ expected หรือ %; glide ratio เป็นค่าประมาณ (1.5 NM/1,000 ft)'),
+  // gap 16 (19 Nov 2026): performance.tests = the rows of the T-LE table (10.12), from scripts/out/le_tests.json
+  ...(LET ? { tests: testsLeaf(LET.tests, { src: ['LE0', 'LE1', 'LE2', 'LE3', 'R1:V10'],
+    note: 'แถวเดียวกับตาราง T-LE ในหัวข้อ 10.12 สร้างโดย le_json.mjs จาก scripts/out/le_tests.json (รัน le_tests.mjs ก่อน); ค่าคาดหวังมาจาก IM/POH/TCDS/MIL-F-8785C/ฟิสิกส์ตามช่อง origin; tolerance ที่ผู้เขียนตั้งเองบอกไว้ในช่อง tolerance ของแถวนั้น; current_model คือผลของบัตรในฟิสิกส์วันนี้' }) } : {}),
   vtbd_hot_day: L({ to_roll_ft: C.hot[35].to_roll_ft, to_50_ft: C.hot[35].to_50_ft, ldg_roll_ft: C.hot[35].ldg_roll_ft, ldg_50_ft: C.hot[35].ldg_50_ft, roc_fpm: C.hot[35].roc_fpm,
     to_roll_m: C.hot[35].to_roll_m, to_50_m: C.hot[35].to_50_m, ldg_roll_m: C.hot[35].ldg_roll_m, ldg_50_m: C.hot[35].ldg_50_m, oat30: { to_roll_ft: C.hot[30].to_roll_ft, to_50_ft: C.hot[30].to_50_ft, roc_fpm: C.hot[30].roc_fpm } }, 'ft, fpm, m', ['LE3', 'LE0'], 'กลาง', true,
     'interpolate ตาราง POH ที่ PA 0 ft (VTBD 9 ft) OAT 35 °C 2,450 lb ลมสงบ (ค่าประมาณจากการ interpolate); วิ่งขึ้นยาวขึ้น 16 % ROC ลดลง 9 % เทียบ ISA'),
@@ -156,13 +150,13 @@ add('propulsion, piston, propeller', {
     },
     fixed: {
       pitch_in: L(70, 'in', ['LE1', 'LC6'], 'กลาง', false, 'จากรหัส 7570 = 75 in × 70 in (แบบแผนชื่อรุ่นของ McCauley เหมือนที่บัตร c172s ใช้กับ 7660)'),
-      beta75_deg: L(prop.beta75_deg, 'deg', ['LE0'], 'กลาง', false, 'atan(70/(0.75π·75))'),
+      beta75_deg: L(prop.beta75_deg, 'deg', ['LE0'], 'กลาง', true, 'ค่าประมาณ: atan(70/(0.75π·75)) โดยสมมติว่า pitch 70 in วัดที่ 75 % ของรัศมีและใบบิดแบบ helical (รูปใบจริงไม่เปิดเผย; ใช้ใน BEM ของ lm_prop)', 'propeller'),
       static_rpm_range: L([2065, 2165], 'rpm', ['LE1', 'LE2'], 'สูง', false, 'คันเร่งเต็ม อยู่กับที่ mixture leaned for max rpm; ไม่มี tolerance เพิ่ม'),
     },
     engineInterface: { maxShaftPower: L(C.geom.P_kW, 'kW', ['LE1'], 'สูง', false, '160 hp') },
     bladeGeometry: {
       chordOverD: L({ axes: { x: GA_CX }, data: GA_CD.map(c => r(c * cs, 4)) }, 'c/D', ['LM0', 'LE0'], 'ต่ำ', true, `ค่าประมาณ: รูปใบ GA ของ lm_prop × ${cs} (ปรับให้รอบสถิต 2,115 rpm กลางช่วง TCDS ที่ 160 hp/2,400 rpm)`),
-      twistDesignJ: L(r(70 / 75, 3), '-', ['LE0'], 'กลาง', false, 'pitch เรขาคณิตคงที่ = helical ที่ J = p/D'),
+      twistDesignJ: L(r(70 / 75, 3), '-', ['LE0'], 'กลาง', true, 'ค่าประมาณ: สมมติใบบิดแบบ helical ที่ pitch เรขาคณิตคงที่ ได้ J ออกแบบ = p/D = 70/75 (รูปใบจริงไม่เปิดเผย; ใช้ใน BEM ของ lm_prop)', 'propeller'),
     },
     tables: {
       CT: L({ axes: { J: prop.table.map(t => t[0]) }, data: prop.table.map(t => t[1]) }, '-', ['LM0', 'LE0'], 'ต่ำ', true, 'BEM lm_prop (ค่าประมาณ ใบ 75×70 เชือกใบปรับแล้ว) ที่ 2,100 rpm ISA SL'),
@@ -184,6 +178,9 @@ add('propulsion, piston, propeller', {
 // ── 6. gear certification, wind, validation targets ──
 const vt = {
   trim_targets: { approach: L({ ias_kt: 66, h_m: 300, gamma_deg: -3 }, 'kt CAS, m, deg', ['LE2', 'LE0'], 'กลาง', false, 'normal approach แฟลป 30 65 KIAS ≈ 65.5 KCAS') },
+  // gap 18 (19 Nov 2026): stick force per g target band (requirement-derived; the sim has no stick-force model)
+  ...(LET?.raw?.modes?.cruise?.nAlpha ? { stick_force_targets: L(stickForceBand({ nAlpha: LET.raw.modes.cruise.nAlpha, nL: 3.8, W_lb: 2450 }), 'lbf/g, N/g, g/rad, lbf, lbf/kt, N/kt', ['R1:C12', 'LM3', 'LC14', 'LE2', 'LE0'], 'ต่ำ', true,
+    `ค่าประมาณ: ไม่ใช่ค่าที่วัดจาก C172R แต่เป็นแถบเป้าหมายจากเกณฑ์ MIL-F-8785C Level 1 แบบ wheel (controls.requirements.mil8785c_fs_per_g_wheel_L1 ของรอบที่ 1) ด้วย n/α ${r(LET.raw.modes.cruise.nAlpha, 2)} g/rad ของบัตรที่ cruise 110 KCAS MTOW และ nL 3.8 กับพื้นขั้นต่ำของ 14 CFR 23.155 (W/100 = 24.5 lbf); แรงต่อ kt ขั้นต่ำ 1 lbf ต่อ 6 kt ยืมจาก 14 CFR 25.173(c); ซิมวันนี้ไม่มีแบบจำลองแรงที่คันบังคับ จึงทดสอบไม่ได้`) } : {}),
   takeoff_test: L({ flap: '10', VR_kt: FIT?.takeoff_VR_kcas ?? 51, theta_deg: FIT?.takeoff_theta_deg ?? 12 }, '-, kt CAS, deg', ['LE3', 'LE0'], 'กลาง', true,
     'short field: lift-off 51 KIAS ≈ 55.7 KCAS ตามตาราง (ค่าสอบเทียบใช้กับการบินระดับ); VR และ θ ของการทดสอบเลือกตามวิธีของ c172s ปรับตาม √(มวล) (ค่าประมาณ)'),
 };
@@ -192,6 +189,9 @@ add('gear, wind, validation', {
   ...(FIT?.excessTW != null ? { wind: { fFactor: { trainerExcessTW: L(FIT.excessTW, '-', ['LE0'], 'ต่ำ', true, 'ค่าประมาณ: (T − D)/W ที่ approach แฟลป 30 คันเร่งเต็ม (โมเดล legacy ของบัตร)') } } } : {}),
   validation: vt,
 });
+
+// D4 (19 Nov 2026): scope by category in every block (piston → engine, propeller → propeller, gear → gear, ...)
+for (const b of blocks) normaliseScopes(b.obj.c172r);
 
 // ── write ──
 // compact layout: one leaf per line (as the other topic files), nested groups indented

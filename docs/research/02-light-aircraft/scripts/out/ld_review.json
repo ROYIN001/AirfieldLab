@@ -20,7 +20,7 @@
   {
    "mass": 1100,
    "label": "T/O idle",
-   "det": "TO",
+   "det": "T/O",
    "kias": 88,
    "reported": {
     "theta_deg": -7.5,
@@ -36,7 +36,7 @@
   {
    "mass": 1100,
    "label": "T/O idle",
-   "det": "TO",
+   "det": "T/O",
    "kias": 84,
    "reported": {
     "theta_deg": -6,
@@ -116,7 +116,7 @@
   {
    "mass": 1310,
    "label": "T/O idle",
-   "det": "TO",
+   "det": "T/O",
    "kias": 88,
    "reported": {
     "theta_deg": -7.5,
@@ -132,7 +132,7 @@
   {
    "mass": 1310,
    "label": "T/O idle",
-   "det": "TO",
+   "det": "T/O",
    "kias": 84,
    "reported": {
     "theta_deg": -6,

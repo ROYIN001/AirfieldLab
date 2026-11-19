@@ -23,9 +23,7 @@ export async function iterate() {
   const C = compute();
   const card = loadType('c172r');
   const ac = buildAC(card, { mass: MTOW });
-  const trv = s => val(card, `controls.surfaces.${s}`)?.travel_deg;          // lm_card path workaround (see lc_tests.mjs)
-  const el = trv('elevator'), ai = trv('aileron'), ru = trv('rudder');
-  Object.assign(ac, { deUp: el.up * DEG, deDn: el.down * DEG, daMax: 0.5 * (ai.up + ai.down) * DEG, drMax: Math.min(ru.left, ru.right) * DEG });
+  // D2 (19 Nov 2026): buildAC takes the card's TCDS travel itself (lm_card.travelOf); the former workaround is gone
   const M = await loadSim();
   const restore = applyAC(M, ac);
   const info = cardInfo(card, ac);

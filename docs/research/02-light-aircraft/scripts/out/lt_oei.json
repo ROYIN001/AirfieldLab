@@ -212,44 +212,44 @@
    "trim_climb": {
     "kcas": 84.6,
     "gamma_deg": 7.86,
-    "roc_fpm": 1188
+    "roc_fpm": 1189
    },
    "rows": [
     {
      "t_s": 1,
      "dpsi_deg": -4.65,
-     "phi_deg": -5.01,
-     "beta_deg": 3.53,
+     "phi_deg": -5,
+     "beta_deg": 3.54,
      "r_dps": -9.42,
      "p_dps": -8.92,
-     "ias_kt": 83.1
+     "ias_kt": 83
     },
     {
      "t_s": 2,
-     "dpsi_deg": -14.7,
-     "phi_deg": -20.1,
-     "beta_deg": 8.46,
-     "r_dps": -9.22,
+     "dpsi_deg": -14.8,
+     "phi_deg": -20.2,
+     "beta_deg": 8.47,
+     "r_dps": -9.24,
      "p_dps": -15.5,
-     "ias_kt": 80.9
+     "ias_kt": 80.8
     },
     {
      "t_s": 3,
-     "dpsi_deg": -20.5,
-     "phi_deg": -36.6,
-     "beta_deg": 6.63,
-     "r_dps": -7.04,
-     "p_dps": -14.9,
-     "ias_kt": 79.2
+     "dpsi_deg": -21.1,
+     "phi_deg": -36.8,
+     "beta_deg": 6.61,
+     "r_dps": -7.19,
+     "p_dps": -15,
+     "ias_kt": 78.9
     },
     {
      "t_s": 5,
      "dpsi_deg": -36.1,
-     "phi_deg": -64,
-     "beta_deg": 3.58,
-     "r_dps": -15.6,
-     "p_dps": -14.4,
-     "ias_kt": 81.6
+     "phi_deg": -64.8,
+     "beta_deg": 3.66,
+     "r_dps": -15.8,
+     "p_dps": -14.7,
+     "ias_kt": 80.8
     }
    ],
    "rdot_expected_dps2": -20.7,
@@ -262,23 +262,23 @@
   },
   "cut_VYSE_recovery": {
    "delay_s": 1,
-   "max_dpsi_deg": 12,
-   "max_bank_deg": 7.82,
+   "max_dpsi_deg": 12.5,
+   "max_bank_deg": 7.81,
    "after20s": {
-    "dpsi_deg": -10.6,
-    "phi_deg": 1.22,
-    "beta_deg": -2.55,
-    "dr_deg": -21.5,
-    "da_deg": 2.26,
-    "ias_kt": 89.2
+    "dpsi_deg": -10.5,
+    "phi_deg": 1.59,
+    "beta_deg": -3.02,
+    "dr_deg": -21.1,
+    "da_deg": 1.79,
+    "ias_kt": 91.6
    }
   },
   "trim": {
    "VYSE_feathered_zeroBeta": {
     "kcas": 84.6,
-    "alpha_deg": 6.85,
-    "theta_deg": 8.61,
-    "de_deg": -7.22,
+    "alpha_deg": 6.68,
+    "theta_deg": 8.44,
+    "de_deg": -3.93,
     "da_deg": 4.01,
     "dr_deg": -19.1,
     "beta_deg": 0,
@@ -288,9 +288,9 @@
    },
    "VYSE_windmill_zeroBeta": {
     "kcas": 84.6,
-    "alpha_deg": 6.87,
-    "theta_deg": 8.04,
-    "de_deg": -7.23,
+    "alpha_deg": 6.69,
+    "theta_deg": 7.87,
+    "de_deg": -3.93,
     "da_deg": 4.1,
     "dr_deg": -20.7,
     "beta_deg": 0,
@@ -300,21 +300,21 @@
    },
    "VYSE_feathered_phi5": {
     "kcas": 84.6,
-    "alpha_deg": 6.82,
-    "theta_deg": 8.47,
-    "de_deg": -7.2,
+    "alpha_deg": 6.65,
+    "theta_deg": 8.3,
+    "de_deg": -3.91,
     "da_deg": 6.03,
     "dr_deg": -11.8,
-    "beta_deg": 5.08,
+    "beta_deg": 5.09,
     "phi_deg": 5,
     "roc_fpm": 184,
     "dr_saturated": false
    },
    "VYSE_feathered_wingsLevel": {
     "kcas": 84.6,
-    "alpha_deg": 6.86,
-    "theta_deg": 8.51,
-    "de_deg": -7.23,
+    "alpha_deg": 6.69,
+    "theta_deg": 8.34,
+    "de_deg": -3.93,
     "da_deg": 1.87,
     "dr_deg": -26.9,
     "beta_deg": -5.39,
@@ -325,15 +325,15 @@
   },
   "vmca_sim_phi5_wm": {
    "VMCA_kcas": 69.2,
-   "kcas": 69.23643862828612,
-   "alpha_deg": 12.2,
-   "theta_deg": 13.6,
-   "de_deg": -12.1,
+   "kcas": 69.22082700766623,
+   "alpha_deg": 12,
+   "theta_deg": 13.3,
+   "de_deg": -6.27,
    "da_deg": 10.5,
    "dr_deg": -27,
-   "beta_deg": 5.11,
+   "beta_deg": 5.12,
    "phi_deg": 5,
-   "roc_fpm": 123,
+   "roc_fpm": 122,
    "dr_saturated": true
   },
   "oei_climb_sweep": [
@@ -359,7 +359,7 @@
    ],
    [
     82,
-    269
+    270
    ],
    [
     84,
@@ -400,9 +400,9 @@
   ],
   "oei_best": {
    "kcas": 78,
-   "alpha_deg": 8.68,
-   "theta_deg": 10.6,
-   "de_deg": -8.89,
+   "alpha_deg": 8.46,
+   "theta_deg": 10.4,
+   "de_deg": -4.72,
    "da_deg": 5.38,
    "dr_deg": -23.8,
    "beta_deg": 0,

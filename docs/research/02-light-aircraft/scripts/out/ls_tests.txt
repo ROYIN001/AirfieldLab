@@ -7,4 +7,5 @@ PASS T-LS-06 base_icao format / VTBD absent / set: got true / true / VTPH,VTPO,V
 PASS T-LS-07 forbidden military terms (military leaf + whole block): got 0, expected 0
 PASS T-LS-08 ranking_extra[0..1], others P3: got c172r:P1, c152:P2, P3 rest: true, expected c172r:P1, c152:P2, P3 rest: true
 PASS T-LS-09 C172 % of ATO fleet / C172S % of C172 / ATOs with C172 / ATOs with C172S: got 56.4 / 77.3 / 7 / 6, expected 56.4 / 77.3 (±0.1) / 7 / 6
-9/9 passed
+PASS T-LS-13 types ids that are not card ids / bad variants rows / ids without airframe.identity in the merged cards: got none / none / none, expected none / none / none
+10/10 passed

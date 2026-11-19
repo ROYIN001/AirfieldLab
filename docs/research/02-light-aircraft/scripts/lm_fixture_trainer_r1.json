@@ -3,6 +3,20 @@
   "note": "fixture: เครื่องฝึกสมมติของรอบที่ 1 = AC ใน src/20-flight.js:100-118 (cabf0f0) ใช้ทดสอบ lm_card เท่านั้น ไม่ใช่เครื่องบินจริง"
  },
  "trainer_r1": {
+  "_na": {
+   "v": [
+    "turbofan.*",
+    "controls.reference_types.*"
+   ],
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "R1:V19"
+   ],
+   "conf": "สูง",
+   "est": true,
+   "note": "เครื่องฝึกรอบที่ 1 เป็น turboprop: turbofan.* ของรอบที่ 1 เป็นค่าคลาสเครื่องยนต์ของเครื่องบินโดยสาร และ controls.reference_types.* เป็นค่าอ้างอิงของ B737/ATR72 (รอบที่ 3) จึงไม่ใช้กับแบบนี้"
+  },
   "airframe": {
    "identity": {
     "v": {
@@ -453,52 +467,52 @@
   "controls": {
    "surfaces": {
     "elevator": {
-     "travel_deg": {
-      "v": {
+     "v": {
+      "travel_deg": {
        "up": 22,
        "down": 15
-      },
-      "u": "deg",
-      "scope": "aircraft",
-      "src": [
-       "R1:V19"
-      ],
-      "conf": "สูง",
-      "est": true,
-      "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
-     }
+      }
+     },
+     "u": "deg",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
     },
     "aileron": {
-     "travel_deg": {
-      "v": {
+     "v": {
+      "travel_deg": {
        "up": 20,
        "down": 20
-      },
-      "u": "deg",
-      "scope": "aircraft",
-      "src": [
-       "R1:V19"
-      ],
-      "conf": "สูง",
-      "est": true,
-      "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
-     }
+      }
+     },
+     "u": "deg",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
     },
     "rudder": {
-     "travel_deg": {
-      "v": {
+     "v": {
+      "travel_deg": {
        "left": 25,
        "right": 25
-      },
-      "u": "deg",
-      "scope": "aircraft",
-      "src": [
-       "R1:V19"
-      ],
-      "conf": "สูง",
-      "est": true,
-      "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
-     }
+      }
+     },
+     "u": "deg",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
     }
    }
   },

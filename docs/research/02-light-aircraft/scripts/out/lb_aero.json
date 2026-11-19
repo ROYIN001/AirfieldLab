@@ -392,5 +392,253 @@
     "aero/coefficient/Cmadot"
    ]
   }
+ },
+ "fg_pc9m": {
+  "0": {
+   "flap_deg": 0.0,
+   "CL0": 0.4382,
+   "CLalpha_per_rad": 5.194,
+   "CLmax": 1.977,
+   "alpha_CLmax_deg": 17.5,
+   "CDmin": 0.0239,
+   "alpha_CDmin": 0.0,
+   "Cm0": 0.0037,
+   "Cmalpha_per_rad": -0.423,
+   "CD_at_CL05": 0.0279,
+   "excluded_rate_functions": [
+    "aero/force/Lift_pitch_rate",
+    "aero/force/Lift_alpha_rate",
+    "aero/moment/Pitch_damp",
+    "aero/moment/Pitch_alphadot"
+   ],
+   "propwash_terms": [
+    "aero/force/Lift_propwash (ct)",
+    "aero/force/Drag_induced (qind)",
+    "aero/moment/Pitch_propwash (ct)",
+    "aero/moment/Pitch_elevator (qind)"
+   ]
+  },
+  "23": {
+   "flap_deg": 23.0,
+   "CL0": 0.6498,
+   "CLalpha_per_rad": 5.194,
+   "CLmax": 2.188,
+   "alpha_CLmax_deg": 17.5,
+   "CDmin": 0.0606,
+   "alpha_CDmin": -2.0,
+   "Cm0": 0.0096,
+   "Cmalpha_per_rad": -0.662,
+   "CD_at_CL05": 0.0607,
+   "excluded_rate_functions": [
+    "aero/force/Lift_pitch_rate",
+    "aero/force/Lift_alpha_rate",
+    "aero/moment/Pitch_damp",
+    "aero/moment/Pitch_alphadot"
+   ],
+   "propwash_terms": [
+    "aero/force/Lift_propwash (ct)",
+    "aero/force/Drag_induced (qind)",
+    "aero/moment/Pitch_propwash (ct)",
+    "aero/moment/Pitch_elevator (qind)"
+   ]
+  },
+  "50": {
+   "flap_deg": 50.0,
+   "CL0": 0.8982,
+   "CLalpha_per_rad": 5.194,
+   "CLmax": 2.437,
+   "alpha_CLmax_deg": 17.5,
+   "CDmin": 0.1039,
+   "alpha_CDmin": -4.5,
+   "Cm0": 0.0173,
+   "Cmalpha_per_rad": -0.943,
+   "CD_at_CL05": 0.1039,
+   "excluded_rate_functions": [
+    "aero/force/Lift_pitch_rate",
+    "aero/force/Lift_alpha_rate",
+    "aero/moment/Pitch_damp",
+    "aero/moment/Pitch_alphadot"
+   ],
+   "propwash_terms": [
+    "aero/force/Lift_propwash (ct)",
+    "aero/force/Drag_induced (qind)",
+    "aero/moment/Pitch_propwash (ct)",
+    "aero/moment/Pitch_elevator (qind)"
+   ]
+  }
+ },
+ "fg_c152": {
+  "0": {
+   "flap_deg": 0.0,
+   "CL0": 0.25,
+   "CLalpha_per_rad": 5.0,
+   "CLmax": 1.39,
+   "alpha_CLmax_deg": 13.5,
+   "CDmin": 0.0293,
+   "alpha_CDmin": -2.0,
+   "Cm0": 0.0051,
+   "Cmalpha_per_rad": -0.569,
+   "CD_at_CL05": 0.0401,
+   "excluded_rate_functions": [
+    "aero/moment/Pitch_damp",
+    "aero/moment/Pitch_alphadot"
+   ],
+   "propwash_terms": []
+  },
+  "10": {
+   "flap_deg": 10.0,
+   "CL0": 0.3833,
+   "CLalpha_per_rad": 5.0,
+   "CLmax": 1.523,
+   "alpha_CLmax_deg": 13.5,
+   "CDmin": 0.0401,
+   "alpha_CDmin": -3.5,
+   "Cm0": 0.0074,
+   "Cmalpha_per_rad": -0.583,
+   "CD_at_CL05": 0.0494,
+   "excluded_rate_functions": [
+    "aero/moment/Pitch_damp",
+    "aero/moment/Pitch_alphadot"
+   ],
+   "propwash_terms": []
+  },
+  "30": {
+   "flap_deg": 30.0,
+   "CL0": 0.6499,
+   "CLalpha_per_rad": 5.0,
+   "CLmax": 1.789,
+   "alpha_CLmax_deg": 13.5,
+   "CDmin": 0.0619,
+   "alpha_CDmin": -6.0,
+   "Cm0": 0.0126,
+   "Cmalpha_per_rad": -0.61,
+   "CD_at_CL05": 0.0696,
+   "excluded_rate_functions": [
+    "aero/moment/Pitch_damp",
+    "aero/moment/Pitch_alphadot"
+   ],
+   "propwash_terms": []
+  }
+ },
+ "fg_da40ng": {
+  "0": {
+   "flap_deg": 0.0,
+   "CL0": 0.6491,
+   "CLalpha_per_rad": 6.15,
+   "CLmax": 1.547,
+   "alpha_CLmax_deg": 14.0,
+   "CDmin": 0.0332,
+   "alpha_CDmin": -4.0,
+   "Cm0": -0.05,
+   "Cmalpha_per_rad": -1.334,
+   "CD_at_CL05": 0.0414,
+   "excluded_rate_functions": [
+    "aero/force/Lift_pitch_rate",
+    "aero/force/Lift_alpha_rate",
+    "aero/moment/Pitch_damp",
+    "aero/moment/Pitch_alphadot"
+   ],
+   "propwash_terms": [
+    "aero/force/Lift_propwash (ct)",
+    "aero/moment/Pitch_propwash (ct)"
+   ]
+  },
+  "15": {
+   "flap_deg": 15.0,
+   "CL0": 0.8336,
+   "CLalpha_per_rad": 6.15,
+   "CLmax": 1.731,
+   "alpha_CLmax_deg": 14.0,
+   "CDmin": 0.0647,
+   "alpha_CDmin": -4.5,
+   "Cm0": -0.0609,
+   "Cmalpha_per_rad": -1.346,
+   "CD_at_CL05": 0.0656,
+   "excluded_rate_functions": [
+    "aero/force/Lift_pitch_rate",
+    "aero/force/Lift_alpha_rate",
+    "aero/moment/Pitch_damp",
+    "aero/moment/Pitch_alphadot"
+   ],
+   "propwash_terms": [
+    "aero/force/Lift_propwash (ct)",
+    "aero/moment/Pitch_propwash (ct)"
+   ]
+  },
+  "30": {
+   "flap_deg": 30.0,
+   "CL0": 1.0181,
+   "CLalpha_per_rad": 6.15,
+   "CLmax": 1.916,
+   "alpha_CLmax_deg": 14.0,
+   "CDmin": 0.0969,
+   "alpha_CDmin": -5.0,
+   "Cm0": -0.0715,
+   "Cmalpha_per_rad": -1.358,
+   "CD_at_CL05": 0.0976,
+   "excluded_rate_functions": [
+    "aero/force/Lift_pitch_rate",
+    "aero/force/Lift_alpha_rate",
+    "aero/moment/Pitch_damp",
+    "aero/moment/Pitch_alphadot"
+   ],
+   "propwash_terms": [
+    "aero/force/Lift_propwash (ct)",
+    "aero/moment/Pitch_propwash (ct)"
+   ]
+  }
+ },
+ "fg_t6": {
+  "0": {
+   "flap_deg": 0.0,
+   "CL0": 0.1698,
+   "CLalpha_per_rad": 4.482,
+   "CLmax": 1.191,
+   "alpha_CLmax_deg": 13.5,
+   "CDmin": 0.0213,
+   "alpha_CDmin": 0.0,
+   "Cm0": 0.0139,
+   "Cmalpha_per_rad": -0.274,
+   "CD_at_CL05": 0.0359,
+   "excluded_rate_functions": [
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ],
+   "propwash_terms": []
+  },
+  "0.5": {
+   "flap_deg": 0.5,
+   "CL0": 0.3198,
+   "CLalpha_per_rad": 4.482,
+   "CLmax": 1.341,
+   "alpha_CLmax_deg": 13.5,
+   "CDmin": 0.0438,
+   "alpha_CDmin": -1.5,
+   "Cm0": 0.0269,
+   "Cmalpha_per_rad": -0.287,
+   "CD_at_CL05": 0.0553,
+   "excluded_rate_functions": [
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ],
+   "propwash_terms": []
+  },
+  "1.0": {
+   "flap_deg": 1.0,
+   "CL0": 0.4698,
+   "CLalpha_per_rad": 4.482,
+   "CLmax": 1.491,
+   "alpha_CLmax_deg": 13.5,
+   "CDmin": 0.0663,
+   "alpha_CDmin": -3.5,
+   "Cm0": 0.0403,
+   "Cmalpha_per_rad": -0.3,
+   "CD_at_CL05": 0.0722,
+   "excluded_rate_functions": [
+    "aero/coefficient/Cmq",
+    "aero/coefficient/Cmadot"
+   ],
+   "propwash_terms": []
+  }
  }
 }

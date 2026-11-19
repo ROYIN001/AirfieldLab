@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Round 2 / topic 02 (LS): Thai flight-school fleet from the CAAT aircraft register.
 // Reads out/ls_register_2026-07-09.json (rows transcribed from [LS1]), maps each registered model string to a
-// type id, counts by operator, family and variant, ranks extra types for data cards, and writes
+// card type id (older models such as 172M or C150H keep the card id plus a `variants` note, gap 21 of 19 Nov 2026),
+// counts by operator, family and variant, ranks extra types for data cards, and writes
 //   out/ls_fleet_summary.json   (numbers quoted in 02-thai-schools.md and the expected values of T-LS-xx)
 //   out/ls_thai_fleet_block.json (the common_light.thai_fleet JSON block of 02-thai-schools.md §02.6)
 // Node >= 18, no dependencies. Run from anywhere: node scripts/ls_fleet.mjs [--check]
@@ -18,9 +19,10 @@ function classify(model, serial) {
   const m = model.trim();
   if (m === '172S') return { id: 'c172s', fam: 'C172', eng: 1 };
   if (m === '172R') return { id: 'c172r', fam: 'C172', eng: 1 };
-  if (/^172[MNP]$/.test(m)) return { id: 'c172_' + m.slice(3).toLowerCase(), fam: 'C172', eng: 1 };
+  // gap 21 (19 Nov 2026): every register model maps to a card id; older models carry a variant note instead of their own id
+  if (/^172[MNP]$/.test(m)) return { id: 'c172r', variant: m, fam: 'C172', eng: 1 };           // 10-c172r.md §10.10
   if (m === '152') return { id: 'c152', fam: 'C150/152', eng: 1 };
-  if (/^150/.test(m)) return { id: 'c150', fam: 'C150/152', eng: 1 };
+  if (/^150/.test(m)) return { id: 'c152', variant: 'C' + m, fam: 'C150/152', eng: 1 };          // 11-c152.md §11.10
   if (m === 'DA 40 D') return { id: 'da40d', fam: 'DA40', eng: 1 };                    // TAE 125 (TDI)
   if (m === 'DA 40') return { id: 'da40_180', fam: 'DA40', eng: 1 };                  // IO-360-M1A, CS prop
   if (m === 'DA 40 NG') return { id: 'da40ng', fam: 'DA40', eng: 1 };
@@ -32,7 +34,7 @@ function classify(model, serial) {
   if (m === 'P.68C') return { id: 'p68c', fam: 'other', eng: 2 };
   if (m === 'T206H') return { id: 't206h', fam: 'other', eng: 1 };
   if (/^PA-28-161/.test(m)) return { id: 'pa28_161', fam: 'other', eng: 1 };
-  if (/^PA-28-151/.test(m)) return { id: 'pa28_151', fam: 'other', eng: 1 };
+  if (/^PA-28-151/.test(m)) return { id: 'pa28_161', variant: 'PA-28-151', fam: 'other', eng: 1 };  // 13-other-trainers.md
   return { id: 'unknown:' + m, fam: 'other', eng: 1 };
 }
 
@@ -54,14 +56,15 @@ const OPS = {
 };
 
 // ---- count ---------------------------------------------------------------------------------------------------
-const byOp = {}, byType = {}, opsByType = {}, byFam = {};
+const byOp = {}, byType = {}, opsByType = {}, byFam = {}, byVariant = {};
 let wuhu = 0, unknown = [];
 for (const [reg, model, serial, op] of REG.rows) {
   const c = classify(model, serial);
   if (c.id.startsWith('unknown')) unknown.push(reg + ' ' + model);
   if (c.wuhu) wuhu++;
   const o = OPS[op]; if (!o) throw new Error('operator not mapped: ' + op);
-  (byOp[o.key] ??= { ...o, types: {}, n: 0 }); byOp[o.key].types[c.id] = (byOp[o.key].types[c.id] || 0) + 1; byOp[o.key].n++;
+  (byOp[o.key] ??= { ...o, types: {}, variants: {}, n: 0 }); byOp[o.key].types[c.id] = (byOp[o.key].types[c.id] || 0) + 1; byOp[o.key].n++;
+  if (c.variant) { const vk = c.id + '|' + c.variant; byOp[o.key].variants[vk] = (byOp[o.key].variants[vk] || 0) + 1; byVariant[vk] = (byVariant[vk] || 0) + 1; }
   byType[c.id] = (byType[c.id] || 0) + 1;
   (opsByType[c.id] ??= new Set()).add(o.key);
   byFam[c.fam] = (byFam[c.fam] || 0) + 1;
@@ -70,7 +73,8 @@ const total = REG.rows.length;
 const atoKeys = Object.keys(byOp).filter(k => byOp[k].kind !== 'club');
 const atoTotal = atoKeys.reduce((s, k) => s + byOp[k].n, 0);
 const sumIn = (ids, keys = atoKeys) => keys.reduce((s, k) => s + ids.reduce((t, id) => t + (byOp[k].types[id] || 0), 0), 0);
-const c172All = sumIn(['c172s', 'c172r', 'c172_m', 'c172_n', 'c172_p']);
+const C172_IDS = ['c172s', 'c172r'];                                                // c172r includes 172M/N/P (variant note)
+const c172All = sumIn(C172_IDS);
 const share = (a, b) => Math.round(1000 * a / b) / 10;
 
 // ---- cross-checks against other sources (conflicts section) ---------------------------------------------------
@@ -88,10 +92,11 @@ const FNPT = { c172r: 3 };                                                      
 const DISTINCT = { c152: 'สองที่นั่ง เบากว่า C172', p2006t: 'สองเครื่องยนต์ Rotax ล้อพับได้', p2002jf: 'สองที่นั่ง ปีกต่ำ ระดับ LSA/VLA', be76: 'สองเครื่องยนต์ T-tail', p68c: 'สองเครื่องยนต์ ปีกสูง ล้อตายตัว' };
 const MAIN = new Set(['c172s', 'da40d', 'da40_180', 'da40ng', 'da42_tae125', 'da42ng']);
 const extraIds = Object.keys(byType).filter(id => !MAIN.has(id));
-// fold the old carburetted C172 (M, N, P) into one candidate with C172R: same airframe family, data card c172r
+// the old carburetted C172 (M, N, P), the C150 and the PA-28-151 are already counted under their card ids c172r, c152 and
+// pa28_161 by classify() (gap 21, 19 Nov 2026), so each candidate is one card
 const cand = {};
 for (const id of extraIds) {
-  const key = /^c172_/.test(id) ? 'c172r' : id === 'c150' ? 'c152' : id === 'pa28_151' ? 'pa28_161' : id;
+  const key = id;
   (cand[key] ??= { id: key, ato: 0, all: 0, ops: new Set() });
   for (const k of opsByType[id]) { const n = byOp[k].types[id]; cand[key].all += n; if (byOp[k].kind !== 'club') { cand[key].ato += n; cand[key].ops.add(k); } }
 }
@@ -103,7 +108,15 @@ const ranking = Object.values(cand).map(c => ({
 ranking.forEach((r, i) => { r.rank = i + 1; r.priority = r.score >= 10 ? 1 : r.score >= 6 ? 2 : 3; });
 
 // ---- military (generic, secondary source [LS21]; counts are ค่าประมาณ) -------------------------------------------
-const MIL = { 'CT-4A/E': 24, 'T-41D': 6, 'DA40 NG': 8, 'DA42': 18, 'T-6TH (T-6C)': 12 };
+// gap 21 (19 Nov 2026): card ids, with the public type designation kept as a variant note
+const MIL_ROWS = [
+  { id: 'ct4', variant: 'CT-4A/E', n: 24 },
+  { id: 'c172s', variant: 'T-41D (C172 รุ่นทหาร; ไม่มีบัตรของตัวเอง ใช้บัตร c172s เป็นตัวแทนโครง C172)', n: 6 },
+  { id: 'da40ng', variant: 'DA40 NG', n: 8 },
+  { id: 'da42ng', variant: 'DA42 (รุ่นย่อยไม่ระบุในแหล่ง; ใช้บัตรหลัก da42ng)', n: 18 },
+  { id: 't6c', variant: 'T-6C (ชื่อในไทย T-6TH)', n: 12 },
+];
+const MIL = {}; for (const r of MIL_ROWS) MIL[r.id] = (MIL[r.id] || 0) + r.n;
 
 // ---- JSON block for §02.6 --------------------------------------------------------------------------------------
 const leaf = (v, src, conf, est, note) => ({ v, u: '-', scope: 'environment', src, conf, est, note });
@@ -117,7 +130,7 @@ for (const k of order) {
     catc: 'นับจากทะเบียน กพท. 9 ก.ค. 2026 (22 ลำ) สไลด์ CATC ปี 2024 บอก 25 ลำ + R44 5 ลำ; DA40 = TDI (TAE 125) และ CS (IO-360-M1A); DA42 4 ลำเป็นรุ่น TDI',
     bac: 'ทะเบียน 9 ก.ค. 2026 มี 26 ลำ (ปี 2017 ข่าวบอก 47 ลำ); ฐานฝึกนครราชสีมาอนุมานจากที่ตั้ง FNPT 3 เครื่อง (2026) และข่าวปี 2017 ที่ว่ากรมท่าอากาศยานให้ใช้สนามบินนครราชสีมาฝึกบิน; VTUQ = ค่าประมาณ',
     batc: 'DA42 NG ทั้งสองลำเลขเครื่อง 42.NW = สร้างที่ Wuhu จีน; ฐานสุโขทัยอนุมานจากที่ตั้ง FNPT (ค่าประมาณ)',
-    aat: 'ฐานชุมพรอนุมานจาก FNPT FSTD-006 (ค่าประมาณ ความเชื่อมั่นต่ำ); C172M/N เป็นรุ่นเก่า O-320',
+    aat: 'ฐานชุมพรอนุมานจาก FNPT FSTD-006 (ค่าประมาณ ความเชื่อมั่นต่ำ); C172M/N เป็นรุ่นเก่า O-320 นับใต้บัตร c172r (10-c172r.md §10.10)',
     tif: 'จำนวน 5 ลำตรงกับข่าว FlightLogger 20 ส.ค. 2026; Beech 76 Duchess ใช้ฝึก multi-engine',
     taa: 'ซื้อ P2002JF 2 ลำ + P2006T 1 ลำ ปี 2018 แต่ทะเบียน 2026 เหลือ P2002-JF 1 ลำ',
     npu: 'ทะเบียนมี DA40 D 2 ลำ แต่ปี 2025–2026 รับเครื่องฝึกจำลอง DA42 (ขัดกัน ดู 02.8); ฐาน VTUW อนุมานจากที่อยู่ ATO อำเภอเมืองนครพนม (ค่าประมาณ)',
@@ -127,37 +140,54 @@ for (const k of order) {
     phoenix: 'ชมรมการบิน ไม่ใช่ ATO',
     ffc: 'ชมรมการบิน ไม่ใช่ ATO; มีเครื่อง LSA/ทดลองสร้าง CH601XL-B, CH701 อีก 2 ลำ ไม่นับ',
   }[k];
-  T[k] = leaf({ name: o.name, kind: o.kind, base_icao: o.base_icao, base: o.base, types, total: o.n, as_of: AS_OF },
+  const variants = Object.entries(o.variants).sort((a, b) => a[0].localeCompare(b[0])).map(([vk, n]) => { const [id, variant] = vk.split('|'); return { id, variant, n }; });
+  T[k] = leaf({ name: o.name, kind: o.kind, base_icao: o.base_icao, base: o.base, types, ...(variants.length ? { variants } : {}), total: o.n, as_of: AS_OF },
     ['LS1', ...o.bsrc.filter(s => s !== 'LS1')], o.bconf === 'สูง' ? 'สูง' : (o.bconf === 'ต่ำ' && o.base_icao !== null) ? 'ต่ำ' : 'กลาง', !!o.best,
-    notes + ' · จำนวนคือเครื่องที่จดทะเบียน ไม่ใช่เครื่องที่บินได้วันนี้');
+    notes + (variants.length ? ' · รุ่นในทะเบียนที่ไม่มีบัตรของตัวเองนับใต้ type id ของบัตรที่ครอบคลุม (variants)' : '') + ' · จำนวนคือเครื่องที่จดทะเบียน ไม่ใช่เครื่องที่บินได้วันนี้');
 }
-T.military_generic = leaf({ name: 'ผู้ใช้ทางทหารในไทย (รวม ไม่แยกหน่วย)', kind: 'military', base_icao: null, base: 'ไม่ระบุ', types: MIL, total: Object.values(MIL).reduce((a, b) => a + b, 0), as_of: '2026-11-19' },
-  ['LS21', 'LS22', 'LS23'], 'ต่ำ', true, 'ค่าประมาณ: จำนวนคัดจากตารางเครื่องฝึกของรายการสาธารณะทุติยภูมิ (Wikipedia, ตรวจซ้ำ 19 พ.ย. 2026) ไม่ใช่แหล่งทางการ ใช้เพื่อจัดลำดับเท่านั้น; รายการเดียวกันมี DA42 ในหมวดอื่นอีก 11 ลำ (ไม่ชัดว่าซ้อนกับ 18 หรือไม่) และไม่นับรุ่นโจมตีเบาของ T-6; PC-9 ปลดประจำการปี 2023');
+T.military_generic = leaf({ name: 'ผู้ใช้ทางทหารในไทย (รวม ไม่แยกหน่วย)', kind: 'military', base_icao: null, base: 'ไม่ระบุ', types: MIL, variants: MIL_ROWS, total: Object.values(MIL).reduce((a, b) => a + b, 0), as_of: '2026-11-19' },
+  ['LS21', 'LS22', 'LS23'], 'ต่ำ', true, 'ค่าประมาณ: จำนวนคัดจากตารางเครื่องฝึกของรายการสาธารณะทุติยภูมิ (Wikipedia, ตรวจซ้ำ 19 พ.ย. 2026) ไม่ใช่แหล่งทางการ ใช้เพื่อจัดลำดับเท่านั้น; types ใช้ type id ของบัตร และชื่อแบบสาธารณะอยู่ใน variants (T-41D ไม่มีบัตร นับใต้ c172s เป็นตัวแทนโครง C172); รายการเดียวกันมี DA42 ในหมวดอื่นอีก 11 ลำ (ไม่ชัดว่าซ้อนกับ 18 หรือไม่) และไม่นับรุ่นโจมตีเบาของ T-6; PC-9 ปลดประจำการปี 2023');
 T.summary = leaf({
   as_of: AS_OF, ato_aircraft: atoTotal, all_aircraft: total, c172_family_ato: c172All, c172s_ato: sumIn(['c172s']),
-  c172_family_ato_schools: atoKeys.filter(k => ['c172s', 'c172r', 'c172_m', 'c172_n', 'c172_p'].some(id => byOp[k].types[id])).length,
+  c172_family_ato_schools: atoKeys.filter(k => C172_IDS.some(id => byOp[k].types[id])).length,
   c172s_ato_schools: atoKeys.filter(k => byOp[k].types.c172s).length,
   da40_ato: { da40d: sumIn(['da40d']), da40_180: sumIn(['da40_180']), da40ng: sumIn(['da40ng']) },
   da42_ato: { da42_tae125: sumIn(['da42_tae125']), da42ng: sumIn(['da42ng']), da42ng_wuhu: wuhu },
   default_thai_type: 'c172s', ranking_extra: ranking.map(r => `${r.id}:P${r.priority}`),
-}, ['LS1', 'LS2'], 'สูง', false, 'สรุปจาก scripts/ls_fleet.mjs; ato_* นับเฉพาะ ATO 9 แห่ง ไม่รวมชมรม; all_aircraft = เครื่อง ATO + เครื่องแบบฝึกของชมรม 3 แห่ง (ไม่รวม LSA/เครื่องทดลองสร้างและชมรมอื่น); ลำดับ ranking_extra เป็นการให้น้ำหนักของผู้เขียน (ค่าประมาณ ตามสูตรใน 02.5.2) ส่วนจำนวนนับตรงจากทะเบียน');
+}, ['LS1', 'LS2'], 'สูง', false, 'สรุปจาก scripts/ls_fleet.mjs; ato_* นับเฉพาะ ATO 9 แห่ง ไม่รวมชมรม; all_aircraft = เครื่อง ATO + เครื่องแบบฝึกของชมรม 3 แห่ง (ไม่รวม LSA/เครื่องทดลองสร้างและชมรมอื่น); ลำดับ ranking_extra เป็นการให้น้ำหนักของผู้เขียนตามสูตรใน 02.5.2 (น้ำหนักเป็นการเลือกของผู้เขียน ไม่ใช่ข้อมูล) ส่วนจำนวนนับตรงจากทะเบียน; c172_* รวม 172M/N/P ที่นับใต้ c172r');
 
 const summary = {
   _meta: { script: 'scripts/ls_fleet.mjs', register_as_of: AS_OF, generated: new Date().toISOString().slice(0, 10) },
   total_rows: total, ato_total: atoTotal, ato_schools_with_aircraft: atoKeys.length, clubs: Object.keys(byOp).length - atoKeys.length,
-  byType, byFam, wuhu_da42ng: wuhu, unknown,
+  byType, byVariant, byFam, wuhu_da42ng: wuhu, unknown,
   c172_family_ato: c172All, c172s_ato: sumIn(['c172s']), c172s_share_of_c172_ato_pct: share(sumIn(['c172s']), c172All),
   c172_family_share_of_ato_pct: share(c172All, atoTotal),
   diamond_ato: sumIn(['da40d', 'da40_180', 'da42_tae125', 'da42ng']),
   twins_ato: atoKeys.reduce((s, k) => s + Object.entries(byOp[k].types).reduce((t, [id, n]) => t + (['da42_tae125', 'da42ng', 'be76', 'p2006t', 'p68c'].includes(id) ? n : 0), 0), 0),
   schools_flying: Object.fromEntries(Object.entries(opsByType).map(([id, s]) => [id, [...s].filter(k => byOp[k].kind !== 'club').length])),
-  byOp: Object.fromEntries(Object.entries(byOp).map(([k, o]) => [k, { n: o.n, base_icao: o.base_icao, types: o.types }])),
+  byOp: Object.fromEntries(Object.entries(byOp).map(([k, o]) => [k, { n: o.n, base_icao: o.base_icao, types: o.types, variants: o.variants }])),
   crossChecks, ranking,
 };
 
 fs.writeFileSync(new URL('./out/ls_fleet_summary.json', HERE), JSON.stringify(summary, null, 1) + '\n');
 fs.writeFileSync(new URL('./out/ls_thai_fleet_block.json', HERE), JSON.stringify(block, null, 1) + '\n');
 
+// --write (added 19 Nov 2026): replace the thai_fleet json block of ../02-thai-schools.md with the generated one
+// (one leaf per line, the layout §02.6 has always used), so the file is regenerated, never hand-edited
+export function blockText(blk) {
+  const fleet = blk.common_light.thai_fleet;
+  const rows = Object.entries(fleet).map(([k, l]) => `   ${JSON.stringify(k)}: ${JSON.stringify(l).replace(/,"/g, ', "').replace(/":/g, '": ')}`);
+  return '{\n "common_light": {\n  "thai_fleet": {\n' + rows.join(',\n') + '\n  }\n }\n}';
+}
+if (process.argv.includes('--write')) {
+  const mdUrl = new URL('../02-thai-schools.md', HERE);
+  const md = fs.readFileSync(mdUrl, 'utf8');
+  let n = 0;
+  const out = md.replace(/```json\n([\s\S]*?)\n```/g, (all, body) => { try { if (JSON.parse(body).common_light?.thai_fleet) { n++; return '```json\n' + blockText(block) + '\n```'; } } catch {} return all; });
+  if (n !== 1) throw new Error(`--write: expected one thai_fleet block, found ${n}`);
+  fs.writeFileSync(mdUrl, out);
+  console.log('write: §02.6 block replaced');
+}
 if (process.argv.includes('--check')) {
   const md = fs.readFileSync(new URL('../02-thai-schools.md', HERE), 'utf8');
   const blocks = [...md.matchAll(/```json\n([\s\S]*?)\n```/g)].map(m => JSON.parse(m[1])).filter(b => b.common_light?.thai_fleet);

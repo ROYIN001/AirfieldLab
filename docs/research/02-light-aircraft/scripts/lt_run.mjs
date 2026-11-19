@@ -8,15 +8,14 @@
 import fs from 'node:fs';
 import { loadType } from './lm_lib.mjs';
 import { legacyFit, checkFit } from './lm_legacy_fit.mjs';
-import { loadSim, applyAC, buildAC, cardInfo, runCard, simCLmax, trim, AC_R1 } from './lm_card.mjs';
-// WORKAROUND (lm_card bug, also reported by topics 04/05): buildAC looks for controls.surfaces.<s>.travel_deg as a leaf, but the
-// schema puts the leaf at controls.surfaces.<s> (angles in v.travel_deg), so it falls back to AC_R1. We set the fallback object to
-// the DA42 TCDS travel [LT1] before any buildAC call: elevator up 15.5 / down 13, aileron ½(25+15) = 20, rudder min(27, 29) = 27.
-{ const D = Math.PI / 180; Object.assign(AC_R1, { deUp: 15.5 * D, deDn: 13 * D, daMax: 20 * D, drMax: 27 * D }); }
-// aero.legacy.Cma (ค่าประมาณ, fitted): lm_derivs gives Cmα −1.75 at 13.9 %MAC, the TDI flight test [LT15] −0.50…−0.57. With Cmδe −1.21
-// and 15.5° up elevator the sim cannot reach CLmax below |Cmα| ≈ 1.25, but the real aircraft stalls at forward CG with 15.5° [LT1, LT5].
-// We take the largest |Cmα| that still trims at α(CLmax) in both UP and LDG with ≥ 1.5° elevator left: −1.10 (SM ≈ 0.20).
-const CMA_FIT = +(process.argv.includes('--cma') ? process.argv[process.argv.indexOf('--cma') + 1] : -1.10);
+import { loadSim, applyAC, buildAC, cardInfo, runCard, simCLmax, trim } from './lm_card.mjs';
+// Control travel: lm_card (fixed 19 Nov 2026, decision D2) reads controls.surfaces.<s>.v.travel_deg from the card, so the DA42 TCDS
+// travel [LT1] (elevator up 15.5 / down 13, aileron ½(25+15) = 20, rudder min(27, 29) = 27) reaches buildAC without any patch.
+// aero.legacy.Cma (ค่าประมาณ): the target is the TDI flight test [LT15] Cmα −0.50…−0.57 → midpoint −0.535 (completeness review gap 22).
+// lm_derivs (geometry, 13.9 %MAC) gives −1.75, which cannot reach CLmax with Cmδe −1.21 and 15.5° up elevator; the earlier −1.10
+// was the largest |Cmα| that still reaches CLmax (closest to geometry). −0.535 also reaches CLmax in UP and LDG (§06.6.4, §06.9.1).
+// --cma x overrides for experiments.
+const CMA_FIT = +(process.argv.includes('--cma') ? process.argv[process.argv.indexOf('--cma') + 1] : -0.535);
 const args = process.argv.slice(2), cmd = args[0] || 'fit';
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const ids = args.slice(1).filter((a, i, A) => !a.startsWith('--') && !(A[i - 1] || '').startsWith('--'));

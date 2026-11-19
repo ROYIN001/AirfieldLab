@@ -324,6 +324,7 @@
    "h_ft": 8000,
    "mode": "rpm",
    "target": 2600,
+   "v0_kcas": 100,
    "ktas": 126.6,
    "kcas": 112.4,
    "h_avg": 8000.0,
@@ -338,6 +339,7 @@
    "h_ft": 8000,
    "mode": "rpm",
    "target": 2500,
+   "v0_kcas": 100,
    "ktas": 120.8,
    "kcas": 107.3,
    "h_avg": 8000.0,
@@ -352,6 +354,7 @@
    "h_ft": 4000,
    "mode": "rpm",
    "target": 2500,
+   "v0_kcas": 100,
    "ktas": 122.3,
    "kcas": 115.3,
    "h_avg": 4000.0,
@@ -366,6 +369,7 @@
    "h_ft": 8000,
    "mode": "full",
    "target": null,
+   "v0_kcas": 100,
    "ktas": 131.9,
    "kcas": 117.1,
    "h_avg": 8000.0,
@@ -396,5 +400,83 @@
   "v_liftoff_kcas": 60.8,
   "v_50ft_kcas": 62.1,
   "note": "SL ISA, JSBSim default friction, zero wind, full throttle against brakes then release; pilot model: elevator neutral to VR, pitch to theta_rot, after lift-off speed hold at v50"
+ },
+ "preq": {
+  "h_ft": 8000,
+  "rows": [
+   {
+    "kcas": 70,
+    "ktas": 78.9,
+    "hp": 74.3,
+    "thr": 1.0,
+    "h": 7945.0,
+    "hdot": -19.0,
+    "alpha": 6.09
+   },
+   {
+    "kcas": 80,
+    "ktas": 90.1,
+    "hp": 77.3,
+    "thr": 1.0,
+    "h": 7920.0,
+    "hdot": -24.0,
+    "alpha": 4.28
+   },
+   {
+    "kcas": 90,
+    "ktas": 101.2,
+    "hp": 82.3,
+    "thr": 1.0,
+    "h": 7846.0,
+    "hdot": -50.0,
+    "alpha": 2.7
+   },
+   {
+    "kcas": 100,
+    "ktas": 112.2,
+    "hp": 92.3,
+    "thr": 1.0,
+    "h": 7654.0,
+    "hdot": -127.0,
+    "alpha": 1.56
+   },
+   {
+    "kcas": 110,
+    "ktas": 122.9,
+    "hp": 104.7,
+    "thr": 1.0,
+    "h": 7431.0,
+    "hdot": -217.0,
+    "alpha": 0.72
+   },
+   {
+    "kcas": 120,
+    "ktas": 133.5,
+    "hp": 121.0,
+    "thr": 1.0,
+    "h": 7137.0,
+    "hdot": -326.0,
+    "alpha": 0.07
+   },
+   {
+    "kcas": 130,
+    "ktas": 143.7,
+    "hp": 135.7,
+    "thr": 1.0,
+    "h": 6749.0,
+    "hdot": -521.0,
+    "alpha": -0.44
+   },
+   {
+    "kcas": 140,
+    "ktas": 153.6,
+    "hp": 148.7,
+    "thr": 1.0,
+    "h": 6245.0,
+    "hdot": -794.0,
+    "alpha": -0.84
+   }
+  ],
+  "note": "speed held on pitch, altitude on throttle; thr 1.0 with h below 8000 means the speed cannot be held level"
  }
 }

@@ -5,8 +5,10 @@
 //   node scripts/lp_cards.mjs                 → prints a summary of the derived numbers
 //   node scripts/lp_cards.mjs --md <file>     → writes the JSON blocks (one block per type and category)
 //   node scripts/lp_cards.mjs --calc <file>   → writes the derived numbers (lp_calc.json)
-// Pure Node >= 18, no dependencies. Run from the repo root (AIRFIELDLAB_ROOT). Round-1 parameters are read from
-// R1_PARAMS (default docs/research/01-flight-physics/params-trainer.json).
+// Pure Node >= 18, no dependencies. Run from the repo root (AIRFIELDLAB_ROOT). Round-1 parameters are read from the repo
+// layout first (../../01-flight-physics/params-trainer.json relative to this scripts/ folder, i.e.
+// docs/research/01-flight-physics/), then R1_PARAMS / AIRFIELDLAB_R1_PARAMS, then the /home/user/r1 worktree fallback
+// (completeness check 19 Nov 2026, gap 26).
 import fs from 'node:fs';
 import path from 'node:path';
 import { HERE, isObj, isMainModule } from './lm_lib.mjs';
@@ -18,10 +20,12 @@ export const KT = 0.514444, FT = 0.3048, LB = 0.45359237, HP = 745.69987, G0 = 9
 const r = (x, n = 3) => (typeof x === 'number' ? +x.toFixed(n) : x);
 
 // ───────── round-1 parameters (adopted as class estimates where round 1 already modelled this class) ─────────
-const R1_CANDS = [process.env.R1_PARAMS, new URL('../../01-flight-physics/params-trainer.json', import.meta.url).pathname,
+const R1_CANDS = [new URL('../../01-flight-physics/params-trainer.json', import.meta.url).pathname, process.env.R1_PARAMS, process.env.AIRFIELDLAB_R1_PARAMS,
   new URL('../../01-flight-physics/params-trainer.json', import.meta.url).pathname].filter(Boolean);
 const R1F = R1_CANDS.find(f => fs.existsSync(f));
 export const R1 = R1F ? JSON.parse(fs.readFileSync(R1F, 'utf8')) : null;
+export const R1_FILE = R1F ?? null;
+if (!R1) throw new Error('lp_cards: round-1 params-trainer.json not found (tried ' + R1_CANDS.join(', ') + ')');
 export function r1leaf(p) { let o = R1; for (const k of p.split('.')) { if (!o || typeof o !== 'object') return undefined; o = o[k]; } return o && 'v' in o ? o : undefined; }
 
 // ───────── leaf helpers ─────────
@@ -51,7 +55,9 @@ export const PUB = {
   t6a: { // EASA TCDS IM.A.636 [LP5]; Textron [LP7][LP8]; USAF/Navy public training material [LP15–LP23]
     MTOW: 6500 * LB, MRW: 6550 * LB, MZFW: 5500 * LB, BEW: 4707 * LB, fuel_usable_lb: 1100, S: 16.28, b: 10.19, L: 10.16, H: 3.25, wheelbase: 2.31, track: 2.54, fusW: 0.96,
     P_shp: 1100, Np: 2000, NpT: 2200, ITT: 820, propD: 2.4638,
-    VMO: 316, VA: 227, VFE: 150, VLE: 150, VY: 140, VR: 85, VG: 125, glide_sink: [1100, 1350], ROC_avg: 3100, ROC_init: 4500, TOD_ft: 1775, VAPP: 110,
+    VMO: 316, VA: 227, VFE: 150, VLE: 150, VY: 140, VR: 85, VG: 125, glide_sink: [1100, 1350], ROC_avg: 3100, ROC_init: 4500, TOD_ft: 1775, VAPP: 100,
+    // AOPA Pilot spec table, Aug 1997 [LP29]: manufacturer's calculations, SL ISA, gross weight 6,300 lb, KIAS
+    aopa: { m_lb: 6300, VS1: 82, VS0: 74, ROC: 4000, VY: 140, VR: 85, TO_gr_ft: 1400, TO50_ft: 2000, LD_gr_ft: 1900, LD50_ft: 2400, xwind: 24, Vmax_SL_kt: 310, ceiling_ft: 35000, BEW_lb: 4600 },
     cgFS_in: { fwd: [[5850, 164.67], [6900, 165.45], [6950, 165.45]], aft: [[6950, 169.35], [5850, 169.35]], zeroFuel: { fwd: 164.80, aft: 169.22, upTo_lb: 5850 } }, firewallFS_in: 118.1,
     travel: { elevator: { up: 18, down: 16 }, aileron: { up: 20, down: 11 }, rudder: { left: 24, right: 24 }, flap: { TO: 23, LDG: 50 }, elevator_tab: { up: 5.5, down: 22 }, rudder_tab: { right: 6, left: 11 }, speedbrake: 67.5 },
   },
@@ -83,11 +89,13 @@ export function derive() {
   // fuel
   d.pc9m.fuel_kg = r(P9.fuel_L * P9.fuel_rho, 1);
   d.t6a.fuel_kg = r(T.fuel_usable_lb * LB, 1);
-  // training mass: BEW + 2 crew × 95 kg (incl. parachute/flight equipment, est) + 50 % usable fuel
-  d.pc9m.training_mass = r(P9.BEW + 190 + 0.5 * d.pc9m.fuel_kg, 1);
-  d.pc7mk2 = { training_mass: r(PUB.pc7mk2.BEW + 190 + 0.5 * d.pc9m.fuel_kg, 1) };
-  d.t6a.training_mass = r(T.BEW + 190 + 0.5 * d.t6a.fuel_kg, 1);
-  d.t6c = { training_mass: r(PUB.t6c.BEW + 190 + 0.5 * d.t6a.fuel_kg, 1) };
+  // training mass (D3 object): BEW + 2 crew × 95 kg (incl. parachute/flight equipment, est) + 50 % usable fuel
+  const tmObj = (bew, fuelKg, fuelL) => { const o = { kg: 0, empty_kg: r(bew, 1), crew_kg: 190, fuel_kg: r(0.5 * fuelKg, 1), fuel_l: r(0.5 * fuelL, 0) }; o.kg = r(o.empty_kg + o.crew_kg + o.fuel_kg, 1); return o; };
+  d.pc9m.tm = tmObj(P9.BEW, d.pc9m.fuel_kg, P9.fuel_L);
+  d.pc7mk2 = { tm: tmObj(PUB.pc7mk2.BEW, d.pc9m.fuel_kg, P9.fuel_L) };
+  d.t6a.tm = tmObj(T.BEW, d.t6a.fuel_kg, d.t6a.fuel_kg / 0.80);          // Jet A 0.80 kg/L (est)
+  d.t6c = { tm: tmObj(PUB.t6c.BEW, d.t6a.fuel_kg, d.t6a.fuel_kg / 0.80) };
+  for (const k of ['pc9m', 'pc7mk2', 't6a', 't6c']) d[k].training_mass = d[k].tm.kg;
   // inertia: Roskam radii, class trainer_turboprop (lm_inertia, 01-methods §01.4) at MTOW
   const rad = RADII.trainer_turboprop;
   d.radii = rad;
@@ -110,13 +118,19 @@ export function derive() {
   d.stallCL = {
     pc9m_UP: cl(2350, P9.S, 77), pc9m_LDG: cl(2350, P9.S, 69), pc9m_util_UP: cl(3200, P9.S, 93), pc9m_util_LDG: cl(3200, P9.S, 85),
     pc9_UP: cl(2250, P9.S, 79), pc9_LDG: cl(2250, P9.S, 70), pc7mk2_UP: cl(2250, 16.283, 75), pc7mk2_LDG: cl(2250, 16.283, 67),
+    t6a_UP: cl(PUB.t6a.aopa.m_lb * LB, PUB.t6a.S, PUB.t6a.aopa.VS1), t6a_LDG: cl(PUB.t6a.aopa.m_lb * LB, PUB.t6a.S, PUB.t6a.aopa.VS0),
   };
   for (const k of Object.keys(d.stallCL)) d.stallCL[k] = { CLapp: r(d.stallCL[k].CLapparent, 4), CLmax_1g: r(d.stallCL[k].CLmax_1g, 4), V1g: r(d.stallCL[k].V1g_kcas, 2) };
-  // T-6A / T-6C stall speeds (est): PC-9M CL (same wing family, S 16.28 vs 16.29) at T-6 mass, minimum-speed definition
+  // T-6A / T-6C stall speeds: AOPA spec table [LP29] 82 / 74 KIAS at 6,300 lb (manufacturer's calc, 1997), KIAS taken
+  // = KCAS (speeds.ias_cas identity, est; no public PEC table). Other masses scaled with √W (est). Completeness check 19 Nov
+  // 2026: replaces the earlier estimate from the PC-9 M CL (86.3 / 77.3 KCAS at 6,500 lb, 3.6 % / 2.8 % higher).
+  const A = T.aopa, mA = A.m_lb * LB;
   const vsScale = (v, m1, S1, m2, S2) => v * Math.sqrt((m2 / S2) / (m1 / S1));
-  d.t6a.VS1 = r(vsScale(77, 2350, 16.29, T.MTOW, T.S), 1); d.t6a.VS0 = r(vsScale(69, 2350, 16.29, T.MTOW, T.S), 1);
-  d.t6c.VS1 = r(vsScale(77, 2350, 16.29, PUB.t6c.MTOW, T.S), 1); d.t6c.VS0 = r(vsScale(69, 2350, 16.29, PUB.t6c.MTOW, T.S), 1);
-  d.t6a.VS0_6000 = r(vsScale(69, 2350, 16.29, 6000 * LB, T.S), 1);
+  d.t6a.VS1_pub = A.VS1; d.t6a.VS0_pub = A.VS0; d.t6a.m_pub = r(mA, 1);
+  d.t6a.VS1 = r(vsScale(A.VS1, mA, T.S, T.MTOW, T.S), 1); d.t6a.VS0 = r(vsScale(A.VS0, mA, T.S, T.MTOW, T.S), 1);
+  d.t6c.VS1 = r(vsScale(A.VS1, mA, T.S, PUB.t6c.MTOW, T.S), 1); d.t6c.VS0 = r(vsScale(A.VS0, mA, T.S, PUB.t6c.MTOW, T.S), 1);
+  d.t6a.VS0_6000 = r(vsScale(A.VS0, mA, T.S, 6000 * LB, T.S), 1);
+  d.t6a.pc9mCL_check = { VS1_6300: r(vsScale(77, 2350, 16.29, mA, T.S), 1), VS0_6300: r(vsScale(69, 2350, 16.29, mA, T.S), 1), note: 'PC-9 M CL at 6,300 lb (old estimate) vs AOPA 82/74 KIAS' };
   d.t6a.onspeed = { MTOW: r(1.3 * d.t6a.VS0, 1), at6000: r(1.3 * d.t6a.VS0_6000, 1), note: 'on-speed AOA = 1.3 Vs [LP21]' };
   // T-6 glide (est): 125 KIAS clean, sink 1100–1350 fpm [LP16][LP19][LP20]; IAS ≈ EAS; altitude 3,000–9,000 ft
   const sig = h => rhoISA(h * FT) / 1.225;
@@ -152,6 +166,16 @@ export function derive() {
     omega_hat: [r((2 * Math.PI / 3) * PUB.t6a.b / (2 * 135 / Math.sqrt(sig15) * KT), 3), r((2 * Math.PI / 2) * PUB.t6a.b / (2 * 120 / Math.sqrt(sig15) * KT), 3)] };
   // ICAO approach category from 1.3 VS0 at max landing mass (ICAO Doc 8168: A < 91, B 91–120 kt)
   d.icao = { pc9m: r(1.3 * 69, 1), pc7mk2: r(1.3 * 67, 1), t6a: r(1.3 * d.t6a.VS0, 1), t6c: r(1.3 * d.t6c.VS0, 1) };
+  // D1 (19 Nov 2026): VREF = 1.3 VS0 and VAPP at the card's training_mass (V ∝ √m from the VS0 of the source mass)
+  //   pc9m 69 KCAS @2,350 kg [LP2]; pc7mk2 67 KCAS @2,250 kg [LP9]; t6a/t6c 74 KIAS @6,300 lb [LP29].
+  //   VAPP: Pilatus VREF + 5 kt (est); T-6A published final 100 KIAS flap LDG [LP20][LP29]; T-6C = 100 × √(m_t6c/m_t6a) (est).
+  const vs0At = (vs0, m0, m) => vs0 * Math.sqrt(m / m0);
+  const ap = (vs0, m0, m) => { const v = vs0At(vs0, m0, m); return { VS0_tm: r(v, 2), VREF_exact: r(1.3 * v, 2), VREF: Math.round(1.3 * v) }; };
+  d.vref = { pc9m: ap(69, 2350, d.pc9m.training_mass), pc7mk2: ap(67, 2250, d.pc7mk2.training_mass), t6a: ap(PUB.t6a.aopa.VS0, mA, d.t6a.training_mass), t6c: ap(PUB.t6a.aopa.VS0, mA, d.t6c.training_mass) };
+  d.vref.pc9m.VAPP = d.vref.pc9m.VREF + 5; d.vref.pc7mk2.VAPP = d.vref.pc7mk2.VREF + 5; d.vref.t6a.VAPP = 100;
+  d.vref.t6c.VAPP_exact = r(100 * Math.sqrt(d.t6c.training_mass / d.t6a.training_mass), 2); d.vref.t6c.VAPP = Math.round(d.vref.t6c.VAPP_exact);
+  // the same speeds at MTOW (test condition of lp_check, which runs at MTOW for the TCDS comparisons)
+  for (const [k, m] of [['pc9m', 2350], ['pc7mk2', 2250], ['t6a', T.MTOW], ['t6c', PUB.t6c.MTOW]]) d.vref[k].VAPP_at_MTOW = r(d.vref[k].VAPP * Math.sqrt(m / d[k].training_mass), 1);
   // loadings
   d.loading = {};
   for (const [k, m, S, P] of [['r1_trainer', 2250, 16.3, 700], ['pc7mk2', 2250, 16.283, 522], ['pc9m', 2350, 16.29, 708], ['t6a', T.MTOW, T.S, 1100 * HP / 1e3], ['t6c', PUB.t6c.MTOW, T.S, 1100 * HP / 1e3]])

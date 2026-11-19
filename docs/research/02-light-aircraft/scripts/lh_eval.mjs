@@ -17,15 +17,21 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KT = 0.514444, FT = 0.3048, DEG = Math.PI / 180;
 
-// ---- per-type profiles (speeds KIAS from the data cards / 08.1; aim = sim GP origin, m) ----
+// ---- per-type profiles: speeds KIAS from the data cards (19 Nov 2026, D1: Vapp/Vref = card VAPP_kt/VREF_kt at the
+// training mass); VS0 = card VS0 as published (MTOW, forward CG; KIAS from the card note or stall table: lower IAS
+// than the card CAS value makes the near-stall alert earlier, i.e. conservative); VR = normal-takeoff rotation
+// (C172S/C172R 55 KIAS from the card notes, card VR_kt 51 is the short-field lift-off); DA40 NG VR/VX at the
+// training mass 1,150 kg from the card notes; aim = sim GP origin (m) ----
 export const PROFILES = {
   c172s: { Vapp: 65, Vref: 61, VS0: 40, VR: 55, VY: 74, VX: 62, carb: false, retract: false, demoXwind: 15, landFlap: 1, aim: 314 },
-  c172m: { Vapp: 65, Vref: 61, VS0: 41, VR: 55, VY: 73, VX: 60, carb: true, retract: false, demoXwind: 15, landFlap: 1, aim: 314 },
+  c172r: { Vapp: 65, Vref: 62, VS0: 33, VR: 55, VY: 79, VX: 60, carb: false, retract: false, demoXwind: 15, landFlap: 1, aim: 314 },
   c152: { Vapp: 60, Vref: 54, VS0: 35, VR: 50, VY: 67, VX: 55, carb: true, retract: false, demoXwind: 12, landFlap: 1, aim: 314 },
-  da40ng: { Vapp: 74, Vref: 74, VS0: 55, VR: 60, VY: 72, VX: 66, carb: false, retract: false, demoXwind: 25, landFlap: 1, aim: 314 },
+  da40ng: { Vapp: 74, Vref: 74, VS0: 60, VR: 63, VY: 72, VX: 73, carb: false, retract: false, demoXwind: 25, landFlap: 1, aim: 314 },
   da42ng: { Vapp: 84, Vref: 84, VS0: 62, VR: 76, VY: 90, VX: 77, carb: false, retract: true, demoXwind: 25, landFlap: 1, aim: 314 },
-  t6a: { Vapp: 100, Vref: 100, VS0: 77, VR: 85, VY: 140, VX: 120, carb: false, retract: true, demoXwind: 25, landFlap: 1, aim: 314 },
+  t6a: { Vapp: 100, Vref: 91, VS0: 74, VR: 85, VY: 140, VX: 100, carb: false, retract: true, demoXwind: 24, landFlap: 1, aim: 314 },
 };
+/** card speed leaves that each profile field mirrors (lh_tests T-LH-55 checks them) */
+export const PROFILE_CARD = { Vapp: 'speeds.VAPP_kt', Vref: 'speeds.VREF_kt', VY: 'speeds.VY_kt', demoXwind: 'speeds.crosswind_demonstrated_kt' };
 
 // ---- thresholds (each with its source; est = ค่าประมาณ of this topic) ----
 export const TH = {

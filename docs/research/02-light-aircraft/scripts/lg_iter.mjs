@@ -8,7 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadType, isMainModule, val } from './lm_lib.mjs';
+import { loadType, isMainModule, trainingMassKg } from './lm_lib.mjs';
 import { geoFromCard, estimate } from './lm_derivs.mjs';
 import { buildAC, applyAC, loadSim, modes, cardInfo } from './lm_card.mjs';
 
@@ -17,7 +17,8 @@ const KT = 0.514444, G0 = 9.80665;
 const r = (x, n = 4) => +(+x).toPrecision(n);
 
 function derivsAt(geo, card, Vkt) {
-  const m = val(card, 'airframe.weights.training_mass'), V = Vkt * KT, CL = 2 * m * G0 / (1.225 * geo.S * V * V);
+  // D3 (19 Nov 2026): training_mass is {kg, empty_kg, crew_kg, fuel_kg}; trainingMassKg reads kg (or a plain number)
+  const m = trainingMassKg(card), V = Vkt * KT, CL = 2 * m * G0 / (1.225 * geo.S * V * V);
   return estimate(geo, { CL, M: V / 340, alpha: (CL - 0.25) / 5 });
 }
 function solve(fn, lo, hi, target, n = 40) { // monotone bisection

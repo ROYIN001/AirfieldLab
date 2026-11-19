@@ -6,16 +6,16 @@ import fs from 'node:fs';
 import { buildAll } from './lp_build.mjs';
 import { resolveType } from './lm_lib.mjs';
 import { legacyFit } from './lm_legacy_fit.mjs';
-import { loadSim, applyAC, cardInfo, takeoffTest, AC_R1 } from './lm_card.mjs';
+import { loadSim, applyAC, cardInfo, takeoffTest } from './lm_card.mjs';
 const DEG = Math.PI / 180;
-Object.assign(AC_R1, { deUp: 18.5 * DEG, deDn: 16 * DEG, daMax: 15.5 * DEG, drMax: 24 * DEG });   // lm_card travel workaround (see lp_check.mjs)
+// D2 (19 Nov 2026): lm_card.buildAC reads the TCDS travel from controls.surfaces.<s>.v.travel_deg; the AC_R1 travel patch is removed
 const M = await loadSim();
 const { cards } = buildAll();
 const rows = [];
 for (const id of ['pc7mk2', 't6a']) {
   const card = structuredClone(resolveType(cards, id));
   card.validation = { takeoff_test: { v: { flap: 'TO', VR_kt: id === 't6a' ? 85 : 76, theta_deg: id === 't6a' ? 8.5 : 10 }, u: '-', scope: 'sim', src: [], conf: 'ต่ำ', est: true, note: 'x' } };
-  if (id === 't6a') Object.assign(AC_R1, { deUp: 18 * DEG });
+
   for (const FM of [0.55, 0.65, 0.75, 0.85]) {
     const P = id === 't6a' ? 820300 : 522000, D = id === 't6a' ? 2.4638 : 2.44, A = Math.PI * D * D / 4;
     const T0 = Math.pow(FM * P * Math.sqrt(2 * 1.225 * A), 2 / 3);

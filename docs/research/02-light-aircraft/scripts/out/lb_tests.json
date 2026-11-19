@@ -7,7 +7,7 @@
    "expected": 54.5,
    "tolerance": 0.5,
    "unit": "KCAS",
-   "source": "lb_perf.py stall; POH 51 KCAS [LB9]",
+   "source": "lb_perf.py stall; POH 52 KCAS ที่ CG หน้าสุด (51 ที่ CG หลังสุด) [LB9 Fig 5-3]",
    "current_model": "ไม่เกี่ยว (fixture ของ JSBSim)"
   },
   {
@@ -27,7 +27,7 @@
    "expected": "54.1 / 48.6",
    "tolerance": 0.5,
    "unit": "KCAS",
-   "source": "POH 51 / 47 KCAS [LB11]",
+   "source": "POH 52 / 47 KCAS ที่ CG หน้าสุด [LE3 Fig 5-3] (หน้า spec 51 = CG หลังสุด [LB11])",
    "current_model": "ไม่เกี่ยว (fixture ของ JSBSim)"
   },
   {
@@ -167,12 +167,12 @@
    "expected": "53 / 48",
    "tolerance": 3,
    "unit": "KCAS",
-   "source": "C172S manual p ii [LB12]; tolerance ±3 kt ตาม Part 60 [R1:V2]; VS ของ JSBSim c172p สูงกว่า POH 2.8–3.5 kt จึงห้ามใช้ JSBSim เป็นเป้า",
+   "source": "C172S manual p ii [LB12]; tolerance ±3 kt ตาม Part 60 [R1:V2]; VS ของ JSBSim c172p สูงกว่า POH (CG หน้าสุด) 2.5–2.8 kt จึงห้ามใช้ JSBSim เป็นเป้า",
    "current_model": "ยังวัดไม่ได้ (ยังไม่มีบัตร C172 ในซิม)"
   },
   {
    "id": "T-LB-18",
-   "condition": "CL ที่ POH ต้องการ ณ VS (1 g): C172P 2,400 lb S 174 ft² ที่ 51 / 46 KCAS; JSBSim c172p ที่ 54.49 / 48.77 KCAS",
+   "condition": "CL ที่ POH ต้องการ ณ VS (1 g): C172P 2,400 lb S 174 ft² ที่ 51 KCAS (CG หลังสุด หน้า spec; CG หน้าสุด 52 KCAS ให้ 1.507) / 46 KCAS (เท่ากันทั้งสอง CG); JSBSim c172p ที่ 54.49 / 48.77 KCAS",
    "quantity": "CL = W/(½ρ0 V² S)",
    "expected": "1.566 / 1.925 (JSBSim 1.372 / 1.713)",
    "tolerance": 0.005,
@@ -199,7 +199,57 @@
    "unit": "rad/s",
    "source": "lb_signs.py; +elevator = ขอบท้ายลง, +aileron = ม้วนขวา, +rudder = ขอบท้ายไปซ้าย ตรงกับ AC (schema-ext-r2 §5)",
    "current_model": "ไม่เกี่ยว (fixture ของ JSBSim)"
+  },
+  {
+   "id": "T-LB-21",
+   "condition": "FlightGear PC-9M (commit 8cf7c87) 2,350 kg trim 1 g ไม่มีกำลัง 200 KCAS 5,000 ft แฟลป 0 / 95 KCAS 1,000 ft แฟลป 50 ล้อลง; finite difference",
+   "quantity": "Cmα / Cmδe / Cnr / Cnδr (ต่อ rad, r ใช้ b/2V)",
+   "expected": "-0.1662 / -1.0573 / -0.211 / -0.1089 ; -1.1589 / -1.2803 / -0.1276 / -0.1089",
+   "tolerance": "0.005",
+   "unit": "-",
+   "source": "lb_derivs.py → lb_pc9m_fg.json; Cnr −0.211 แฟลป 0 และ Cnδr −0.1089 ตรงค่าที่ไฟล์ทำเครื่องหมาย DSTO [LB27]",
+   "current_model": "ไม่เกี่ยว (fixture ของโมเดล FlightGear)"
+  },
+  {
+   "id": "T-LB-22",
+   "condition": "FlightGear PC-9M 2,350 kg 1 kt/s idle 3,000 ft แฟลป 0 / 23 / 50",
+   "quantity": "VS และสาเหตุที่หยุด",
+   "expected": "68.2 (elevator stop) / 64 (aero (CL break)) / 62.9 (elevator stop)",
+   "tolerance": 0.5,
+   "unit": "KCAS",
+   "source": "lb_perf.py; สาธารณะ 77 / – / 69 KCAS [LP2]",
+   "current_model": "ไม่เกี่ยว (fixture ของโมเดล FlightGear)"
+  },
+  {
+   "id": "T-LB-23",
+   "condition": "FlightGear C152 (commit b8286b9) 1,670 lb: 1 kt/s idle แฟลป 0 / 30; ไต่ SL ISA คันเร่งสุด กวาด 50–125 KCAS",
+   "quantity": "VS1 / VS0 ; Vy / ROCmax",
+   "expected": "54.1 / 47.3 ; 95.4 / 942",
+   "tolerance": "0.5 kt ; 3 kt / 30 fpm",
+   "unit": "KCAS ; KCAS / fpm",
+   "source": "POH 48 / 43 KCAS (CG หน้าสุด) และ 66.3 KCAS / 715 fpm [LF1]",
+   "current_model": "ไม่เกี่ยว (fixture ของโมเดล FlightGear)"
+  },
+  {
+   "id": "T-LB-24",
+   "condition": "FlightGear DA40 NG (commit 0d50a45) 1,310 kg: ไต่ SL ISA คันเร่งสุด แฟลป 0; บินระดับคันเร่งสุด 16,000 ft",
+   "quantity": "ROCmax ; KTAS",
+   "expected": "646 ; 154.4",
+   "tolerance": "30 fpm ; 1 kt",
+   "unit": "fpm ; KTAS",
+   "source": "ผู้ผลิต 651 fpm และ 154 KTAS (92 %) [LD4]",
+   "current_model": "ไม่เกี่ยว (fixture ของโมเดล FlightGear)"
+  },
+  {
+   "id": "T-LB-25",
+   "condition": "FlightGear T-6 (commit 15837ee) 5,564 lb คันเร่งสุด 1,000 ft ระดับคงที่",
+   "quantity": "KTAS",
+   "expected": 324.4,
+   "tolerance": 2,
+   "unit": "KTAS",
+   "source": "Navy 270 kt [LB16]; โมเดลเป็น jet thrust",
+   "current_model": "ไม่เกี่ยว (fixture ของโมเดล FlightGear)"
   }
  ],
- "helper_checks": "10/10"
+ "helper_checks": "16/16"
 }

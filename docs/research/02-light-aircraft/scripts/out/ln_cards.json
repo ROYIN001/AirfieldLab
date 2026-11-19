@@ -1,0 +1,203 @@
+{
+ "_meta": {
+  "script": "scripts/ln_json.mjs",
+  "generated": "2026-11-19"
+ },
+ "derived": {
+  "pa28_161": {
+   "m_train": 930,
+   "mtow": 1106.8,
+   "S": 15.79,
+   "b": 10.67,
+   "vs0": 44,
+   "vs1": 50,
+   "vsUnit": "kt IAS",
+   "CLmax": {
+    "0": 1.611,
+    "40": 2.081
+   },
+   "VREF": 63,
+   "VAPP": 70,
+   "vrefUnit": "kt IAS",
+   "vappUnit": "kt IAS",
+   "detents": [
+    "0",
+    "10",
+    "25",
+    "40"
+   ],
+   "fullDet": "40",
+   "cleanDet": "0",
+   "P_W": 119312,
+   "nEng": 1,
+   "twin": false,
+   "VY": 79,
+   "VX": 63,
+   "ROC": 692,
+   "na": 77,
+   "leaves": 59
+  },
+  "be76": {
+   "m_train": 1420,
+   "mtow": 1769,
+   "S": 16.82,
+   "b": 11.58,
+   "vs0": 60,
+   "vs1": 70,
+   "vsUnit": "kt IAS",
+   "CLmax": {
+    "0": 1.234,
+    "35": 1.679
+   },
+   "VREF": 76,
+   "VAPP": 80,
+   "vrefUnit": "kt IAS",
+   "vappUnit": "kt IAS",
+   "detents": [
+    "0",
+    "10",
+    "20",
+    "35"
+   ],
+   "fullDet": "35",
+   "cleanDet": "0",
+   "P_W": 134226,
+   "nEng": 2,
+   "twin": true,
+   "VY": 85,
+   "VX": 71,
+   "ROC": 1248,
+   "na": 75,
+   "leaves": 60
+  },
+  "p2002jf": {
+   "m_train": 573.2,
+   "mtow": 620,
+   "S": 11.5,
+   "b": 8.6,
+   "vs0": 38,
+   "vs1": 41,
+   "vsUnit": "kt CAS",
+   "CLmax": {
+    "UP": 1.843,
+    "LDG": 2.146
+   },
+   "VREF": 47,
+   "VAPP": 52,
+   "vrefUnit": "kt CAS",
+   "vappUnit": "kt CAS",
+   "detents": [
+    "UP",
+    "TO",
+    "LDG"
+   ],
+   "fullDet": "LDG",
+   "cleanDet": "UP",
+   "P_W": 73500,
+   "nEng": 1,
+   "twin": false,
+   "VY": 68,
+   "VX": 60,
+   "ROC": 800,
+   "na": 74,
+   "leaves": 57
+  },
+  "p68c": {
+   "m_train": 1796,
+   "mtow": 1990,
+   "S": 18.6,
+   "b": 12,
+   "vs0": 55.5,
+   "vs1": null,
+   "vsUnit": "kt CAS",
+   "CLmax": {
+    "35": 1.996
+   },
+   "VREF": 69,
+   "VAPP": 74,
+   "vrefUnit": "kt CAS",
+   "vappUnit": "kt CAS",
+   "detents": [
+    "0",
+    "17",
+    "30",
+    "35"
+   ],
+   "fullDet": "35",
+   "cleanDet": "0",
+   "P_W": 149140,
+   "nEng": 2,
+   "twin": true,
+   "VY": null,
+   "VX": null,
+   "ROC": 1100,
+   "na": 75,
+   "leaves": 51
+  },
+  "t206h": {
+   "m_train": 1354,
+   "mtow": 1632.9,
+   "S": 16.17,
+   "b": 10.97,
+   "vs0": 54,
+   "vs1": 62,
+   "vsUnit": "kt CAS",
+   "CLmax": {
+    "UP": 1.51,
+    "FULL": 1.99
+   },
+   "VREF": 67,
+   "VAPP": 75,
+   "vrefUnit": "kt IAS",
+   "vappUnit": "kt IAS",
+   "detents": [
+    "UP",
+    "10",
+    "20",
+    "FULL"
+   ],
+   "fullDet": "FULL",
+   "cleanDet": "UP",
+   "P_W": 231167,
+   "nEng": 1,
+   "twin": false,
+   "VY": 89,
+   "VX": 69,
+   "ROC": 1050,
+   "na": 75,
+   "leaves": 57
+  },
+  "ct4": {
+   "m_train": 1038,
+   "mtow": 1180,
+   "S": 12,
+   "b": 7.9,
+   "vs0": 45,
+   "vs1": 60,
+   "vsUnit": "kt CAS",
+   "CLmax": {
+    "UP": 1.57,
+    "LDG": 2.791
+   },
+   "VREF": 55,
+   "VAPP": 60,
+   "vrefUnit": "kt CAS",
+   "vappUnit": "kt CAS",
+   "detents": [
+    "UP",
+    "TO",
+    "LDG"
+   ],
+   "fullDet": "LDG",
+   "cleanDet": "UP",
+   "P_W": 223710,
+   "nEng": 1,
+   "twin": false,
+   "VY": null,
+   "VX": null,
+   "ROC": 1830,
+   "na": 75,
+   "leaves": 46
+  }
+ }
+}

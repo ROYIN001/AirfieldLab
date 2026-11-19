@@ -122,19 +122,21 @@
     "training_mass": {
      "v": {
       "kg": 1150,
+      "empty_kg": 903,
       "crew_kg": 170,
-      "fuel_l": 75,
-      "empty_kg": 920
+      "fuel_kg": 77,
+      "fuel_l": 96
      },
      "u": "kg",
      "scope": "aircraft",
      "src": [
       "LD2",
-      "LD4"
+      "LD4",
+      "LM19"
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: น้ำหนักเปล่าติดอุปกรณ์ ~920 kg + ครูฝึกและศิษย์ 2×85 kg + Jet A-1 75 l (60 kg) ≈ 1,150 kg; อยู่ในช่วง 940–1,310 kg [LD2 p.2-16]"
+     "note": "ค่าประมาณ (D3): empty_kg = BEW_typical 903 kg (โบรชัวร์ ไม่มีอุปกรณ์เสริม [LD4]) + ครูฝึกและศิษย์ 2 × 85 kg + Jet A-1 96 l (77 kg ที่ 0.80 kg/l [LM19], ราว 90 % ของถังมาตรฐาน 106 l) = 1,150 kg (2,535 lb); อยู่ในช่วง 940–1,310 kg [LD2 p.2-16]; ฉบับก่อน 19 พ.ย. 2026 ใช้เปล่า 920 kg + 75 l ได้มวลรวมเท่ากัน จึงไม่มีผลต่อผลทดสอบ"
     }
    },
    "cg": {
@@ -204,7 +206,7 @@
      ],
      "conf": "สูง",
      "est": false,
-     "note": "แถว [มวล, หน้าสุด, หลังสุด]; หน้าสุดเปลี่ยนเชิงเส้น 2.40 m (94.5 in) ที่ ≤1,080 kg ถึง 2.469 m (97.2 in) ที่ 1,310 kg; หลังสุด 2.53 m (99.6 in) ทุกมวล; คิดเป็น %MAC ≈ 14.6–20.5 % (หน้า) และ 25.7 % (หลัง) ด้วย LEMAC ค่าประมาณ [LD1 p.29]"
+     "note": "แถว [มวล, หน้าสุด, หลังสุด] ตาม TCDS; หน้าสุดเปลี่ยนเชิงเส้น 2.40 m (94.5 in) ที่ ≤1,080 kg ถึง 2.469 m (97.2 in) ที่ 1,310 kg; หลังสุด 2.53 m (99.6 in) ทุกมวล [LD1 p.29]; ค่า %MAC ≈ 14.6–20.5 % (หน้า) และ 25.7 % (หลัง) คิดกับ airframe.cg.LEMAC ซึ่งบัตรประมาณเอง (est:true ที่ leaf นั้น) ตัวเลขช่วง CG เองมาจาก TCDS โดยตรง"
     },
     "ref": {
      "v": {
@@ -826,7 +828,7 @@
     "note": "แฟลป T/O 1,280 kg; 56/58/61/65/67 KIAS ที่ 940/1,000/1,100/1,200/1,280 kg; V50 72 KIAS ที่ 1,280 kg [LD3]"
    },
    "VAPP_kt": {
-    "v": 77,
+    "v": 74,
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
@@ -834,10 +836,10 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "approach แฟลป LDG 1,280 kg (MLW); 66/68/72/76/76/77 ที่ 940/1,000/1,100/1,200/1,216/1,280 kg [LD3]"
+    "note": "D1: ที่ training_mass 1,150 kg แฟลป LDG ลมสงบ = ตาราง speeds.approach_table อ่านเชิงเส้นระหว่าง 72 KIAS (1,100 kg) กับ 76 KIAS (1,200 kg) [LD3]; ตรวจด้วย V ∝ √m ใน CAS จากสองแถวนั้นได้ 73.5–74.5 KIAS; ≈ 73 KCAS (38 m/s); เท่ากับ VREF เพราะ checklist ให้ความเร็ว approach ค่าเดียวไม่มีส่วนเพิ่ม และ AFM รุ่นเดิมให้นักบินเพิ่มเองเมื่อลมแรง ลมกระโชก หรือ wind shear [LD6 p.4A-34]; ที่ MLM 1,280 kg = 77 KIAS"
    },
    "VREF_kt": {
-    "v": 77,
+    "v": 74,
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
@@ -845,7 +847,86 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "checklist เรียกความเร็ว approach นี้ว่า VREF (แฟลป LDG 1,280 kg) [LD3]; แฟลป T/O 78, UP 83"
+    "note": "D1: ที่ training_mass 1,150 kg แฟลป LDG (checklist เรียกความเร็ว approach นี้ว่า VREF [LD3]); วิธีเดียวกับ VAPP_kt; แฟลป T/O 75.5, UP 80 KIAS ที่มวลเดียวกัน (ตาราง approach_table)"
+   },
+   "approach_table": {
+    "v": {
+     "axes": {
+      "mass_kg": [
+       940,
+       1000,
+       1100,
+       1200,
+       1280
+      ],
+      "flap": [
+       "UP",
+       "T/O",
+       "LDG"
+      ]
+     },
+     "data": [
+      [
+       71,
+       73,
+       78,
+       82,
+       83
+      ],
+      [
+       68,
+       70,
+       74,
+       77,
+       78
+      ],
+      [
+       66,
+       68,
+       72,
+       76,
+       77
+      ]
+     ]
+    },
+    "u": "kt IAS",
+    "scope": "aircraft",
+    "src": [
+     "LD3"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "ความเร็ว approach (VREF) ตามมวลและแฟลปจาก checklist ของ Diamond Flight Training (ตัวเลขจัดใหม่ ไม่ได้คัดลอกรูปแบบตาราง) [LD3]; แถว 1,216 kg ให้ LDG 76 KIAS; ใช้ตั้ง VREF ของซิมที่มวลอื่นนอก training_mass (scripts/ld_tools.mjs card)"
+   },
+   "VX_kt": {
+    "v": 78,
+    "u": "kt IAS",
+    "scope": "aircraft",
+    "src": [
+     "LD17",
+     "LC1",
+     "LF1",
+     "LE2",
+     "LM0",
+     "LD3"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ (scripts/ld_vx.mjs, gap 7): แฟลป UP ที่ MTOM 1310 kg = k·VS1 ใน CAS = 1.19 × 64.6 = 76.9 KCAS (39.6 m/s); ที่ training_mass 1150 kg = 73 KIAS (72 KCAS); k = ค่าเฉลี่ย Vx/VS1 (CAS) ของ POH c172s 1.200, c172r 1.192, c152 1.177 (บัตร 04/10/11); AFM ไม่ให้ Vx (14 CFR 23.1585/23.1587 ไม่บังคับ [LD17]) ส่วนความเร็วไต่หลังวิ่งขึ้นแฟลป T/O ของ AFM 72 KIAS = 71.1 KCAS ตรงกับ k·VS(T/O) = 72.2 KCAS จึงทำหน้าที่ Vx ของโครงแบบวิ่งขึ้น; polar ของบัตร + ตาราง CT/CP ให้มุมไต่สูงสุดที่ 58.1 KCAS ซึ่งต่ำกว่า 1.1 VS1 (มุมไต่ยังเพิ่มจนใกล้ stall) จึงใช้ตัดสิน Vx เองไม่ได้; ซิมวันนี้ได้ 69.5 KCAS (T-LD-38…40)"
+   },
+   "stall_altitude_loss_ft": {
+    "v": 240,
+    "u": "ft",
+    "scope": "aircraft",
+    "src": [
+     "LC2",
+     "LF1",
+     "LG5",
+     "LM0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ (scripts/ld_vx.mjs, gap 18): AFM ที่เปิดอ่านได้ไม่ระบุความสูงที่เสียในการแก้ stall; ใช้ค่าคลาส Δh = c·VS1² (KCAS) โดย c เฉลี่ย 0.0646 จาก POH/AFM C172S 230 ft, C152 160 ft, P2006T 180 ft (บัตร 04/11/12) × VS1 60.5 KCAS ที่ training_mass 1150 kg = 240 ft (73 m), ช่วง 160–300 ft ตาม c ต่ำสุด/สูงสุด; การแก้ stall ปกติ ปีกระดับ idle (เกณฑ์ของ evaluator)"
    },
    "VG_kt": {
     "v": 88,
@@ -901,7 +982,7 @@
    },
    "VFE": {
     "v": {
-     "TO": 110,
+     "T/O": 110,
      "LDG": 98
     },
     "u": "kt IAS",
@@ -934,7 +1015,7 @@
        172
       ]
      ],
-     "TO": [
+     "T/O": [
       [
        56,
        54.7
@@ -992,7 +1073,7 @@
       ],
       "flap": [
        "UP",
-       "TO",
+       "T/O",
        "LDG"
       ]
      },
@@ -1179,6 +1260,399 @@
     "conf": "สูง",
     "est": false,
     "note": "[LD1 p.27–28]; อัตราสิ้นเปลือง 60 % จาก [LD4], 100 % จาก factsheet AE300 [LM19]"
+   },
+   "tests": {
+    "v": [
+     {
+      "case": "T-LD-01",
+      "conditions": "DA40 NG AFM: span 11.63 m, wing area 13.244 m²",
+      "quantity": "AR = b²/S",
+      "expected": 10.223,
+      "tolerance": 0.02,
+      "unit": "",
+      "origin": "[LD2 p.1-5] ให้ 10.223",
+      "current_model": 10.213,
+      "pass": true
+     },
+     {
+      "case": "T-LD-02",
+      "conditions": "CG หน้า 2.40 m (≤ 1,080 kg), 2.469 m (1,310 kg), หลัง 2.53 m DAT; LEMAC 2.229 m (ค่าประมาณ ld_geom), MAC 1.171 m",
+      "quantity": "CG เป็น %MAC: หน้าสุด / หน้าที่ MTOW / หลังสุด",
+      "expected": "14.6 / 20.5 / 25.7",
+      "tolerance": "±1 %MAC (จาก LEMAC ค่าประมาณ)",
+      "unit": "%MAC",
+      "origin": "[LD1 p.29][LD2 p.2-18]; ld_geom.mjs",
+      "current_model": "CG อ้างอิงของบัตร 20.6 %MAC อยู่ในช่วง",
+      "pass": true
+     },
+     {
+      "case": "T-LD-03",
+      "conditions": "ตาราง stall checklist แฟลป UP: 66 KIAS ที่ 1,310 kg",
+      "quantity": "VS ที่ 1,000 kg = 66·√(1000/1310)",
+      "expected": 57.7,
+      "tolerance": 1,
+      "unit": "KIAS",
+      "origin": "[LD3] ตารางให้ 58 KIAS",
+      "current_model": 58,
+      "pass": true
+     },
+     {
+      "case": "T-LD-04",
+      "conditions": "1,310 kg, S 13.244 m², VS 66/62/60 KIAS → 64.6/60.7/58.0 KCAS (ld_iascas) ถือเป็นความเร็วต่ำสุด (n_z 0.95)",
+      "quantity": "CLmax 1 g UP / T/O / LDG",
+      "expected": "1.362 / 1.543 / 1.69",
+      "tolerance": 0.03,
+      "unit": "",
+      "origin": "lm_polar.clmaxFromStall [LM2]; [LD3][LD4]",
+      "current_model": "1.363 / 1.589 / 1.691",
+      "pass": false
+     },
+     {
+      "case": "T-LD-05",
+      "conditions": "ซิม: da40ng 1,310 kg, CG อ้างอิง, 3,000 ft ISA, idle, แฟลป UP, ลด 1 kt/s",
+      "quantity": "Vmin (KEAS ≈ KCAS)",
+      "expected": 64.6,
+      "tolerance": 5,
+      "unit": "KCAS",
+      "origin": "[LD3] แปลงด้วย ld_iascas; ±3 kt ตาม Part 60 [R1:V2] + ±2 kt ความไม่แน่นอนของ IAS–CAS และ CLmax แฟลป UP (gap 12, §05.3)",
+      "current_model": 63.4,
+      "pass": true
+     },
+     {
+      "case": "T-LD-06",
+      "conditions": "ซิม: da40ng 1,310 kg, CG อ้างอิง, 3,000 ft ISA, idle, แฟลป T/O, ลด 1 kt/s",
+      "quantity": "Vmin (KEAS ≈ KCAS)",
+      "expected": 60.7,
+      "tolerance": 3,
+      "unit": "KCAS",
+      "origin": "[LD3] แปลงด้วย ld_iascas; ±3 kt ตาม Part 60 [R1:V2]",
+      "current_model": 58.8,
+      "pass": true
+     },
+     {
+      "case": "T-LD-07",
+      "conditions": "ซิม: da40ng 1,310 kg, CG อ้างอิง, 3,000 ft ISA, idle, แฟลป LDG, ลด 1 kt/s",
+      "quantity": "Vmin (KEAS ≈ KCAS)",
+      "expected": 58,
+      "tolerance": 3,
+      "unit": "KCAS",
+      "origin": "[LD3] แปลงด้วย ld_iascas; Diamond ระบุ 58 KCAS [LD4]; ±3 kt ตาม Part 60 [R1:V2]",
+      "current_model": 57.2,
+      "pass": true
+     },
+     {
+      "case": "T-LD-08",
+      "conditions": "ซิม: da40ng 1,310 kg, SL ISA, คันเร่งสุด, แฟลป UP, กวาด IAS",
+      "quantity": "ROC สูงสุด",
+      "expected": 651,
+      "tolerance": "±100 fpm (หรือ 5 %)",
+      "unit": "fpm",
+      "origin": "[LD4] 3.3 m/s; Part 60 [R1:V2]",
+      "current_model": 666,
+      "pass": true
+     },
+     {
+      "case": "T-LD-09",
+      "conditions": "เหมือน T-LD-08",
+      "quantity": "Vy",
+      "expected": 71.1,
+      "tolerance": 3,
+      "unit": "KCAS",
+      "origin": "Vy 72 KIAS แฟลป T/O [LD3] (ซิมไต่แฟลป UP — ต่างโครงแบบ)",
+      "current_model": 79.6,
+      "pass": false
+     },
+     {
+      "case": "T-LD-10",
+      "conditions": "ซิม: da40ng 1,310 kg, 3,000 ft ISA, แรงขับศูนย์, แฟลป UP",
+      "quantity": "ความเร็วร่อนดีสุด / L/D",
+      "expected": "87.5 / 9.7",
+      "tolerance": "±3 kt / ±0.5",
+      "unit": "KCAS / -",
+      "origin": "[LD2 p.3-4][LD3]",
+      "current_model": "87.3 / 9.7",
+      "pass": true
+     },
+     {
+      "case": "T-LD-11",
+      "conditions": "ซิม: da40ng 1,310 kg, SL ISA 15 °C, แฟลป T/O, คันเร่งสุด, VR 66.9 KCAS, θ 8°",
+      "quantity": "ground roll",
+      "expected": 397,
+      "tolerance": "±5 % หรือ ±61 m (ค่าเล็ก = ±20 m)",
+      "unit": "m",
+      "origin": "[LD4]; Part 60 [R1:V2]; หมายเหตุ: T0 ของซิมถูกปรับให้ตรงข้อนี้ (§05.9)",
+      "current_model": 397,
+      "pass": true
+     },
+     {
+      "case": "T-LD-12",
+      "conditions": "เหมือน T-LD-11",
+      "quantity": "ระยะถึง 50 ft",
+      "expected": 590,
+      "tolerance": "±10 % (59 m; ผู้เขียนตั้ง ไม่มีเกณฑ์ Part 60 ตรง)",
+      "unit": "m",
+      "origin": "[LD4]",
+      "current_model": 616,
+      "pass": true
+     },
+     {
+      "case": "T-LD-13",
+      "conditions": "ซิม: autoland da40ng 1,310 kg (MLW จริง 1,280), ลมสงบ, 15 °C, แฟลป LDG, VREF 77 KIAS = 76 KCAS (speeds.approach_table แถว 1,280 kg, ld_tools card), เบรกเต็ม",
+      "quantity": "ระยะจาก 50 ft ถึงหยุด",
+      "expected": 650,
+      "tolerance": "±10 % หรือ ±61 m (ค่าเล็ก = ±61 m)",
+      "unit": "m",
+      "origin": "[LD4]; Part 60 1.e [R1:V2]",
+      "current_model": 642,
+      "pass": true
+     },
+     {
+      "case": "T-LD-14",
+      "conditions": "เหมือน T-LD-13",
+      "quantity": "ground roll",
+      "expected": 318,
+      "tolerance": "±10 % หรือ ±61 m (ค่าเล็ก = ±32 m)",
+      "unit": "m",
+      "origin": "[LD4]",
+      "current_model": 311,
+      "pass": true
+     },
+     {
+      "case": "T-LD-15",
+      "conditions": "วันร้อนที่ดอนเมือง 35 °C SL (ISA+20), da40ng 1,310 kg แฟลป T/O",
+      "quantity": "ground roll = 397 × 1/(σ·σ^⅓) (เครื่อง flat-rated กำลังคงที่)",
+      "expected": 434,
+      "tolerance": "±10 % (ค่าประมาณ)",
+      "unit": "m",
+      "origin": "σ 0.935; สเกลจาก [LD4]; ค่าประมาณ ไม่มีตาราง AFM บท 5",
+      "current_model": 428,
+      "pass": true
+     },
+     {
+      "case": "T-LD-16",
+      "conditions": "ซิม linearise da40ng 1,310 kg: approach 76 KCAS แฟลป LDG γ −3° (Cat C) / cruise 110 KCAS 3,000 ft (Cat B)",
+      "quantity": "short period ζ (approach / cruise)",
+      "expected": "0.35–1.30 / 0.30–2.00",
+      "tolerance": "ขอบ Level 1",
+      "unit": "",
+      "origin": "MIL-F-8785C Class I [R1:V7, R1:V10]",
+      "current_model": "0.572 / 0.555",
+      "pass": true
+     },
+     {
+      "case": "T-LD-17",
+      "conditions": "เหมือน T-LD-16",
+      "quantity": "CAP = ωsp²/(n/α) (approach / cruise)",
+      "expected": "0.16–3.6 (Cat C) / 0.085–3.6 (Cat B)",
+      "tolerance": "ขอบ Level 1 (ขอบบน 3.6 ยังไม่ยืนยันจากต้นฉบับตามรอบที่ 1)",
+      "unit": "1/s²",
+      "origin": "MIL-F-8785C §3.2.2.1.1 [R1:V7][R1:V9]; ฉบับแรกใช้ 0.15 / 0.28 (0.28 เป็นของ Cat A)",
+      "current_model": "2.06 / 2.03",
+      "pass": true
+     },
+     {
+      "case": "T-LD-18",
+      "conditions": "เหมือน T-LD-16 (cruise)",
+      "quantity": "phugoid ζ / คาบ",
+      "expected": "ζ ≥ 0.04; คาบ Lanchester π√2·V/g = 26.8 s (ข้อมูลประกอบ)",
+      "tolerance": "-",
+      "unit": "- / s",
+      "origin": "MIL-F-8785C [R1:V10]",
+      "current_model": "0.116 / 30.3",
+      "pass": true
+     },
+     {
+      "case": "T-LD-19",
+      "conditions": "เหมือน T-LD-16 (approach)",
+      "quantity": "Dutch roll ζ / ζωn / ωn",
+      "expected": "ζ ≥ 0.08, ζωn ≥ 0.15, ωn ≥ 0.4",
+      "tolerance": "-",
+      "unit": "- / rad/s",
+      "origin": "MIL-F-8785C Table 3 Class I Cat C [R1:V10]",
+      "current_model": "0.206 / 0.308 / 1.5",
+      "pass": true
+     },
+     {
+      "case": "T-LD-20",
+      "conditions": "เหมือน T-LD-16",
+      "quantity": "roll mode τR (approach / cruise)",
+      "expected": "≤ 1.0 / ≤ 1.4",
+      "tolerance": "-",
+      "unit": "s",
+      "origin": "MIL-F-8785C Table 5 [R1:V10]",
+      "current_model": "0.252 / 0.181",
+      "pass": true
+     },
+     {
+      "case": "T-LD-21",
+      "conditions": "เหมือน T-LD-16",
+      "quantity": "spiral T₂ (approach / cruise)",
+      "expected": "≥ 12 / ≥ 20",
+      "tolerance": "-",
+      "unit": "s",
+      "origin": "MIL-F-8785C Table 6 [R1:V10]",
+      "current_model": "61.1 / 32",
+      "pass": true
+     },
+     {
+      "case": "T-LD-22",
+      "conditions": "รุ่นเดิม 1,150 kg: VREF แฟลป UP 73 KIAS [LD8] ถือว่า IAS ≈ CAS ที่ 73 kt และ VREF = 1.3 VS",
+      "quantity": "VS1 (KCAS) = 73/1.3 เทียบตาราง ias_cas ที่ VS1 52 KIAS",
+      "expected": 56.2,
+      "tolerance": 1.5,
+      "unit": "KCAS",
+      "origin": "[LD8][LD6 p.5-8]; ld_iascas.mjs (ตรวจอิสระ)",
+      "current_model": 55.9,
+      "pass": true
+     },
+     {
+      "case": "T-LD-23",
+      "conditions": "DA40 NG 1,280 kg แฟลป T/O: V50 72 KIAS, VS(T/O) 61.5 KIAS (ตีความตาราง)",
+      "quantity": "V50 / VS (KCAS)",
+      "expected": 1.2,
+      "tolerance": "≥ 1.20 − 0.03 (การอ่านค่า)",
+      "unit": "-",
+      "origin": "14 CFR 23.53 ก่อน Amdt 64 [LD12]; [LD3]",
+      "current_model": "AFM 1.182; ซิม 1.183",
+      "pass": true
+     },
+     {
+      "case": "T-LD-24",
+      "conditions": "MTOW 1,310 kg, S 13.244 m² → W/S 20.26 lb/ft²",
+      "quantity": "limit descent velocity 4.4 (W/S)^¼",
+      "expected": 9.33,
+      "tolerance": 0.02,
+      "unit": "fps",
+      "origin": "14 CFR 23.473(d) ก่อน Amdt 64 [LD12]",
+      "current_model": "ค่าในบัตร 9.33",
+      "pass": true
+     },
+     {
+      "case": "T-LD-25",
+      "conditions": "ใบพัด NG 1.90 m 123.5 kW SL ISA ความเร็วศูนย์",
+      "quantity": "แรงขับสถิตอุดมคติ (P²·2ρA)^⅓ / BEM (FM)",
+      "expected": "4.73 kN / FM 0.55–0.80",
+      "tolerance": "-",
+      "unit": "kN",
+      "origin": "ทฤษฎีโมเมนตัม; lm_prop [LM0]",
+      "current_model": "BEM 3.45 kN (FM 0.623); T0 ซิม 4.05 kN (FM เทียบเท่า 0.79)",
+      "pass": true
+     },
+     {
+      "case": "T-LD-26",
+      "conditions": "ซิม: da40ng 1,310 kg, 14,000 ft ISA, บินระดับ 124 KTAS (โบรชัวร์: load 60 %)",
+      "quantity": "คันเร่งที่ซิมต้องใช้ (≈ สัดส่วนกำลัง)",
+      "expected": 0.6,
+      "tolerance": "±0.05",
+      "unit": "-",
+      "origin": "[LD4]",
+      "current_model": 0.801,
+      "pass": false
+     },
+     {
+      "case": "T-LD-35",
+      "conditions": "ซิม: da40ng 1,100 kg (ค่าประมาณจาก \"เชื้อเพลิงเต็ม + นักบิน 1 คน\") / 1,310 kg, 1,000 ft ISA, idle, แฟลป LDG, 88 KIAS",
+      "quantity": "อัตราร่อน L/D ≈ V / (อัตราจม)",
+      "expected": 6.9,
+      "tolerance": "±0.7 (แหล่งความเชื่อมั่นต่ำ)",
+      "unit": "-",
+      "origin": "[LD13] โพสต์ 20: DA40 NG −12.5° 88 kt −1,300 fpm (ไม่ใช่จุด DA 40 TDI 73 kt ที่ใช้ปรับ CDflap)",
+      "current_model": "6.24 / 6.71",
+      "pass": true
+     },
+     {
+      "case": "T-LD-36",
+      "conditions": "ซิม: da40ng 1,100 kg, 1,000 ft ISA, idle, แฟลป UP, 88 KIAS",
+      "quantity": "pitch attitude θ",
+      "expected": -2.5,
+      "tolerance": "±1.5° (ผู้เขียนตั้ง; แหล่งความเชื่อมั่นต่ำ)",
+      "unit": "deg",
+      "origin": "[LD13] โพสต์ 17/20: DA40 NG −2.5° 88 kt −900 to −950 fpm",
+      "current_model": -2.6,
+      "pass": true
+     },
+     {
+      "case": "T-LD-37",
+      "conditions": "บัตรที่ merge แล้วของ da40ng, da40_180, da40d (รุ่นย่อยรับค่าจาก NG ผ่าน _inherits)",
+      "quantity": "propeller.identity.diameter = interference.slipstream.diskDiameter; controls.surfaces.* travel = controls.pitch/yaw.stops",
+      "expected": "เท่ากันทุก id",
+      "tolerance": "ตรงทุกค่า",
+      "unit": "-",
+      "origin": "[LD1 p.5, 7, 13–14, 27, 29]",
+      "current_model": "da40ng: D 1.9/1.9 m, elev 21/17 vs 21/17, rud 24/26 vs 24/26; da40_180: D 1.8/1.8 m, elev 18/16 vs 18/16, rud 29/31 vs 29/31; da40d: D 1.87/1.87 m, elev 23/15 vs 23/15, rud 29/31 vs 29/31",
+      "pass": true
+     },
+     {
+      "case": "T-LD-38",
+      "conditions": "ซิม: da40ng 1,310 kg (MTOM), SL ISA, คันเร่งสุด, แฟลป UP, กวาด IAS ทีละ 0.25 kt จาก 1.03 VS1 (ld_vx.mjs)",
+      "quantity": "Vx (ความเร็วที่มุมไต่สูงสุด)",
+      "expected": 76.9,
+      "tolerance": 4,
+      "unit": "KCAS",
+      "origin": "ค่าประมาณ: k·VS1 = 1.19 × 64.6 KCAS (= 78 KIAS); k เฉลี่ยจาก POH C172S/C172R/C152 [LC1][LE2][LF1]; AFM ไม่ให้ Vx [LD17]; ความเร็วไต่แฟลป T/O ของ AFM 72 KIAS = 71.1 KCAS เทียบ k·VS(T/O) 72.2 KCAS; ±4 kt = ช่วง k (±1 kt) + ความไม่แน่นอนของ VS1 (gap 12)",
+      "current_model": "69.5 (γmax 5.08°)",
+      "pass": false
+     },
+     {
+      "case": "T-LD-41",
+      "conditions": "stall ปีกระดับ idle ลด 1 kt/s แฟลป UP ที่ training_mass (NG 1,150 / 180 1,050 / D 1,060 kg) แล้วแก้ตามวิธีมาตรฐาน: ลดมุมปะทะ คันเร่งเต็ม ปีกระดับ ดึงกลับสู่การไต่",
+      "quantity": "ความสูงที่เสียจากเริ่ม stall ถึงอัตราจมเป็นศูนย์ (da40ng / da40_180 / da40d)",
+      "expected": "240 / 180 / 190",
+      "tolerance": "±35 % (ช่วง c ของคลาส)",
+      "unit": "ft",
+      "origin": "ค่าประมาณ Δh = c·VS1² (KCAS), c เฉลี่ย 0.0646 จาก C172S 230 ft [LC2], C152 160 ft [LF1], P2006T 180 ft [LG5] (ช่วง 0.0426–0.0819); AFM ที่อ่านได้ไม่ระบุ",
+      "current_model": "ไม่รองรับในซิมวันนี้ (ไม่มีลำดับแก้ stall อัตโนมัติและ evaluator ไม่วัดความสูงที่เสีย)",
+      "pass": null
+     },
+     {
+      "case": "T-LD-42",
+      "conditions": "บัตรที่ merge แล้วของ 3 id: speeds.VREF_kt / VAPP_kt, speeds.approach_table (แถว LDG), airframe.weights.training_mass",
+      "quantity": "VAPP = approach_table ที่ training_mass; VAPP ≥ VREF; empty + crew + fuel = kg",
+      "expected": "เป็นจริงทุก id",
+      "tolerance": "±0.5 kt / ±2 kg",
+      "unit": "kt IAS, kg",
+      "origin": "D1, D3 (critic-r2); [LD3][LD6 p.4A-34][LD8]",
+      "current_model": "da40ng: 1150 kg → ตาราง 74 KIAS, VREF 74 / VAPP 74; 903 + 170 + 77 = 1150 kg; da40_180: 1050 kg → ตาราง 65.2 KIAS, VREF 65 / VAPP 65; 792 + 170 + 88 = 1050 kg; da40d: 1060 kg → ตาราง 65.6 KIAS, VREF 66 / VAPP 66; 830 + 170 + 60 = 1060 kg",
+      "pass": true
+     },
+     {
+      "case": "T-LD-43",
+      "conditions": "เครื่องที่ MTOM (NG 1,310 / 180 1,200 / D 1,150 kg), CG อ้างอิง, cruise trim (NG 110, รุ่นเดิม 100 KCAS) 3,000 ft, ดึงถึง limit load factor 3.8 g (normal category)",
+      "quantity": "แรงดึงคันต่อ g (Fs/g) da40ng / da40_180 / da40d",
+      "expected": "≥ 33 / ≥ 30 / ≥ 29",
+      "tolerance": "ขั้นต่ำตามข้อกำหนด (ไม่มี tolerance)",
+      "unit": "N/g",
+      "origin": "14 CFR 23.155(a)(2) ก่อน Amdt 64 [LD12]: แรงดึงถึง n limit ≥ max(W/140 lb, 15 lb) = 20.6 / 18.9 / 18.1 lbf; หาร (n − 1) = 2.8; ค่าประมาณจากโมเดล hinge รอบที่ 1 กับพารามิเตอร์บัตร (controls.pitch.*) = 21.1 / 19.2 / 18.6 N/g ต่ำกว่าเกณฑ์ (ค่า Chδ/gearing ของรอบที่ 1 ต่ำไปสำหรับ DA40)",
+      "current_model": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีโมเดลแรงที่คัน: DIRECT สั่งมุม elevator ตรง)",
+      "pass": null
+     },
+     {
+      "case": "T-LD-44",
+      "conditions": "เครื่องที่ training_mass, trim ด้วย tab ที่ VAPP แฟลป LDG 300 m และที่ cruise 3,000 ft แล้วเปลี่ยนความเร็ว ±1 kt (tab คงที่)",
+      "quantity": "ความชันแรงคันต่อความเร็ว approach / cruise (ดึงเมื่อช้าลง = บวก)",
+      "expected": "0.401 / 0.266; 0.396 / 0.262; 0.394 / 0.264",
+      "tolerance": "±50 % (ค่าประมาณ) และต้อง > 0",
+      "unit": "N/kt",
+      "origin": "ค่าประมาณจากโมเดล hinge รอบที่ 1 กับพารามิเตอร์บัตร (ld_stickforce.mjs); 14 CFR 23.173(a) ต้องดึงเมื่อช้ากว่าความเร็ว trim [LD12]; เครื่องฝึกรอบที่ 1 0.63 N/kt ที่ 95 kt [R1:V10]",
+      "current_model": "ไม่รองรับในซิมวันนี้ (ไม่มีโมเดลแรงที่คัน)",
+      "pass": null
+     }
+    ],
+    "u": "ตามช่อง unit ของแต่ละแถว",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LD1",
+     "LD2",
+     "LD3",
+     "LD4",
+     "LD6",
+     "LD8",
+     "R1:V10"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "แถวเดียวกับตาราง T-LD ใน §05.11 ที่ตรวจ da40ng (scripts/ld_tests.mjs 2026-11-19 → out/ld_tests.json → ld_json.mjs); expected มาจากแหล่งในช่อง origin (แถวที่ผู้เขียนประมาณเองระบุวิธีไว้ในช่องนั้น); current_model = บัตรนี้ในฟิสิกส์ของซิม commit cabf0f0; pass null = ไม่รองรับในซิมวันนี้; ผ่าน 27 ไม่ผ่าน 4 n.a. 3 จาก 34 แถว"
    }
   }
  }
@@ -1254,7 +1728,7 @@
      "tcds": "EASA E.200 Issue 12"
     },
     "u": "-",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD10",
      "LD1"
@@ -1275,7 +1749,7 @@
      "takeoff_time_limit_s": 300
     },
     "u": "W, rpm (ใบพัด)",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD10",
      "LD1",
@@ -1283,7 +1757,7 @@
     ],
     "conf": "สูง",
     "est": false,
-    "note": "take-off 100 % = 123.5 kW (168 hp) ที่ 2,300 rpm ใบพัด (3,880 rpm เพลาข้อเหวี่ยง) นานสุด 5 นาที; ต่อเนื่อง 92 % = 114 kW ที่ 2,100 rpm; overspeed 2,500 rpm ≤ 20 s [LD2 p.2-5, 2-6][LD10 p.5]; รอบ idle ไม่พบ"
+    "note": "take-off 100 % = 123.5 kW (166 hp; 168 PS) ที่ 2,300 rpm ใบพัด (3,880 rpm เพลาข้อเหวี่ยง) นานสุด 5 นาที; ต่อเนื่อง 92 % = 114 kW ที่ 2,100 rpm; overspeed 2,500 rpm ≤ 20 s [LD2 p.2-5, 2-6][LD10 p.5]; รอบ idle ไม่พบ"
    },
    "altitude": {
     "v": {
@@ -1292,7 +1766,7 @@
      "max_operating_alt_m": 5490
     },
     "u": "-",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD10",
      "LD4"
@@ -1319,7 +1793,7 @@
      ]
     },
     "u": "W",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD2",
      "LM19"
@@ -1347,7 +1821,7 @@
      ]
     },
     "u": "g/kWh, [load %, l/h]",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LM19",
      "LD4"
@@ -1363,7 +1837,7 @@
      "friction_torque": null
     },
     "u": "s, kg m2, N m",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LM0"
     ],
@@ -1395,7 +1869,7 @@
      "load_max_at_1975rpm_pct": 65
     },
     "u": "[load %, rpm]",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD2",
      "LD3",
@@ -1418,7 +1892,7 @@
     "kind": {
      "v": "constant_speed",
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1",
       "LD9"
@@ -1430,7 +1904,7 @@
     "model": {
      "v": "MT-Propeller MTV-6-R/190-69",
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1",
       "LD9"
@@ -1442,7 +1916,7 @@
     "nBlades": {
      "v": 3,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1",
       "LD9"
@@ -1454,7 +1928,7 @@
     "diameter": {
      "v": 1.9,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1",
       "LD9"
@@ -1466,7 +1940,7 @@
     "sense": {
      "v": 1,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1",
       "LD9"
@@ -1478,7 +1952,7 @@
     "massComplete": {
      "v": 14,
      "u": "kg",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD9"
      ],
@@ -1493,7 +1967,7 @@
       0.05
      ],
      "u": "m FRD",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD2"
      ],
@@ -1508,7 +1982,7 @@
       0
      ],
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD2"
      ],
@@ -1521,7 +1995,7 @@
     "maxShaftPower": {
      "v": 123.5,
      "u": "kW",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD10",
       "LD2"
@@ -1533,7 +2007,7 @@
     "rpmGoverned": {
      "v": 2300,
      "u": "rpm",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1",
       "LD2"
@@ -1545,7 +2019,7 @@
     "rpmTransientLimit": {
      "v": 2500,
      "u": "rpm",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD2"
      ],
@@ -1556,7 +2030,7 @@
     "gearRatio": {
      "v": 1.69,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD10"
      ],
@@ -1569,7 +2043,7 @@
     "hubRadiusRatio": {
      "v": 0.18,
      "u": "r/R",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -1605,7 +2079,7 @@
       ]
      },
      "u": "c/D",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -1616,7 +2090,7 @@
     "twistDesignJ": {
      "v": 0.95,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -1627,7 +2101,7 @@
     "activityFactor": {
      "v": 77,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -1640,7 +2114,7 @@
     "liftSlope": {
      "v": 5.65,
      "u": "1/rad",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -1651,7 +2125,7 @@
     "alpha0": {
      "v": -3,
      "u": "deg",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -1662,7 +2136,7 @@
     "alphaStallPos": {
      "v": 14,
      "u": "deg",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -1673,7 +2147,7 @@
     "alphaStallNeg": {
      "v": -10,
      "u": "deg",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -1684,7 +2158,7 @@
     "stallBlendM": {
      "v": 10,
      "u": "1/rad",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD15"
      ],
@@ -1695,7 +2169,7 @@
     "cd0": {
      "v": 0.01,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -1706,7 +2180,7 @@
     "kcd": {
      "v": 0.012,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -1717,7 +2191,7 @@
     "Mdd": {
      "v": 0.8,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD15"
      ],
@@ -1728,7 +2202,7 @@
     "stallDelayFactor": {
      "v": 3,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD15"
      ],
@@ -1807,7 +2281,7 @@
       ]
      },
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -1884,7 +2358,7 @@
       ]
      },
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -1897,7 +2371,7 @@
     "Ip": {
      "v": 1.4,
      "u": "kg m2",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD9"
      ],
@@ -1908,7 +2382,7 @@
     "IreflectedEngine": {
      "v": 0.4,
      "u": "kg m2",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD10"
      ],
@@ -1921,7 +2395,7 @@
     "kGov": {
      "v": 1,
      "u": "deg/s per rpm",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD15"
      ],
@@ -1932,7 +2406,7 @@
     "pitchRateMax": {
      "v": 15,
      "u": "deg/s",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD15"
      ],
@@ -1943,7 +2417,7 @@
     "rpmOverspeed": {
      "v": 2500,
      "u": "rpm",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD2"
      ],
@@ -1954,7 +2428,7 @@
     "oilMinRpm": {
      "v": 200,
      "u": "rpm",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD15"
      ],
@@ -1965,7 +2439,7 @@
     "betaFlightIdle": {
      "v": 14.5,
      "u": "deg @0.75R",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -1976,7 +2450,7 @@
     "betaHigh": {
      "v": 35,
      "u": "deg @0.75R",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -1989,7 +2463,7 @@
     "staticThrustISA": {
      "v": 3.45,
      "u": "kN",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -2000,7 +2474,7 @@
     "staticThrustVTBD31C": {
      "v": 3.39,
      "u": "kN",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -2011,7 +2485,7 @@
     "momentumIdealStaticISA": {
      "v": 4.73,
      "u": "kN",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -2022,7 +2496,7 @@
     "peakEfficiency": {
      "v": 0.89,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -2079,7 +2553,7 @@
     "CL0": {
      "v": {
       "UP": 0.34,
-      "TO": 0.86,
+      "T/O": 0.86,
       "LDG": 1.09
      },
      "u": "-",
@@ -2107,7 +2581,7 @@
     "Cm0": {
      "v": {
       "UP": 0.02,
-      "TO": -0.04,
+      "T/O": -0.04,
       "LDG": -0.08
      },
      "u": "-",
@@ -2134,7 +2608,7 @@
     "CLmax_target": {
      "v": {
       "UP": 1.362,
-      "TO": 1.543,
+      "T/O": 1.543,
       "LDG": 1.69
      },
      "u": "-",
@@ -2239,7 +2713,7 @@
     "alpha_CLmax": {
      "v": {
       "UP": 12.6,
-      "TO": 9.4,
+      "T/O": 9.4,
       "LDG": 8.1
      },
      "u": "deg",
@@ -2265,7 +2739,7 @@
        "CLmax": 1.362
       },
       {
-       "name": "TO",
+       "name": "T/O",
        "flap_deg": 20,
        "VFE_kt": 110,
        "dCL0": 0.52,
@@ -2291,7 +2765,7 @@
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "มุมแฟลปและ VFE จริง [LD1 p.28–29]; dCL0 ค่าประมาณ DATCOM (ld_flaps.mjs); dCD0 LDG 0.035 ปรับให้ polar ของซิมร่อน idle ที่ 73 KIAS แฟลป LDG ได้ L/D ≈ 7.0 ตามจุดของ DA 40 TDI ที่อ้างใน [LD13] โพสต์ 16/20 (ไม่ใช่ NG; ลดจาก 0.050 รอบแรก, ld_iter.mjs §05.9) ตรวจกับจุดของ NG แฟลป LDG idle 88 KIAS L/D 6.9 (โพสต์ 20): ซิมให้ 6.7 ที่ 1,310 kg และ 6.2 ที่ 1,100 kg (scripts/ld_review.mjs), TO 0.008 ตามสัดส่วน (ซิมวันนี้ใช้ CDflap·f จึงได้ 0.024 ที่ T/O ดู §05.12); dCm0 ค่าประมาณจากขนาดทั่วไป; CLmax จาก VS ใน checklist [LD3]"
+     "note": "มุมแฟลปและ VFE จริง [LD1 p.28–29]; dCL0 ค่าประมาณ DATCOM (ld_flaps.mjs); dCD0 LDG 0.035 ปรับให้ polar ของซิมร่อน idle ที่ 73 KIAS แฟลป LDG ได้ L/D ≈ 7.0 ตามจุดของ DA 40 TDI ที่อ้างใน [LD13] โพสต์ 16/20 (ไม่ใช่ NG; ลดจาก 0.050 รอบแรก, ld_iter.mjs §05.9) ตรวจกับจุดของ NG แฟลป LDG idle 88 KIAS L/D 6.9 (โพสต์ 20): ซิมให้ 6.7 ที่ 1,310 kg และ 6.2 ที่ 1,100 kg (scripts/ld_review.mjs), T/O 0.008 ตามสัดส่วน (ซิมวันนี้ใช้ CDflap·f จึงได้ 0.024 ที่ T/O ดู §05.12); dCm0 ค่าประมาณจากขนาดทั่วไป; CLmax จาก VS ใน checklist [LD3]"
     },
     "transition_time_s": {
      "v": 8,
@@ -3069,16 +3543,16 @@
     "flap": {
      "v": {
       "travel_deg": {
-       "TO": 20,
+       "T/O": 20,
        "LDG": 42
       },
       "tol": {
-       "TO": "±2",
+       "T/O": "±2",
        "LDG": "±1"
       },
       "rate_dps": null,
       "actuator_tau_s": null,
-      "kind": "ไฟฟ้า 3 ตำแหน่ง UP/T-O/LDG"
+      "kind": "ไฟฟ้า 3 ตำแหน่ง UP / T/O / LDG (ชื่อตาม AFM)"
      },
      "u": "deg",
      "scope": "aircraft",
@@ -3364,6 +3838,42 @@
      "conf": "ต่ำ",
      "est": true,
      "note": "ค่าประมาณ: รอบที่ 1"
+    },
+    "derived_check": {
+     "v": {
+      "mass_kg": 1150,
+      "Fs_per_g_N": {
+       "approach": 19.4,
+       "cruise": 19.1
+      },
+      "grad_N_per_kt": {
+       "approach": 0.401,
+       "cruise": 0.266
+      },
+      "at_kcas": {
+       "approach": 73,
+       "cruise": 110
+      },
+      "SM_fixed": 0.294,
+      "SM_free": 0.227,
+      "free_elevator_factor": 0.82,
+      "mtom": {
+       "mass_kg": 1310,
+       "Fs_per_g_N": 21.1,
+       "pull_to_nL_lbf": 13.3,
+       "cfr23_155_min_lbf": 20.6
+      }
+     },
+     "u": "N/g, N/kt, MAC",
+     "scope": "aircraft",
+     "src": [
+      "LD12",
+      "LD15",
+      "LM0"
+     ],
+     "conf": "ต่ำ",
+     "est": true,
+     "note": "ค่าประมาณ (scripts/ld_stickforce.mjs, gap 18): สมการ elevator แบบ reversible ของรอบที่ 1 §6 (trim เชิงเส้น + Ch = Ch0 + Chα·αt + Chδ·δe + Chtab·δtab, F = G·ηt·q·Se·ce·Ch) กับ controls.pitch.* ของบัตรนี้ ที่ training_mass 1150 kg; ที่ MTOM 1310 kg แรงดึงถึง 3.8 g = 13.3 lbf (59.2 N) ต่ำกว่าขั้นต่ำ 14 CFR 23.155(a)(2) 20.6 lbf [LD12] แสดงว่า Chδ และ gearing ที่ยกมาจากรอบที่ 1 ต่ำไปสำหรับ DA40 (เครื่องจริงผ่านการรับรอง) เป้าของโมเดลแรงที่คันในอนาคตคือ Fs/g ≥ 32.8 N/g ที่ MTOM (T-LD-43) และความชันต่อความเร็วเป็นบวก (T-LD-44); ซิมวันนี้ไม่มีโมเดลแรงที่คัน"
     }
    },
    "roll": {
@@ -3652,7 +4162,7 @@
    "layout": {
     "v": "tricycle_fixed",
     "u": "-",
-    "scope": "aircraft",
+    "scope": "gear",
     "src": [
      "LD1"
     ],
@@ -3668,7 +4178,7 @@
       0.88
      ],
      "u": "m FRD",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD2",
       "LB19"
@@ -3691,7 +4201,7 @@
       ]
      ],
      "u": "m FRD",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD2",
       "LB19"
@@ -3703,7 +4213,7 @@
     "cg_height_parked": {
      "v": 0.85,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LB19"
      ],
@@ -3716,7 +4226,7 @@
     "kind": {
      "v": "spring_leg",
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD6"
      ],
@@ -3727,7 +4237,7 @@
     "stroke": {
      "v": 0.15,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD6"
      ],
@@ -3741,7 +4251,7 @@
       "damping_ratio": 0.25
      },
      "u": "m, -",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD6"
      ],
@@ -3754,7 +4264,7 @@
     "kind": {
      "v": "elastomer",
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD6"
      ],
@@ -3765,7 +4275,7 @@
     "stroke": {
      "v": 0.08,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD6"
      ],
@@ -3779,7 +4289,7 @@
       "damping_ratio": 0.4
      },
      "u": "m, -",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD6"
      ],
@@ -3795,7 +4305,7 @@
       "ply": 6
      },
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD1"
      ],
@@ -3806,7 +4316,7 @@
     "rated_load": {
      "v": 5560,
      "u": "N",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD1"
      ],
@@ -3817,7 +4327,7 @@
     "rated_pressure": {
      "v": 40,
      "u": "psi",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD1"
      ],
@@ -3828,7 +4338,7 @@
     "operating_pressure": {
      "v": 36,
      "u": "psi",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD1"
      ],
@@ -3839,7 +4349,7 @@
     "outside_diameter": {
      "v": 0.381,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD1"
      ],
@@ -3850,7 +4360,7 @@
     "section_width": {
      "v": 0.152,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD1"
      ],
@@ -3861,7 +4371,7 @@
     "k_vertical": {
      "v": 150000,
      "u": "N/m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -3872,7 +4382,7 @@
     "c_vertical": {
      "v": 1500,
      "u": "N s/m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -3883,7 +4393,7 @@
     "cornering_stiffness_coef": {
      "v": 3.2,
      "u": "1/rad",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -3894,7 +4404,7 @@
     "relaxation_length": {
      "v": 0.25,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -3905,7 +4415,7 @@
     "k_longitudinal": {
      "v": 110000,
      "u": "N/m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -3916,7 +4426,7 @@
     "mu_peak_dry": {
      "v": 0.8,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -3927,7 +4437,7 @@
     "mu_skid_ratio_dry": {
      "v": 0.75,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -3938,7 +4448,7 @@
     "mu_skid_ratio_wet": {
      "v": 0.5,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -3949,7 +4459,7 @@
     "rolling_radius": {
      "v": 0.18,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD1"
      ],
@@ -3960,7 +4470,7 @@
     "wheel_inertia": {
      "v": 0.12,
      "u": "kg m2",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -3976,7 +4486,7 @@
       "ply": 6
      },
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD1"
      ],
@@ -3987,7 +4497,7 @@
     "rated_load": {
      "v": 3600,
      "u": "N",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD1"
      ],
@@ -3998,7 +4508,7 @@
     "rated_pressure": {
      "v": 50,
      "u": "psi",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD1"
      ],
@@ -4009,7 +4519,7 @@
     "operating_pressure": {
      "v": 30,
      "u": "psi",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD1"
      ],
@@ -4020,7 +4530,7 @@
     "outside_diameter": {
      "v": 0.355,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD1"
      ],
@@ -4031,7 +4541,7 @@
     "k_vertical": {
      "v": 110000,
      "u": "N/m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -4042,7 +4552,7 @@
     "c_vertical": {
      "v": 900,
      "u": "N s/m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -4053,7 +4563,7 @@
     "cornering_stiffness_coef": {
      "v": 3.2,
      "u": "1/rad",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -4064,7 +4574,7 @@
     "relaxation_length": {
      "v": 0.22,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -4077,7 +4587,7 @@
     "force_limit_ratio": {
      "v": 0.6,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -4088,7 +4598,7 @@
     "pressure_rise_rate": {
      "v": 2.5,
      "u": "1/s",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -4099,7 +4609,7 @@
     "antiskid": {
      "v": 0,
      "u": "bool",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD6"
      ],
@@ -4110,7 +4620,7 @@
     "heat_sink_mass": {
      "v": 1.5,
      "u": "kg",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -4121,7 +4631,7 @@
     "heat_sink_cool_tau": {
      "v": 600,
      "u": "s",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -4132,7 +4642,7 @@
     "fade_start_temp": {
      "v": 400,
      "u": "degC",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -4143,7 +4653,7 @@
     "fade_full_temp": {
      "v": 700,
      "u": "degC",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -4160,7 +4670,7 @@
       "pedal_linked": false
      },
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD6",
       "LD1"
@@ -4172,7 +4682,7 @@
     "pedal_max": {
      "v": 0,
      "u": "deg",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD6"
      ],
@@ -4183,7 +4693,7 @@
     "caster_max": {
      "v": 360,
      "u": "deg",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LB19"
      ],
@@ -4194,7 +4704,7 @@
     "shimmy_lag": {
      "v": 0.05,
      "u": "s",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD15"
      ],
@@ -4210,7 +4720,7 @@
       "da40ng_fps": 9.33
      },
      "u": "fps",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD12"
      ],
@@ -4221,7 +4731,7 @@
     "part23_wing_lift_ratio": {
      "v": 0.667,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD12"
      ],
@@ -4235,7 +4745,7 @@
       "ground_reaction": 2
      },
      "u": "g",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD12"
      ],
@@ -4246,7 +4756,7 @@
     "part23_reserve_drop_factor": {
      "v": 1.44,
      "u": "x drop height",
-     "scope": "aircraft",
+     "scope": "gear",
      "src": [
       "LD12"
      ],
@@ -4411,7 +4921,7 @@
     "diskDiameter": {
      "v": 1.9,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -4422,7 +4932,7 @@
     "hubRadius": {
      "v": 0.13,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD2"
      ],
@@ -4448,7 +4958,7 @@
     "sense": {
      "v": 1,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1",
       "LD9"
@@ -4793,7 +5303,7 @@
    },
    "takeoff_test": {
     "v": {
-     "flap": "TO",
+     "flap": "T/O",
      "VR_kt": 66.9,
      "theta_deg": 8
     },
@@ -4804,7 +5314,7 @@
     ],
     "conf": "กลาง",
     "est": true,
-    "note": "VR 68 KIAS ที่ 1,310 kg (สเกลจาก 67 KIAS ที่ 1,280 kg [LD3]) → 66.9 KCAS ด้วยตาราง TO; มุมเงย 8° ค่าประมาณ"
+    "note": "VR 68 KIAS ที่ 1,310 kg (สเกลจาก 67 KIAS ที่ 1,280 kg [LD3]) → 66.9 KCAS ด้วยตาราง T/O; มุมเงย 8° ค่าประมาณ"
    },
    "trim_targets": {
     "cruise": {
@@ -4835,7 +5345,7 @@
      ],
      "conf": "กลาง",
      "est": true,
-     "note": "ค่าประมาณ: VREF 77 KIAS แฟลป LDG → 76 KCAS (ld_iascas)"
+     "note": "ค่าประมาณ: จุด trim/linearise ของซิมที่ MTOM 1,310 kg ใช้ speeds.approach_table แถว 1,280 kg (MLW, แถวสุดท้ายของตาราง) 77 KIAS แฟลป LDG → 76 KCAS ด้วย speeds.ias_cas (ld_iascas, ค่าประมาณ); VREF/VAPP ที่ training_mass 1,150 kg = 74 KIAS อยู่ใน speeds (D1)"
     }
    },
    "currentModel": {
@@ -4844,12 +5354,12 @@
       "mass_kg": 1310,
       "VSR_kcas": {
        "UP": 66.3,
-       "TO": 61.4,
+       "T/O": 61.4,
        "LDG": 59.5
       },
       "Vmin_keas": {
        "UP": 63.4,
-       "TO": 58.8,
+       "T/O": 58.8,
        "LDG": 57.2
       },
       "Vy_kt": 79.6,
@@ -4861,7 +5371,7 @@
        "sink_fpm": 945
       },
       "takeoff_m": {
-       "flap": "TO",
+       "flap": "T/O",
        "ground": 397,
        "d50ft": 616,
        "V_LOF_kt": 72.8
@@ -4979,7 +5489,6 @@
     "propeller.betaReverse.*",
     "propeller.feathered.*",
     "propeller.engineInterface.flightIdleShaftPower",
-    "controls.pitch.derived_check",
     "controls.reference_types.*",
     "gear.strut_main.p_static",
     "gear.strut_main.piston_area",
@@ -5010,7 +5519,10 @@
     "validation.typicalModes.*",
     "validation.currentModel.approach95",
     "validation.currentModel.cruise155",
-    "otherSims.*"
+    "otherSims.*",
+    "performance.ROC_table",
+    "performance.takeoff_table",
+    "performance.landing_table"
    ],
    "u": "-",
    "scope": "aircraft",
@@ -5019,7 +5531,7 @@
    ],
    "conf": "สูง",
    "est": false,
-   "note": "turbofan.*: เครื่องลูกสูบดีเซล · turboprop.*: ไม่ใช่เทอร์โบพร็อป · aero.static_long.table_clean: ตารางตัวอย่างรูปแบบ คำนวณได้จากพารามิเตอร์ข้างบนด้วยสคริปต์รอบที่ 1 · interference.groundEffect.tablesCheck: แถวตรวจของรอบที่ 1 คำนวณจาก rEps ได้ ไม่ขึ้นกับแบบ · propeller.tables.CNmu: ยังไม่ได้คำนวณ BEM แยกมุมแอสไซเมทรี (P-factor) ของใบพัดนี้ งาน P2 · propeller.tables.CMmu: เหมือน CNmu · propeller.governor.betaFeather: MTV-6-R/190-69 ไม่มี feather · propeller.governor.featherRate: ไม่มี feather · propeller.betaReverse.*: ไม่มี reverse · propeller.feathered.*: ไม่มี feather (เครื่องยนต์เดียว) · propeller.engineInterface.flightIdleShaftPower: นิยามของเทอร์โบพร็อป; ลูกสูบ/ดีเซลใช้ piston.* · controls.pitch.derived_check: ผลตรวจ c6_hinge.mjs ของเครื่องฝึกรอบที่ 1 ต้องคำนวณใหม่เมื่อมีโมเดล hinge (งาน P2) · controls.reference_types.*: ค่าอ้างอิงของเครื่องโดยสาร (737, ATR) ไม่ใช่ของ DA40 · gear.strut_main.p_static: ขาสปริงเหล็ก ไม่ใช่ oleo · gear.strut_main.piston_area: ไม่ใช่ oleo · gear.strut_main.ratio_static_to_extended: ไม่ใช่ oleo · gear.strut_main.ratio_compressed_to_extended: ไม่ใช่ oleo · gear.strut_main.polytropic_n_dynamic: ไม่ใช่ oleo · gear.strut_main.polytropic_n_static: ไม่ใช่ oleo · gear.strut_main.Kh_compression: ไม่ใช่ oleo · gear.strut_main.Kr_rebound: ไม่ใช่ oleo · gear.strut_main.c_linear: ใช้ spring.damping_ratio แทน · gear.strut_main.seal_friction_ratio: ไม่ใช่ oleo · gear.strut_nose.p_static: ล้อหน้า elastomer · gear.strut_nose.piston_area: elastomer · gear.strut_nose.ratio_static_to_extended: elastomer · gear.strut_nose.ratio_compressed_to_extended: elastomer · gear.strut_nose.Kh_compression: elastomer · gear.strut_nose.Kr_rebound: elastomer · gear.strut_nose.c_linear: ใช้ spring.damping_ratio แทน · gear.brakes.antiskid_efficiency: ไม่มี antiskid · gear.brakes.antiskid_efficiency_measured: ไม่มี antiskid · gear.brakes.antiskid_slip_setpoint: ไม่มี antiskid · gear.steering.steer_rate: ล้อหน้า castering ไม่มีตัวขับเลี้ยว · gear.certification.part25_limit_descent: CS/Part 23 ไม่ใช่ Part 25 · gear.certification.part25_friction_cap: Part 25 · wind.discreteGust.cfr25_341_Fg: สูตร gust ของ Part 25 · wind.wake.leaders: รายการเครื่องนำ (A320, 737 …) ใช้ร่วมจากรอบที่ 1 ไม่ใช่ค่าของ DA40 · numerics.contact.*: ค่าตัวเลขของโมเดลสัมผัสพื้นในซิม ไม่ขึ้นกับแบบ ใช้ค่ารอบที่ 1 · validation.typicalModes.*: โหมดอ้างอิงของแบบอื่น (c172x, 737, 747, GA ทั่วไป) ไม่ใช่ของ DA40 · validation.currentModel.approach95: ชื่อผูกกับสภาพของเครื่องฝึกรอบที่ 1; ผลของ DA40 อยู่ที่ validation.currentModel.approach · validation.currentModel.cruise155: เหมือนกัน; ดู validation.currentModel.cruise · otherSims.*: หัวข้อ 03 (LB) เป็นเจ้าของ path otherSims"
+   "note": "turbofan.*: เครื่องลูกสูบดีเซล · turboprop.*: ไม่ใช่เทอร์โบพร็อป · aero.static_long.table_clean: ตารางตัวอย่างรูปแบบ คำนวณได้จากพารามิเตอร์ข้างบนด้วยสคริปต์รอบที่ 1 · interference.groundEffect.tablesCheck: แถวตรวจของรอบที่ 1 คำนวณจาก rEps ได้ ไม่ขึ้นกับแบบ · propeller.tables.CNmu: ยังไม่ได้คำนวณ BEM แยกมุมแอสไซเมทรี (P-factor) ของใบพัดนี้ งาน P2 · propeller.tables.CMmu: เหมือน CNmu · propeller.governor.betaFeather: MTV-6-R/190-69 ไม่มี feather · propeller.governor.featherRate: ไม่มี feather · propeller.betaReverse.*: ไม่มี reverse · propeller.feathered.*: ไม่มี feather (เครื่องยนต์เดียว) · propeller.engineInterface.flightIdleShaftPower: นิยามของเทอร์โบพร็อป; ลูกสูบ/ดีเซลใช้ piston.* · controls.reference_types.*: ค่าอ้างอิงของเครื่องโดยสาร (737, ATR) ไม่ใช่ของ DA40 · gear.strut_main.p_static: ขาสปริงเหล็ก ไม่ใช่ oleo · gear.strut_main.piston_area: ไม่ใช่ oleo · gear.strut_main.ratio_static_to_extended: ไม่ใช่ oleo · gear.strut_main.ratio_compressed_to_extended: ไม่ใช่ oleo · gear.strut_main.polytropic_n_dynamic: ไม่ใช่ oleo · gear.strut_main.polytropic_n_static: ไม่ใช่ oleo · gear.strut_main.Kh_compression: ไม่ใช่ oleo · gear.strut_main.Kr_rebound: ไม่ใช่ oleo · gear.strut_main.c_linear: ใช้ spring.damping_ratio แทน · gear.strut_main.seal_friction_ratio: ไม่ใช่ oleo · gear.strut_nose.p_static: ล้อหน้า elastomer · gear.strut_nose.piston_area: elastomer · gear.strut_nose.ratio_static_to_extended: elastomer · gear.strut_nose.ratio_compressed_to_extended: elastomer · gear.strut_nose.Kh_compression: elastomer · gear.strut_nose.Kr_rebound: elastomer · gear.strut_nose.c_linear: ใช้ spring.damping_ratio แทน · gear.brakes.antiskid_efficiency: ไม่มี antiskid · gear.brakes.antiskid_efficiency_measured: ไม่มี antiskid · gear.brakes.antiskid_slip_setpoint: ไม่มี antiskid · gear.steering.steer_rate: ล้อหน้า castering ไม่มีตัวขับเลี้ยว · gear.certification.part25_limit_descent: CS/Part 23 ไม่ใช่ Part 25 · gear.certification.part25_friction_cap: Part 25 · wind.discreteGust.cfr25_341_Fg: สูตร gust ของ Part 25 · wind.wake.leaders: รายการเครื่องนำ (A320, 737 …) ใช้ร่วมจากรอบที่ 1 ไม่ใช่ค่าของ DA40 · numerics.contact.*: ค่าตัวเลขของโมเดลสัมผัสพื้นในซิม ไม่ขึ้นกับแบบ ใช้ค่ารอบที่ 1 · validation.typicalModes.*: โหมดอ้างอิงของแบบอื่น (c172x, 737, 747, GA ทั่วไป) ไม่ใช่ของ DA40 · validation.currentModel.approach95: ชื่อผูกกับสภาพของเครื่องฝึกรอบที่ 1; ผลของ DA40 อยู่ที่ validation.currentModel.approach · validation.currentModel.cruise155: เหมือนกัน; ดู validation.currentModel.cruise · otherSims.*: หัวข้อ 03 (LB) เป็นเจ้าของ path otherSims · performance.ROC_table: AFM บท 5 ให้อัตราไต่ตามความสูง/อุณหภูมิเป็นแผนภูมิ (nomogram) ซึ่งเป็นภาพในฉบับ IO-360 ที่เปิดอ่านได้ [LD6 viewer 180–191] และสำเนา AFM NG [LD2] มีเฉพาะบท 1–3; จุด SL 30–35 °C จึงไม่มีจากเอกสาร (วันร้อนเป็นค่าประมาณใน T-LD-15/T-LD-33) · performance.takeoff_table: เหตุผลเดียวกับ performance.ROC_table: แผนภูมิระยะวิ่งขึ้นของ AFM บท 5 อ่านค่าไม่ได้; ใช้ performance.takeoff ที่ SL ISA และสเกล σ สำหรับ 35 °C (T-LD-15, T-LD-33 ค่าประมาณ) · performance.landing_table: เหตุผลเดียวกับ performance.ROC_table: แผนภูมิระยะลงจอดของ AFM บท 5 อ่านค่าไม่ได้; ใช้ performance.landing ที่ SL ISA"
   }
  }
 }
@@ -5145,18 +5657,20 @@
     "training_mass": {
      "v": {
       "kg": 1050,
+      "empty_kg": 792,
       "crew_kg": 170,
-      "fuel_l": 75,
-      "empty_kg": 825
+      "fuel_kg": 88,
+      "fuel_l": 122
      },
      "u": "kg",
      "scope": "aircraft",
      "src": [
-      "LD6"
+      "LD4",
+      "LD1"
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: เปล่า ~825 kg + ครูและศิษย์ 170 kg + AVGAS 75 l (54 kg) ≈ 1,050 kg"
+     "note": "ค่าประมาณ (D3): empty_kg = BEW_typical 792 kg (XLT ไม่มีอุปกรณ์เสริม [LD4]) + ครูฝึกและศิษย์ 2 × 85 kg + AVGAS 122 l (88 kg ที่ 0.72 kg/l, ราว 80 % ของถัง 152.2 l [LD1 p.5]) = 1,050 kg (2,315 lb); ฉบับก่อน 19 พ.ย. 2026 ใช้เปล่า 825 kg + 75 l ได้มวลรวมเท่ากัน (เครื่อง CS ที่ติดอุปกรณ์จริงอาจหนักกว่า BEW_typical จึงเหลือเชื้อเพลิงน้อยกว่านี้)"
     }
    },
    "cg": {
@@ -5398,28 +5912,90 @@
     "note": "ความเร็วยกล้อโดยประมาณตามขั้นตอนวิ่งขึ้น แฟลป T/O [LD6 p.5-10]"
    },
    "VAPP_kt": {
-    "v": 73,
+    "v": 65,
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
-     "LD6",
-     "LD8"
+     "LD6"
     ],
-    "conf": "ต่ำ",
+    "conf": "กลาง",
     "est": false,
-    "note": "แฟลป LDG 1,200 kg (71 KIAS ที่ 1,150 kg) [LD6 p.3-4][LD8]; การจับคู่คอลัมน์ในสำเนา AFM อ่านไม่ชัด"
+    "note": "D1: ที่ training_mass 1,050 kg แฟลป LDG ลมสงบ = speeds.approach_table อ่านเชิงเส้นระหว่าง 63 KIAS (1,000 kg) กับ 67 KIAS (1,092 kg) ได้ 65.2 KIAS [LD6 p.4A-34]; ≈ 66 KCAS (34 m/s) ด้วยตาราง ias_cas รุ่นเดิม; เท่ากับ VREF (AFM ให้ความเร็ว approach ค่าเดียว และให้นักบินเพิ่มเองเมื่อลมแรง/กระโชก); ที่ MTOM 1,200 kg = 73 KIAS"
    },
    "VREF_kt": {
-    "v": 73,
+    "v": 65,
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
      "LD6",
      "LD8"
     ],
-    "conf": "ต่ำ",
+    "conf": "กลาง",
     "est": false,
-    "note": "เท่ากับ VAPP ข้างบน; แฟลป UP 73 KIAS ที่ 1,150 kg [LD8]"
+    "note": "D1: ที่ training_mass 1,050 kg แฟลป LDG วิธีเดียวกับ VAPP_kt; handout DA 40 D เรียกความเร็วนี้ว่า VREF (71 KIAS ที่ 1,150 kg ตรงกับ AFM) [LD8 p.24]; แฟลป UP หรือ T/O (แฟลปเสีย) AFM ให้ 68/73/76 KIAS ที่ 1,000/1,150/1,200 kg [LD6 p.4B-9]"
+   },
+   "approach_table": {
+    "v": {
+     "axes": {
+      "mass_kg": [
+       850,
+       1000,
+       1092,
+       1150,
+       1200
+      ],
+      "flap": [
+       "LDG"
+      ]
+     },
+     "data": [
+      [
+       58,
+       63,
+       67,
+       71,
+       73
+      ]
+     ]
+    },
+    "u": "kt IAS",
+    "scope": "aircraft",
+    "src": [
+     "LD6"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ความเร็ว approach แฟลป LDG ตามมวลจาก AFM 4A.3.12 [LD6 p.4A-34 (viewer 150)]; แถว 1,200 kg ใช้เมื่อทำ MÄM 40-227; ตรงกับความเร็วลงจอดฉุกเฉินแฟลป LDG [LD6 p.3-4]; ใช้ตั้ง VREF ของซิมที่มวลอื่นนอก training_mass (scripts/ld_tools.mjs card)"
+   },
+   "VX_kt": {
+    "v": 67,
+    "u": "kt IAS",
+    "scope": "aircraft",
+    "src": [
+     "LD17",
+     "LC1",
+     "LF1",
+     "LE2",
+     "LM0",
+     "LD6"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ (scripts/ld_vx.mjs, gap 7): แฟลป UP ที่ MTOM 1200 kg = k·VS1 ใน CAS = 1.19 × 56.7 = 67.5 KCAS (34.7 m/s); ที่ training_mass 1050 kg = 61 KIAS (63.1 KCAS); k = ค่าเฉลี่ย Vx/VS1 (CAS) ของ POH c172s 1.200, c172r 1.192, c152 1.177 (บัตร 04/10/11); AFM ไม่ให้ Vx (14 CFR 23.1585/23.1587 ไม่บังคับ [LD17]) ส่วนความเร็วไต่หลังวิ่งขึ้นแฟลป T/O ของ AFM 67 KIAS = 68.3 KCAS ตรงกับ k·VS(T/O) = 66.9 KCAS จึงทำหน้าที่ Vx ของโครงแบบวิ่งขึ้น; polar ของบัตร + ตาราง CT/CP ให้มุมไต่สูงสุดที่ 52.2 KCAS ซึ่งต่ำกว่า 1.1 VS1 (มุมไต่ยังเพิ่มจนใกล้ stall) จึงใช้ตัดสิน Vx เองไม่ได้; ซิมวันนี้ได้ 60 KCAS (T-LD-38…40)"
+   },
+   "stall_altitude_loss_ft": {
+    "v": 180,
+    "u": "ft",
+    "scope": "aircraft",
+    "src": [
+     "LC2",
+     "LF1",
+     "LG5",
+     "LM0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ (scripts/ld_vx.mjs, gap 18): AFM ที่เปิดอ่านได้ไม่ระบุความสูงที่เสียในการแก้ stall; ใช้ค่าคลาส Δh = c·VS1² (KCAS) โดย c เฉลี่ย 0.0646 จาก POH/AFM C172S 230 ft, C152 160 ft, P2006T 180 ft (บัตร 04/11/12) × VS1 53.1 KCAS ที่ training_mass 1050 kg = 180 ft (55 m), ช่วง 120–230 ft ตาม c ต่ำสุด/สูงสุด; การแก้ stall ปกติ ปีกระดับ idle (เกณฑ์ของ evaluator)"
    },
    "VG_kt": {
     "v": 76,
@@ -5457,7 +6033,7 @@
       ],
       "flap": [
        "UP",
-       "TO",
+       "T/O",
        "LDG"
       ]
      },
@@ -5514,7 +6090,7 @@
    },
    "VFE": {
     "v": {
-     "TO": 108,
+     "T/O": 108,
      "LDG": 91
     },
     "u": "kt IAS",
@@ -5551,7 +6127,7 @@
        178
       ]
      ],
-     "TO": [
+     "T/O": [
       [
        51,
        55.2
@@ -5720,6 +6296,135 @@
     "conf": "สูง",
     "est": false,
     "note": "[LD1 p.5][LD4]"
+   },
+   "tests": {
+    "v": [
+     {
+      "case": "T-LD-27",
+      "conditions": "ซิม: da40_180 1,200 kg, 3,000 ft ISA, idle, ลด 1 kt/s",
+      "quantity": "Vmin UP / LDG",
+      "expected": "56.7 / 55.7",
+      "tolerance": "±5 / ±3",
+      "unit": "KCAS",
+      "origin": "[LD6 p.5-8][LD4] แปลงด้วยตารางรุ่นเดิม; UP ±5 kt = Part 60 ±3 kt + ±2 kt ความไม่แน่นอนของ IAS–CAS (ตาราง IAS–CAS ของ AFM รุ่นเดิมอ่านไม่ได้, gap 12)",
+      "current_model": "55.9 / 55",
+      "pass": true
+     },
+     {
+      "case": "T-LD-28",
+      "conditions": "ซิม: da40_180 1,200 kg SL ISA คันเร่งสุด / ร่อนแรงขับศูนย์",
+      "quantity": "ROC สูงสุด / L/D ร่อน",
+      "expected": "780 / 8.8",
+      "tolerance": "±100 fpm / ±0.5",
+      "unit": "fpm / -",
+      "origin": "[LD4][LD6 p.3-28]",
+      "current_model": "799 / 8.8",
+      "pass": true
+     },
+     {
+      "case": "T-LD-29",
+      "conditions": "ซิม: da40_180 1,200 kg SL ISA แฟลป T/O VR ≈ 62 KCAS θ 8°",
+      "quantity": "ground roll / ระยะถึง 50 ft",
+      "expected": "305 / 450",
+      "tolerance": "±15 m (5 %) / ±45 m (10 %)",
+      "unit": "m",
+      "origin": "[LD4] (XLT)",
+      "current_model": "310 / 510",
+      "pass": false
+     },
+     {
+      "case": "T-LD-30",
+      "conditions": "da40_180 1,200 kg SL ISA คันเร่งสุด บินระดับ (quasi-steady แบบแรงของซิม)",
+      "quantity": "ความเร็วสูงสุด",
+      "expected": 142,
+      "tolerance": "±3 kt",
+      "unit": "KTAS",
+      "origin": "[LD4] max cruise MSL",
+      "current_model": 113.9,
+      "pass": false
+     },
+     {
+      "case": "T-LD-37",
+      "conditions": "บัตรที่ merge แล้วของ da40ng, da40_180, da40d (รุ่นย่อยรับค่าจาก NG ผ่าน _inherits)",
+      "quantity": "propeller.identity.diameter = interference.slipstream.diskDiameter; controls.surfaces.* travel = controls.pitch/yaw.stops",
+      "expected": "เท่ากันทุก id",
+      "tolerance": "ตรงทุกค่า",
+      "unit": "-",
+      "origin": "[LD1 p.5, 7, 13–14, 27, 29]",
+      "current_model": "da40ng: D 1.9/1.9 m, elev 21/17 vs 21/17, rud 24/26 vs 24/26; da40_180: D 1.8/1.8 m, elev 18/16 vs 18/16, rud 29/31 vs 29/31; da40d: D 1.87/1.87 m, elev 23/15 vs 23/15, rud 29/31 vs 29/31",
+      "pass": true
+     },
+     {
+      "case": "T-LD-39",
+      "conditions": "ซิม: da40_180 1,200 kg (MTOM), SL ISA, คันเร่งสุด, แฟลป UP, กวาด IAS ทีละ 0.25 kt จาก 1.03 VS1 (ld_vx.mjs)",
+      "quantity": "Vx (ความเร็วที่มุมไต่สูงสุด)",
+      "expected": 67.5,
+      "tolerance": 4,
+      "unit": "KCAS",
+      "origin": "ค่าประมาณ: k·VS1 = 1.19 × 56.7 KCAS (= 67 KIAS); k เฉลี่ยจาก POH C172S/C172R/C152 [LC1][LE2][LF1]; AFM ไม่ให้ Vx [LD17]; ความเร็วไต่แฟลป T/O ของ AFM 67 KIAS = 68.3 KCAS เทียบ k·VS(T/O) 66.9 KCAS; ±4 kt = ช่วง k (±1 kt) + ความไม่แน่นอนของ VS1 (gap 12)",
+      "current_model": "60 (γmax 6.95°)",
+      "pass": false
+     },
+     {
+      "case": "T-LD-41",
+      "conditions": "stall ปีกระดับ idle ลด 1 kt/s แฟลป UP ที่ training_mass (NG 1,150 / 180 1,050 / D 1,060 kg) แล้วแก้ตามวิธีมาตรฐาน: ลดมุมปะทะ คันเร่งเต็ม ปีกระดับ ดึงกลับสู่การไต่",
+      "quantity": "ความสูงที่เสียจากเริ่ม stall ถึงอัตราจมเป็นศูนย์ (da40ng / da40_180 / da40d)",
+      "expected": "240 / 180 / 190",
+      "tolerance": "±35 % (ช่วง c ของคลาส)",
+      "unit": "ft",
+      "origin": "ค่าประมาณ Δh = c·VS1² (KCAS), c เฉลี่ย 0.0646 จาก C172S 230 ft [LC2], C152 160 ft [LF1], P2006T 180 ft [LG5] (ช่วง 0.0426–0.0819); AFM ที่อ่านได้ไม่ระบุ",
+      "current_model": "ไม่รองรับในซิมวันนี้ (ไม่มีลำดับแก้ stall อัตโนมัติและ evaluator ไม่วัดความสูงที่เสีย)",
+      "pass": null
+     },
+     {
+      "case": "T-LD-42",
+      "conditions": "บัตรที่ merge แล้วของ 3 id: speeds.VREF_kt / VAPP_kt, speeds.approach_table (แถว LDG), airframe.weights.training_mass",
+      "quantity": "VAPP = approach_table ที่ training_mass; VAPP ≥ VREF; empty + crew + fuel = kg",
+      "expected": "เป็นจริงทุก id",
+      "tolerance": "±0.5 kt / ±2 kg",
+      "unit": "kt IAS, kg",
+      "origin": "D1, D3 (critic-r2); [LD3][LD6 p.4A-34][LD8]",
+      "current_model": "da40ng: 1150 kg → ตาราง 74 KIAS, VREF 74 / VAPP 74; 903 + 170 + 77 = 1150 kg; da40_180: 1050 kg → ตาราง 65.2 KIAS, VREF 65 / VAPP 65; 792 + 170 + 88 = 1050 kg; da40d: 1060 kg → ตาราง 65.6 KIAS, VREF 66 / VAPP 66; 830 + 170 + 60 = 1060 kg",
+      "pass": true
+     },
+     {
+      "case": "T-LD-43",
+      "conditions": "เครื่องที่ MTOM (NG 1,310 / 180 1,200 / D 1,150 kg), CG อ้างอิง, cruise trim (NG 110, รุ่นเดิม 100 KCAS) 3,000 ft, ดึงถึง limit load factor 3.8 g (normal category)",
+      "quantity": "แรงดึงคันต่อ g (Fs/g) da40ng / da40_180 / da40d",
+      "expected": "≥ 33 / ≥ 30 / ≥ 29",
+      "tolerance": "ขั้นต่ำตามข้อกำหนด (ไม่มี tolerance)",
+      "unit": "N/g",
+      "origin": "14 CFR 23.155(a)(2) ก่อน Amdt 64 [LD12]: แรงดึงถึง n limit ≥ max(W/140 lb, 15 lb) = 20.6 / 18.9 / 18.1 lbf; หาร (n − 1) = 2.8; ค่าประมาณจากโมเดล hinge รอบที่ 1 กับพารามิเตอร์บัตร (controls.pitch.*) = 21.1 / 19.2 / 18.6 N/g ต่ำกว่าเกณฑ์ (ค่า Chδ/gearing ของรอบที่ 1 ต่ำไปสำหรับ DA40)",
+      "current_model": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีโมเดลแรงที่คัน: DIRECT สั่งมุม elevator ตรง)",
+      "pass": null
+     },
+     {
+      "case": "T-LD-44",
+      "conditions": "เครื่องที่ training_mass, trim ด้วย tab ที่ VAPP แฟลป LDG 300 m และที่ cruise 3,000 ft แล้วเปลี่ยนความเร็ว ±1 kt (tab คงที่)",
+      "quantity": "ความชันแรงคันต่อความเร็ว approach / cruise (ดึงเมื่อช้าลง = บวก)",
+      "expected": "0.401 / 0.266; 0.396 / 0.262; 0.394 / 0.264",
+      "tolerance": "±50 % (ค่าประมาณ) และต้อง > 0",
+      "unit": "N/kt",
+      "origin": "ค่าประมาณจากโมเดล hinge รอบที่ 1 กับพารามิเตอร์บัตร (ld_stickforce.mjs); 14 CFR 23.173(a) ต้องดึงเมื่อช้ากว่าความเร็ว trim [LD12]; เครื่องฝึกรอบที่ 1 0.63 N/kt ที่ 95 kt [R1:V10]",
+      "current_model": "ไม่รองรับในซิมวันนี้ (ไม่มีโมเดลแรงที่คัน)",
+      "pass": null
+     }
+    ],
+    "u": "ตามช่อง unit ของแต่ละแถว",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LD1",
+     "LD2",
+     "LD3",
+     "LD4",
+     "LD6",
+     "LD8",
+     "R1:V10"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "แถวเดียวกับตาราง T-LD ใน §05.11 ที่ตรวจ da40_180 (scripts/ld_tests.mjs 2026-11-19 → out/ld_tests.json → ld_json.mjs); expected มาจากแหล่งในช่อง origin (แถวที่ผู้เขียนประมาณเองระบุวิธีไว้ในช่องนั้น); current_model = บัตรนี้ในฟิสิกส์ของซิม commit cabf0f0; pass null = ไม่รองรับในซิมวันนี้; ผ่าน 4 ไม่ผ่าน 3 n.a. 3 จาก 10 แถว"
    }
   }
  }
@@ -5794,7 +6499,7 @@
      "tcds": "FAA 1E10"
     },
     "u": "-",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD1",
      "LD6"
@@ -5815,7 +6520,7 @@
      "takeoff_time_limit_s": null
     },
     "u": "W, rpm",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD1",
      "LD4"
@@ -5831,7 +6536,7 @@
      "max_operating_alt_m": 5000
     },
     "u": "-",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LM12",
      "LD5"
@@ -5854,7 +6559,7 @@
      ]
     },
     "u": "W (คันเร่งสุด SL)",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD1",
      "LD4"
@@ -5877,7 +6582,7 @@
      ]
     },
     "u": "g/kWh, [load %, l/h]",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD4"
     ],
@@ -5892,7 +6597,7 @@
      "friction_torque": null
     },
     "u": "s, kg m2, N m",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LM12"
     ],
@@ -5903,7 +6608,7 @@
    "fadec": {
     "v": "none: throttle (MAP) + propeller rpm lever + mixture",
     "u": "-",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD6"
     ],
@@ -5924,7 +6629,7 @@
     "model": {
      "v": "MT-Propeller MTV-12-B/180-17",
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1",
       "LD16"
@@ -5936,7 +6641,7 @@
     "diameter": {
      "v": 1.8,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1",
       "LD16"
@@ -5948,7 +6653,7 @@
     "massComplete": {
      "v": 20,
      "u": "kg",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD16"
      ],
@@ -5961,7 +6666,7 @@
     "Ip": {
      "v": 1.8,
      "u": "kg m2",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD16"
      ],
@@ -5974,7 +6679,7 @@
     "maxShaftPower": {
      "v": 134.2,
      "u": "kW",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD4"
      ],
@@ -5985,7 +6690,7 @@
     "rpmGoverned": {
      "v": 2700,
      "u": "rpm",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -5996,7 +6701,7 @@
     "rpmTransientLimit": {
      "v": 2700,
      "u": "rpm",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -6007,7 +6712,7 @@
     "gearRatio": {
      "v": 1,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -6020,7 +6725,7 @@
     "betaFlightIdle": {
      "v": 10.5,
      "u": "deg @0.75R",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -6031,7 +6736,7 @@
     "betaHigh": {
      "v": 30,
      "u": "deg @0.75R",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -6042,7 +6747,7 @@
     "rpmOverspeed": {
      "v": 2700,
      "u": "rpm",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -6055,7 +6760,7 @@
     "staticThrustISA": {
      "v": 3.52,
      "u": "kN",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -6066,7 +6771,7 @@
     "staticThrustVTBD31C": {
      "v": 3.32,
      "u": "kN",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -6077,7 +6782,7 @@
     "momentumIdealStaticISA": {
      "v": 4.82,
      "u": "kN",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -6134,7 +6839,7 @@
     "CLmax_target": {
      "v": {
       "UP": 1.583,
-      "TO": 1.611,
+      "T/O": 1.611,
       "LDG": 1.642
      },
      "u": "-",
@@ -6161,7 +6866,7 @@
        "CLmax": 1.583
       },
       {
-       "name": "TO",
+       "name": "T/O",
        "flap_deg": 20,
        "VFE_kt": 108,
        "dCL0": 0.52,
@@ -6279,6 +6984,42 @@
      "conf": "สูง",
      "est": false,
      "note": "MÄM 40-227 (MTOM 1,200 kg) 18/16° [LD1 p.7]"
+    },
+    "derived_check": {
+     "v": {
+      "mass_kg": 1050,
+      "Fs_per_g_N": {
+       "approach": 17.6,
+       "cruise": 17.3
+      },
+      "grad_N_per_kt": {
+       "approach": 0.396,
+       "cruise": 0.262
+      },
+      "at_kcas": {
+       "approach": 66,
+       "cruise": 100
+      },
+      "SM_fixed": 0.294,
+      "SM_free": 0.226,
+      "free_elevator_factor": 0.82,
+      "mtom": {
+       "mass_kg": 1200,
+       "Fs_per_g_N": 19.2,
+       "pull_to_nL_lbf": 12.1,
+       "cfr23_155_min_lbf": 18.9
+      }
+     },
+     "u": "N/g, N/kt, MAC",
+     "scope": "aircraft",
+     "src": [
+      "LD12",
+      "LD15",
+      "LM0"
+     ],
+     "conf": "ต่ำ",
+     "est": true,
+     "note": "ค่าประมาณ (scripts/ld_stickforce.mjs, gap 18): สมการ elevator แบบ reversible ของรอบที่ 1 §6 (trim เชิงเส้น + Ch = Ch0 + Chα·αt + Chδ·δe + Chtab·δtab, F = G·ηt·q·Se·ce·Ch) กับ controls.pitch.* ของบัตรนี้ ที่ training_mass 1050 kg; ที่ MTOM 1200 kg แรงดึงถึง 3.8 g = 12.1 lbf (53.8 N) ต่ำกว่าขั้นต่ำ 14 CFR 23.155(a)(2) 18.9 lbf [LD12] แสดงว่า Chδ และ gearing ที่ยกมาจากรอบที่ 1 ต่ำไปสำหรับ DA40 (เครื่องจริงผ่านการรับรอง) เป้าของโมเดลแรงที่คันในอนาคตคือ Fs/g ≥ 30 N/g ที่ MTOM (T-LD-43) และความชันต่อความเร็วเป็นบวก (T-LD-44); ซิมวันนี้ไม่มีโมเดลแรงที่คัน"
     }
    },
    "yaw": {
@@ -6311,7 +7052,7 @@
     "diskDiameter": {
      "v": 1.8,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -6344,7 +7085,7 @@
   "validation": {
    "takeoff_test": {
     "v": {
-     "flap": "TO",
+     "flap": "T/O",
      "VR_kt": 62.1,
      "theta_deg": 8
     },
@@ -6355,7 +7096,7 @@
     ],
     "conf": "กลาง",
     "est": true,
-    "note": "VR ≈ 59 KIAS [LD6 p.5-10] → KCAS ด้วยตาราง TO รุ่นเดิม; มุมเงย 8° ค่าประมาณ"
+    "note": "VR ≈ 59 KIAS [LD6 p.5-10] → KCAS ด้วยตาราง T/O รุ่นเดิม; มุมเงย 8° ค่าประมาณ"
    },
    "trim_targets": {
     "approach": {
@@ -6371,7 +7112,7 @@
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: VREF 73 KIAS แฟลป LDG → KCAS"
+     "note": "ค่าประมาณ: จุด trim/linearise ของซิมที่ MTOM 1,200 kg = speeds.approach_table 73 KIAS แฟลป LDG [LD6 p.4A-34] → KCAS ด้วยตาราง ias_cas รุ่นเดิม (ค่าประมาณ); VREF/VAPP ที่ training_mass 1,050 kg = 65 KIAS อยู่ใน speeds (D1)"
     },
     "cruise": {
      "v": {
@@ -6395,7 +7136,7 @@
       "mass_kg": 1200,
       "VSR_kcas": {
        "UP": 58.2,
-       "TO": 57.5,
+       "T/O": 57.5,
        "LDG": 57.1
       },
       "Vy_kt": 71.3,
@@ -6405,7 +7146,7 @@
        "LD": 8.8
       },
       "takeoff_m": {
-       "flap": "TO",
+       "flap": "T/O",
        "ground": 310,
        "d50ft": 510
       },
@@ -6641,18 +7382,20 @@
     "training_mass": {
      "v": {
       "kg": 1060,
+      "empty_kg": 830,
       "crew_kg": 170,
-      "fuel_l": 75,
-      "empty_kg": 830
+      "fuel_kg": 60,
+      "fuel_l": 75
      },
      "u": "kg",
      "scope": "aircraft",
      "src": [
-      "LD8"
+      "LD8",
+      "LM19"
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: 830 + 170 + Jet A-1 75 l (60 kg) ≈ 1,060 kg"
+     "note": "ค่าประมาณ (D3): empty_kg = BEW_typical 830 kg [LD8] + ครูฝึกและศิษย์ 2 × 85 kg + Jet A-1 75 l (60 kg ที่ 0.80 kg/l [LM19], ราว 70 % ของถัง 106 l) = 1,060 kg (2,337 lb)"
     }
    },
    "cg": {
@@ -6896,26 +7639,91 @@
     "note": "[LD8]"
    },
    "VAPP_kt": {
-    "v": 71,
+    "v": 66,
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
+     "LD6",
      "LD8"
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "แฟลป LDG 1,150 kg; แฟลป UP 73 KIAS [LD8]"
+    "note": "D1: ที่ training_mass 1,060 kg แฟลป LDG ลมสงบ = speeds.approach_table อ่านเชิงเส้นระหว่าง 63 KIAS (1,000 kg) กับ 67 KIAS (1,092 kg) ได้ 65.6 KIAS [LD6 p.4A-34] (โครงเดียวกัน; handout ให้ 71 KIAS ที่ 1,150 kg ตรงกับ AFM [LD8 p.24]); ≈ 66 KCAS (34 m/s); เท่ากับ VREF; ที่ MTOM 1,150 kg = 71 KIAS"
    },
    "VREF_kt": {
-    "v": 71,
+    "v": 66,
     "u": "kt IAS",
     "scope": "aircraft",
     "src": [
+     "LD6",
      "LD8"
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "handout เรียกว่า VREF [LD8]"
+    "note": "D1: ที่ training_mass 1,060 kg; handout เรียกความเร็วนี้ว่า VREF (71 KIAS แฟลป LDG, 73 KIAS แฟลป UP ที่ 1,150 kg) [LD8 p.24]"
+   },
+   "approach_table": {
+    "v": {
+     "axes": {
+      "mass_kg": [
+       850,
+       1000,
+       1092,
+       1150
+      ],
+      "flap": [
+       "LDG"
+      ]
+     },
+     "data": [
+      [
+       58,
+       63,
+       67,
+       71
+      ]
+     ]
+    },
+    "u": "kt IAS",
+    "scope": "aircraft",
+    "src": [
+     "LD6",
+     "LD8"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "ตาราง approach แฟลป LDG ของ AFM โครงรุ่นเดิม [LD6 p.4A-34] (AFM ของ DA 40 D เปิดอ่านไม่ได้; handout ของรุ่น D ให้ 71 KIAS ที่ 1,150 kg ตรงกัน [LD8 p.24]); ใช้ตั้ง VREF ของซิมที่มวลอื่นนอก training_mass (scripts/ld_tools.mjs card)"
+   },
+   "VX_kt": {
+    "v": 66,
+    "u": "kt IAS",
+    "scope": "aircraft",
+    "src": [
+     "LD17",
+     "LC1",
+     "LF1",
+     "LE2",
+     "LM0",
+     "LD6",
+     "LD8"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ (scripts/ld_vx.mjs, gap 7): แฟลป UP ที่ MTOM 1150 kg = k·VS1 ใน CAS = 1.19 × 55.9 = 66.5 KCAS (34.2 m/s); ที่ training_mass 1060 kg = 62 KIAS (63.8 KCAS); k = ค่าเฉลี่ย Vx/VS1 (CAS) ของ POH c172s 1.200, c172r 1.192, c152 1.177 (บัตร 04/10/11); AFM ไม่ให้ Vx (14 CFR 23.1585/23.1587 ไม่บังคับ [LD17]) ส่วนความเร็วไต่หลังวิ่งขึ้นแฟลป T/O ของ AFM 66 KIAS = 67.4 KCAS ตรงกับ k·VS(T/O) = 65.7 KCAS จึงทำหน้าที่ Vx ของโครงแบบวิ่งขึ้น; polar ของบัตร + ตาราง CT/CP ให้มุมไต่สูงสุดที่ 52 KCAS ซึ่งต่ำกว่า 1.1 VS1 (มุมไต่ยังเพิ่มจนใกล้ stall) จึงใช้ตัดสิน Vx เองไม่ได้; ซิมวันนี้ได้ 59.5 KCAS (T-LD-38…40)"
+   },
+   "stall_altitude_loss_ft": {
+    "v": 190,
+    "u": "ft",
+    "scope": "aircraft",
+    "src": [
+     "LC2",
+     "LF1",
+     "LG5",
+     "LM0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ (scripts/ld_vx.mjs, gap 18): AFM ที่เปิดอ่านได้ไม่ระบุความสูงที่เสียในการแก้ stall; ใช้ค่าคลาส Δh = c·VS1² (KCAS) โดย c เฉลี่ย 0.0646 จาก POH/AFM C172S 230 ft, C152 160 ft, P2006T 180 ft (บัตร 04/11/12) × VS1 53.7 KCAS ที่ training_mass 1060 kg = 190 ft (58 m), ช่วง 120–240 ft ตาม c ต่ำสุด/สูงสุด; การแก้ stall ปกติ ปีกระดับ idle (เกณฑ์ของ evaluator)"
    },
    "VG_kt": {
     "v": 73,
@@ -6951,7 +7759,7 @@
       ],
       "flap": [
        "UP",
-       "TO",
+       "T/O",
        "LDG"
       ]
      },
@@ -7005,7 +7813,7 @@
    },
    "VFE": {
     "v": {
-     "TO": 108,
+     "T/O": 108,
      "LDG": 91
     },
     "u": "kt IAS",
@@ -7042,7 +7850,7 @@
        178
       ]
      ],
-     "TO": [
+     "T/O": [
       [
        51,
        55.2
@@ -7219,6 +8027,135 @@
     "conf": "กลาง",
     "est": false,
     "note": "[LD1 p.13]; ≈ 5 USgal/h ที่ 70 % [LD8][LD14]; ≈ 8 USgal/h กำลังเต็ม [LD14]"
+   },
+   "tests": {
+    "v": [
+     {
+      "case": "T-LD-31",
+      "conditions": "ซิม: da40d 1,150 kg 3,000 ft idle / SL คันเร่งสุด",
+      "quantity": "Vmin UP / ROC สูงสุด",
+      "expected": "55.9 / 550 (ค่าประมาณ)",
+      "tolerance": "±5 kt / ±100 fpm",
+      "unit": "KCAS / fpm",
+      "origin": "[LD8][LD14]; Vmin ±5 kt = Part 60 ±3 kt + ±2 kt ความไม่แน่นอนของ IAS–CAS (gap 12)",
+      "current_model": "55.3 / 565",
+      "pass": true
+     },
+     {
+      "case": "T-LD-32",
+      "conditions": "ซิม: da40d 1,150 kg SL ISA แฟลป T/O VR ≈ 62 KCAS",
+      "quantity": "ระยะถึง 50 ft",
+      "expected": 640,
+      "tolerance": "±10 % (64 m; ผู้เขียนตั้ง)",
+      "unit": "m",
+      "origin": "[LD8]",
+      "current_model": 577,
+      "pass": true
+     },
+     {
+      "case": "T-LD-33",
+      "conditions": "วันร้อนที่ดอนเมือง 35 °C SL, da40d 1,150 kg แฟลป T/O",
+      "quantity": "ระยะถึง 50 ft = 640 × 1/(σ·σ^⅓)",
+      "expected": 700,
+      "tolerance": "±10 % (ค่าประมาณ)",
+      "unit": "m",
+      "origin": "[LD8] สเกลด้วย σ; ค่าประมาณ",
+      "current_model": 613,
+      "pass": false
+     },
+     {
+      "case": "T-LD-34",
+      "conditions": "da40d 1,150 kg, SL ISA, คันเร่งสุด บินระดับ (quasi-steady)",
+      "quantity": "ความเร็วสูงสุด",
+      "expected": 125,
+      "tolerance": "±5 kt (ค่าประมาณจากนักบิน ~130 KIAS ที่ความสูง)",
+      "unit": "KTAS",
+      "origin": "[LD14] (ต่ำ)",
+      "current_model": 103,
+      "pass": false
+     },
+     {
+      "case": "T-LD-37",
+      "conditions": "บัตรที่ merge แล้วของ da40ng, da40_180, da40d (รุ่นย่อยรับค่าจาก NG ผ่าน _inherits)",
+      "quantity": "propeller.identity.diameter = interference.slipstream.diskDiameter; controls.surfaces.* travel = controls.pitch/yaw.stops",
+      "expected": "เท่ากันทุก id",
+      "tolerance": "ตรงทุกค่า",
+      "unit": "-",
+      "origin": "[LD1 p.5, 7, 13–14, 27, 29]",
+      "current_model": "da40ng: D 1.9/1.9 m, elev 21/17 vs 21/17, rud 24/26 vs 24/26; da40_180: D 1.8/1.8 m, elev 18/16 vs 18/16, rud 29/31 vs 29/31; da40d: D 1.87/1.87 m, elev 23/15 vs 23/15, rud 29/31 vs 29/31",
+      "pass": true
+     },
+     {
+      "case": "T-LD-40",
+      "conditions": "ซิม: da40d 1,150 kg (MTOM), SL ISA, คันเร่งสุด, แฟลป UP, กวาด IAS ทีละ 0.25 kt จาก 1.03 VS1 (ld_vx.mjs)",
+      "quantity": "Vx (ความเร็วที่มุมไต่สูงสุด)",
+      "expected": 66.5,
+      "tolerance": 4,
+      "unit": "KCAS",
+      "origin": "ค่าประมาณ: k·VS1 = 1.19 × 55.9 KCAS (= 66 KIAS); k เฉลี่ยจาก POH C172S/C172R/C152 [LC1][LE2][LF1]; AFM ไม่ให้ Vx [LD17]; ความเร็วไต่แฟลป T/O ของ AFM 66 KIAS = 67.4 KCAS เทียบ k·VS(T/O) 65.7 KCAS; ±4 kt = ช่วง k (±1 kt) + ความไม่แน่นอนของ VS1 (gap 12)",
+      "current_model": "59.5 (γmax 5.06°)",
+      "pass": false
+     },
+     {
+      "case": "T-LD-41",
+      "conditions": "stall ปีกระดับ idle ลด 1 kt/s แฟลป UP ที่ training_mass (NG 1,150 / 180 1,050 / D 1,060 kg) แล้วแก้ตามวิธีมาตรฐาน: ลดมุมปะทะ คันเร่งเต็ม ปีกระดับ ดึงกลับสู่การไต่",
+      "quantity": "ความสูงที่เสียจากเริ่ม stall ถึงอัตราจมเป็นศูนย์ (da40ng / da40_180 / da40d)",
+      "expected": "240 / 180 / 190",
+      "tolerance": "±35 % (ช่วง c ของคลาส)",
+      "unit": "ft",
+      "origin": "ค่าประมาณ Δh = c·VS1² (KCAS), c เฉลี่ย 0.0646 จาก C172S 230 ft [LC2], C152 160 ft [LF1], P2006T 180 ft [LG5] (ช่วง 0.0426–0.0819); AFM ที่อ่านได้ไม่ระบุ",
+      "current_model": "ไม่รองรับในซิมวันนี้ (ไม่มีลำดับแก้ stall อัตโนมัติและ evaluator ไม่วัดความสูงที่เสีย)",
+      "pass": null
+     },
+     {
+      "case": "T-LD-42",
+      "conditions": "บัตรที่ merge แล้วของ 3 id: speeds.VREF_kt / VAPP_kt, speeds.approach_table (แถว LDG), airframe.weights.training_mass",
+      "quantity": "VAPP = approach_table ที่ training_mass; VAPP ≥ VREF; empty + crew + fuel = kg",
+      "expected": "เป็นจริงทุก id",
+      "tolerance": "±0.5 kt / ±2 kg",
+      "unit": "kt IAS, kg",
+      "origin": "D1, D3 (critic-r2); [LD3][LD6 p.4A-34][LD8]",
+      "current_model": "da40ng: 1150 kg → ตาราง 74 KIAS, VREF 74 / VAPP 74; 903 + 170 + 77 = 1150 kg; da40_180: 1050 kg → ตาราง 65.2 KIAS, VREF 65 / VAPP 65; 792 + 170 + 88 = 1050 kg; da40d: 1060 kg → ตาราง 65.6 KIAS, VREF 66 / VAPP 66; 830 + 170 + 60 = 1060 kg",
+      "pass": true
+     },
+     {
+      "case": "T-LD-43",
+      "conditions": "เครื่องที่ MTOM (NG 1,310 / 180 1,200 / D 1,150 kg), CG อ้างอิง, cruise trim (NG 110, รุ่นเดิม 100 KCAS) 3,000 ft, ดึงถึง limit load factor 3.8 g (normal category)",
+      "quantity": "แรงดึงคันต่อ g (Fs/g) da40ng / da40_180 / da40d",
+      "expected": "≥ 33 / ≥ 30 / ≥ 29",
+      "tolerance": "ขั้นต่ำตามข้อกำหนด (ไม่มี tolerance)",
+      "unit": "N/g",
+      "origin": "14 CFR 23.155(a)(2) ก่อน Amdt 64 [LD12]: แรงดึงถึง n limit ≥ max(W/140 lb, 15 lb) = 20.6 / 18.9 / 18.1 lbf; หาร (n − 1) = 2.8; ค่าประมาณจากโมเดล hinge รอบที่ 1 กับพารามิเตอร์บัตร (controls.pitch.*) = 21.1 / 19.2 / 18.6 N/g ต่ำกว่าเกณฑ์ (ค่า Chδ/gearing ของรอบที่ 1 ต่ำไปสำหรับ DA40)",
+      "current_model": "ไม่รองรับในซิมวันนี้ (ซิมไม่มีโมเดลแรงที่คัน: DIRECT สั่งมุม elevator ตรง)",
+      "pass": null
+     },
+     {
+      "case": "T-LD-44",
+      "conditions": "เครื่องที่ training_mass, trim ด้วย tab ที่ VAPP แฟลป LDG 300 m และที่ cruise 3,000 ft แล้วเปลี่ยนความเร็ว ±1 kt (tab คงที่)",
+      "quantity": "ความชันแรงคันต่อความเร็ว approach / cruise (ดึงเมื่อช้าลง = บวก)",
+      "expected": "0.401 / 0.266; 0.396 / 0.262; 0.394 / 0.264",
+      "tolerance": "±50 % (ค่าประมาณ) และต้อง > 0",
+      "unit": "N/kt",
+      "origin": "ค่าประมาณจากโมเดล hinge รอบที่ 1 กับพารามิเตอร์บัตร (ld_stickforce.mjs); 14 CFR 23.173(a) ต้องดึงเมื่อช้ากว่าความเร็ว trim [LD12]; เครื่องฝึกรอบที่ 1 0.63 N/kt ที่ 95 kt [R1:V10]",
+      "current_model": "ไม่รองรับในซิมวันนี้ (ไม่มีโมเดลแรงที่คัน)",
+      "pass": null
+     }
+    ],
+    "u": "ตามช่อง unit ของแต่ละแถว",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LD1",
+     "LD2",
+     "LD3",
+     "LD4",
+     "LD6",
+     "LD8",
+     "R1:V10"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "แถวเดียวกับตาราง T-LD ใน §05.11 ที่ตรวจ da40d (scripts/ld_tests.mjs 2026-11-19 → out/ld_tests.json → ld_json.mjs); expected มาจากแหล่งในช่อง origin (แถวที่ผู้เขียนประมาณเองระบุวิธีไว้ในช่องนั้น); current_model = บัตรนี้ในฟิสิกส์ของซิม commit cabf0f0; pass null = ไม่รองรับในซิมวันนี้; ผ่าน 4 ไม่ผ่าน 3 n.a. 3 จาก 10 แถว"
    }
   }
  }
@@ -7293,7 +8230,7 @@
      "tcds": "EASA E.055"
     },
     "u": "-",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD11",
      "LD1"
@@ -7314,7 +8251,7 @@
      "takeoff_time_limit_s": null
     },
     "u": "W, rpm (ใบพัด)",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD11",
      "LD1",
@@ -7322,7 +8259,7 @@
     ],
     "conf": "สูง",
     "est": false,
-    "note": "99 kW (135 hp) ที่ 3,900 rpm เพลาข้อเหวี่ยง ≈ 2,300 rpm ใบพัด ทั้ง take-off และต่อเนื่อง [LD11][LD8]; TCDS เครื่องบินจำกัด 2,300 rpm ใบพัด [LD1 p.12]"
+    "note": "99 kW (133 hp; ผู้ผลิตเรียก 135 hp ซึ่งเป็นแรงม้าเมตริก PS) ที่ 3,900 rpm เพลาข้อเหวี่ยง ≈ 2,300 rpm ใบพัด ทั้ง take-off และต่อเนื่อง [LD11][LD8]; TCDS เครื่องบินจำกัด 2,300 rpm ใบพัด [LD1 p.12]"
    },
    "altitude": {
     "v": {
@@ -7349,7 +8286,7 @@
      }
     },
     "u": "-, ft, สัดส่วนกำลังสูงสุด",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD14",
      "LD5"
@@ -7372,7 +8309,7 @@
      ]
     },
     "u": "W",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD8"
     ],
@@ -7399,7 +8336,7 @@
      ]
     },
     "u": "g/kWh, [load %, l/h]",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD8",
      "LD14"
@@ -7419,7 +8356,7 @@
      ]
     },
     "u": "[load %, rpm]",
-    "scope": "aircraft",
+    "scope": "engine",
     "src": [
      "LD8"
     ],
@@ -7440,7 +8377,7 @@
     "model": {
      "v": "MT-Propeller MTV-6-A/187-129",
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -7451,7 +8388,7 @@
     "diameter": {
      "v": 1.87,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -7464,7 +8401,7 @@
     "maxShaftPower": {
      "v": 99,
      "u": "kW",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD11"
      ],
@@ -7475,7 +8412,7 @@
     "rpmGoverned": {
      "v": 2300,
      "u": "rpm",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1",
       "LD11"
@@ -7487,7 +8424,7 @@
     "rpmTransientLimit": {
      "v": 2500,
      "u": "rpm",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD2"
      ],
@@ -7498,7 +8435,7 @@
     "gearRatio": {
      "v": 1.689,
      "u": "-",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD11"
      ],
@@ -7511,7 +8448,7 @@
     "betaFlightIdle": {
      "v": 12,
      "u": "deg @0.75R",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -7522,7 +8459,7 @@
     "betaHigh": {
      "v": 28,
      "u": "deg @0.75R",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -7533,7 +8470,7 @@
     "rpmOverspeed": {
      "v": 2500,
      "u": "rpm",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD2",
       "LD9"
@@ -7547,7 +8484,7 @@
     "staticThrustISA": {
      "v": 2.95,
      "u": "kN",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -7558,7 +8495,7 @@
     "staticThrustVTBD31C": {
      "v": 2.89,
      "u": "kN",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -7569,7 +8506,7 @@
     "momentumIdealStaticISA": {
      "v": 4.04,
      "u": "kN",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LM0"
      ],
@@ -7626,7 +8563,7 @@
     "CLmax_target": {
      "v": {
       "UP": 1.562,
-      "TO": 1.602,
+      "T/O": 1.602,
       "LDG": 1.693
      },
      "u": "-",
@@ -7654,7 +8591,7 @@
        "CLmax": 1.562
       },
       {
-       "name": "TO",
+       "name": "T/O",
        "flap_deg": 20,
        "VFE_kt": 108,
        "dCL0": 0.52,
@@ -7775,6 +8712,42 @@
      "conf": "สูง",
      "est": false,
      "note": "มาตรฐาน 23/15° (ถังพิสัยไกล 23/16°) [LD1 p.14]"
+    },
+    "derived_check": {
+     "v": {
+      "mass_kg": 1060,
+      "Fs_per_g_N": {
+       "approach": 17.7,
+       "cruise": 17.4
+      },
+      "grad_N_per_kt": {
+       "approach": 0.394,
+       "cruise": 0.264
+      },
+      "at_kcas": {
+       "approach": 67,
+       "cruise": 100
+      },
+      "SM_fixed": 0.294,
+      "SM_free": 0.226,
+      "free_elevator_factor": 0.82,
+      "mtom": {
+       "mass_kg": 1150,
+       "Fs_per_g_N": 18.6,
+       "pull_to_nL_lbf": 11.7,
+       "cfr23_155_min_lbf": 18.1
+      }
+     },
+     "u": "N/g, N/kt, MAC",
+     "scope": "aircraft",
+     "src": [
+      "LD12",
+      "LD15",
+      "LM0"
+     ],
+     "conf": "ต่ำ",
+     "est": true,
+     "note": "ค่าประมาณ (scripts/ld_stickforce.mjs, gap 18): สมการ elevator แบบ reversible ของรอบที่ 1 §6 (trim เชิงเส้น + Ch = Ch0 + Chα·αt + Chδ·δe + Chtab·δtab, F = G·ηt·q·Se·ce·Ch) กับ controls.pitch.* ของบัตรนี้ ที่ training_mass 1060 kg; ที่ MTOM 1150 kg แรงดึงถึง 3.8 g = 11.7 lbf (52 N) ต่ำกว่าขั้นต่ำ 14 CFR 23.155(a)(2) 18.1 lbf [LD12] แสดงว่า Chδ และ gearing ที่ยกมาจากรอบที่ 1 ต่ำไปสำหรับ DA40 (เครื่องจริงผ่านการรับรอง) เป้าของโมเดลแรงที่คันในอนาคตคือ Fs/g ≥ 28.8 N/g ที่ MTOM (T-LD-43) และความชันต่อความเร็วเป็นบวก (T-LD-44); ซิมวันนี้ไม่มีโมเดลแรงที่คัน"
     }
    },
    "yaw": {
@@ -7807,7 +8780,7 @@
     "diskDiameter": {
      "v": 1.87,
      "u": "m",
-     "scope": "aircraft",
+     "scope": "propeller",
      "src": [
       "LD1"
      ],
@@ -7840,7 +8813,7 @@
   "validation": {
    "takeoff_test": {
     "v": {
-     "flap": "TO",
+     "flap": "T/O",
      "VR_kt": 62.1,
      "theta_deg": 8
     },
@@ -7851,7 +8824,7 @@
     ],
     "conf": "กลาง",
     "est": true,
-    "note": "ค่าประมาณ: VR 59 KIAS [LD8] → KCAS ด้วยตาราง TO รุ่นเดิม"
+    "note": "ค่าประมาณ: VR 59 KIAS [LD8] → KCAS ด้วยตาราง T/O รุ่นเดิม"
    },
    "trim_targets": {
     "approach": {
@@ -7867,7 +8840,7 @@
      ],
      "conf": "กลาง",
      "est": true,
-     "note": "ค่าประมาณ: VREF 71 KIAS แฟลป LDG → KCAS"
+     "note": "ค่าประมาณ: จุด trim/linearise ของซิมที่ MTOM 1,150 kg = speeds.approach_table 71 KIAS แฟลป LDG [LD6 p.4A-34][LD8] → KCAS ด้วยตาราง ias_cas รุ่นเดิม (ค่าประมาณ); VREF/VAPP ที่ training_mass 1,060 kg = 66 KIAS อยู่ใน speeds (D1)"
     },
     "cruise": {
      "v": {
@@ -7891,7 +8864,7 @@
       "mass_kg": 1150,
       "VSR_kcas": {
        "UP": 57.3,
-       "TO": 55.8,
+       "T/O": 55.8,
        "LDG": 55.1
       },
       "Vy_kt": 67.5,
@@ -7901,7 +8874,7 @@
        "LD": 8.8
       },
       "takeoff_m": {
-       "flap": "TO",
+       "flap": "T/O",
        "ground": 362,
        "d50ft": 577
       },
