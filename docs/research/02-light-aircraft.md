@@ -79,6 +79,8 @@
 
 การตรวจความสอดคล้อง 8 ชนิดของ `lm_merge` (`scope`, `est`, `est_conf`, `training_mass`, `speeds`, `vapp_vref`, `xfile_vapp`, `detent`) เป็น WARN ตามปกติและเป็น ERROR เมื่อใช้ `--strict` วันนี้ทุกรหัสได้ 0
 
+D1 และ D4 บังคับเฉพาะบัตรของรอบที่ 2 รอบที่ 3 ตั้ง scope ตามความหมายของค่าและให้ VREF/VAPP เป็นตารางหรือกฎตามมวล ([03-airliners.md](03-airliners.md) ย่อหน้า "ความต่างจากข้อตกลงของรอบที่ 2") ตัวอ่านในงานข้อ 10 จึงต้องปรับ scope ตามหมวดตอนโหลด และ `lm_merge --strict` ใช้กับไฟล์ของรอบที่ 2 เท่านั้น
+
 **รหัสอ้างอิงและกรณีทดสอบ** แต่ละหัวข้อมีอักษรนำหน้าสองตัว เช่น [LC7] คือแหล่งที่ 7 ของหัวข้อ C172S และ T-LC-07 คือกรณีทดสอบที่ 7 ของหัวข้อเดียวกัน การอ้างข้ามรอบใช้ `R1:` เช่น [R1:V10]
 
 | หัวข้อ | อักษร | หัวข้อ | อักษร | หัวข้อ | อักษร |
@@ -275,7 +277,7 @@ Evaluator ที่เสนอ (`common_light.evaluator`) มี 41 กฎ แ�
 
 **ระยะ 1: หลายแบบเครื่องบินโดยยังไม่เปลี่ยนสมการ**
 
-10. **P1 · M** ให้ซิมเลือกแบบเครื่องบินได้ ต่อจากงานข้อ 8 ของรอบที่ 1 (ย้าย `AC` ไป `data/aircraft/<id>.json`): สร้างไฟล์ข้อมูลจาก `params-light.json` ด้วย `resolveType` + `buildAC` เริ่มที่ `c172s` แล้ว `c172r`, `da42ng`, `da42_tae125`, `da40d`, `da40_180` ใช้ `airframe.weights.training_mass` (D3) เป็นมวลเริ่ม ตั้ง Vref/Vapp จากบัตร (D1) ใช้ `inertiaFromRadii` เมื่อบัตรไม่มี inertia และแสดงป้ายภาษาไทยว่าแบบนั้นใช้ที่โรงเรียนใดในไทย (อ่านจาก `common_light.thai_fleet`) — [4](02-light-aircraft/04-c172s.md), [10](02-light-aircraft/10-c172r.md), [5](02-light-aircraft/05-da40.md), [6](02-light-aircraft/06-da42.md), [2](02-light-aircraft/02-thai-schools.md), [1](02-light-aircraft/01-methods.md) · T-LC-04, 06–08, 12–14, 20–24, 31 · T-LE-05–07, 09, 11–13, 19–23 · T-LD-27–32 · T-LS-03, 11 · T-LM-13
+10. **P1 · M** ให้ซิมเลือกแบบเครื่องบินได้ ต่อจากงานข้อ 8 ของรอบที่ 1 (ย้าย `AC` ไป `data/aircraft/<id>.json`): สร้างไฟล์ข้อมูลจาก `params-light.json` ด้วย `resolveType` + `buildAC` เริ่มที่ `c172s` แล้ว `c172r`, `da42ng`, `da42_tae125`, `da40d`, `da40_180` ใช้ `airframe.weights.training_mass` (D3) เป็นมวลเริ่ม ตั้ง Vref/Vapp จากบัตร (D1; บัตรรอบที่ 3 ให้เป็นตารางหรือกฎตามมวล ตัวอ่านเดียวกันต้องคำนวณจากมวลที่เลือกและตั้ง scope ตามหมวดตอนโหลด ตามงานข้อ 1 ของรอบที่ 3) ใช้ `inertiaFromRadii` เมื่อบัตรไม่มี inertia และแสดงป้ายภาษาไทยว่าแบบนั้นใช้ที่โรงเรียนใดในไทย (อ่านจาก `common_light.thai_fleet`) — [4](02-light-aircraft/04-c172s.md), [10](02-light-aircraft/10-c172r.md), [5](02-light-aircraft/05-da40.md), [6](02-light-aircraft/06-da42.md), [2](02-light-aircraft/02-thai-schools.md), [1](02-light-aircraft/01-methods.md) · T-LC-04, 06–08, 12–14, 20–24, 31 · T-LE-05–07, 09, 11–13, 19–23 · T-LD-27–32 · T-LS-03, 11 · T-LM-13
 11. **P1 · M** `test/types.test.mjs`: โหลดทุกบัตร สร้าง `AC` แล้ววัด V_SR, ROC, glide, ระยะวิ่งขึ้น และโหมด เทียบค่าคาดหวังของแต่ละหัวข้อ ใช้ช่วงยอมรับ `common_light.methods.lateral_mode_tolerance` กับโหมดด้านข้างของบัตรที่อนุพันธ์มาจาก `lm_derivs` และย้ายเทสต์ที่ผ่านวันนี้ของ `lc_`/`le_`/`lf_`/`lg_`/`ln_tests` เข้าชุดเทสต์ของ repo เพื่อกันการถดถอย — [1](02-light-aircraft/01-methods.md), [11](02-light-aircraft/11-c152.md), [12](02-light-aircraft/12-p2006t.md), [13](02-light-aircraft/13-other-trainers.md) · T-LM-02–07, 31 · T-LF-01–06, 08, 10–12, 14, 18, 20, 21, 26–28 · T-LG-01–12, 14–17, 19
 12. **P2 · S** แสดง KIAS บน HUD จาก `speeds.ias_cas` ของแต่ละแบบ (ขยายช่วงต่ำด้วยคู่จาก `speeds.stall_table`) และให้ callout กับเกณฑ์ Evaluator ใช้ KIAS แบบเดียวกับมาตรวัด — [4](02-light-aircraft/04-c172s.md), [10](02-light-aircraft/10-c172r.md), [11](02-light-aircraft/11-c152.md) · T-LC-03, 05 · T-LE-04 · T-LF-07
 
