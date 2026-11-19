@@ -15,7 +15,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Build: `node build.mjs` → `dist/index.html`, and copies `data/*` into `dist/`.
 - Run: `python3 -m http.server 8080 -d dist`, open http://localhost:8080 (needs HTTP: the page fetches its data).
 - Physics tests (Node ≥ 18, no dependencies): `node test/geo.test.mjs`, `node test/flight.test.mjs`,
-  `node test/runways.test.mjs`, `node test/assist.test.mjs`, `node test/stall.test.mjs`.
+  `node test/runways.test.mjs`, `node test/assist.test.mjs`, `node test/stall.test.mjs`, `node test/papi.test.mjs`.
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function`, so those three files must stay DOM-free.
 - Screenshots: `test/shots.mjs <set>` (Playwright + Chrome, SwiftShader). Paths inside it point at the original
   cloud workspace (`/home/claude/...`, `/opt/npm-tools`, vendored three.js); adjust before use.
@@ -42,7 +42,12 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   quaternion body→NED, SI units internally.
 - Render: x = east, y = up, z = −north. Data JSON coordinates are `[e, n]` metres from the ARP.
 - `RWY_END[id]`: `thr` [n,e], `u` landing direction, `r` right normal, `lda`, `aim` (GP origin = RDH / tan 3°),
-  `papi` (distance from MEHT), `locDist`, `appr.kind` ILS or RNP (03R is RNP with a synthetic 3° path).
+  `papi` (estimated distance solved from the AIP MEHT in the drawn geometry: `PAPI_GEOM` light height 0.64 m,
+  2°50′ unit 33 m outside the edge), `locDist`, `appr.kind` ILS or RNP (03R is RNP with a synthetic 3° path).
+- Body points (FRD from the CG, estimates): `AC.eye` (cockpit camera, PAPI colours) and `AC.gsAnt` (ILS receiver).
+  ILS deviations and the autopilot use the antenna, PAPI uses the eye. LOC 1 dot = atan(105 m / locDist) / 2
+  per runway (0.75° on 21R/03L, 0.89° on 21L), G/S 1 dot 0.36°. On the ILS the trainer sees the PAPI read low in
+  the last ~0.7 km because DMK's MEHT is 3.3–5.1 m above the beam over the threshold (real, AIP-derived).
 
 ## Flight model (current state)
 - Generic two-seat turboprop trainer (fictional): m 2250 kg, S 16.3 m², b 10.2 m, P 700 kW, static thrust 11.5 kN.

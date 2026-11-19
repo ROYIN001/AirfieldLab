@@ -9,27 +9,28 @@ const FIELD = {
   aim: 314,          // glide-path origin: RDH / tan 3°, metres past the landing threshold
   gs: 3.0,           // glide slope, degrees
   locBeyond: 300,    // localizer array beyond the stop end (derived per runway from AIP coordinates)
-  locDot: 0.91,      // degrees per dot (2 dots full scale)
-  gsDot: 0.35,       // degrees per dot
+  locDot: 0.75,      // degrees per dot (2 dots full scale), set per runway from the localizer distance
+  gsDot: 0.36,       // degrees per dot: 0.12 θ for θ = 3° (ICAO Annex 10 glide-path sensitivity, 2 dots full scale)
   appr: 'ILS', ident: 'IBKK',
 };
 // Active landing runway frame (NED): unit vector along the landing direction, right normal, threshold.
 const RWY_U = [1, 0, 0];
 const RWY_R = [0, 1, 0];
 const THR03 = [0, 0, 0];
-// PAPI on both sides of the landing threshold, inner unit 15 m from the edge, 9 m apart.
-// Setting angles from the inner unit outward: 3°30′, 3°10′, 2°50′, 2°30′ (the left bank drives the cockpit widget).
-const PAPI = { s: 400, h: 0.9, units: [] };
+// PAPI on both sides of the landing threshold (geometry PAPI_GEOM in 15-geo.js; the left bank drives the widget).
+const PAPI = { s: 400, h: PAPI_GEOM.h, units: [] };
 function setActiveRunway(id) {
   const E = RWY_END[id] || RWY_END['21R'];
   FIELD.rwy = E.id; FIELD.rwyHdg = E.hdg; FIELD.rwyLen = E.lda; FIELD.rwyWid = E.w;
   FIELD.aim = E.aim; FIELD.locBeyond = E.locDist - E.lda; FIELD.appr = E.appr.kind; FIELD.ident = E.appr.ident;
-  FIELD.locDot = E.appr.kind === 'ILS' ? 0.91 : 0.8;
+  // ILS course sector 210 m wide at the threshold (ICAO Annex 10 §3.1.3.7; AIP course widths 3.0°/3.0°/3.6° match):
+  // full scale (2 dots) is atan(105 m / threshold-to-localizer distance), so 1 dot is 0.75° on 21R/03L and 0.89° on 21L.
+  FIELD.locDot = E.appr.kind === 'ILS' ? Math.atan(105 / E.locDist) * RAD / 2 : 0.8;
   RWY_U[0] = E.u[0]; RWY_U[1] = E.u[1]; RWY_R[0] = -E.u[1]; RWY_R[1] = E.u[0];
   THR03[0] = E.thr[0]; THR03[1] = E.thr[1];
   PAPI.s = E.papi;
   const W2 = E.w / 2;
-  PAPI.units = [[15, 3.5], [24, 3 + 10 / 60], [33, 2 + 50 / 60], [42, 2.5]].map(([o, ang]) => ({ t: -(W2 + o), ang }));
+  PAPI.units = PAPI_GEOM.off.map((o, i) => ({ t: -(W2 + o), ang: PAPI_GEOM.ang[i] }));
   if (typeof globalThis !== 'undefined' && typeof globalThis.__onRwy === 'function') globalThis.__onRwy(E);
   return E;
 }
@@ -46,8 +47,8 @@ function ilsAt(n, e, h) {
   return { s, t, gsDev: gsAng - FIELD.gs, gsDots: (gsAng - FIELD.gs) / FIELD.gsDot, locAng, locDots: locAng / FIELD.locDot };
 }
 
-// Fraction of white for each PAPI unit as seen from an eye point (1 white, 0 red), left→right as
-// the pilot sees them on approach to 03: outer (2°30′) … inner (3°30′).
+// Fraction of white for each PAPI unit as seen from the pilot's eye (n, e, height), left→right as the pilot sees
+// them: outer (2°30′) … inner (3°30′). The colour edge (±0.025°) matches the light shader in 60-lights.js.
 function papiSeen(n, e, h) {
   const [s, t] = rwyLocal(n, e);
   const out = [0, 0, 0, 0];
@@ -55,7 +56,7 @@ function papiSeen(n, e, h) {
     const u = PAPI.units[3 - i];
     const d = Math.hypot(PAPI.s - s, u.t - t);
     const ang = Math.atan2(h - PAPI.h, d) * RAD;
-    out[i] = (s > PAPI.s) ? -1 : smoothstep(u.ang - 0.03, u.ang + 0.03, ang);
+    out[i] = (s > PAPI.s) ? -1 : smoothstep(u.ang - 0.025, u.ang + 0.025, ang);
   }
   return out;
 }
@@ -115,6 +116,10 @@ const AC = {
     { b: [-0.35, 1.55, 1.38], k: 1.25e5, c: 1.25e4, stroke: 0.25, brake: true },
   ],
   Vref: 88, Vapp: 95, Vs0: 71,   // knots IAS, landing flaps
+  // Body points (FRD, m from the CG). The eye matches the cockpit camera; the glide-slope antenna sits in the lower
+  // nose. Both are estimates for this fictional type. ILS deviations use the antenna and PAPI uses the eye
+  // (research round 3, topic 3.5): eye 1.3 m above the antenna, close to the ATR 72 (0.9 m) and 737-800 (1.4 m).
+  eye: [0.95, 0, -1.0], gsAnt: [2.6, 0, 0.3],
 };
 (() => { // inverse inertia tensor (FRD, Ixz product)
   const { Ixx, Iyy, Izz, Ixz } = AC, G = Ixx * Izz - Ixz * Ixz;
@@ -280,13 +285,17 @@ class Aircraft {
     let hWheel = Infinity;
     for (const g of AC.gear) { const c = mulR(R, g.b); hWheel = Math.min(hWheel, -(x[2] + c[2])); }
     const ils = ilsAt(x[0], x[1], -x[2]);
+    const pAnt = mulR(R, AC.gsAnt), pEye = mulR(R, AC.eye);
+    const ant = ilsAt(x[0] + pAnt[0], x[1] + pAnt[1], -(x[2] + pAnt[2]));
     const a = this.air;
     a.V = d.V; a.ias = d.V * Math.sqrt(d.rho / RHO0); a.alpha = d.alpha; a.beta = d.beta; a.qbar = d.qbar;
     a.phi = phi; a.theta = th; a.psi = psi; a.vs = -x[5]; a.gs = vg; a.track = Math.atan2(x[4], x[3]);
     a.gamma = Math.atan2(-x[5], Math.max(vg, 0.1)); a.h = -x[2]; a.hWheel = hWheel; a.stall = d.sig;
     a.T = d.T; a.CL = d.CL; a.wind = d.wind; a.phiGE = d.phiGE; a.rho = d.rho;
     a.wow = d.wow; a.load = d.load; a.onGround = d.wow[1] || d.wow[2] || d.wow[0];
-    a.s = ils.s; a.t = ils.t; a.gsDots = ils.gsDots; a.locDots = ils.locDots;
+    a.s = ils.s; a.t = ils.t; a.gsDots = ant.gsDots; a.locDots = ant.locDots;
+    a.antS = ant.s; a.antH = -(x[2] + pAnt[2]);
+    a.eye = [x[0] + pEye[0], x[1] + pEye[1], -(x[2] + pEye[2])];   // n, e, height of the pilot's eye
     a.p = x[10]; a.q = x[11]; a.r = x[12];
     a.nz = 0;
   }
@@ -355,7 +364,7 @@ class Autopilot {
     const eTrk = wrapPi(dTrackCmd - dTrack);
     const lim = a.hWheel < 60 ? 12 : 22;
     const phiCmd = clamp(Math.atan(a.V * eTrk / (G0 * 3.0)), -lim * DEG, lim * DEG);
-    const hErr = a.h - gpHeight(a.s);
+    const hErr = a.antH - gpHeight(a.antS);   // the receiver flies the beam at the glide-slope antenna
     let gammaCmd = -FIELD.gs * DEG - clamp(0.0028 * hErr, -0.05, 0.05);
     return { phiCmd, gammaCmd, eTrk, dTrackCmd };
   }
