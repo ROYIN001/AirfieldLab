@@ -18,7 +18,7 @@ const goAround = (f, a) => {
 // 1) touch-and-go after an autoland, hand back at 150 m: a new approach, no crash
 {
   const f = new Flight({ wind: SCENARIOS.calm, pilot: 'ap', seed: 5 });
-  while (!f.ev.td && f.ac.t < 200) f.tick(DT);
+  while (!f.ev.td && f.ac.t < 200 && !f.crashed) f.tick(DT);
   tick(f, 3);
   f.setPilot('man'); f.opts.assist = false; f.opts.autoTrim = true;
   while (f.ac.air.h < 150 && f.ac.t < 400 && !f.crashed) tick(f, 0.1, goAround);
@@ -32,7 +32,7 @@ const goAround = (f, a) => {
 // 2) go-around from the autopilot's flare, hand back at 150 m
 {
   const f = new Flight({ wind: SCENARIOS.xr, pilot: 'ap', seed: 5 });
-  while (f.ap.mode !== 'FLARE' && f.ac.t < 200) f.tick(DT);
+  while (f.ap.mode !== 'FLARE' && f.ac.t < 200 && !f.crashed) f.tick(DT);
   f.setPilot('man'); f.opts.assist = false;
   while (f.ac.air.h < 150 && f.ac.t < 400 && !f.crashed) tick(f, 0.1, goAround);
   f.setPilot('ap');
@@ -53,9 +53,12 @@ const goAround = (f, a) => {
 for (const seed of [5, 9]) {
   const f = new Flight({ wind: SCENARIOS.xl, pilot: 'ap', seed, dist: 9000 });
   tick(f, 25);
-  f.setPilot('man'); f.opts.assist = false; f.opts.autoTrim = false;
+  f.opts.assist = false; f.opts.autoTrim = false;
+  const daI = f.ap.daI, drI = f.ap.drI, deI = f.ap.deI;
+  f.setPilot('man');
+  const carried = f.laws.ailTrim === clamp(daI, -6 * DEG, 6 * DEG) && f.laws.rudTrim === clamp(drI, -10 * DEG, 10 * DEG) && f.laws.trimDe === clamp(deI, AC.trimMin, AC.trimMax);
   let maxPhi = 0; tick(f, 10, (ff, a) => { maxPhi = Math.max(maxPhi, Math.abs(a.phi)); });
-  check(`DIRECT take-over in gusty crosswind (seed ${seed}): hands off for 10 s stays below 35° of bank`, maxPhi < 35 * DEG, `aileron trim ${f1(f.laws.ailTrim * RAD, 2)}°, max bank ${f1(maxPhi * RAD)}°`);
+  check(`DIRECT take-over in gusty crosswind (seed ${seed}): the autopilot's trims carry over, hands off for 10 s stays below 12° of bank`, carried && maxPhi < 12 * DEG, `${carried ? 'trims carried' : 'trims NOT carried'}: aileron ${f1(f.laws.ailTrim * RAD, 2)}°, max bank ${f1(maxPhi * RAD)}°`);
 }
 // 4) handing a fast clean aircraft to the autopilot: it slows before lowering gear and flaps (no limit-speed events)
 for (const kt of [145, 158]) {
@@ -79,7 +82,7 @@ for (const kt of [145, 158]) {
 // 6) a crash scores nothing, even after a soft first touchdown
 {
   const f = new Flight({ wind: SCENARIOS.calm, pilot: 'ap', seed: 5 });
-  while (!f.ev.td && f.ac.t < 200) f.tick(DT);
+  while (!f.ev.td && f.ac.t < 200 && !f.crashed) f.tick(DT);
   f.setPilot('man'); f.opts.assist = false;
   tick(f, 0.3, (ff) => { ff.input.thr = 1; ff.input.y = 1; });            // balloon
   tick(f, 8, (ff) => { ff.input.thr = 0; ff.input.y = -1; });             // shove it back onto the runway

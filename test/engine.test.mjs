@@ -27,7 +27,7 @@ check('governed above 9 % power: no windmill drag at approach power', t15 > 1200
 {
   const e = new Turboprop().set(0); let t = 0;
   while (e.frac < 0.9 && t < 20) { e.update(DT, 1); t += DT; }
-  const t50 = (() => { const g = new Turboprop().set(0); let s = 0; while (g.frac < 0.5) { g.update(DT, 1); s += DT; } return s; })();
+  const t50 = (() => { const g = new Turboprop().set(0); let s = 0; while (g.frac < 0.5 && s < 20) { g.update(DT, 1); s += DT; } return s; })();
   check('spool-up idle → 90 % power', within(t, 3, 5.5), `${f1(t, 2)} s (50 % at ${f1(t50, 2)} s)`);
   let td = 0; while (e.frac > 0.1 && td < 20) { e.update(DT, 0); td += DT; }
   check('spool-down 90 % → 10 % power', within(td, 0.5, 2.5), `${f1(td, 2)} s`);
@@ -63,10 +63,11 @@ check('governed above 9 % power: no windmill drag at approach power', t15 > 1200
   Object.assign(AC, keep);
   check('torque reaction rolls left by (1 − kWing)·ΔQ/Ixx', (hi.pd - lo.pd) < 0 && Math.abs((hi.pd - lo.pd) / want - 1) < 0.15, `Δṗ ${f1((hi.pd - lo.pd) * RAD, 2)} vs ${f1(want * RAD, 2)} °/s²`);
 }
-// cruise: the fin offset leaves little rudder
+// cruise: the fin offset leaves little rudder (compared with the same trim without the offset)
 {
   const { tr } = trimmed({ ias: 180, pcl: 0.6, h: 1500 });
-  check('cruise 180 kt at 60 % power: rudder within ±2°', Math.abs(tr.dr) < 2 * DEG, `${f1(tr.dr * RAD, 2)}°`);
+  const keep = AC.finOffset; AC.finOffset = 0; const { tr: tr0 } = trimmed({ ias: 180, pcl: 0.6, h: 1500 }); AC.finOffset = keep;
+  check('cruise 180 kt at 60 % power: the fin offset leaves under 1° of rudder', Math.abs(tr.dr) < 1 * DEG && Math.abs(tr0.dr) > Math.abs(tr.dr) + 0.5 * DEG, `${f1(tr.dr * RAD, 2)}° (without the offset ${f1(tr0.dr * RAD, 2)}°)`);
 }
 // P-factor: at high α with power the thrust centre moves right (nose-left moment)
 {

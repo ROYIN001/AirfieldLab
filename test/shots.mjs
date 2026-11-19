@@ -71,24 +71,24 @@ try {
   if (set === 'train' || set === 'all') {
     const { page } = await open(browser, { width: 1100, height: 680 });
     await ev(page, () => __app.setMode('train')); await shot(page, 't1-setup.png');
-    await ev(page, () => { __app.startFlight(); const f = __app.app.flight; while (f.ac.t < 92) f.tick(f.dt); });
+    await ev(page, () => { __app.startFlight(); const f = __app.app.flight; while (f.ac.t < 92 && !f.crashed) f.tick(f.dt); });
     await shot(page, 't2-chase.png');
     await ev(page, () => __app.setTrainCam('cockpit')); await shot(page, 't3-cockpit.png');
-    await ev(page, () => { const f = __app.app.flight; while (!f.ev.td && f.ac.t < 200) f.tick(f.dt); for (let i = 0; i < 120; i++) f.tick(f.dt); __app.setTrainCam('side'); });
+    await ev(page, () => { const f = __app.app.flight; while (!f.ev.td && f.ac.t < 200 && !f.crashed) f.tick(f.dt); for (let i = 0; i < 120; i++) f.tick(f.dt); __app.setTrainCam('side'); });
     await shot(page, 't4-side-td.png');
-    await ev(page, () => { const f = __app.app.flight; while (f.finishedAt == null && f.ac.t < 260) f.tick(f.dt); for (let i = 0; i < 240 * 3; i++) f.tick(f.dt); __app.setTrainCam('chase'); });
+    await ev(page, () => { const f = __app.app.flight; while (f.finishedAt == null && f.ac.t < 260 && !f.crashed) f.tick(f.dt); for (let i = 0; i < 240 * 3; i++) f.tick(f.dt); __app.setTrainCam('chase'); });
     await frames(page, 6); await shot(page, 't5-result.png');
-    await ev(page, () => { const a = __app; const lp = a.localParts(a.app.date); a.app.date = a.makeDate(lp.y, lp.m, lp.d, 19 * 60 + 40); a.applyTime(); a.startFlight(); const f = a.app.flight; while (f.ac.t < 100) f.tick(f.dt); a.setTrainCam('chase'); });
+    await ev(page, () => { const a = __app; const lp = a.localParts(a.app.date); a.app.date = a.makeDate(lp.y, lp.m, lp.d, 19 * 60 + 40); a.applyTime(); a.startFlight(); const f = a.app.flight; while (f.ac.t < 100 && !f.crashed) f.tick(f.dt); a.setTrainCam('chase'); });
     await frames(page, 4); await shot(page, 't6-night-chase.png');
     await ev(page, () => __app.setTrainCam('cockpit')); await shot(page, 't7-night-cockpit.png');
   }
   if (set === 'layout') {
     const { page } = await open(browser, { width: 1366, height: 820 });
-    await ev(page, () => { const a = __app; a.setMode('train'); a.app.train.pilot = 'man'; a.startFlight(); const f = a.app.flight; while (f.ac.t < 40) f.tick(f.dt); });
+    await ev(page, () => { const a = __app; a.setMode('train'); a.app.train.pilot = 'man'; a.startFlight(); const f = a.app.flight; while (f.ac.t < 40 && !f.crashed) f.tick(f.dt); });
     await shot(page, 'l1-desktop-manual.png');
     await page.context().close();
     const { page: p2 } = await open(browser, { width: 390, height: 844 });
-    await ev(p2, () => { const a = __app; a.setMode('train'); a.app.train.pilot = 'man'; a.startFlight(); const f = a.app.flight; while (f.ac.t < 40) f.tick(f.dt); });
+    await ev(p2, () => { const a = __app; a.setMode('train'); a.app.train.pilot = 'man'; a.startFlight(); const f = a.app.flight; while (f.ac.t < 40 && !f.crashed) f.tick(f.dt); });
     await shot(p2, 'l2-phone-manual.png');
     await ev(p2, () => { const a = __app; a.setMode('explore'); a.selectSpot('papi', true); });
     await frames(p2, 8); await shot(p2, 'l3-phone-papi.png');
@@ -99,7 +99,7 @@ try {
     await ev(page, () => { const a = __app; const lp = a.localParts(a.app.date); a.app.date = a.makeDate(lp.y, lp.m, lp.d, 19 * 60 + 40); a.applyTime(); a.setView('approach', true); });
     await frames(page, 8); await shot(page, 'f2-night-approach.png');
     await ev(page, () => { __app.setView('terminal', true); }); await frames(page, 3); await shot(page, 'f3-night-terminal.png');
-    await ev(page, () => { const a = __app; a.setMode('train'); a.startFlight(); const f = a.app.flight; while (f.ac.t < 100) f.tick(f.dt); a.setTrainCam('chase'); });
+    await ev(page, () => { const a = __app; a.setMode('train'); a.startFlight(); const f = a.app.flight; while (f.ac.t < 100 && !f.crashed) f.tick(f.dt); a.setTrainCam('chase'); });
     await frames(page, 6); await shot(page, 'f4-night-chase.png');
     await page.context().close();
   }
@@ -107,7 +107,7 @@ try {
     const { page } = await open(browser, { width: 390, height: 844 });
     await shot(page, 'p1-explore.png', true);
     await ev(page, () => { __app.setMode('train'); }); await shot(page, 'p2-train-setup.png', true);
-    await ev(page, () => { __app.app.train.pilot = 'man'; __app.startFlight(); const f = __app.app.flight; while (f.ac.t < 30) f.tick(f.dt); });
+    await ev(page, () => { __app.app.train.pilot = 'man'; __app.startFlight(); const f = __app.app.flight; while (f.ac.t < 30 && !f.crashed) f.tick(f.dt); });
     await shot(page, 'p3-train-fly.png');
   }
 } catch (e) { logs.push('HARNESS ERROR ' + e.message); }

@@ -56,10 +56,11 @@ check('best glide ratio at flight idle (design estimate 10–14)', within(bg.ld,
 {
   const ac = onRunway(0, { flaps: AC.flapNotch[1] });
   ac.cmd.thr = 1; run(ac, 5);
-  const s0 = ac.air.s, hdg = FIELD.rwyHdg * DEG; let roll = null, d50 = null, thI = 0, vLof = 0;
+  const s0 = ac.air.s, hdg = FIELD.rwyHdg * DEG; let roll = null, d50 = null, thI = 0, vLof = 0, tailHit = null;
   ac.cmd.brake = 0;
   for (let i = 0; i < 240 * 60 && d50 == null; i++) {
     const a = ac.air;
+    if (tailHit == null && a.hard.tail) tailHit = a.ias / KT;   // contacts are rebuilt every step: latch the first one
     ac.cmd.dr = clamp(1.4 * wrapPi(a.psi - hdg) + 0.6 * a.r + 0.02 * a.t, -AC.drMax, AC.drMax);
     ac.cmd.da = clamp(-1.2 * a.phi - 0.3 * a.p, -AC.daMax, AC.daMax);
     if (a.ias / KT < 78 && a.onGround) ac.cmd.de = 0;
@@ -70,7 +71,7 @@ check('best glide ratio at flight idle (design estimate 10–14)', within(bg.ld,
   }
   check('take-off ground roll (PC-9 class: 230–250 m published run)', within(roll, 180, 350), `${f1(roll, 0)} m, lift-off at ${f1(vLof, 0)} KIAS`);
   check('take-off distance over 50 ft vs PC-9 391 m [2]', within(d50, 300, 520), `${f1(d50, 0)} m`);
-  check('no tail strike on rotation', !ac.air.hard.tail);
+  check('no tail strike on rotation', tailHit == null && d50 != null, tailHit == null ? 'tail clear all the way to 50 ft' : `tail touched at ${f1(tailHit, 0)} KIAS`);
 }
 
 // ── landing: autopilot approach, Vref over the threshold, maximum braking without a skid ──
@@ -83,7 +84,8 @@ check('best glide ratio at flight idle (design estimate 10–14)', within(bg.ld,
     return c;
   };
   let s50 = null, v50 = 0;
-  while (!f.ev.done && f.ac.t < 300) { f.tick(DT); const a = f.ac.air; if (s50 == null && a.hWheel < 50 * FT) { s50 = a.s; v50 = a.ias / KT; } }
+  while (!f.ev.done && f.ac.t < 300 && !f.crashed) { f.tick(DT); const a = f.ac.air; if (s50 == null && a.hWheel < 50 * FT) { s50 = a.s; v50 = a.ias / KT; } }
+  if (!f.ev.done || !f.ev.td) { check('landing: the autopilot lands and stops', false, f.crashed ? 'crashed' : 'did not stop within 300 s'); done(); }
   const td = f.ev.td, total = f.ev.stopS - s50, gr = f.ev.stopS - td.s;
   check('landing distance from 50 ft vs PC-9 700 m [2]', within(total, 450, 800), `${f1(total, 0)} m (50 ft at ${f1(v50, 0)} KIAS)`);
   check('landing ground roll with maximum braking', within(gr, 200, 450) && f.ac.skids === 0, `${f1(gr, 0)} m, touchdown ${f1(td.ias, 0)} KIAS`);
@@ -95,7 +97,7 @@ for (const [cat, o] of [['C (approach 95 KIAS, LDG flaps, gear down)', { ias: 95
   const { ac } = trimmed(o);
   const m = linearModes(M, ac);
   const nAlpha = ac.air.qbar * AC.S * AC.CLa / (AC.m * G0), cap = m.sp.wn ** 2 / nAlpha;
-  console.log(`  Cat ${cat}: short period ω ${f1(m.sp.wn, 2)} rad/s ζ ${f1(m.sp.zeta, 2)}, phugoid ω ${f1(m.ph.wn, 3)} ζ ${f1(m.ph.zeta, 3)}, Dutch roll ω ${f1(m.dr.wn, 2)} ζ ${f1(m.dr.zeta, 3)}, roll τ ${f1(m.roll.tau, 2)} s, spiral ${m.spiral.re < 0 ? 'stable, τ ' + f1(m.spiral.tau, 0) + ' s' : 'doubles in ' + f1(m.spiral.t2, 0) + ' s'}`);
+  console.log(`  Cat ${cat}: short period ω ${f1(m.sp.wn, 2)} rad/s ζ ${f1(m.sp.zeta, 2)}, phugoid ${m.ph.reals ? 'real roots ' + m.ph.reals.map((v) => f1(v, 4)).join(', ') + ' 1/s, ' : ''}ω ${f1(m.ph.wn, 3)} ζ ${f1(m.ph.zeta, 3)}, Dutch roll ω ${f1(m.dr.wn, 2)} ζ ${f1(m.dr.zeta, 3)}, roll τ ${f1(m.roll.tau, 2)} s, spiral ${m.spiral.re < 0 ? 'stable, τ ' + f1(m.spiral.tau, 0) + ' s' : 'doubles in ' + f1(m.spiral.t2, 0) + ' s'}`);
   check(`Cat ${cat[0]}: short-period damping`, C ? within(m.sp.zeta, 0.35, 1.30) : within(m.sp.zeta, 0.30, 2.0), f1(m.sp.zeta, 2));
   check(`Cat ${cat[0]}: control anticipation parameter`, C ? within(cap, 0.16, 3.6) : within(cap, 0.085, 3.6), `${f1(cap, 2)} (rad/s)²/g`);
   check(`Cat ${cat[0]}: phugoid damping ≥ 0.04`, m.ph.zeta >= 0.04, f1(m.ph.zeta, 3));

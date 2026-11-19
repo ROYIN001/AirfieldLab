@@ -82,15 +82,15 @@ for (const [flaps, name, lo, hi] of [[0, 'clean (Vs1)', 73, 80], [1, 'landing fl
   check(`coordinated stall, prompt recovery: wings stay nearly level, ${name}`, r.maxPhi < 12 * DEG, `max bank ${f1(r.maxPhi * RAD)}°`);
   check(`prompt recovery height loss, ${name}`, r.loss < 110, `${f1(r.loss, 0)} m (${f1(r.loss / 0.3048, 0)} ft)`);
 }
-for (const seed of [1, 2]) {
+for (const seed of [1, 3]) {   // seed 1: the left half stalls first, seed 3: the right half
   const r = stallRun({ seed, mode: 'pull' });
   const toward = Math.sign(r.phiAtMax) === -Math.sign(r.asym);   // asym > 0: the left half stalls first
   check(`stick held back: a wing drops (seed ${seed})`, within(r.maxPhi * RAD, 8, 70) && toward, `${f1(r.phiAtMax * RAD)}° (${r.asym > 0 ? 'left' : 'right'} half stalls first)`);
   check(`stick held back: elevator can only hold a mushing stall (seed ${seed})`, within(r.aHold * RAD, 16, 30), `mean α ${f1(r.aHold * RAD)}°`);
 }
-// landing flaps, stick held back, feet off: the nose yaws toward the dropping (stalled) wing
-{
-  const { ac, tr } = trimmed({ ias: 95, flaps: 1, gear: 1, h: 1500, seed: 1, pcl: 0.2 });
+// landing flaps, stick held back, feet off: the wing that stalls first drops and the nose yaws toward it
+for (const seed of [1, 3]) {
+  const { ac, tr } = trimmed({ ias: 95, flaps: 1, gear: 1, h: 1500, seed, pcl: 0.2 });
   ac.cmd.thr = 0; let aCmd = ac.air.alpha, aI = tr.de, tB = null, rSum = 0, n = 0;
   const aS = (AC.aStall + AC.aStallFlap) * DEG;
   for (let i = 0; i < 240 * 60; i++) {
@@ -103,7 +103,7 @@ for (const seed of [1, 2]) {
     ac.step(DT);
   }
   const drop = Math.sign(ac.air.phi), yaw = Math.sign(rSum);
-  check('wing drop with landing flaps: the nose yaws toward the low wing', n > 0 && drop !== 0 && yaw === drop, `bank ${f1(ac.air.phi * RAD)}°, mean yaw rate ${f1(rSum / Math.max(n, 1) * RAD, 2)}°/s`);
+  check(`wing drop with landing flaps: the first-stalled wing drops and the nose yaws toward it (seed ${seed})`, n > 0 && drop !== 0 && drop === -Math.sign(ac.asym) && yaw === drop, `${ac.asym > 0 ? 'left' : 'right'} half first, bank ${f1(ac.air.phi * RAD)}°, mean yaw rate ${f1(rSum / Math.max(n, 1) * RAD, 2)}°/s`);
 }
 for (const rud of [1, -1]) {
   const r = stallRun({ seed: 1, mode: 'spin', rud });

@@ -35,13 +35,14 @@ for (const [key, sc] of Object.entries({ calm: SCENARIOS.calm, xl: SCENARIOS.xl 
   }
   const td = f.ev.td, s2 = f.ev.score();
   console.log(`${key} assist=${assist} crashed=${f.crashed} t=${f.ac.t.toFixed(0)} maxPhi=${(maxPhi*RAD).toFixed(1)} TD s=${td?.s.toFixed(0)} tl=${td?.tl.toFixed(1)} vs=${td?.vsFpm.toFixed(0)} ias=${td?.ias.toFixed(1)} pitch=${td?.pitch.toFixed(1)} crab=${td?.crab.toFixed(1)} score=${s2?.total} stop=${f.ev.stopS?.toFixed(0)} events=${JSON.stringify(f.ev.events.map(e=>e.k))}`);
-  check(`${key} ${assist ? 'ASSIST' : 'DIRECT'}: robot lands on the runway and stops on it`, !f.crashed && td && td.onRunway && !f.ev.has('excursion') && !f.ev.has('skid'));
+  const stopped = f.ev.done && f.ev.stopS != null && f.ev.stopS <= FIELD.rwyLen;   // the excursion event is lateral only
+  check(`${key} ${assist ? 'ASSIST' : 'DIRECT'}: robot lands on the runway and stops on it`, !f.crashed && td && td.onRunway && stopped && !f.ev.has('excursion') && !f.ev.has('skid'), `stopped ${stopped ? Math.round(f.ev.stopS) + ' m from the threshold' : 'no'} of ${Math.round(FIELD.rwyLen)} m`);
 }
 // pitch attitude at touchdown for the autopilot
 for (const key of ['calm', 'xr']) {
   const f = new Flight({ wind: SCENARIOS[key], pilot: 'ap', seed: 5 });
   while (f.ac.t < 260 && !f.ev.done && !f.crashed) f.tick(f.dt);
   const td = f.ev.td; console.log(`AP ${key}: TD s=${td.s.toFixed(0)} vs=${td.vsFpm.toFixed(0)} ias=${td.ias.toFixed(1)} pitch=${td.pitch.toFixed(1)} score=${f.ev.score().total} stop=${f.ev.stopS.toFixed(0)}`);
-  check(`AP ${key}: nose-high touchdown (no nose-first)`, td.pitch > 2 && !td.noseFirst);
+  check(`AP ${key}: nose-high touchdown (no nose-first)`, td.pitch > 2 && !td.noseFirst && f.ev.done, `pitch ${td.pitch.toFixed(1)}°`);
 }
 done();

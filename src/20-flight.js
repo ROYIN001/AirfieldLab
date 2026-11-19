@@ -142,6 +142,7 @@ const AC = {
   Vref: 88, Vapp: 95, Vs0: 71,   // knots IAS, landing flaps
   gustAdd: 0.2,                  // approach speed additive: kt per (wind kt × turbulence level), about half the gust factor
   wingLow: 0.6 * DEG,            // decrab bank per m/s of mean crosswind: holds the sideslip with the nose on the runway heading
+  rudAid: 0.15, rudAidTau: 1.5,  // DIRECT rudder trim aid: 1/s on sideslip filtered over 1.5 s (slow, so the Dutch roll is left alone)
 };
 (() => { // inverse inertia tensor (FRD, Ixz product)
   const { Ixx, Iyy, Izz, Ixz } = AC, G = Ixx * Izz - Ixz * Ixz;
@@ -725,7 +726,7 @@ class PilotLaws {
   constructor(ac, trim) {
     this.ac = ac; this.thHold = trim.th; this.deI = trim.de; this.trimDe = trim.de; this.spdI = trim.thr; this.tdAt = null;
     this.daI = trim.da || 0; this.drI = trim.dr || 0; this.relief = 0; this.grip = 0;
-    this.ailTrim = trim.da || 0; this.rudTrim = trim.dr || 0;   // DIRECT: aileron auto-trim and rudder trim aid
+    this.ailTrim = trim.da || 0; this.rudTrim = trim.dr || 0; this.betaF = 0;   // DIRECT: aileron auto-trim, rudder trim aid
   }
   // inp: x roll (+right), y pitch (+pull), rud (+right), thr power lever 0..1, brake / brakeL / brakeR 0..1,
   // trim (+1 nose up … −1 nose down, held), flaps notch index, gear selector 1 down / 0 up
@@ -781,12 +782,15 @@ class PilotLaws {
       // Elevator trim by hand (trim keys) or automatic: with the stick released the trim follows the pitch
       // attitude rate (θ̇, so a level turn does not trim the nose down) and, with auto-trim on, the aileron trim
       // stops a slow roll. A rudder trim aid (like the trim-aid device of modern turboprop trainers) centres the
-      // ball against propeller yaw whenever the pedals are free.
+      // ball against propeller yaw whenever the pedals are free. It trims, it does not damp: it follows the sideslip
+      // averaged over 1.5 s and needs about 8 s after a power change, so the pedals still do the quick work (a faster
+      // loop on raw sideslip fought the Dutch roll and grew a yaw oscillation of ±15° after a power change).
       const thDot = a.q * Math.cos(a.phi) - a.r * Math.sin(a.phi), auto = opts.autoTrim !== false && !onG;
       if (inp.trim) this.trimDe = clamp(this.trimDe - inp.trim * AC.trimRate * dt, AC.trimMin, AC.trimMax);
       else if (auto && Math.abs(inp.y) < 0.05) this.trimDe = clamp(this.trimDe + 0.25 * thDot * dt, AC.trimMin, AC.trimMax);
       if (auto && Math.abs(inp.x) < 0.05) this.ailTrim = clamp(this.ailTrim - 0.3 * a.p * dt, -6 * DEG, 6 * DEG);
-      if (!onG && Math.abs(inp.rud) < 0.05) this.rudTrim = clamp(this.rudTrim - 0.8 * a.beta * dt, -10 * DEG, 10 * DEG);
+      this.betaF += (a.beta - this.betaF) * Math.min(1, dt / AC.rudAidTau);
+      if (!onG && Math.abs(inp.rud) < 0.05) this.rudTrim = clamp(this.rudTrim - AC.rudAid * this.betaF * dt, -10 * DEG, 10 * DEG);
       c.de = this.trimDe - inp.y * stickGain(AC.stickE, a.qH);
       c.da = this.ailTrim + inp.x * stickGain(AC.stickA, a.qbar);
       c.dr = this.rudTrim - inp.rud * stickGain(AC.stickR, a.qV);
@@ -966,7 +970,7 @@ class Flight {
       // take over: the trims start from the autopilot's steady (integrator) parts, not its momentary corrections
       laws.thHold = a.theta; laws.deI = ac.de; laws.spdI = ac.pcl;
       laws.trimDe = clamp(ap.deI, AC.trimMin, AC.trimMax);
-      laws.daI = laws.ailTrim = clamp(ap.daI, -6 * DEG, 6 * DEG); laws.drI = laws.rudTrim = clamp(ap.drI, -10 * DEG, 10 * DEG);
+      laws.daI = laws.ailTrim = clamp(ap.daI, -6 * DEG, 6 * DEG); laws.drI = laws.rudTrim = clamp(ap.drI, -10 * DEG, 10 * DEG); laws.betaF = a.beta;
       Object.assign(this.input, { thr: ac.pcl, flaps: flapIndex(ac.cmd.flaps), gear: ac.cmd.gear ? 1 : 0, trim: 0 });
     }
     this.pilot = p;

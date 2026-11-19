@@ -1,39 +1,53 @@
 name: Deploy to GitHub Pages
 
+# Pull requests into main run the same checks and build without deploying; pushes to main also deploy.
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Physics checks
+      - name: Physics and page checks
         run: |
-          node test/geo.test.mjs
-          for t in input engine controls config stall ground validation flight runways assist handover autoland; do node test/$t.test.mjs > /tmp/$t.log || { cat /tmp/$t.log; exit 1; }; tail -n 1 /tmp/$t.log; done
+          for t in geo input engine controls config stall ground validation flight runways assist handover autoland page; do
+            if timeout 600 node test/$t.test.mjs > /tmp/$t.log 2>&1; then
+              echo "$t: $(tail -n 1 /tmp/$t.log)"
+            else
+              code=$?; cat /tmp/$t.log
+              if [ $code -eq 124 ]; then echo "::error::test/$t.test.mjs timed out after 600 s"; else echo "::error::test/$t.test.mjs failed (exit $code)"; fi
+              exit 1
+            fi
+          done
       - name: Build
         run: node build.mjs
       - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
         with:
           path: dist
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

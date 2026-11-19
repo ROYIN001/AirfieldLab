@@ -14,13 +14,16 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 ## Commands
 - Build: `node build.mjs` → `dist/index.html`, and copies `data/*` into `dist/`.
 - Run: `python3 -m http.server 8080 -d dist`, open http://localhost:8080 (needs HTTP: the page fetches its data).
-- Physics tests (Node ≥ 18, no dependencies; each prints its numbers and exits non-zero if a check fails):
+- Tests (Node ≥ 18, no dependencies; each prints its numbers and exits non-zero if a check fails):
   `node test/geo.test.mjs`, `input`, `engine`, `controls`, `config`, `stall`, `ground`, `validation`, `flight`,
-  `runways`, `assist`, `handover`, `autoland` (all as `node test/<name>.test.mjs`; CI runs them all before
-  deploying). `autoland` flies 160 approaches and takes about a minute; the others take a few seconds each.
+  `runways`, `assist`, `handover`, `autoland`, `page` (all as `node test/<name>.test.mjs`). `autoland` flies 160
+  approaches and takes about a minute; the others take a few seconds each. `page` assembles the page through
+  `build.mjs`'s `assemble()` and parses the whole module script (a syntax error or a top-level name declared in
+  two files breaks the page), and checks the import map and that every element id the scripts use exists.
   `test/harness.mjs` evaluates the pure files listed in its `PURE` array (`10-atmo`, `15-geo`, `16-engine`,
-  `18-input`, `20-flight`) with `new Function`, so those files must stay DOM-free. Shared helpers: `test/lib/`
-  (`check.mjs` assertions, `sim.mjs` trimmed states and runway starts, `linear.mjs` Jacobian and modes).
+  `18-input`, `20-flight`) with `new Function` in strict mode, so those files must stay DOM-free. Shared helpers:
+  `test/lib/` (`check.mjs` assertions, `sim.mjs` trimmed states and runway starts, `linear.mjs` Jacobian and
+  modes). Loops in tests must stop on `f.crashed` too: a crashed `Flight` no longer advances time.
 - Screenshots: `test/shots.mjs <set>` (Playwright + Chromium, SwiftShader). jsDelivr is blocked in cloud sessions,
   so give it a local three.js: `npm pack three@0.186.0`, unpack, then set `THREE_DIR`, `DIST_DIR`, `SHOTS_DIR`,
   `PW_REQUIRE` (folder whose `node_modules` holds playwright, e.g. `/opt/node-tools/node_modules/`) and
@@ -83,7 +86,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   gear up once climbing above 30 m, levels at 300 m ≈ 1,000 ft at 105 KIAS); FLARE is kept only below 10 m and
   descending. Take-over carries the autopilot's trims into DIRECT. `PilotLaws`: ASSIST (attitude command, turn
   coordinator, auto-throttle, auto-brake) and DIRECT (pilot force through `stickGain`, manual trim, optional
-  auto-trim on θ̇ and roll rate, rudder trim aid that centres the ball).
+  auto-trim on θ̇ and roll rate, rudder trim aid that centres the ball: slow on purpose, sideslip filtered over
+  1.5 s at 0.15 /s, about 8 s after a power change, so it never fights the Dutch roll).
 - Evaluator: stabilised gates at 500 and 200 ft, callouts, touchdown score (sink 40, position 25, centre line 15,
   speed 10, attitude 10). Touchdown window 300–600 m is "perfect". Deductions: flap or gear overspeed −8, skid −4;
   caps for strikes (tail 45, prop 25, wing tip 30) and belly landing (10); a crash scores 0. Event labels in
@@ -104,8 +108,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Gamepad (W3C standard mapping): left stick roll/pitch, right stick X rudder, right stick Y throttle rate, LT/RT
   toe brakes, LB/RB flaps, D-pad ↑/↓ trim, Y gear, X camera, A take control, Start pause, Back restart. Other
   joysticks: throttle and rudder axes chosen in the setup panel. Rumble for buffet and touchdown.
-- Settings (setup panel, saved in localStorage `afl-input`): sensitivity, expo, dead zone; runway surface;
-  auto-trim for DIRECT.
+- Settings (setup panel): sensitivity, expo, dead zone and the joystick's throttle/rudder axes and inversion are
+  saved in localStorage `afl-input`; runway surface and DIRECT auto-trim are chosen per session (they reset on
+  reload).
 - Touch: virtual stick (expo applied), throttle rail, brake button, gear and flap buttons, trim buttons in DIRECT.
   Short landscape screens move the flap/gear buttons into a row and the ILS/PAPI widget left of the controls.
 - Cues: TRQ / FLAP / GEAR / TRIM readouts, FMA shows BRK or SKID, callouts STALL, OVERSPEED, TOO LOW · GEAR,
@@ -126,7 +131,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 
 ## Working in the cloud (Claude Code on the web)
 - The owner works from the cloud so their computer can stay off. Test changes on the GitHub Pages site:
-  every push to `main` runs `.github/workflows/pages.yml` (all physics tests, build, deploy).
+  `.github/workflows/pages.yml` runs every test and the build for pull requests into `main` (shown as a check on
+  the PR, nothing deployed) and for every push to `main`, which then deploys. Each test gets 600 s, the job 20 min.
   One-time setup in the repo: Settings → Pages → Source: GitHub Actions.
 - Work on a branch and open a pull request for anything that changes the flight model, so the owner can try it
   before merging.

@@ -77,7 +77,34 @@ for (const autoTrim of [true, false]) {
   const f = new Flight({ wind: SCENARIOS.xr, pilot: 'man', assist: false, autoThr: false, autoTrim, dh: 12, dtl: 40, seed: 9 });
   let maxPhi = 0, maxDv = 0; const v0 = f.ac.air.ias;
   for (let i = 0; i < 240 * 25; i++) { f.tick(DT); maxPhi = Math.max(maxPhi, Math.abs(f.ac.air.phi)); maxDv = Math.max(maxDv, Math.abs(f.ac.air.ias - v0) / KT); }
-  if (autoTrim) check('DIRECT hands off with auto-trim: holds wings level and speed for 25 s', maxPhi < 5 * DEG && maxDv < 5, `max bank ${f1(maxPhi * RAD)}°, speed ±${f1(maxDv)} kt`);
+  if (autoTrim) check('DIRECT hands off with auto-trim: holds wings level and speed for 25 s', maxPhi < 3 * DEG && maxDv < 5, `max bank ${f1(maxPhi * RAD)}°, speed ±${f1(maxDv)} kt`);
   else check('DIRECT hands off without auto-trim: drifts but no spiral dive in 25 s', maxPhi < 25 * DEG && maxDv < 10, `max bank ${f1(maxPhi * RAD)}°, speed ±${f1(maxDv)} kt`);
+}
+// each DIRECT aid on its own:
+// pitch auto-trim: after a short pull and release (hands off), the trim follows the attitude, so the aircraft holds
+// roughly the new attitude instead of swinging through a full phugoid
+{
+  const run = (autoTrim) => {
+    const f = new Flight({ wind: SCENARIOS.calm, pilot: 'man', assist: false, autoThr: false, autoTrim, seed: 9, dist: 9000 });
+    const de0 = f.laws.trimDe; let lo = 1e9, hi = -1e9;
+    for (let i = 0; i < 240; i++) { f.input.y = 0.3; f.tick(DT); }
+    f.input.y = 0;
+    for (let i = 0; i < 240 * 30; i++) { const a = f.ac.air; f.input.x = Math.max(-1, Math.min(1, -2 * a.phi - 0.5 * a.p)); f.tick(DT); lo = Math.min(lo, a.theta); hi = Math.max(hi, a.theta); }
+    return { range: hi - lo, moved: f.laws.trimDe - de0 };
+  };
+  const on = run(true), off = run(false);
+  check('DIRECT pitch auto-trim holds the attitude after a pull and release', on.range < 0.7 * off.range && Math.abs(on.moved) > 0.5 * DEG && off.moved === 0, `pitch swing ${f1(on.range * RAD)}° with, ${f1(off.range * RAD)}° without; trim moved ${f1(on.moved * RAD, 2)}°`);
+}
+// rudder trim aid: full power at approach speed with the pedals free; the aid centres the ball within about 15 s
+// and holds it there, without exciting the Dutch roll
+{
+  const f = new Flight({ wind: SCENARIOS.calm, pilot: 'man', assist: false, autoThr: false, autoTrim: true, seed: 9, dist: 9000 });
+  const rt0 = f.laws.rudTrim; let bPk = 0, bLate = 0, rLate = 0;
+  for (let i = 0; i < 240 * 40; i++) {
+    Object.assign(f.input, { thr: 1, x: 0, y: 0, rud: 0 }); f.tick(DT);
+    const a = f.ac.air; bPk = Math.max(bPk, Math.abs(a.beta));
+    if (i > 240 * 15) { bLate = Math.max(bLate, Math.abs(a.beta)); rLate = Math.max(rLate, Math.abs(a.r)); }
+  }
+  check('DIRECT rudder trim aid: full power, pedals free: ball centred after 15 s, no yaw oscillation', bLate < 1 * DEG && rLate < 1 * DEG && f.laws.rudTrim < rt0 - 2 * DEG, `peak sideslip ${f1(bPk * RAD)}°, after 15 s ≤ ${f1(bLate * RAD, 2)}° and ≤ ${f1(rLate * RAD, 2)}°/s yaw rate, rudder trim ${f1(rt0 * RAD)}° → ${f1(f.laws.rudTrim * RAD)}°`);
 }
 done();

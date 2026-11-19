@@ -56,14 +56,19 @@ export function linearModes(M, ac) {
   }
   const sub = (idx) => idx.map((i) => idx.map((j) => J[i][j]));
   const lon = roots(charPoly(sub([0, 2, 4, 7]))).map(modeInfo), lat = roots(charPoly(sub([1, 3, 5, 6]))).map(modeInfo);
-  const osc = lon.filter((m) => m.im > 0).sort((a, b) => b.wn - a.wn), lr = lon.filter((m) => m.im === 0);
-  // short period: the faster oscillatory pair (or a pair of fast real roots when overdamped); phugoid: the slow pair
+  const osc = lon.filter((m) => m.im > 0).sort((a, b) => b.wn - a.wn), lr = lon.filter((m) => m.im === 0).sort((a, b) => Math.abs(b.re) - Math.abs(a.re));
+  // short period: the faster oscillatory pair (or a pair of fast real roots when overdamped); phugoid: the slow pair.
+  // A pair of real roots is reported with the ω and ζ of the quadratic they make: ζ ≥ 1 when both decay; a root
+  // that grows gives ζ < 0 (both growing: ζ ≤ −1; one growing: ζ = −1), so a divergence fails every damping check.
+  const pair = (r1, r2) => {
+    const p = r1 * r2, s = -(r1 + r2), wn = Math.sqrt(Math.abs(p));
+    return { wn, zeta: p > 0 ? s / (2 * wn) : -1, reals: [r1, r2], overdamped: true };
+  };
   let sp, ph;
   if (osc.length === 2) { sp = osc[0]; ph = osc[1]; }
   else if (osc.length === 1) {
-    const fast = lr.sort((a, b) => Math.abs(b.re) - Math.abs(a.re));
-    if (osc[0].wn > 1) { sp = osc[0]; ph = { wn: 0, zeta: 1 }; } else { ph = osc[0]; const p = fast[0].re * fast[1].re, s = -(fast[0].re + fast[1].re); sp = { wn: Math.sqrt(p), zeta: s / (2 * Math.sqrt(p)), overdamped: true }; }
-  }
+    if (osc[0].wn > 1) { sp = osc[0]; ph = pair(lr[0].re, lr[1].re); } else { ph = osc[0]; sp = pair(lr[0].re, lr[1].re); }
+  } else { sp = pair(lr[0].re, lr[1].re); ph = pair(lr[2].re, lr[3].re); }
   const dr = lat.find((m) => m.im > 0), reals = lat.filter((m) => m.im === 0).sort((a, b) => a.re - b.re);
   const roll = reals[0], spiral = reals[reals.length - 1];
   return { sp, ph, dr, roll, spiral, lon, lat };
