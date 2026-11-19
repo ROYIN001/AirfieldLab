@@ -19,13 +19,15 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   the research scripts under `docs/research/` whose names match Node's default test patterns).
   `geo` (AIP geometry), `flight` (start trim, parked, autoland per wind), `runways` (autoland on all four ends),
   `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01), `modes` (trim, linearise and
-  MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `page` (parses the assembled page
+  MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `keys` (keyboard map and key handling,
+  research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `page` (parses the assembled page
   module and checks the element ids the scripts use). Autoland score floors sit just under the values measured on
   2026-11-19 (the assist robot's floor is a loose 50); touchdown points and every mode value have regression bands.
   A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
-  `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, so those
-  three files must stay DOM-free. `build.mjs` exports `assemble()` for the page test.
+  `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, and
+  `test/keys.test.mjs` evaluates `18-keys.js` the same way, so those four files must stay DOM-free. `build.mjs`
+  exports `assemble()` for the page test.
 - Screenshots: `test/shots.mjs <set>` (Playwright + Chrome, SwiftShader). Paths inside it point at the original
   cloud workspace (`/home/claude/...`, `/opt/npm-tools`, vendored three.js); adjust before use.
 
@@ -35,6 +37,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 00-head.js | three.js imports (OrbitControls, BufferGeometryUtils) |
 | 10-atmo.js | pure: constants (KT, FT, NM, DEG, RAD, G0), USSA-1976 `atmosphere(h, isaDev)`, NOAA sun position, sky radiance |
 | 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
+| 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions; `app.keys`) |
 | 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()`, `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
@@ -70,10 +73,16 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   on all four runways. Calm has no turbulence, so its scores do not depend on the seed.
 
 ## Controls (current)
-- Keyboard: W/S or ↑/↓ pitch, A/D or ←/→ roll, Q/E rudder, Shift/Ctrl throttle, B brake, C camera, T take control,
-  P pause, R restart. Keys already ramp linearly (`readInputs` in 90-app.js: pitch 2.0/s, roll and rudder 2.5/s,
-  release 5/s). Research round 1 §11 finds the ramps too fast, and Ctrl (throttle down) held with W makes Ctrl+W,
-  which closes the Chrome tab before the page can block it.
+- Keyboard (physical keys, `KeyboardEvent.code`, so a Thai layout works; map in `src/18-keys.js`): W/S or ↑/↓
+  pitch, A/D or ←/→ roll, Q/E rudder, = / - (or PageUp/PageDown, Numpad 9/3) throttle, B brake, C camera,
+  T take control, P pause, R restart. No Ctrl, Meta or Alt in the map: pressing one releases every held flight key
+  and keys pressed with one are ignored. Ctrl (the old throttle-down key) with W made Ctrl+W, which closes the
+  Chrome tab before the page can block it (research round 1 §11.4.5). On macOS, Cmd's keyup also releases held keys
+  (the browser sends no keyup for a key released while Cmd is down). C/T/P/R act once per press (key repeat
+  ignored); while flying, bound keys do not scroll the page; held keys are released when the window loses focus or
+  the tab is hidden. Keys ramp linearly
+  (`readInputs` in 90-app.js: pitch 2.0/s, roll and rudder 2.5/s, release 5/s); research round 1 §11 finds the
+  ramps too fast (its task list, item 10).
 - Touch: virtual stick, throttle rail, brake button.
 
 ## Research reports (docs/research/)
