@@ -39,6 +39,31 @@ test('macOS: S held, Cmd pressed and released, no keyup for S arrives: nothing s
   k.down(ev('MetaLeft', { metaKey: true }), FLY);
   k.up(ev('MetaLeft'));   // the browser never sends the keyup of S released while Cmd was down
   assert.equal(k.size, 0);
+  // Cmd's keyup releases held keys by itself (its keydown may have gone to another window)
+  for (const code of ['MetaLeft', 'MetaRight', 'OSLeft']) {
+    k.down(ev('KeyS'), FLY); assert.ok(k.has('dn'));
+    k.up(ev(code)); assert.equal(k.size, 0, `keyup ${code}`);
+  }
+});
+
+test('two keys held: releasing one keeps the other; toggles are never held; modifier codes clear on their own', () => {
+  const k = new K.KeyState();
+  k.down(ev('KeyW'), FLY); k.down(ev('KeyD'), FLY);
+  assert.deepEqual([...k].sort(), ['rt', 'up']);
+  k.up(ev('KeyD'));
+  assert.deepEqual([...k], ['up'], 'releasing D keeps W');
+  k.up(ev('KeyX')); assert.deepEqual([...k], ['up'], 'keyup of an unbound key changes nothing');
+  // a toggle key is not a held key, even before its keyup
+  k.down(ev('KeyC'), FLY); assert.deepEqual([...k], ['up']);
+  k.up(ev('KeyC')); assert.deepEqual([...k], ['up']);
+  // a key that arrives with a modifier flag releases what was held and is not added (the modifier is down)
+  k.down(ev('KeyA', { ctrlKey: true }), FLY); assert.equal(k.size, 0);
+  // modifier keys clear by their code alone: AltGr on Linux is AltRight with altKey false, and some browsers report
+  // the Windows key as OSLeft / OSRight with metaKey false
+  for (const code of ['ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'MetaLeft', 'MetaRight', 'OSLeft', 'OSRight']) {
+    k.down(ev('KeyS'), FLY); assert.ok(k.has('dn'));
+    k.down(ev(code), FLY); assert.equal(k.size, 0, `keydown ${code}`);
+  }
 });
 
 test('throttle on = / − , PageUp / PageDown and Numpad 9 / 3, not on Shift or Ctrl', () => {
