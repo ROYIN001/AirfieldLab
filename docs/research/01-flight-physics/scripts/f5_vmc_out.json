@@ -1,0 +1,32 @@
+{
+ "vmc_JSBSim737": {
+  "V_ms": 52.43,
+  "V_kt": 101.9,
+  "F_at_Vmc_kN": 75.5,
+  "yawMoment_kNm": 370,
+  "inputs": {
+   "S": 108.78945984,
+   "b": 28.86456,
+   "Cndr": 0.2,
+   "drmax": 0.35,
+   "ye": 4.9022,
+   "F0": 88964.432,
+   "bpr": 5.9
+  }
+ },
+ "vmc_JSBSim737_conservative_kt": 114.8,
+ "cruiseCheck": [
+  {
+   "engine": "CFM56-7B26",
+   "OpenAP_ratio": 0.208,
+   "BY_takeoffEq": 0.175,
+   "Howe": 0.246
+  },
+  {
+   "engine": "CFM56-5B4",
+   "OpenAP_ratio": 0.189,
+   "BY_takeoffEq": 0.169,
+   "Howe": 0.241
+  }
+ ]
+}

@@ -1,0 +1,675 @@
+{
+ "_meta": {
+  "note": "fixture: เครื่องฝึกสมมติของรอบที่ 1 = AC ใน src/20-flight.js:100-118 (cabf0f0) ใช้ทดสอบ lm_card เท่านั้น ไม่ใช่เครื่องบินจริง"
+ },
+ "trainer_r1": {
+  "_na": {
+   "v": [
+    "turbofan.*",
+    "controls.reference_types.*"
+   ],
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "R1:V19"
+   ],
+   "conf": "สูง",
+   "est": true,
+   "note": "เครื่องฝึกรอบที่ 1 เป็น turboprop: turbofan.* ของรอบที่ 1 เป็นค่าคลาสเครื่องยนต์ของเครื่องบินโดยสาร และ controls.reference_types.* เป็นค่าอ้างอิงของ B737/ATR72 (รอบที่ 3) จึงไม่ใช้กับแบบนี้"
+  },
+  "airframe": {
+   "identity": {
+    "v": {
+     "manufacturer": "-",
+     "model": "AirfieldLab trainer (round 1)",
+     "variant": "fictional",
+     "engine": "turboprop 700 kW",
+     "seats": 2,
+     "category": "aerobatic"
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R1:V19"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+   },
+   "weights": {
+    "training_mass": {
+     "v": 2250,
+     "u": "kg",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "MTOW": {
+     "v": 2250,
+     "u": "kg",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    }
+   },
+   "inertia": {
+    "Ixx": {
+     "v": 2600,
+     "u": "kg m2",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Iyy": {
+     "v": 7300,
+     "u": "kg m2",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Izz": {
+     "v": 9200,
+     "u": "kg m2",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Ixz": {
+     "v": 120,
+     "u": "kg m2",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    }
+   },
+   "geometry": {
+    "length": {
+     "v": 10.1,
+     "u": "m",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าประมาณ ใช้เฉพาะตรวจ radii"
+    }
+   }
+  },
+  "aero": {
+   "ref": {
+    "S": {
+     "v": 16.3,
+     "u": "m2",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "b": {
+     "v": 10.2,
+     "u": "m",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "c": {
+     "v": 1.65,
+     "u": "m",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    }
+   },
+   "legacy": {
+    "v": {
+     "CD0": 0.024,
+     "K": 0.062,
+     "CL0": 0.25,
+     "CLa": 4.8,
+     "CLflap": 0.55,
+     "CDflap": 0.05,
+     "CDgear": 0.02,
+     "Cm0": 0.045,
+     "Cma": -0.72,
+     "Cmflap": -0.1,
+     "aStall": 17,
+     "aStallFlap": -2.5
+    },
+    "u": "-, 1/rad, deg",
+    "scope": "aircraft",
+    "src": [
+     "R1:V19"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+   },
+   "derivatives": {
+    "CLq": {
+     "v": 7.5,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "CLadot": {
+     "v": 1.6,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "CLde": {
+     "v": 0.35,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "CYb": {
+     "v": -0.6,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "CYdr": {
+     "v": 0.15,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "CYr": {
+     "v": 0.2,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Clb": {
+     "v": -0.085,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Clp": {
+     "v": -0.47,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Clr": {
+     "v": 0.11,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Clda": {
+     "v": 0.16,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Cldr": {
+     "v": 0.012,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Cmq": {
+     "v": -12.5,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Cmadot": {
+     "v": -4.5,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Cmde": {
+     "v": -1.15,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Cnb": {
+     "v": 0.075,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Cnp": {
+     "v": -0.055,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Cnr": {
+     "v": -0.14,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Cnda": {
+     "v": -0.01,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "Cndr": {
+     "v": -0.072,
+     "u": "1/rad",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    }
+   },
+   "flaps": {
+    "detents": {
+     "v": [
+      {
+       "name": "UP",
+       "flap_deg": 0,
+       "dCL0": 0
+      },
+      {
+       "name": "LDG",
+       "flap_deg": 40,
+       "dCL0": 0.55,
+       "dCD0": 0.05,
+       "dCm0": -0.1
+      }
+     ],
+     "u": "-",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "มุมแฟลป 40° เป็นค่าสมมติ"
+    }
+   }
+  },
+  "propulsion": {
+   "legacy": {
+    "v": {
+     "P": 700000,
+     "eta": 0.8,
+     "T0": 11500,
+     "idle": 0.045
+    },
+    "u": "W, -, N, -",
+    "scope": "engine",
+    "src": [
+     "R1:V19"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+   },
+   "layout": {
+    "v": [
+     {
+      "id": 1,
+      "pos": [
+       3.5,
+       0,
+       0
+      ],
+      "axis": [
+       1,
+       0,
+       0
+      ],
+      "type": "turboprop",
+      "model": "fictional",
+      "prop_sense": 1
+     }
+    ],
+    "u": "m FRD",
+    "scope": "engine",
+    "src": [
+     "R1:V19"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+   }
+  },
+  "controls": {
+   "surfaces": {
+    "elevator": {
+     "v": {
+      "travel_deg": {
+       "up": 22,
+       "down": 15
+      }
+     },
+     "u": "deg",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "aileron": {
+     "v": {
+      "travel_deg": {
+       "up": 20,
+       "down": 20
+      }
+     },
+     "u": "deg",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "rudder": {
+     "v": {
+      "travel_deg": {
+       "left": 25,
+       "right": 25
+      }
+     },
+     "u": "deg",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    }
+   }
+  },
+  "gear": {
+   "layout": {
+    "v": "tricycle_retract",
+    "u": "-",
+    "scope": "gear",
+    "src": [
+     "R1:V19"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+   },
+   "legacy": {
+    "v": [
+     {
+      "b": [
+       2.3,
+       0,
+       1.36
+      ],
+      "k": 52000,
+      "c": 5000,
+      "stroke": 0.22,
+      "steer": true
+     },
+     {
+      "b": [
+       -0.35,
+       -1.55,
+       1.38
+      ],
+      "k": 125000,
+      "c": 12500,
+      "stroke": 0.25,
+      "brake": true
+     },
+     {
+      "b": [
+       -0.35,
+       1.55,
+       1.38
+      ],
+      "k": 125000,
+      "c": 12500,
+      "stroke": 0.25,
+      "brake": true
+     }
+    ],
+    "u": "m FRD, N/m, N s/m, m",
+    "scope": "gear",
+    "src": [
+     "R1:V19"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "AC.gear ตรง (override ที่ lm_card รองรับ)"
+   }
+  },
+  "speeds": {
+   "VS0_kt": {
+    "v": 71,
+    "u": "kt CAS",
+    "scope": "aircraft",
+    "src": [
+     "R1:V19"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "AC.Vs0"
+   },
+   "VREF_kt": {
+    "v": 88,
+    "u": "kt CAS",
+    "scope": "aircraft",
+    "src": [
+     "R1:V19"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+   },
+   "VAPP_kt": {
+    "v": 95,
+    "u": "kt CAS",
+    "scope": "aircraft",
+    "src": [
+     "R1:V19"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+   }
+  },
+  "validation": {
+   "trim_targets": {
+    "cruise": {
+     "v": {
+      "ias_kt": 155,
+      "h_ft": 3000
+     },
+     "u": "kt, ft",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    },
+    "approach": {
+     "v": {
+      "ias_kt": 95,
+      "h_m": 300,
+      "gamma_deg": -3
+     },
+     "u": "kt, m, deg",
+     "scope": "aircraft",
+     "src": [
+      "R1:V19"
+     ],
+     "conf": "สูง",
+     "est": true,
+     "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+    }
+   },
+   "takeoff_test": {
+    "v": {
+     "flap": "UP",
+     "VR_kt": 82,
+     "theta_deg": 10
+    },
+    "u": "kt, deg",
+    "scope": "aircraft",
+    "src": [
+     "R1:V19"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "ค่าของเครื่องฝึกสมมติรอบที่ 1 (AC ปัจจุบัน)"
+   },
+   "stall_test": {
+    "v": {
+     "UP": 106,
+     "LDG": 96
+    },
+    "u": "kt",
+    "scope": "aircraft",
+    "src": [
+     "R1:V19"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "ความเร็วเริ่มต้นของ v10_perf"
+   }
+  }
+ }
+}

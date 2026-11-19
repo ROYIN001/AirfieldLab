@@ -115,6 +115,42 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   Short landscape screens move the flap/gear buttons into a row and the ILS/PAPI widget left of the controls.
 - Cues: TRQ / FLAP / GEAR / TRIM readouts, FMA shows BRK or SKID, callouts STALL, OVERSPEED, TOO LOW · GEAR,
   view shake in the buffet (off with reduced motion).
+- These replace the earlier linear key ramps that research round 1 §11 found too fast, and the Ctrl
+  throttle key (Ctrl+W closed the tab).
+
+## Research reports (docs/research/)
+- The owner's 5-round research program lives in `docs/research/`: `01-flight-physics.md`, `02-light-aircraft.md`,
+  `03-airliners.md`, `04-weather.md`, `05-airport-city.md` (each file appears when its round's pull request is
+  merged). Each report cites its sources with licences, marks
+  estimates (ค่าประมาณ), gives test cases with expected values, and ends with "สิ่งที่ Claude Code ควรทำ".
+- Round 1 is split: the summary and prioritised task list are in `01-flight-physics.md`; the 12 topic files,
+  the parameter schema (`schema.md`), the merged JSON (`params-trainer.json`) and the computation scripts are in
+  `01-flight-physics/`. Parameters use the leaf format `{v, u, scope, src, conf, est, note}`; scopes `aircraft`,
+  `engine`, `propeller`, `gear` are per aircraft type (rounds 2–3 fill them), `environment` and `sim` are shared.
+- Round 2 (light aircraft and trainers) is split the same way in `02-light-aircraft/`. `schema-ext.md` adds
+  per-type cards keyed by type id (`c172s`, `da40ng`, `da42ng`, `pc9m`, `t6a`, ...) with `_inherits` for variants,
+  shared with round 3. `params-light.json` is merged by `scripts/lm_merge.mjs`; `scripts/lm_lib.mjs` `loadType(id)`
+  resolves a card, and `scripts/lm_card.mjs` `buildAC(card)` / `applyAC(M, ac)` load it into the current sim for tests.
+  The card owns `speeds.VREF_kt` / `VAPP_kt`; handling (08) and procedures (09) quote it. After editing any JSON block,
+  `node docs/research/02-light-aircraft/scripts/lm_merge.mjs --coverage --dry --strict` must report 0 warnings.
+- Read the relevant report before changing physics, input or data. Physics code changes wait until the owner
+  approves the development plan that follows all five rounds.
+
+## Next phase (owner's request): control feel and flight-physics realism
+The prioritised task list at the end of `docs/research/01-flight-physics.md` refines this list. Steps 1–7 have a
+first implementation, each with a Node test (described above under Flight model and Controls); what changes next
+follows the owner's development plan.
+Suggested order, each with a Node test before tuning by feel in the browser:
+1. Input: proportional keyboard ramps with self-centring, elevator trim keys, flap and gear controls,
+   differential brakes; Gamepad API (stick, rudder, throttle axes) with dead zone and expo; sensitivity settings.
+2. Propeller/engine: thrust from power and advance ratio with an efficiency curve, turbine spool-up lag,
+   torque, P-factor and slipstream yaw/roll.
+3. Control effectiveness with dynamic pressure and slipstream; trim and stick-force model.
+4. Configuration changes: flap/gear transition time, pitching moments, speed limits.
+5. Stall behaviour: wing drop and departure; buffet cue.
+6. Ground handling: speed-limited nosewheel steering, better tyre model, wet runway.
+7. Validation suite against reference trainer numbers: stall speeds, best-rate climb, glide ratio, takeoff and
+   landing distances, and linearised modes (short period, phugoid, Dutch roll, spiral) frequency and damping.
 
 ## Possible next steps
 - Runway surface visuals for wet / standing water (the physics has them; the ground shader does not yet).

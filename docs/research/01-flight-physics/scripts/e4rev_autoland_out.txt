@@ -1,0 +1,8 @@
+{"current_calm":{"crashed":false,"score":100,"maxGsDots":0.48,"iasRange_kt":[88.7,95]},
+"current_head":{"crashed":false,"score":96,"maxGsDots":0.53,"iasRange_kt":[87.8,96.5]},
+"current_xr":{"crashed":false,"score":97,"maxGsDots":0.6,"iasRange_kt":[86.8,96.9]},
+"current_xl":{"crashed":false,"score":88,"maxGsDots":0.57,"iasRange_kt":[83.4,101.5]},
+"engine_calm":{"crashed":false,"score":100,"maxGsDots":0.48,"iasRange_kt":[88.7,95]},
+"engine_head":{"crashed":false,"score":96,"maxGsDots":0.53,"iasRange_kt":[87.9,96.5]},
+"engine_xr":{"crashed":false,"score":97,"maxGsDots":0.59,"iasRange_kt":[86.8,96.9]},
+"engine_xl":{"crashed":false,"score":88,"maxGsDots":0.56,"iasRange_kt":[83.5,101.3]}}

@@ -1,0 +1,60 @@
+{
+  "validation": {
+    "classification": {
+      "hqClassCategory": {"v": {"class": "I", "approachLanding": "C", "cruiseClimb": "B", "takeoff": "C"}, "u": "-", "scope": "aircraft", "src": ["V7", "V10"], "conf": "กลาง", "est": true, "note": "เครื่องฝึกเบาเครื่องยนต์เดียวจัดเป็น Class I (small, light airplanes); ช่วงลงจอดเป็น Category C; ถ้าต่อไปทำผาดโผนแบบเครื่องฝึกนำเข้า Class IV ให้ตรวจเพิ่มด้วยเกณฑ์ Class IV"},
+      "fstdAnalogue": {"v": {"faa": "FTD Level 5 (generic aero) ถึง Level 6", "easa": "FNPT/BITD (class-specific modelling)"}, "u": "-", "scope": "sim", "src": ["V3", "V5"], "conf": "กลาง", "est": true, "note": "AirfieldLab ไม่ได้ขอรับรอง ใช้ระดับเหล่านี้เป็นกรอบเทียบความลึกของการตรวจเท่านั้น"}
+    },
+    "hqLimits": {
+      "shortPeriodZeta_catAC": {"v": {"L1": [0.35, 1.30], "L2": [0.25, 2.00], "L3": [0.15, null]}, "u": "-", "scope": "sim", "src": ["V7", "V10"], "conf": "สูง", "est": false, "note": "MIL-F-8785C Table IV ตามที่ NASA grant report ถอดไว้; L3 ไม่มีขอบบนที่อ่านได้"},
+      "shortPeriodZeta_catB": {"v": {"L1": [0.30, 2.00], "L2": [0.20, 2.00], "L3": [0.15, null]}, "u": "-", "scope": "sim", "src": ["V11"], "conf": "กลาง", "est": false, "note": "จากหน้าเอกสาร MathWorks (ทุติยภูมิ) ใช้กับช่วง cruise"},
+      "CAP_catC": {"v": {"L1": [0.16, 3.6], "L2": [0.096, 10.0]}, "u": "1/(g s^2) = rad^2/s^2 per g/rad", "scope": "sim", "src": ["V9"], "conf": "ต่ำ", "est": false, "note": "ขอบล่าง 0.16 (L1) และ 0.096 (L2) ยืนยันจากข้อความใน NASA CR-170391; ขอบบน 3.6 และ 10 ยังไม่ยืนยันจากต้นฉบับ"},
+      "phugoid": {"v": {"L1": {"zetaMin": 0.04}, "L2": {"zetaMin": 0.0}, "L3": {"T2min_s": 55}}, "u": "- / s", "scope": "sim", "src": ["V10", "V11"], "conf": "กลาง", "est": false, "note": "MIL-F-8785C 3.2.1.2"},
+      "dutchRoll_classI_catC": {"v": {"L1": {"zeta": 0.08, "zetaWn": 0.15, "wn": 0.4}, "L2": {"zeta": 0.02, "zetaWn": 0.05, "wn": 0.4}, "L3": {"zeta": 0.0, "wn": 0.4}}, "u": "- / rad/s / rad/s", "scope": "sim", "src": ["V7", "V10", "V11"], "conf": "กลาง", "est": false, "note": "ζ 0.08 และ ζωn 0.15 ยืนยันจากสองแหล่ง; ωn 0.4 และค่า L2/L3 ยังไม่ยืนยันจากต้นฉบับ (V10 ให้ ωn 1.0 ซึ่งตรงกับ Category A)"},
+      "rollModeTauMax_classI_catC": {"v": {"L1": 1.0, "L2": 1.4, "L3": 10.0}, "u": "s", "scope": "sim", "src": ["V7", "V10"], "conf": "กลาง", "est": false, "note": "L3 = 10 s ยังไม่ยืนยัน"},
+      "spiralT2min_catAC": {"v": {"L1": 12, "L2": 8, "L3": 4}, "u": "s", "scope": "sim", "src": ["V7", "V10"], "conf": "สูง", "est": false, "note": "เวลาที่มุมเอียงเพิ่มเป็นสองเท่าเมื่อปล่อยคันบังคับ; Category B ใช้ 20 s ที่ L1 ตามความจำ ยังไม่ยืนยัน"},
+      "rollPerformance_classI_catC": {"v": {"bankChange_deg": 30, "L1": 1.3, "L2": 1.8, "L3": 2.6}, "u": "s", "scope": "sim", "src": ["V10"], "conf": "ต่ำ", "est": false, "note": "30° ใน 1.3 s มาจาก V10; ค่า L2/L3 ยังไม่ยืนยัน"},
+      "equivalentTimeDelay": {"v": {"L1": 0.10, "L2": 0.20, "L3": 0.25}, "u": "s", "scope": "sim", "src": ["V7"], "conf": "กลาง", "est": false, "note": "allowable airplane response delay; ใช้กับทั้งสาย input→ภาพ ในเบราว์เซอร์"}
+    },
+    "fstdTolerances": {
+      "groundAccel_1b1": {"v": {"timePct": 5, "distPct": 5, "distAbs_m": 61}, "u": "% / m", "scope": "sim", "src": ["V2"], "conf": "กลาง", "est": false, "note": "±5% time and distance or ±5% time and ±200 ft"},
+      "normalTakeoff_1b4": {"v": {"iasAbs_kt": 3, "pitchAbs_deg": 1.5, "aoaAbs_deg": 1.5, "heightAbs_ft": 20}, "u": "kt / deg / ft", "scope": "sim", "src": ["V2"], "conf": "กลาง", "est": false, "note": "brake release ถึง 200 ft AGL"},
+      "normalClimb_1c1": {"v": {"iasAbs_kt": 3, "rocPct": 5, "rocAbs_fpm": 100, "minBand_ft": 1000}, "u": "kt / % / fpm / ft", "scope": "sim", "src": ["V2", "V3"], "conf": "กลาง", "est": false, "note": "บันทึกอย่างน้อย 1000 ft"},
+      "levelAccelDecel_1d1_1d2": {"v": {"timePct": 5, "minSpeedChange_kt": 50}, "u": "% / kt", "scope": "sim", "src": ["V2"], "conf": "กลาง", "est": false, "note": "เร่ง max continuous / ลด idle อย่างน้อย 50 kt"},
+      "idleDescent_1d4": {"v": {"iasAbs_kt": 3, "rodPct": 5, "rodAbs_fpm": 200}, "u": "kt / % / fpm", "scope": "sim", "src": ["V2"], "conf": "กลาง", "est": false, "note": "บันทึกอย่างน้อย 1000 ft"},
+      "stopping_1e1": {"v": {"timePct": 5, "distPct": 10, "distAbs_m": 61, "rule": "smaller"}, "u": "% / m", "scope": "sim", "src": ["V2"], "conf": "กลาง", "est": false, "note": "ระยะไม่เกิน 4000 ft ใช้ ±200 ft หรือ ±10% ค่าที่เล็กกว่า"},
+      "engineAccel_1f1": {"v": {"TtPct": 10, "TiPct": 10, "TiAbs_s": 0.25}, "u": "% / s", "scope": "sim", "src": ["V2"], "conf": "กลาง", "est": false, "note": "slam throttle flight idle ถึง go-around"},
+      "powerChange_2c1": {"v": {"iasAbs_kt": 3, "altAbs_ft": 100, "pitchPct": 20, "pitchAbs_deg": 1.5}, "u": "kt / ft / % / deg", "scope": "sim", "src": ["V2"], "conf": "กลาง", "est": false, "note": "free response หลังเปลี่ยนกำลัง ช่วง approach"},
+      "longTrim_2c5": {"v": {"elevAbs_deg": 1, "pitchAbs_deg": 1, "thrustPct": 5}, "u": "deg / %", "scope": "sim", "src": ["V2", "V3"], "conf": "กลาง", "est": false, "note": "cruise, approach, landing"},
+      "stall_2c8": {"v": {"iasAbs_kt": 3, "bankAbs_deg": 2}, "u": "kt / deg", "scope": "sim", "src": ["V2", "V3"], "conf": "กลาง", "est": false, "note": "ฉบับก่อน 2016; ฉบับปัจจุบันแก้ไขหัวข้อ stall แล้ว"},
+      "phugoid_2c9": {"v": {"periodPct": 10, "t2Pct": 10, "zetaAbs": 0.02, "minCycles": 3}, "u": "% / -", "scope": "sim", "src": ["V2", "V3"], "conf": "สูง", "est": false, "note": "cruise"},
+      "shortPeriod_2c10": {"v": {"pitchAbs_deg": 1.5, "qAbs_degs": 2.0, "nzAbs_g": 0.10}, "u": "deg / deg/s / g", "scope": "sim", "src": ["V2"], "conf": "กลาง", "est": false, "note": "cruise"},
+      "rollRate_2d2": {"v": {"pct": 10, "abs_degs": 2, "wheelFraction": 0.33}, "u": "% / deg/s", "scope": "sim", "src": ["V2"], "conf": "กลาง", "est": false, "note": "ใช้คันบังคับราว 1/3"},
+      "spiral_2d4": {"v": {"bankAbs_deg": 2, "bankPct": 10, "window_s": 20}, "u": "deg / % / s", "scope": "sim", "src": ["V2"], "conf": "กลาง", "est": false, "note": "correct trend ทั้งสองทิศ"},
+      "dutchRoll_2d7": {"v": {"periodAbs_s": 0.5, "periodPct": 10, "t2Pct": 10, "zetaAbs": 0.02, "minCycles": 6}, "u": "s / % / -", "scope": "sim", "src": ["V2"], "conf": "สูง", "est": false, "note": "yaw damper off"},
+      "steadySideslip_2d8": {"v": {"bankAbs_deg": 2, "betaAbs_deg": 1, "ailPct": 10, "ailAbs_deg": 2}, "u": "deg / %", "scope": "sim", "src": ["V2"], "conf": "กลาง", "est": false, "note": "อย่างน้อยสองตำแหน่ง rudder"},
+      "normalLanding_2e1": {"v": {"iasAbs_kt": 3, "pitchAbs_deg": 1.5, "aoaAbs_deg": 1.5, "heightPct": 10, "heightAbs_ft": 10}, "u": "kt / deg / % / ft", "scope": "sim", "src": ["V2"], "conf": "กลาง", "est": false, "note": "จาก 200 ft AGL ถึงล้อหน้าแตะ"}
+    },
+    "procedures": {
+      "stallEntryRate": {"v": 1.0, "u": "kt/s (สูงสุด)", "scope": "sim", "src": ["V16", "V17"], "conf": "สูง", "est": false, "note": "ลดความเร็วไม่เกิน 1 kt/s; power idle; ปีกระดับ"},
+      "stallTrimSpeed": {"v": {"part23": "1.5 VS1 หรือ minimum trim", "part25": [1.13, 1.30]}, "u": "× VS1 / × VSR", "scope": "sim", "src": ["V16", "V17"], "conf": "สูง", "est": false, "note": "Part 25 trim ระหว่าง 1.13–1.30 VSR"},
+      "stallHoldAtStop": {"v": 2.0, "u": "s", "scope": "sim", "src": ["V17"], "conf": "สูง", "est": false, "note": "ถ้าคันบังคับถึง stop ให้ค้างอย่างน้อย 2 s"},
+      "screenHeight": {"v": 15.24, "u": "m (50 ft)", "scope": "sim", "src": ["V18"], "conf": "สูง", "est": false, "note": "takeoff ถึง 50 ft และ landing จาก 50 ft"},
+      "v50MinFactor_singleEngine": {"v": 1.2, "u": "× VS1", "scope": "aircraft", "src": ["V17"], "conf": "สูง", "est": false, "note": "ความเร็วที่ 50 ft ของเครื่องยนต์เดียวไม่ต่ำกว่า 1.2 VS1 (Part 23 เดิม)"},
+      "takeoffRunsRecommended": {"v": 6, "u": "runs", "scope": "sim", "src": ["V17"], "conf": "สูง", "est": false, "note": "ในซิมใช้ 1 รันลมสงบ + กรณีลมหน้า/หลัง"},
+      "testWindMax": {"v": {"kt": 10, "fracVS1": 0.12}, "u": "kt / -", "scope": "sim", "src": ["V17"], "conf": "กลาง", "est": false, "note": "ลมระหว่างทดสอบสมรรถนะ; ในซิมตั้งลมสงบ"},
+      "linearisation": {"v": {"eps_vel_mps": 1e-3, "eps_rate_rads": 1e-5, "eps_angle_rad": 1e-5, "adot": "quasi-steady"}, "u": "-", "scope": "sim", "src": ["V19"], "conf": "สูง", "est": true, "note": "central difference; ผลตรงกับ ml-matrix 12-state ของ section 9"}
+    },
+    "typicalModes": {
+      "c172x_jsbsim_100kcas_3000ft": {"v": {"sp_wn": 6.50, "sp_zeta": 0.68, "ph_T_s": 32.0, "ph_zeta": 0.13, "dr_wn": 2.25, "dr_zeta": 0.16, "tauR_s": 0.20, "spiral_tau_s": 46}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V15"], "conf": "ต่ำ", "est": true, "note": "คำนวณจากโมเดลเปิด JSBSim c172x ไม่ใช่ข้อมูลบินจริง; spiral เสถียร"},
+      "c172x_jsbsim_65kcas_flaps30": {"v": {"sp_wn": 4.38, "sp_zeta": 0.67, "ph_T_s": 19.7, "ph_zeta": 0.12, "dr_wn": 1.54, "dr_zeta": 0.16, "tauR_s": 0.30, "spiral_tau_s": 64}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V15"], "conf": "ต่ำ", "est": true, "note": "โมเดลเปิด; 1000 ft"},
+      "b737_jsbsim_140kcas_landing": {"v": {"sp_wn": 1.05, "sp_zeta": 0.54, "ph_T_s": 37.2, "ph_zeta": 0.066, "dr_wn": 1.09, "dr_zeta": 0.24, "tauR_s": 0.98, "spiral_tau_s": 14.5}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V15"], "conf": "ต่ำ", "est": true, "note": "โมเดลทั่วไปของ JSBSim ไม่ได้ผ่าน validation; 1500 ft gear down flaps เต็ม"},
+      "b747_M08_40000ft": {"v": {"sp_wn": 0.962, "sp_zeta": 0.387, "ph_wn": 0.0673, "ph_zeta": 0.0489}, "u": "rad/s, -", "scope": "aircraft", "src": ["V14"], "conf": "กลาง", "est": false, "note": "เอกสารสอน MIT OCW จากข้อมูล Nelson/Reid; ทุติยภูมิ"},
+      "gaFlightTest_dutchRoll": {"v": {"T_s": [2, 4], "t_half_max_s": 2}, "u": "s", "scope": "aircraft", "src": ["V13"], "conf": "กลาง", "est": false, "note": "เครื่อง GA ที่ดีที่สุดในการทดสอบของ NASA 1966"}
+    },
+    "currentModel": {
+      "approach95": {"v": {"sp_wn": 2.221, "sp_zeta": 0.578, "CAP": 0.951, "nAlpha": 5.19, "ph_T_s": 25.5, "ph_zeta": 0.115, "dr_wn": 1.611, "dr_zeta": 0.139, "dr_zetaWn": 0.225, "tauR_s": 0.218, "spiral_t_half_s": 36.2, "t30_s": 0.80}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V19"], "conf": "สูง", "est": true, "note": "IAS 95 kt flaps 1 gear down 300 m γ −3°; α̇ แบบ quasi-steady"},
+      "cruise155": {"v": {"sp_wn": 3.593, "sp_zeta": 0.560, "CAP": 0.935, "nAlpha": 13.81, "ph_T_s": 42.5, "ph_zeta": 0.073, "dr_wn": 2.525, "dr_zeta": 0.145, "dr_zetaWn": 0.366, "tauR_s": 0.138, "spiral_t_half_s": 86.6, "t30_s": 0.53}, "u": "rad/s, -, s", "scope": "aircraft", "src": ["V19"], "conf": "สูง", "est": true, "note": "IAS 155 kt clean 3000 ft ระดับ"},
+      "performance": {"v": {"VSR_flaps1_kt": 71.9, "VCLmax_flaps1_kt": 70.0, "VSR_clean_kt": 79.6, "Vy_SL_kt": 128, "ROCmax_SL_fpm": 3225, "glideLD_zeroThrust": 16.5, "glideLD_idle": 21.7, "TO_groundRoll_flaps0_m": 358, "TO_50ft_flaps0_m": 590, "LDG_50ft_maxBrake_m": 714}, "u": "kt, fpm, -, m", "scope": "aircraft", "src": ["V19"], "conf": "สูง", "est": true, "note": "2250 kg ISA ลมสงบ; ตัวเลข regression ไม่ใช่ค่าจริง"}
+    }
+  }
+}

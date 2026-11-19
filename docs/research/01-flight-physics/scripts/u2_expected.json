@@ -1,0 +1,143 @@
+{
+ "alphadot": {
+  "aeromatic_4_over_A_plus_2": {
+   "deda": 0.477,
+   "CLadot": 1.996,
+   "Cmadot": -6.558
+  },
+  "sec06_backsolved": {
+   "deda": 0.36,
+   "CLadot": 1.506,
+   "Cmadot": -4.948
+  },
+  "chosen": {
+   "deda": 0.4,
+   "CLadot": 1.674,
+   "Cmadot": -5.497
+  },
+  "current": {
+   "CLadot": 1.6,
+   "Cmadot": -4.5
+  },
+  "CLq_tail": 4.184,
+  "Cmq_tail": -13.744
+ },
+ "A": 6.383,
+ "rEpsFit": {
+  "a": 3.99,
+  "m": 0.652,
+  "rms": 0.01
+ },
+ "ge": [
+  {
+   "hb": 0.05,
+   "kD_tani": 0.345,
+   "kD_repo": 0.39,
+   "kL_proposed": 1.168,
+   "kL_repo": 1.073,
+   "rEps": 0.432,
+   "dCm_repo": -0.0366
+  },
+  {
+   "hb": 0.1,
+   "kD_tani": 0.513,
+   "kD_repo": 0.719,
+   "kL_proposed": 1.12,
+   "kL_repo": 1.034,
+   "rEps": 0.589,
+   "dCm_repo": -0.0169
+  },
+  {
+   "hb": 0.15,
+   "kD_tani": 0.626,
+   "kD_repo": 0.852,
+   "kL_proposed": 1.089,
+   "kL_repo": 1.018,
+   "rEps": 0.686,
+   "dCm_repo": -0.0089
+  },
+  {
+   "hb": 0.2,
+   "kD_tani": 0.707,
+   "kD_repo": 0.911,
+   "kL_proposed": 1.069,
+   "kL_repo": 1.011,
+   "rEps": 0.753,
+   "dCm_repo": -0.0053
+  },
+  {
+   "hb": 0.3,
+   "kD_tani": 0.813,
+   "kD_repo": 0.958,
+   "kL_proposed": 1.043,
+   "kL_repo": 1.005,
+   "rEps": 0.838,
+   "dCm_repo": -0.0025
+  },
+  {
+   "hb": 0.5,
+   "kD_tani": 0.916,
+   "kD_repo": 0.985,
+   "kL_proposed": 1.019,
+   "kL_repo": 1.002,
+   "rEps": 0.921,
+   "dCm_repo": -0.0009
+  },
+  {
+   "hb": 1,
+   "kD_tani": 0.985,
+   "kD_repo": 0.996,
+   "kL_proposed": 1.003,
+   "kL_repo": 1,
+   "rEps": 0.982,
+   "dCm_repo": -0.0002
+  }
+ ],
+ "trimRepo": {
+  "CLreq": 1.305,
+  "dAlpha_deg": -0.16,
+  "dDe_deg": -0.74,
+  "CDiRatio": 0.719
+ },
+ "trimProposed": {
+  "hb01": {
+   "sigma": 0.487,
+   "dAlphaInd_deg": -1.81,
+   "eps_deg": 6.8,
+   "dEps_deg": -2.79,
+   "dCm": -0.102,
+   "dAlpha_deg": -1.51,
+   "dDe_deg": -4.13
+  },
+  "hb02": {
+   "sigma": 0.293,
+   "dAlphaInd_deg": -1.09,
+   "eps_deg": 6.8,
+   "dEps_deg": -1.68,
+   "dCm": -0.0614,
+   "dAlpha_deg": -0.91,
+   "dDe_deg": -2.49
+  },
+  "hb05": {
+   "sigma": 0.084,
+   "dAlphaInd_deg": -0.31,
+   "eps_deg": 6.8,
+   "dEps_deg": -0.54,
+   "dCm": -0.0196,
+   "dAlpha_deg": -0.25,
+   "dDe_deg": -0.82
+  }
+ },
+ "blown": {
+  "Sb": 2.63,
+  "Sb_over_S": 0.161,
+  "ga80": 0.119,
+  "app": 0.016
+ },
+ "static": {
+  "rho": 1.16,
+  "vi": 32.56,
+  "qs": 2459,
+  "rs_over_R": 0.707
+ }
+}

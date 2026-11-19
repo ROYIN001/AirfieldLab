@@ -1,0 +1,25 @@
+h=100 ft W10=15 kt turb=1: W20(code)=13.98 kt; spec(8785C with turb factor) su=1.234 sw=0.719 m/s, Lu=154.0 Lw=30.5 m
+   measured sigma n=1.222 e=1.260 d=0.713 (taper 1.00 -> expected d 0.719)
+   R(xi=0.5L): w meas 0.594 [code e^-xi=0.607, Dryden8785C (1-xi/2)e^-xi=0.455]; u meas 0.603 [e^-xi 0.607]
+   R(xi=1L): w meas 0.345 [code e^-xi=0.368, Dryden8785C (1-xi/2)e^-xi=0.184]; u meas 0.363 [e^-xi 0.368]
+   R(xi=2L): w meas 0.103 [code e^-xi=0.135, Dryden8785C (1-xi/2)e^-xi=0.000]; u meas 0.100 [e^-xi 0.135]
+h=300 ft W10=15 kt turb=1: W20(code)=13.98 kt; spec(8785C with turb factor) su=1.014 sw=0.719 m/s, Lu=256.1 Lw=91.4 m
+   measured sigma n=0.996 e=1.034 d=0.700 (taper 1.00 -> expected d 0.719)
+   R(xi=0.5L): w meas 0.582 [code e^-xi=0.607, Dryden8785C (1-xi/2)e^-xi=0.455]; u meas 0.598 [e^-xi 0.607]
+   R(xi=1L): w meas 0.343 [code e^-xi=0.368, Dryden8785C (1-xi/2)e^-xi=0.184]; u meas 0.340 [e^-xi 0.368]
+   R(xi=2L): w meas 0.138 [code e^-xi=0.135, Dryden8785C (1-xi/2)e^-xi=0.000]; u meas 0.082 [e^-xi 0.135]
+h=100 ft W10=15 kt turb=1.6: W20(code)=13.98 kt; spec(8785C with turb factor) su=1.974 sw=1.150 m/s, Lu=154.0 Lw=30.5 m
+   measured sigma n=1.955 e=2.016 d=1.141 (taper 1.00 -> expected d 1.150)
+   R(xi=0.5L): w meas 0.594 [code e^-xi=0.607, Dryden8785C (1-xi/2)e^-xi=0.455]; u meas 0.603 [e^-xi 0.607]
+   R(xi=1L): w meas 0.345 [code e^-xi=0.368, Dryden8785C (1-xi/2)e^-xi=0.184]; u meas 0.363 [e^-xi 0.368]
+   R(xi=2L): w meas 0.103 [code e^-xi=0.135, Dryden8785C (1-xi/2)e^-xi=0.000]; u meas 0.100 [e^-xi 0.135]
+h=50 ft W10=10 kt turb=0.6: W20(code)=9.32 kt; spec(8785C with turb factor) su=0.529 sw=0.288 m/s, Lu=94.7 Lw=15.2 m
+   measured sigma n=0.525 e=0.537 d=0.287 (taper 1.00 -> expected d 0.288)
+   R(xi=0.5L): w meas 0.609 [code e^-xi=0.607, Dryden8785C (1-xi/2)e^-xi=0.455]; u meas 0.602 [e^-xi 0.607]
+   R(xi=1L): w meas 0.358 [code e^-xi=0.368, Dryden8785C (1-xi/2)e^-xi=0.184]; u meas 0.374 [e^-xi 0.368]
+   R(xi=2L): w meas 0.118 [code e^-xi=0.135, Dryden8785C (1-xi/2)e^-xi=0.000]; u meas 0.138 [e^-xi 0.135]
+h=30 ft W10=15 kt turb=1: W20(code)=13.98 kt; spec(8785C with turb factor) su=1.364 sw=0.719 m/s, Lu=62.4 Lw=9.1 m
+   measured sigma n=1.356 e=1.379 d=0.439 (taper 0.61 -> expected d 0.438)
+   R(xi=0.5L): w meas 0.615 [code e^-xi=0.607, Dryden8785C (1-xi/2)e^-xi=0.455]; u meas 0.602 [e^-xi 0.607]
+   R(xi=1L): w meas 0.367 [code e^-xi=0.368, Dryden8785C (1-xi/2)e^-xi=0.184]; u meas 0.363 [e^-xi 0.368]
+   R(xi=2L): w meas 0.127 [code e^-xi=0.135, Dryden8785C (1-xi/2)e^-xi=0.000]; u meas 0.142 [e^-xi 0.135]

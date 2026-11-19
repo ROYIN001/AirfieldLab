@@ -1,0 +1,2323 @@
+{
+ "generated": "lh_attitude.mjs (cards via lm_lib.loadType, 19 Nov 2026)",
+ "note": "ค่าประมาณ: theta = alpha + gamma (SL ISA); touchdown/flare in ground effect (round-1 §2.4)",
+ "checks": {
+  "fpm_per_deg_65kt": 114.9,
+  "fpm_per_deg_90kt": 159.1,
+  "fpm_per_deg_120kt": 212.1,
+  "vs_3deg_gs65": 345,
+  "vs_3deg_gs74": 393,
+  "vs_3deg_gs84": 446,
+  "vs_3deg_gs100": 531,
+  "t6_150kias_flapsUP_level": 2,
+  "t6_250kias_level": -1.1,
+  "c172_alpha_flap0_65kias_level": 6.84,
+  "c172_alpha_flap30_65kias_3deg": 2.85,
+  "c172_balloon_dn_flap0to10_85kias": 0.221,
+  "c172_balloon_dn_flap10to20_80kias": 0.23,
+  "c172_balloon_dn_flap20to30_70kias": 0.093,
+  "da40_balloon_dn_UPtoTO_100kias": 0.99
+ },
+ "inputs": {
+  "c172s": {
+   "S": 16.165,
+   "b": 10.9982,
+   "A": 7.483,
+   "CLa": 5.17,
+   "CLa_w": 4.691,
+   "CL0": {
+    "0": 0.25,
+    "10": 0.367,
+    "20": 0.503,
+    "30": 0.571
+   },
+   "CLmax": {
+    "0": 1.464,
+    "10": 1.581,
+    "20": 1.717,
+    "30": 1.785
+   },
+   "mass": 1009.6,
+   "landFlap": "30",
+   "ge": {
+    "xmac": 0.036,
+    "zmac": -0.95,
+    "xm": -0.411,
+    "zm": 1.3
+   },
+   "VAPP": 65,
+   "VAPP_u": "kt IAS",
+   "VREF": 61
+  },
+  "c172r": {
+   "S": 16.165,
+   "b": 10.9982,
+   "A": 7.483,
+   "CLa": 5.17,
+   "CLa_w": 4.691,
+   "CL0": {
+    "0": 0.25,
+    "10": 0.367,
+    "20": 0.503,
+    "30": 0.571
+   },
+   "CLmax": {
+    "0": 1.464,
+    "10": 1.581,
+    "20": 1.717,
+    "30": 1.785
+   },
+   "mass": 998.7,
+   "landFlap": "30",
+   "ge": {
+    "xmac": 0.036,
+    "zmac": -0.95,
+    "xm": -0.411,
+    "zm": 1.3
+   },
+   "VAPP": 65,
+   "VAPP_u": "kt IAS",
+   "VREF": 62
+  },
+  "c152": {
+   "S": 14.818,
+   "b": 10.16,
+   "A": 6.966,
+   "CLa": 5.002,
+   "CLa_w": 4.589,
+   "CL0": {
+    "0": 0.25,
+    "10": 0.3633,
+    "20": 0.4635,
+    "30": 0.5638
+   },
+   "CLmax": {
+    "0": 1.275,
+    "10": 1.388,
+    "20": 1.489,
+    "30": 1.589
+   },
+   "mass": 717.47,
+   "landFlap": "30",
+   "ge": {
+    "xmac": -0.0103,
+    "zmac": -0.85,
+    "xm": -0.368,
+    "zm": 1.1
+   },
+   "VAPP": 60,
+   "VAPP_u": "kt IAS",
+   "VREF": 54
+  },
+  "da40ng": {
+   "S": 13.244,
+   "b": 11.63,
+   "A": 10.223,
+   "CLa": 5.45,
+   "CLa_w": 4.99,
+   "CL0": {
+    "UP": 0.34,
+    "T/O": 0.86,
+    "LDG": 1.09
+   },
+   "CLmax": {
+    "UP": 1.362,
+    "T/O": 1.543,
+    "LDG": 1.69
+   },
+   "mass": 1150,
+   "landFlap": "LDG",
+   "ge": {
+    "xmac": -0.052,
+    "zmac": 0.3,
+    "xm": -0.33,
+    "zm": 0.91
+   },
+   "VAPP": 74,
+   "VAPP_u": "kt IAS",
+   "VREF": 74
+  },
+  "da40_180": {
+   "S": 13.54,
+   "b": 11.94,
+   "A": 10.53,
+   "CLa": 5.45,
+   "CLa_w": 4.99,
+   "CL0": {
+    "UP": 0.34,
+    "T/O": 0.86,
+    "LDG": 1.09
+   },
+   "CLmax": {
+    "UP": 1.583,
+    "T/O": 1.611,
+    "LDG": 1.642
+   },
+   "mass": 1050,
+   "landFlap": "LDG",
+   "ge": {
+    "xmac": -0.052,
+    "zmac": 0.3,
+    "xm": -0.33,
+    "zm": 0.91
+   },
+   "VAPP": 65,
+   "VAPP_u": "kt IAS",
+   "VREF": 65
+  },
+  "da40d": {
+   "S": 13.54,
+   "b": 11.94,
+   "A": 10.53,
+   "CLa": 5.45,
+   "CLa_w": 4.99,
+   "CL0": {
+    "UP": 0.34,
+    "T/O": 0.86,
+    "LDG": 1.09
+   },
+   "CLmax": {
+    "UP": 1.562,
+    "T/O": 1.602,
+    "LDG": 1.693
+   },
+   "mass": 1060,
+   "landFlap": "LDG",
+   "ge": {
+    "xmac": -0.052,
+    "zmac": 0.3,
+    "xm": -0.33,
+    "zm": 0.91
+   },
+   "VAPP": 66,
+   "VAPP_u": "kt IAS",
+   "VREF": 66
+  },
+  "da42ng": {
+   "S": 16.29,
+   "b": 13.42,
+   "A": 11.06,
+   "CLa": 5.511,
+   "CLa_w": 5.11,
+   "CL0": {
+    "UP": 0.35,
+    "APP": 0.6499999999999999,
+    "LDG": 0.95
+   },
+   "CLmax": {
+    "UP": 1.47,
+    "APP": 1.59,
+    "LDG": 1.86
+   },
+   "mass": 1752,
+   "landFlap": "LDG",
+   "ge": {
+    "xmac": -0.141,
+    "zmac": 0.11,
+    "xm": -0.326,
+    "zm": 1.08
+   },
+   "VAPP": 84,
+   "VAPP_u": "kt IAS",
+   "VREF": 84
+  },
+  "da42_tae125": {
+   "S": 16.29,
+   "b": 13.42,
+   "A": 11.06,
+   "CLa": 5.511,
+   "CLa_w": 5.11,
+   "CL0": {
+    "UP": 0.35,
+    "APP": 0.6499999999999999,
+    "LDG": 0.95
+   },
+   "CLmax": {
+    "UP": 1.54,
+    "APP": 1.69,
+    "LDG": 1.94
+   },
+   "mass": 1600,
+   "landFlap": "LDG",
+   "ge": {
+    "xmac": -0.141,
+    "zmac": 0.11,
+    "xm": -0.326,
+    "zm": 1.08
+   },
+   "VAPP": 82,
+   "VAPP_u": "kt IAS",
+   "VREF": 76
+  },
+  "da42_vi": {
+   "S": 16.29,
+   "b": 13.42,
+   "A": 11.06,
+   "CLa": 5.511,
+   "CLa_w": 5.11,
+   "CL0": {
+    "UP": 0.35,
+    "APP": 0.6499999999999999,
+    "LDG": 0.95
+   },
+   "CLmax": {
+    "UP": 1.47,
+    "APP": 1.59,
+    "LDG": 1.86
+   },
+   "mass": 1752,
+   "landFlap": "LDG",
+   "ge": {
+    "xmac": -0.141,
+    "zmac": 0.11,
+    "xm": -0.326,
+    "zm": 1.08
+   },
+   "VAPP": 84,
+   "VAPP_u": "kt IAS",
+   "VREF": 84
+  },
+  "t6a": {
+   "S": 16.28,
+   "b": 10.19,
+   "A": 6.378,
+   "CLa": 4.988,
+   "CLa_w": 4.6,
+   "CL0": {
+    "UP": 0.25,
+    "TO": 0.55,
+    "LDG": 0.8
+   },
+   "CLmax": {
+    "UP": 1.5003,
+    "LDG": 1.8423
+   },
+   "mass": 2574.6,
+   "landFlap": "LDG",
+   "ge": {
+    "xmac": -0.033,
+    "zmac": 0.3,
+    "xm": -0.277,
+    "zm": 1.35
+   },
+   "VAPP": 100,
+   "VAPP_u": "kt IAS",
+   "VREF": 91
+  },
+  "t6c": {
+   "S": 16.28,
+   "b": 10.19,
+   "A": 6.378,
+   "CLa": 4.988,
+   "CLa_w": 4.6,
+   "CL0": {
+    "UP": 0.25,
+    "TO": 0.55,
+    "LDG": 0.8
+   },
+   "CLmax": {
+    "UP": 1.5003,
+    "LDG": 1.8423
+   },
+   "mass": 2775.5,
+   "landFlap": "LDG",
+   "ge": {
+    "xmac": -0.033,
+    "zmac": 0.3,
+    "xm": -0.277,
+    "zm": 1.35
+   },
+   "VAPP": 104,
+   "VAPP_u": "kt IAS",
+   "VREF": 95
+  },
+  "pc9m": {
+   "S": 16.29,
+   "b": 10.19,
+   "A": 6.374,
+   "CLa": 4.987,
+   "CLa_w": 4.6,
+   "CL0": {
+    "UP": 0.25,
+    "TO": 0.55,
+    "LDG": 0.8
+   },
+   "CLmax": {
+    "UP": 1.3984,
+    "LDG": 1.7414
+   },
+   "mass": 2123.8,
+   "landFlap": "LDG",
+   "ge": {
+    "xmac": 0,
+    "zmac": 0.3,
+    "xm": -0.277,
+    "zm": 1.35
+   },
+   "VAPP": 90,
+   "VAPP_u": "kt CAS",
+   "VREF": 85
+  },
+  "pc7mk2": {
+   "S": 16.29,
+   "b": 10.19,
+   "A": 6.374,
+   "CLa": 4.987,
+   "CLa_w": 4.6,
+   "CL0": {
+    "UP": 0.25,
+    "TO": 0.55,
+    "LDG": 0.8
+   },
+   "CLmax": {
+    "UP": 1.4118,
+    "LDG": 1.7691
+   },
+   "mass": 2068.8,
+   "landFlap": "LDG",
+   "ge": {
+    "xmac": 0,
+    "zmac": 0.3,
+    "xm": -0.277,
+    "zm": 1.35
+   },
+   "VAPP": 89,
+   "VAPP_u": "kt CAS",
+   "VREF": 84
+  },
+  "p2006t": {
+   "S": 14.76,
+   "b": 11.4,
+   "A": 8.8,
+   "CLa": 4.152,
+   "CLa_w": 4.87,
+   "CL0": {
+    "UP": 0.289,
+    "T/O": 0.733,
+    "FULL": 0.863
+   },
+   "CLmax": {
+    "UP": 1.088,
+    "T/O": 1.465,
+    "FULL": 1.576
+   },
+   "mass": 1128,
+   "landFlap": "FULL",
+   "ge": {
+    "xmac": 0,
+    "zmac": -0.45,
+    "xm": -0.4153,
+    "zm": 1.05
+   },
+   "VAPP": 70,
+   "VAPP_u": "kt IAS",
+   "VREF": 70
+  }
+ },
+ "types": {
+  "c172s": {
+   "rotation": {
+    "ias_kt": 55,
+    "cas_kt": 59,
+    "flap": "0",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.085,
+    "alpha_deg": 9.3,
+    "pitch_deg": 9.3,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 74,
+    "cas_kt": 73.2,
+    "flap": "0",
+    "rate_fpm": 730,
+    "gamma_deg": 5.65,
+    "CL": 0.702,
+    "alpha_deg": 5,
+    "pitch_deg": 10.7,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 80,
+    "cas_kt": 78,
+    "flap": "0",
+    "rate_fpm": 600,
+    "gamma_deg": 4.36,
+    "CL": 0.619,
+    "alpha_deg": 4.1,
+    "pitch_deg": 8.4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 105,
+    "cas_kt": 102,
+    "flap": "0",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.363,
+    "alpha_deg": 1.3,
+    "pitch_deg": 1.3,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 100,
+    "cas_kt": 97,
+    "flap": "0",
+    "rate_fpm": -500,
+    "gamma_deg": -2.92,
+    "CL": 0.401,
+    "alpha_deg": 1.7,
+    "pitch_deg": -1.2,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 90,
+    "cas_kt": 87,
+    "flap": "0",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.499,
+    "alpha_deg": 2.8,
+    "pitch_deg": 2.8,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 75,
+    "cas_kt": 75.5,
+    "flap": "20",
+    "rate_fpm": -500,
+    "gamma_deg": -3.75,
+    "CL": 0.661,
+    "alpha_deg": 1.8,
+    "pitch_deg": -2,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 65,
+    "cas_kt": 67.5,
+    "flap": "30",
+    "rate_fpm": -358,
+    "gamma_deg": -3,
+    "CL": 0.828,
+    "alpha_deg": 2.8,
+    "pitch_deg": -0.2,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 60,
+    "cas_kt": 63,
+    "flap": "20",
+    "rate_fpm": 300,
+    "gamma_deg": 2.7,
+    "CL": 0.951,
+    "alpha_deg": 5,
+    "pitch_deg": 7.7,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 38,
+    "cas_kt": 48.3,
+    "flap": "30",
+    "rate_fpm": -120,
+    "gamma_deg": -1.41,
+    "CL": 1.619,
+    "alpha_deg": 10.6,
+    "pitch_deg": 9.2,
+    "pitch_oge_deg": 10.2,
+    "h_mac_m": 2.29,
+    "h_over_b": 0.208,
+    "sigma": 0.282,
+    "vs0_cas_train": 46
+   },
+   "flare": {
+    "ias_kt": 52,
+    "ias_range_kt": [
+     65,
+     38
+    ],
+    "flap": "30",
+    "pitch_start_deg": -0.2,
+    "pitch_deg": 9.2,
+    "rate_fpm": -120
+   }
+  },
+  "c172r": {
+   "rotation": {
+    "ias_kt": 55,
+    "cas_kt": 59,
+    "flap": "0",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.074,
+    "alpha_deg": 9.1,
+    "pitch_deg": 9.1,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 79,
+    "cas_kt": 78.1,
+    "flap": "0",
+    "rate_fpm": 720,
+    "gamma_deg": 5.22,
+    "CL": 0.61,
+    "alpha_deg": 4,
+    "pitch_deg": 9.2,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 80,
+    "cas_kt": 79,
+    "flap": "0",
+    "rate_fpm": 600,
+    "gamma_deg": 4.3,
+    "CL": 0.597,
+    "alpha_deg": 3.8,
+    "pitch_deg": 8.1,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 105,
+    "cas_kt": 102.5,
+    "flap": "0",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.356,
+    "alpha_deg": 1.2,
+    "pitch_deg": 1.2,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 100,
+    "cas_kt": 98,
+    "flap": "0",
+    "rate_fpm": -500,
+    "gamma_deg": -2.89,
+    "CL": 0.389,
+    "alpha_deg": 1.5,
+    "pitch_deg": -1.4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 90,
+    "cas_kt": 89,
+    "flap": "0",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.472,
+    "alpha_deg": 2.5,
+    "pitch_deg": 2.5,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 75,
+    "cas_kt": 74.5,
+    "flap": "20",
+    "rate_fpm": -500,
+    "gamma_deg": -3.8,
+    "CL": 0.672,
+    "alpha_deg": 1.9,
+    "pitch_deg": -1.9,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 65,
+    "cas_kt": 65.5,
+    "flap": "30",
+    "rate_fpm": -347,
+    "gamma_deg": -3,
+    "CL": 0.87,
+    "alpha_deg": 3.3,
+    "pitch_deg": 0.3,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 55,
+    "cas_kt": 58.5,
+    "flap": "20",
+    "rate_fpm": 300,
+    "gamma_deg": 2.9,
+    "CL": 1.091,
+    "alpha_deg": 6.5,
+    "pitch_deg": 9.4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 42,
+    "cas_kt": 48,
+    "flap": "30",
+    "rate_fpm": -120,
+    "gamma_deg": -1.41,
+    "CL": 1.619,
+    "alpha_deg": 10.6,
+    "pitch_deg": 9.2,
+    "pitch_oge_deg": 10.2,
+    "h_mac_m": 2.29,
+    "h_over_b": 0.208,
+    "sigma": 0.282,
+    "vs0_cas_train": 45.8
+   },
+   "flare": {
+    "ias_kt": 54,
+    "ias_range_kt": [
+     65,
+     42
+    ],
+    "flap": "30",
+    "pitch_start_deg": 0.3,
+    "pitch_deg": 9.2,
+    "rate_fpm": -120
+   }
+  },
+  "c152": {
+   "rotation": {
+    "ias_kt": 50,
+    "cas_kt": 53,
+    "flap": "0",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.043,
+    "alpha_deg": 9.1,
+    "pitch_deg": 9.1,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 67,
+    "cas_kt": 66.3,
+    "flap": "0",
+    "rate_fpm": 715,
+    "gamma_deg": 6.11,
+    "CL": 0.663,
+    "alpha_deg": 4.7,
+    "pitch_deg": 10.8,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 75,
+    "cas_kt": 73.5,
+    "flap": "0",
+    "rate_fpm": 500,
+    "gamma_deg": 3.85,
+    "CL": 0.541,
+    "alpha_deg": 3.3,
+    "pitch_deg": 7.2,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 95,
+    "cas_kt": 92.5,
+    "flap": "0",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.342,
+    "alpha_deg": 1.1,
+    "pitch_deg": 1.1,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 85,
+    "cas_kt": 83,
+    "flap": "0",
+    "rate_fpm": -500,
+    "gamma_deg": -3.41,
+    "CL": 0.424,
+    "alpha_deg": 2,
+    "pitch_deg": -1.4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 80,
+    "cas_kt": 78,
+    "flap": "0",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.481,
+    "alpha_deg": 2.7,
+    "pitch_deg": 2.7,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 65,
+    "cas_kt": 65.5,
+    "flap": "20",
+    "rate_fpm": -500,
+    "gamma_deg": -4.32,
+    "CL": 0.681,
+    "alpha_deg": 2.5,
+    "pitch_deg": -1.8,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 60,
+    "cas_kt": 61,
+    "flap": "30",
+    "rate_fpm": -323,
+    "gamma_deg": -3,
+    "CL": 0.786,
+    "alpha_deg": 2.5,
+    "pitch_deg": -0.5,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 55,
+    "cas_kt": 56.5,
+    "flap": "20",
+    "rate_fpm": 200,
+    "gamma_deg": 2,
+    "CL": 0.917,
+    "alpha_deg": 5.2,
+    "pitch_deg": 7.2,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 43,
+    "cas_kt": 45.1,
+    "flap": "30",
+    "rate_fpm": -120,
+    "gamma_deg": -1.51,
+    "CL": 1.441,
+    "alpha_deg": 9,
+    "pitch_deg": 7.5,
+    "pitch_oge_deg": 8.5,
+    "h_mac_m": 1.98,
+    "h_over_b": 0.195,
+    "sigma": 0.3,
+    "vs0_cas_train": 42.9
+   },
+   "flare": {
+    "ias_kt": 52,
+    "ias_range_kt": [
+     60,
+     43
+    ],
+    "flap": "30",
+    "pitch_start_deg": -0.5,
+    "pitch_deg": 7.5,
+    "rate_fpm": -120
+   }
+  },
+  "da40ng": {
+   "rotation": {
+    "ias_kt": 63,
+    "cas_kt": 61.7,
+    "flap": "T/O",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.378,
+    "alpha_deg": 5.4,
+    "pitch_deg": 5.4,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 72,
+    "cas_kt": 71.1,
+    "flap": "T/O",
+    "rate_fpm": 650,
+    "gamma_deg": 5.18,
+    "CL": 1.034,
+    "alpha_deg": 1.8,
+    "pitch_deg": 7,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 88,
+    "cas_kt": 87.5,
+    "flap": "UP",
+    "rate_fpm": 500,
+    "gamma_deg": 3.23,
+    "CL": 0.685,
+    "alpha_deg": 3.6,
+    "pitch_deg": 6.9,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 115,
+    "cas_kt": 115,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.397,
+    "alpha_deg": 0.6,
+    "pitch_deg": 0.6,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 110,
+    "cas_kt": 110,
+    "flap": "UP",
+    "rate_fpm": -500,
+    "gamma_deg": -2.57,
+    "CL": 0.434,
+    "alpha_deg": 1,
+    "pitch_deg": -1.6,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 90,
+    "cas_kt": 89.6,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.654,
+    "alpha_deg": 3.3,
+    "pitch_deg": 3.3,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 80,
+    "cas_kt": 79.5,
+    "flap": "T/O",
+    "rate_fpm": -500,
+    "gamma_deg": -3.56,
+    "CL": 0.83,
+    "alpha_deg": -0.3,
+    "pitch_deg": -3.9,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 74,
+    "cas_kt": 72.9,
+    "flap": "LDG",
+    "rate_fpm": -387,
+    "gamma_deg": -3,
+    "CL": 0.986,
+    "alpha_deg": -1.1,
+    "pitch_deg": -4.1,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 72,
+    "cas_kt": 71.1,
+    "flap": "T/O",
+    "rate_fpm": 400,
+    "gamma_deg": 3.18,
+    "CL": 1.037,
+    "alpha_deg": 1.9,
+    "pitch_deg": 5,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 61,
+    "cas_kt": 58.5,
+    "flap": "LDG",
+    "rate_fpm": -120,
+    "gamma_deg": -1.16,
+    "CL": 1.533,
+    "alpha_deg": 3,
+    "pitch_deg": 1.9,
+    "pitch_oge_deg": 3.5,
+    "h_mac_m": 0.62,
+    "h_over_b": 0.053,
+    "sigma": 0.642,
+    "vs0_cas_train": 55.8
+   },
+   "flare": {
+    "ias_kt": 68,
+    "ias_range_kt": [
+     74,
+     61
+    ],
+    "flap": "LDG",
+    "pitch_start_deg": -4.1,
+    "pitch_deg": 1.9,
+    "rate_fpm": -120
+   }
+  },
+  "da40_180": {
+   "rotation": {
+    "ias_kt": 59,
+    "cas_kt": 62.1,
+    "flap": "T/O",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.217,
+    "alpha_deg": 3.7,
+    "pitch_deg": 3.7,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 62,
+    "cas_kt": 64.2,
+    "flap": "T/O",
+    "rate_fpm": 780,
+    "gamma_deg": 6.89,
+    "CL": 1.13,
+    "alpha_deg": 2.8,
+    "pitch_deg": 9.7,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 70,
+    "cas_kt": 70.3,
+    "flap": "UP",
+    "rate_fpm": 600,
+    "gamma_deg": 4.84,
+    "CL": 0.947,
+    "alpha_deg": 6.4,
+    "pitch_deg": 11.2,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 110,
+    "cas_kt": 110,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.388,
+    "alpha_deg": 0.5,
+    "pitch_deg": 0.5,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 105,
+    "cas_kt": 105,
+    "flap": "UP",
+    "rate_fpm": -500,
+    "gamma_deg": -2.7,
+    "CL": 0.425,
+    "alpha_deg": 0.9,
+    "pitch_deg": -1.8,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 85,
+    "cas_kt": 85,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.649,
+    "alpha_deg": 3.3,
+    "pitch_deg": 3.3,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 75,
+    "cas_kt": 75.3,
+    "flap": "T/O",
+    "rate_fpm": -500,
+    "gamma_deg": -3.76,
+    "CL": 0.825,
+    "alpha_deg": -0.4,
+    "pitch_deg": -4.1,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 65,
+    "cas_kt": 66.5,
+    "flap": "LDG",
+    "rate_fpm": -352,
+    "gamma_deg": -3,
+    "CL": 1.06,
+    "alpha_deg": -0.3,
+    "pitch_deg": -3.3,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 62,
+    "cas_kt": 64.2,
+    "flap": "T/O",
+    "rate_fpm": 400,
+    "gamma_deg": 3.53,
+    "CL": 1.136,
+    "alpha_deg": 2.9,
+    "pitch_deg": 6.4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 53,
+    "cas_kt": 56.1,
+    "flap": "LDG",
+    "rate_fpm": -120,
+    "gamma_deg": -1.21,
+    "CL": 1.489,
+    "alpha_deg": 2.7,
+    "pitch_deg": 1.5,
+    "pitch_oge_deg": 3,
+    "h_mac_m": 0.62,
+    "h_over_b": 0.052,
+    "sigma": 0.648,
+    "vs0_cas_train": 53.5
+   },
+   "flare": {
+    "ias_kt": 59,
+    "ias_range_kt": [
+     65,
+     53
+    ],
+    "flap": "LDG",
+    "pitch_start_deg": -3.3,
+    "pitch_deg": 1.5,
+    "rate_fpm": -120
+   }
+  },
+  "da40d": {
+   "rotation": {
+    "ias_kt": 59,
+    "cas_kt": 62.1,
+    "flap": "T/O",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.228,
+    "alpha_deg": 3.9,
+    "pitch_deg": 3.9,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 62,
+    "cas_kt": 64.2,
+    "flap": "T/O",
+    "rate_fpm": 550,
+    "gamma_deg": 4.85,
+    "CL": 1.145,
+    "alpha_deg": 3,
+    "pitch_deg": 7.8,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 70,
+    "cas_kt": 70.3,
+    "flap": "UP",
+    "rate_fpm": 450,
+    "gamma_deg": 3.63,
+    "CL": 0.957,
+    "alpha_deg": 6.5,
+    "pitch_deg": 10.1,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 105,
+    "cas_kt": 105,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.43,
+    "alpha_deg": 0.9,
+    "pitch_deg": 0.9,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 100,
+    "cas_kt": 100,
+    "flap": "UP",
+    "rate_fpm": -500,
+    "gamma_deg": -2.83,
+    "CL": 0.473,
+    "alpha_deg": 1.4,
+    "pitch_deg": -1.4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 85,
+    "cas_kt": 85,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.656,
+    "alpha_deg": 3.3,
+    "pitch_deg": 3.3,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 75,
+    "cas_kt": 75.3,
+    "flap": "T/O",
+    "rate_fpm": -500,
+    "gamma_deg": -3.76,
+    "CL": 0.833,
+    "alpha_deg": -0.3,
+    "pitch_deg": -4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 66,
+    "cas_kt": 67.4,
+    "flap": "LDG",
+    "rate_fpm": -357,
+    "gamma_deg": -3,
+    "CL": 1.042,
+    "alpha_deg": -0.5,
+    "pitch_deg": -3.5,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 62,
+    "cas_kt": 64.2,
+    "flap": "T/O",
+    "rate_fpm": 300,
+    "gamma_deg": 2.64,
+    "CL": 1.148,
+    "alpha_deg": 3,
+    "pitch_deg": 5.7,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 52,
+    "cas_kt": 55.5,
+    "flap": "LDG",
+    "rate_fpm": -120,
+    "gamma_deg": -1.22,
+    "CL": 1.535,
+    "alpha_deg": 3.1,
+    "pitch_deg": 1.9,
+    "pitch_oge_deg": 3.5,
+    "h_mac_m": 0.62,
+    "h_over_b": 0.052,
+    "sigma": 0.647,
+    "vs0_cas_train": 52.9
+   },
+   "flare": {
+    "ias_kt": 59,
+    "ias_range_kt": [
+     66,
+     52
+    ],
+    "flap": "LDG",
+    "pitch_start_deg": -3.5,
+    "pitch_deg": 1.9,
+    "rate_fpm": -120
+   }
+  },
+  "da42ng": {
+   "rotation": {
+    "ias_kt": 76,
+    "cas_kt": 75,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.157,
+    "alpha_deg": 8.4,
+    "pitch_deg": 8.4,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 90,
+    "cas_kt": 89.9,
+    "flap": "UP",
+    "rate_fpm": 1100,
+    "gamma_deg": 6.94,
+    "CL": 0.799,
+    "alpha_deg": 4.7,
+    "pitch_deg": 11.6,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 100,
+    "cas_kt": 100.6,
+    "flap": "UP",
+    "rate_fpm": 900,
+    "gamma_deg": 5.07,
+    "CL": 0.64,
+    "alpha_deg": 3,
+    "pitch_deg": 8.1,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 140,
+    "cas_kt": 143.3,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.317,
+    "alpha_deg": -0.3,
+    "pitch_deg": -0.3,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 130,
+    "cas_kt": 132.6,
+    "flap": "UP",
+    "rate_fpm": -500,
+    "gamma_deg": -2.13,
+    "CL": 0.37,
+    "alpha_deg": 0.2,
+    "pitch_deg": -1.9,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 100,
+    "cas_kt": 100.6,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.643,
+    "alpha_deg": 3,
+    "pitch_deg": 3,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 95,
+    "cas_kt": 95.9,
+    "flap": "APP",
+    "rate_fpm": -500,
+    "gamma_deg": -2.95,
+    "CL": 0.707,
+    "alpha_deg": 0.6,
+    "pitch_deg": -2.4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 84,
+    "cas_kt": 81.6,
+    "flap": "LDG",
+    "rate_fpm": -432,
+    "gamma_deg": -3,
+    "CL": 0.976,
+    "alpha_deg": 0.3,
+    "pitch_deg": -2.7,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 90,
+    "cas_kt": 90.7,
+    "flap": "APP",
+    "rate_fpm": 500,
+    "gamma_deg": 3.12,
+    "CL": 0.789,
+    "alpha_deg": 1.4,
+    "pitch_deg": 4.6,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 64,
+    "cas_kt": 62.1,
+    "flap": "LDG",
+    "rate_fpm": -120,
+    "gamma_deg": -1.09,
+    "CL": 1.687,
+    "alpha_deg": 6.2,
+    "pitch_deg": 5.1,
+    "pitch_oge_deg": 6.6,
+    "h_mac_m": 0.98,
+    "h_over_b": 0.073,
+    "sigma": 0.567,
+    "vs0_cas_train": 59.1
+   },
+   "flare": {
+    "ias_kt": 74,
+    "ias_range_kt": [
+     84,
+     64
+    ],
+    "flap": "LDG",
+    "pitch_start_deg": -2.7,
+    "pitch_deg": 5.1,
+    "rate_fpm": -120
+   }
+  },
+  "da42_tae125": {
+   "rotation": {
+    "ias_kt": 70,
+    "cas_kt": 70,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.213,
+    "alpha_deg": 9,
+    "pitch_deg": 9,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 77,
+    "cas_kt": 77,
+    "flap": "UP",
+    "rate_fpm": 1060,
+    "gamma_deg": 7.81,
+    "CL": 0.993,
+    "alpha_deg": 6.7,
+    "pitch_deg": 14.5,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 90,
+    "cas_kt": 90,
+    "flap": "UP",
+    "rate_fpm": 800,
+    "gamma_deg": 5.04,
+    "CL": 0.731,
+    "alpha_deg": 4,
+    "pitch_deg": 9,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 125,
+    "cas_kt": 125,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.38,
+    "alpha_deg": 0.3,
+    "pitch_deg": 0.3,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 120,
+    "cas_kt": 120,
+    "flap": "UP",
+    "rate_fpm": -500,
+    "gamma_deg": -2.36,
+    "CL": 0.412,
+    "alpha_deg": 0.6,
+    "pitch_deg": -1.7,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 100,
+    "cas_kt": 100,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.594,
+    "alpha_deg": 2.5,
+    "pitch_deg": 2.5,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 90,
+    "cas_kt": 89.2,
+    "flap": "APP",
+    "rate_fpm": -500,
+    "gamma_deg": -3.17,
+    "CL": 0.746,
+    "alpha_deg": 1,
+    "pitch_deg": -2.2,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 82,
+    "cas_kt": 81.5,
+    "flap": "LDG",
+    "rate_fpm": -432,
+    "gamma_deg": -3,
+    "CL": 0.893,
+    "alpha_deg": -0.6,
+    "pitch_deg": -3.6,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 82,
+    "cas_kt": 81.4,
+    "flap": "APP",
+    "rate_fpm": 400,
+    "gamma_deg": 2.78,
+    "CL": 0.896,
+    "alpha_deg": 2.6,
+    "pitch_deg": 5.3,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 58,
+    "cas_kt": 58.1,
+    "flap": "LDG",
+    "rate_fpm": -120,
+    "gamma_deg": -1.17,
+    "CL": 1.759,
+    "alpha_deg": 6.9,
+    "pitch_deg": 5.7,
+    "pitch_oge_deg": 7.2,
+    "h_mac_m": 0.98,
+    "h_over_b": 0.073,
+    "sigma": 0.567,
+    "vs0_cas_train": 55.3
+   },
+   "flare": {
+    "ias_kt": 70,
+    "ias_range_kt": [
+     82,
+     58
+    ],
+    "flap": "LDG",
+    "pitch_start_deg": -3.6,
+    "pitch_deg": 5.7,
+    "rate_fpm": -120
+   }
+  },
+  "t6a": {
+   "rotation": {
+    "ias_kt": 85,
+    "cas_kt": 85,
+    "flap": "TO",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.324,
+    "alpha_deg": 8.9,
+    "pitch_deg": 8.9,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 140,
+    "cas_kt": 140,
+    "flap": "UP",
+    "rate_fpm": 3000,
+    "gamma_deg": 12.22,
+    "CL": 0.477,
+    "alpha_deg": 2.6,
+    "pitch_deg": 14.8,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 160,
+    "cas_kt": 160,
+    "flap": "UP",
+    "rate_fpm": 2500,
+    "gamma_deg": 8.88,
+    "CL": 0.369,
+    "alpha_deg": 1.4,
+    "pitch_deg": 10.2,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 200,
+    "cas_kt": 200,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.239,
+    "alpha_deg": -0.1,
+    "pitch_deg": -0.1,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 200,
+    "cas_kt": 200,
+    "flap": "UP",
+    "rate_fpm": -1500,
+    "gamma_deg": -4.25,
+    "CL": 0.239,
+    "alpha_deg": -0.1,
+    "pitch_deg": -4.4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 120,
+    "cas_kt": 120,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.664,
+    "alpha_deg": 4.8,
+    "pitch_deg": 4.8,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 110,
+    "cas_kt": 110,
+    "flap": "LDG",
+    "rate_fpm": -800,
+    "gamma_deg": -4.12,
+    "CL": 0.789,
+    "alpha_deg": -0.1,
+    "pitch_deg": -4.2,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 100,
+    "cas_kt": 100,
+    "flap": "LDG",
+    "rate_fpm": -530,
+    "gamma_deg": -3,
+    "CL": 0.955,
+    "alpha_deg": 1.8,
+    "pitch_deg": -1.2,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 110,
+    "cas_kt": 110,
+    "flap": "TO",
+    "rate_fpm": 1500,
+    "gamma_deg": 7.74,
+    "CL": 0.783,
+    "alpha_deg": 2.7,
+    "pitch_deg": 10.4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 76,
+    "cas_kt": 75.7,
+    "flap": "LDG",
+    "rate_fpm": -120,
+    "gamma_deg": -0.9,
+    "CL": 1.671,
+    "alpha_deg": 7.9,
+    "pitch_deg": 7,
+    "pitch_oge_deg": 9.1,
+    "h_mac_m": 1.07,
+    "h_over_b": 0.105,
+    "sigma": 0.473,
+    "vs0_cas_train": 72.1
+   },
+   "flare": {
+    "ias_kt": 88,
+    "ias_range_kt": [
+     100,
+     76
+    ],
+    "flap": "LDG",
+    "pitch_start_deg": -1.2,
+    "pitch_deg": 7,
+    "rate_fpm": -120
+   }
+  },
+  "p2006t": {
+   "rotation": {
+    "ias_kt": 64,
+    "cas_kt": 64,
+    "flap": "T/O",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.129,
+    "alpha_deg": 5.5,
+    "pitch_deg": 5.5,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 80,
+    "cas_kt": 79,
+    "flap": "UP",
+    "rate_fpm": 1105,
+    "gamma_deg": 7.94,
+    "CL": 0.734,
+    "alpha_deg": 6.1,
+    "pitch_deg": 14.1,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 90,
+    "cas_kt": 89,
+    "flap": "UP",
+    "rate_fpm": 800,
+    "gamma_deg": 5.09,
+    "CL": 0.581,
+    "alpha_deg": 4,
+    "pitch_deg": 9.1,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 135,
+    "cas_kt": 134,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.257,
+    "alpha_deg": -0.4,
+    "pitch_deg": -0.4,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 110,
+    "cas_kt": 108.3,
+    "flap": "UP",
+    "rate_fpm": -500,
+    "gamma_deg": -2.61,
+    "CL": 0.393,
+    "alpha_deg": 1.4,
+    "pitch_deg": -1.2,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 90,
+    "cas_kt": 88,
+    "flap": "T/O",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.597,
+    "alpha_deg": -1.9,
+    "pitch_deg": -1.9,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 80,
+    "cas_kt": 78.1,
+    "flap": "T/O",
+    "rate_fpm": -500,
+    "gamma_deg": -3.62,
+    "CL": 0.756,
+    "alpha_deg": 0.3,
+    "pitch_deg": -3.3,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 70,
+    "cas_kt": 69.1,
+    "flap": "FULL",
+    "rate_fpm": -366,
+    "gamma_deg": -3,
+    "CL": 0.966,
+    "alpha_deg": 1.4,
+    "pitch_deg": -1.6,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 70,
+    "cas_kt": 69.6,
+    "flap": "T/O",
+    "rate_fpm": 400,
+    "gamma_deg": 3.25,
+    "CL": 0.954,
+    "alpha_deg": 3,
+    "pitch_deg": 6.3,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 56,
+    "cas_kt": 56.9,
+    "flap": "FULL",
+    "rate_fpm": -120,
+    "gamma_deg": -1.19,
+    "CL": 1.429,
+    "alpha_deg": 6.4,
+    "pitch_deg": 5.2,
+    "pitch_oge_deg": 6.6,
+    "h_mac_m": 1.53,
+    "h_over_b": 0.134,
+    "sigma": 0.405,
+    "vs0_cas_train": 54.2
+   },
+   "flare": {
+    "ias_kt": 63,
+    "ias_range_kt": [
+     70,
+     56
+    ],
+    "flap": "FULL",
+    "pitch_start_deg": -1.6,
+    "pitch_deg": 5.2,
+    "rate_fpm": -120
+   }
+  },
+  "t6c": {
+   "rotation": {
+    "ias_kt": 85,
+    "cas_kt": 85,
+    "flap": "TO",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.428,
+    "alpha_deg": 10.1,
+    "pitch_deg": 10.1,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 140,
+    "cas_kt": 140,
+    "flap": "UP",
+    "rate_fpm": 3000,
+    "gamma_deg": 12.22,
+    "CL": 0.514,
+    "alpha_deg": 3,
+    "pitch_deg": 15.3,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 160,
+    "cas_kt": 160,
+    "flap": "UP",
+    "rate_fpm": 2500,
+    "gamma_deg": 8.88,
+    "CL": 0.398,
+    "alpha_deg": 1.7,
+    "pitch_deg": 10.6,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 200,
+    "cas_kt": 200,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.258,
+    "alpha_deg": 0.1,
+    "pitch_deg": 0.1,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 200,
+    "cas_kt": 200,
+    "flap": "UP",
+    "rate_fpm": -1500,
+    "gamma_deg": -4.25,
+    "CL": 0.257,
+    "alpha_deg": 0.1,
+    "pitch_deg": -4.2,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 120,
+    "cas_kt": 120,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.716,
+    "alpha_deg": 5.4,
+    "pitch_deg": 5.4,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 110,
+    "cas_kt": 110,
+    "flap": "LDG",
+    "rate_fpm": -800,
+    "gamma_deg": -4.12,
+    "CL": 0.85,
+    "alpha_deg": 0.6,
+    "pitch_deg": -3.5,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 104,
+    "cas_kt": 104,
+    "flap": "LDG",
+    "rate_fpm": -551,
+    "gamma_deg": -3,
+    "CL": 0.952,
+    "alpha_deg": 1.7,
+    "pitch_deg": -1.3,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 110,
+    "cas_kt": 110,
+    "flap": "TO",
+    "rate_fpm": 1500,
+    "gamma_deg": 7.74,
+    "CL": 0.845,
+    "alpha_deg": 3.4,
+    "pitch_deg": 11.1,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 79,
+    "cas_kt": 78.6,
+    "flap": "LDG",
+    "rate_fpm": -120,
+    "gamma_deg": -0.86,
+    "CL": 1.671,
+    "alpha_deg": 7.9,
+    "pitch_deg": 7.1,
+    "pitch_oge_deg": 9.1,
+    "h_mac_m": 1.07,
+    "h_over_b": 0.105,
+    "sigma": 0.473,
+    "vs0_cas_train": 74.8
+   },
+   "flare": {
+    "ias_kt": 92,
+    "ias_range_kt": [
+     104,
+     79
+    ],
+    "flap": "LDG",
+    "pitch_start_deg": -1.3,
+    "pitch_deg": 7.1,
+    "rate_fpm": -120
+   }
+  },
+  "pc9m": {
+   "rotation": {
+    "ias_kt": 78,
+    "cas_kt": 78,
+    "flap": "TO",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.296,
+    "alpha_deg": 8.6,
+    "pitch_deg": 8.6,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 136,
+    "cas_kt": 136,
+    "flap": "UP",
+    "rate_fpm": 3000,
+    "gamma_deg": 12.58,
+    "CL": 0.416,
+    "alpha_deg": 1.9,
+    "pitch_deg": 14.5,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 160,
+    "cas_kt": 160,
+    "flap": "UP",
+    "rate_fpm": 2500,
+    "gamma_deg": 8.88,
+    "CL": 0.304,
+    "alpha_deg": 0.6,
+    "pitch_deg": 9.5,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 200,
+    "cas_kt": 200,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.197,
+    "alpha_deg": -0.6,
+    "pitch_deg": -0.6,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 200,
+    "cas_kt": 200,
+    "flap": "UP",
+    "rate_fpm": -1500,
+    "gamma_deg": -4.25,
+    "CL": 0.197,
+    "alpha_deg": -0.6,
+    "pitch_deg": -4.9,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 107,
+    "cas_kt": 107,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.689,
+    "alpha_deg": 5,
+    "pitch_deg": 5,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 98,
+    "cas_kt": 98,
+    "flap": "LDG",
+    "rate_fpm": -800,
+    "gamma_deg": -4.62,
+    "CL": 0.819,
+    "alpha_deg": 0.2,
+    "pitch_deg": -4.4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 90,
+    "cas_kt": 90,
+    "flap": "LDG",
+    "rate_fpm": -477,
+    "gamma_deg": -3,
+    "CL": 0.972,
+    "alpha_deg": 2,
+    "pitch_deg": -1,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 98,
+    "cas_kt": 98,
+    "flap": "TO",
+    "rate_fpm": 1500,
+    "gamma_deg": 8.69,
+    "CL": 0.812,
+    "alpha_deg": 3,
+    "pitch_deg": 11.7,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 71,
+    "cas_kt": 70.7,
+    "flap": "LDG",
+    "rate_fpm": -120,
+    "gamma_deg": -0.96,
+    "CL": 1.579,
+    "alpha_deg": 7,
+    "pitch_deg": 6,
+    "pitch_oge_deg": 8,
+    "h_mac_m": 1.07,
+    "h_over_b": 0.105,
+    "sigma": 0.472,
+    "vs0_cas_train": 67.3
+   },
+   "flare": {
+    "ias_kt": 81,
+    "ias_range_kt": [
+     90,
+     71
+    ],
+    "flap": "LDG",
+    "pitch_start_deg": -1,
+    "pitch_deg": 6,
+    "rate_fpm": -120
+   }
+  },
+  "pc7mk2": {
+   "rotation": {
+    "ias_kt": 76,
+    "cas_kt": 76,
+    "flap": "TO",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.33,
+    "alpha_deg": 9,
+    "pitch_deg": 9,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 136,
+    "cas_kt": 136,
+    "flap": "UP",
+    "rate_fpm": 2500,
+    "gamma_deg": 10.46,
+    "CL": 0.408,
+    "alpha_deg": 1.8,
+    "pitch_deg": 12.3,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 160,
+    "cas_kt": 160,
+    "flap": "UP",
+    "rate_fpm": 2500,
+    "gamma_deg": 8.88,
+    "CL": 0.297,
+    "alpha_deg": 0.5,
+    "pitch_deg": 9.4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 200,
+    "cas_kt": 200,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.192,
+    "alpha_deg": -0.7,
+    "pitch_deg": -0.7,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 200,
+    "cas_kt": 200,
+    "flap": "UP",
+    "rate_fpm": -1500,
+    "gamma_deg": -4.25,
+    "CL": 0.192,
+    "alpha_deg": -0.7,
+    "pitch_deg": -4.9,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 104,
+    "cas_kt": 104,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.71,
+    "alpha_deg": 5.3,
+    "pitch_deg": 5.3,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 95,
+    "cas_kt": 95,
+    "flap": "LDG",
+    "rate_fpm": -800,
+    "gamma_deg": -4.77,
+    "CL": 0.848,
+    "alpha_deg": 0.6,
+    "pitch_deg": -4.2,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 89,
+    "cas_kt": 89,
+    "flap": "LDG",
+    "rate_fpm": -472,
+    "gamma_deg": -3,
+    "CL": 0.969,
+    "alpha_deg": 1.9,
+    "pitch_deg": -1.1,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 95,
+    "cas_kt": 95,
+    "flap": "TO",
+    "rate_fpm": 1500,
+    "gamma_deg": 8.97,
+    "CL": 0.841,
+    "alpha_deg": 3.3,
+    "pitch_deg": 12.3,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 69,
+    "cas_kt": 69.2,
+    "flap": "LDG",
+    "rate_fpm": -120,
+    "gamma_deg": -0.98,
+    "CL": 1.604,
+    "alpha_deg": 7.2,
+    "pitch_deg": 6.3,
+    "pitch_oge_deg": 8.3,
+    "h_mac_m": 1.07,
+    "h_over_b": 0.105,
+    "sigma": 0.472,
+    "vs0_cas_train": 65.9
+   },
+   "flare": {
+    "ias_kt": 79,
+    "ias_range_kt": [
+     89,
+     69
+    ],
+    "flap": "LDG",
+    "pitch_start_deg": -1.1,
+    "pitch_deg": 6.3,
+    "rate_fpm": -120
+   }
+  },
+  "da42_vi": {
+   "rotation": {
+    "ias_kt": 76,
+    "cas_kt": 75,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 1.157,
+    "alpha_deg": 8.4,
+    "pitch_deg": 8.4,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "initial_climb": {
+    "ias_kt": 90,
+    "cas_kt": 89.9,
+    "flap": "UP",
+    "rate_fpm": 1100,
+    "gamma_deg": 6.94,
+    "CL": 0.799,
+    "alpha_deg": 4.7,
+    "pitch_deg": 11.6,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "cruise_climb": {
+    "ias_kt": 100,
+    "cas_kt": 100.6,
+    "flap": "UP",
+    "rate_fpm": 900,
+    "gamma_deg": 5.07,
+    "CL": 0.64,
+    "alpha_deg": 3,
+    "pitch_deg": 8.1,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "cruise": {
+    "ias_kt": 140,
+    "cas_kt": 143.3,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.317,
+    "alpha_deg": -0.3,
+    "pitch_deg": -0.3,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "descent": {
+    "ias_kt": 130,
+    "cas_kt": 132.6,
+    "flap": "UP",
+    "rate_fpm": -500,
+    "gamma_deg": -2.13,
+    "CL": 0.37,
+    "alpha_deg": 0.2,
+    "pitch_deg": -1.9,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "downwind": {
+    "ias_kt": 100,
+    "cas_kt": 100.6,
+    "flap": "UP",
+    "rate_fpm": 0,
+    "gamma_deg": 0,
+    "CL": 0.643,
+    "alpha_deg": 3,
+    "pitch_deg": 3,
+    "rate_est": false,
+    "from_card_vapp": false
+   },
+   "base": {
+    "ias_kt": 95,
+    "cas_kt": 95.9,
+    "flap": "APP",
+    "rate_fpm": -500,
+    "gamma_deg": -2.95,
+    "CL": 0.707,
+    "alpha_deg": 0.6,
+    "pitch_deg": -2.4,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "final": {
+    "ias_kt": 84,
+    "cas_kt": 81.6,
+    "flap": "LDG",
+    "rate_fpm": -432,
+    "gamma_deg": -3,
+    "CL": 0.976,
+    "alpha_deg": 0.3,
+    "pitch_deg": -2.7,
+    "rate_est": false,
+    "from_card_vapp": true
+   },
+   "go_around": {
+    "ias_kt": 90,
+    "cas_kt": 90.7,
+    "flap": "APP",
+    "rate_fpm": 500,
+    "gamma_deg": 3.12,
+    "CL": 0.789,
+    "alpha_deg": 1.4,
+    "pitch_deg": 4.6,
+    "rate_est": true,
+    "from_card_vapp": false
+   },
+   "touchdown": {
+    "ias_kt": 64,
+    "cas_kt": 62.1,
+    "flap": "LDG",
+    "rate_fpm": -120,
+    "gamma_deg": -1.09,
+    "CL": 1.687,
+    "alpha_deg": 6.2,
+    "pitch_deg": 5.1,
+    "pitch_oge_deg": 6.6,
+    "h_mac_m": 0.98,
+    "h_over_b": 0.073,
+    "sigma": 0.567,
+    "vs0_cas_train": 59.1
+   },
+   "flare": {
+    "ias_kt": 74,
+    "ias_range_kt": [
+     84,
+     64
+    ],
+    "flap": "LDG",
+    "pitch_start_deg": -2.7,
+    "pitch_deg": 5.1,
+    "rate_fpm": -120
+   }
+  }
+ }
+}

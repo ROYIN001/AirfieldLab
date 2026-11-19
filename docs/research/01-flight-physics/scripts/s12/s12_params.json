@@ -1,0 +1,580 @@
+{
+ "otherSims": {
+  "jsbsim": {
+   "version": {
+    "v": [
+     1,
+     3,
+     3
+    ],
+    "u": "major.minor.patch",
+    "scope": "sim",
+    "src": [
+     "S7"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "รุ่นบน PyPI ที่ติดตั้งและรันจริง 2026-11-18 (ออก 2026-10-16)"
+   },
+   "defaultDt": {
+    "v": 0.008333333333333333,
+    "u": "s",
+    "scope": "sim",
+    "src": [
+     "S2"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "dT เริ่มต้นใน FGFDMExec ตั้งใหม่ได้ด้วย set_dt"
+   },
+   "defaultIntegrators": {
+    "v": {
+     "rotationalRate": "RectEuler",
+     "translationalRate": "AdamsBashforth2",
+     "rotationalPosition": "RectEuler",
+     "translationalPosition": "AdamsBashforth3"
+    },
+    "u": "-",
+    "scope": "sim",
+    "src": [
+     "S2"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ค่าเริ่มต้นใน FGPropagate เปลี่ยนได้ทาง simulation/integrator/*"
+   },
+   "tableOutOfRange": {
+    "v": {
+     "mode": "clamp",
+     "extrapolate": false
+    },
+    "u": "-",
+    "scope": "sim",
+    "src": [
+     "S3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "FGTable คืนค่าขอบตาราง ไม่ extrapolate"
+   },
+   "gearSideForcePacejkaDefaults": {
+    "v": {
+     "B_stiffness": 0.06,
+     "C_shape": 2.8,
+     "D_peak": "static_friction",
+     "E_curvature": 1.03
+    },
+    "u": "-",
+    "scope": "gear",
+    "src": [
+     "S5"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ค่าเริ่มต้นของ magic formula ใน FGLGear (มุมไถลเป็นองศา)"
+   },
+   "actuatorFeatures": {
+    "v": [
+     "rate_limit (incr/decr)",
+     "lag",
+     "deadband_width",
+     "hysteresis_width",
+     "bias",
+     "delay"
+    ],
+    "u": "-",
+    "scope": "sim",
+    "src": [
+     "S6"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "องค์ประกอบ FGActuator ใช้เป็นต้นแบบ actuator ของเรา"
+   },
+   "propellerTables": {
+    "v": [
+     "C_THRUST(J)",
+     "C_POWER(J)",
+     "CT_MACH",
+     "CP_MACH",
+     "p_factor",
+     "sense",
+     "cp_factor",
+     "ct_factor"
+    ],
+    "u": "-",
+    "scope": "propeller",
+    "src": [
+     "S4"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "โครงสร้างข้อมูลใบพัดของ JSBSim (ตารางเป็นรายเครื่อง)"
+   },
+   "c172xTrimCruise100kcas3000ft": {
+    "v": {
+     "alpha_deg": 0.585,
+     "elevator_pos_deg": 5.392,
+     "pitchTrimCmd": 0.2295,
+     "throttle": 0.793,
+     "rpm": 2453,
+     "weight_lb": 2480,
+     "dh_10s_ft": 0.077
+    },
+    "u": "deg, -, rpm, lb, ft",
+    "scope": "aircraft",
+    "src": [
+     "S7",
+     "S29"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ผลรันโมเดลเปิด c172x (GPL) ไม่ใช่ข้อมูลบินจริง elevator บวก = ขอบท้ายลง"
+   },
+   "c172xTrimApproach65kcas1000ftFlap30": {
+    "v": {
+     "alpha_deg": 2.037,
+     "theta_deg": -0.963,
+     "elevator_pos_deg": 2.264,
+     "throttle": 0.514,
+     "rpm": 1591,
+     "hdot_fpm": -350
+    },
+    "u": "deg, -, rpm, fpm",
+    "scope": "aircraft",
+    "src": [
+     "S7",
+     "S29"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "gamma -3 deg; ใช้ตรวจว่าสภาพแวดล้อม oracle ติดตั้งถูก"
+   },
+   "costPerStep_c172x_native": {
+    "v": 15.3,
+    "u": "us/step",
+    "scope": "sim",
+    "src": [
+     "S29"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "Python loop + C++ ที่ 120 Hz บนเครื่อง cloud นี้ (544 เท่าเวลาจริง)"
+   },
+   "wasmBundleBytes": {
+    "v": 1588236,
+    "u": "byte",
+    "scope": "sim",
+    "src": [
+     "S9"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "@0x62/jsbsim-wasm 1.2.4-beta.4 ไฟล์ .wasm (LGPL-2.1) ยังไม่ได้รันทดสอบ"
+   }
+  },
+  "yasim": {
+   "solverUnknowns": {
+    "v": [
+     "dragFactor",
+     "liftRatio",
+     "cruiseAoA",
+     "tailIncidence",
+     "approachElevator"
+    ],
+    "u": "-",
+    "scope": "sim",
+    "src": [
+     "S12"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "Airplane::solveAirplane ปรับ 5 ตัวให้ cruise สมดุลแรงและโมเมนต์ และ approach สมดุลแรงยกและโมเมนต์"
+   },
+   "propEtaC": {
+    "v": 0.85,
+    "u": "-",
+    "scope": "propeller",
+    "src": [
+     "S12"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ประสิทธิภาพสูงสุดคงที่ของโมเดลใบพัด YASim"
+   },
+   "propLambdaPeak": {
+    "v": 0.6687,
+    "u": "-",
+    "scope": "propeller",
+    "src": [
+     "S12"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "5^(-1/4) อัตราส่วน J/J0 ที่ประสิทธิภาพสูงสุด"
+   },
+   "gearStaticFrictionDefault": {
+    "v": 0.8,
+    "u": "-",
+    "scope": "gear",
+    "src": [
+     "S11"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "sfric ค่าเริ่มต้น"
+   },
+   "gearDynamicFrictionDefault": {
+    "v": 0.7,
+    "u": "-",
+    "scope": "gear",
+    "src": [
+     "S11"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "dfric ค่าเริ่มต้น"
+   },
+   "groundEffectShape": {
+    "v": {
+     "form": "Fz_extra = Fz_aero * k_ge * (b - h)/b",
+     "activeBelow": "h < b"
+    },
+    "u": "-",
+    "scope": "sim",
+    "src": [
+     "S12"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "Model::calcForces คูณแรงแนวดิ่งเชิงเส้นตามความสูงเทียบ span"
+   },
+   "wingSegmentLength": {
+    "v": {
+     "segmentLength": "mean chord",
+     "minSegmentsIfTwisted": 8
+    },
+    "u": "-",
+    "scope": "sim",
+    "src": [
+     "S12"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "Wing.cpp แบ่ง strip ยาวประมาณหนึ่ง mean chord"
+   },
+   "flightgearModelHz": {
+    "v": 120,
+    "u": "Hz",
+    "scope": "sim",
+    "src": [
+     "S13"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "fgdata defaults.xml"
+   }
+  },
+  "xplane": {
+   "maxElementsPerSide": {
+    "v": 10,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "S14"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ต่อปีกหรือ stabilizer ต่อข้าง"
+   },
+   "minCyclesPerSecond": {
+    "v": 15,
+    "u": "Hz",
+    "scope": "sim",
+    "src": [
+     "S14"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "หน้า How X-Plane Works ระบุ \"at least 15 times per second\""
+   },
+   "minFrameRate": {
+    "v": 20,
+    "u": "fps",
+    "scope": "sim",
+    "src": [
+     "S17"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "คู่มือ X-Plane 12: physics และ rendering วิ่งต่อเฟรม ขั้นต่ำ 20 fps"
+   },
+   "tireRollingCoeffGuidance": {
+    "v": {
+     "airlinerFighter": 0.008,
+     "generalAviation": 0.016,
+     "cub": 0.04
+    },
+    "u": "-",
+    "scope": "gear",
+    "src": [
+     "S15"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "คำแนะนำของผู้พัฒนา X-Plane 12"
+   }
+  },
+  "msfs": {
+   "windTunnelIterations": {
+    "v": 100,
+    "u": "-",
+    "scope": "sim",
+    "src": [
+     "S19"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "รอบปรับพารามิเตอร์พื้นผิวให้ตรงเป้าสมรรถนะ"
+   },
+   "stallDefStartRatio": {
+    "v": 0.9,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "S18"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "สัดส่วนของ stall AoA ที่กระแสเริ่มแยก"
+   },
+   "stallDefEndRatio": {
+    "v": 1.1,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "S18"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "แยกสมบูรณ์"
+   },
+   "stallDefCurvePower": {
+    "v": 0.8,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "S18"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "เลขชี้กำลังของเส้นการแยก"
+   },
+   "stallTipAddIncidence": {
+    "v": 2,
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "S18"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "เพิ่ม stall AoA ที่ปลายปีก"
+   },
+   "elevatorTrimModel": {
+    "v": {
+     "mode": "additive to elevator deflection",
+     "limits": [
+      "elevator_trim_limit",
+      "elevator_trim_up_limit",
+      "elevator_trim_down_limit"
+     ],
+     "scaling": "elevator_trim_elasticity_table(qbar_psf), default 0.0:1.0"
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "S20"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "MSFS 2020 [AIRPLANE_GEOMETRY] trim บวกเข้ามุม elevator และลดตาม qbar ได้"
+   },
+   "gearSpringExponentDefault": {
+    "v": 16,
+    "u": "-",
+    "scope": "gear",
+    "src": [
+     "S22"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "เลขชี้กำลังสปริงไม่เชิงเส้นของ contact point"
+   }
+  },
+  "geofs": {
+   "airfoilPartFields": {
+    "v": [
+     "area | liftFactor+dragFactor",
+     "stallIncidence",
+     "zeroLiftIncidence",
+     "span",
+     "chord",
+     "aspectRatio",
+     "efficiencyFactor",
+     "forceDirection"
+    ],
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "S26"
+    ],
+    "conf": "ต่ำ",
+    "est": false,
+    "note": "จาก typings ชุมชน ไม่ใช่เอกสารทางการ"
+   },
+   "inputModel": {
+    "v": {
+     "modes": [
+      "mouse",
+      "keyboard",
+      "orientation",
+      "touch",
+      "joystick"
+     ],
+     "perMode": [
+      "sensitivity",
+      "exponential",
+      "mixYawRoll",
+      "mixYawRollQuantity"
+     ],
+     "keyboard": [
+      "rollIncrement",
+      "pitchIncrement",
+      "yawIncrement",
+      "throttleIncrement",
+      "recenterRatio"
+     ],
+     "joystick": [
+      "deadZoneUp",
+      "deadZoneDown"
+     ],
+     "trim": [
+      "elevatorTrimMin",
+      "elevatorTrimMax",
+      "elevatorTrimStep"
+     ]
+    },
+    "u": "-",
+    "scope": "sim",
+    "src": [
+     "S26"
+    ],
+    "conf": "ต่ำ",
+    "est": false,
+    "note": "ชื่อฟิลด์จาก typings ชุมชน ไม่มีค่าตัวเลข"
+   },
+   "enginePartThrust": {
+    "v": {
+     "unit": "N",
+     "model": "constant static thrust x throttle",
+     "altitudeLapse": "linear to zeroThrustAltitude"
+    },
+    "u": "-",
+    "scope": "engine",
+    "src": [
+     "S26"
+    ],
+    "conf": "ต่ำ",
+    "est": false,
+    "note": "ลดเชิงเส้นตามความสูงถึง zeroThrustAltitude"
+   }
+  },
+  "airfieldlab": {
+   "oracleTolerance": {
+    "v": {
+     "h_m": 0.05,
+     "V_mps": 0.01,
+     "theta_deg": 0.05,
+     "phi_deg": 0.1,
+     "rate_dps": 0.5
+    },
+    "u": "m, m/s, deg, deg/s",
+    "scope": "sim",
+    "src": [
+     "S29"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "เกณฑ์ T-S-01/02 ตั้งจากผลจริง x3-5 (AB3 240 Hz)"
+   },
+   "oracleMeasuredMaxErr240HzAB3": {
+    "v": {
+     "h_m": 0.004,
+     "V_mps": 0.00095,
+     "alpha_deg": 0.0123,
+     "theta_deg": 0.0137,
+     "phi_deg": 0.0393,
+     "psi_deg": 0.0113,
+     "p_dps": 0.207,
+     "q_dps": 0.05,
+     "r_dps": 0.02
+    },
+    "u": "m, m/s, deg, deg/s",
+    "scope": "sim",
+    "src": [
+     "S29"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "JS RK4 240 Hz เทียบ JSBSim 1.3.3 AB3 240 Hz ไม่มี alpha-dot 25 s"
+   },
+   "oracleMeasuredMaxErrAdot": {
+    "v": {
+     "h_m": 0.0095,
+     "alpha_deg": 0.04,
+     "theta_deg": 0.048,
+     "q_dps": 0.117
+    },
+    "u": "m, deg, deg/s",
+    "scope": "sim",
+    "src": [
+     "S29"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "alpha-dot แบบกรองตัวเลข 50 ms ของเรา เทียบ alphadot เชิงวิเคราะห์ของ JSBSim"
+   },
+   "trimKind": {
+    "v": {
+     "options": [
+      "tab",
+      "ths"
+     ],
+     "trainer": "tab"
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "S30",
+     "S15",
+     "S20"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "tab = ตำแหน่งพักของคันเลื่อน; ths = มุมหางเปลี่ยน โมเมนต์บวกเพิ่ม elevator ยังมีระยะครบ"
+   },
+   "stepCostNode": {
+    "v": 3.7,
+    "u": "us/step",
+    "scope": "sim",
+    "src": [
+     "S29"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "Node 22.23.5 หลัง warm-up, RK4 + updateAir (5 deriv ต่อ step)"
+   }
+  }
+ }
+}

@@ -1,0 +1,37 @@
+PASS 2026-05-14 AD 2.17 ATZ radius 5 NM
+PASS 2026-05-14 AD 2.17 ATZ upper limit 2000 ft AGL
+PASS 2026-05-14 AD 2.20 item 2 GA parking
+PASS 2026-05-14 AD 2.20 item 4.1 03R/21L normally military, may be civil
+PASS 2026-05-14 AD 2.20 item 4.2.2 join 45 deg mid-downwind east of RWY
+PASS 2026-05-14 AD 2.20 item 4.2.2 "800 ft for light aircraft"
+PASS 2026-05-14 AD 2.20 contains no "training"/"touch-and-go"
+PASS 2026-05-14 AD 2.22 8.5.2 VFR entry/exit for light aircraft
+PASS 2026-05-14 AD 2.22 8.5.2 designed for speed < 130 kt
+PASS 2026-05-14 AD 2.22 8.5.1 daylight only
+PASS 2026-05-14 AD 2.22 9.2 light-aircraft training area = D72
+info 2026-05-14: page text 135488 chars, AD 2.20 34636 chars, training area(s) in 9.2: D72
+PASS 2026-07-09 AD 2.17 ATZ radius 5 NM
+PASS 2026-07-09 AD 2.17 ATZ upper limit 2000 ft AGL
+PASS 2026-07-09 AD 2.20 item 2 GA parking
+PASS 2026-07-09 AD 2.20 item 4.1 03R/21L normally military, may be civil
+PASS 2026-07-09 AD 2.20 item 4.2.2 join 45 deg mid-downwind east of RWY
+PASS 2026-07-09 AD 2.20 item 4.2.2 "800 ft for light aircraft"
+PASS 2026-07-09 AD 2.20 contains no "training"/"touch-and-go"
+PASS 2026-07-09 AD 2.22 8.5.2 VFR entry/exit for light aircraft
+PASS 2026-07-09 AD 2.22 8.5.2 designed for speed < 130 kt
+PASS 2026-07-09 AD 2.22 8.5.1 daylight only
+PASS 2026-07-09 AD 2.22 9.2 light-aircraft training area = D72
+info 2026-07-09: page text 135287 chars, AD 2.20 34636 chars, training area(s) in 9.2: D72
+PASS 2026-10-29 AD 2.17 ATZ radius 5 NM
+PASS 2026-10-29 AD 2.17 ATZ upper limit 2000 ft AGL
+PASS 2026-10-29 AD 2.20 item 2 GA parking
+PASS 2026-10-29 AD 2.20 item 4.1 03R/21L normally military, may be civil
+PASS 2026-10-29 AD 2.20 item 4.2.2 join 45 deg mid-downwind east of RWY
+PASS 2026-10-29 AD 2.20 item 4.2.2 "800 ft for light aircraft"
+PASS 2026-10-29 AD 2.20 contains no "training"/"touch-and-go"
+PASS 2026-10-29 AD 2.22 8.5.2 VFR entry/exit for light aircraft
+PASS 2026-10-29 AD 2.22 8.5.2 designed for speed < 130 kt
+PASS 2026-10-29 AD 2.22 8.5.1 daylight only
+PASS 2026-10-29 AD 2.22 9.2 light-aircraft training area = D6A,D6B
+info 2026-10-29: page text 135458 chars, AD 2.20 34636 chars, training area(s) in 9.2: D6A,D6B
+OK: 0 failed check(s); run 2026-11-19

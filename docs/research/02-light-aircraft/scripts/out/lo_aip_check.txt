@@ -1,0 +1,88 @@
+PASS 2026-05-14 AD 2.17 ATZ radius 5 NM
+PASS 2026-05-14 AD 2.17 ATZ upper limit 2000 ft AGL
+PASS 2026-05-14 AD 2.17 class C
+PASS 2026-05-14 AD 2.17 languages English, Thai
+PASS 2026-05-14 AD 2.18 TWR 118.1 MHz
+PASS 2026-05-14 AD 2.18 GND 121.9 and 122.5 MHz
+PASS 2026-05-14 AD 2.18 DEL 127.7 MHz
+PASS 2026-05-14 AD 2.18 ATIS arrival 126.4 MHz
+PASS 2026-05-14 AD 2.18 ATIS departure 118.55 MHz
+PASS 2026-05-14 AD 2.18 Don Mueang Approach 119.4 MHz
+PASS 2026-05-14 AD 2.20 4.1 03R/21L normally military, may be civil, H24, Don Mueang Tower
+PASS 2026-05-14 AD 2.20 4.2.1 outbound: turn east, leave at 45 deg to crosswind
+PASS 2026-05-14 AD 2.20 4.2.2 join 45 deg mid-downwind east of RWY
+PASS 2026-05-14 AD 2.20 4.2.2 heights 1500 jet / 1000 conventional / 800 light / 500 helicopter
+PASS 2026-05-14 AD 2.20 4.2.3 no straight-in without Tower approval
+PASS 2026-05-14 AD 2.20 21L vacate right, hold short of 21R (item 6.3, TWY S)
+PASS 2026-05-14 AD 2.20 take-off/landing need Tower clearance (item 7.3)
+PASS 2026-05-14 AD 2.22 IAS 250 kt at or below 10 000 ft (item 4.1.2)
+PASS 2026-05-14 AD 2.22 8.1 VFR by day: ground visibility 5 km, ceiling 1500 ft
+PASS 2026-05-14 AD 2.22 8.2 VFR by night at VTBD: ATC may authorize, treated as special VFR
+PASS 2026-05-14 AD 2.22 8.4.1 special VFR ground visibility 1500 m
+PASS 2026-05-14 AD 2.22 8.5.1 VFR entry/exit daylight only
+PASS 2026-05-14 AD 2.22 8.5.2 light-aircraft routes designed for < 130 kt
+PASS 2026-05-14 AD 2.22 8.5.2 j) reporting-point table found (26 points)
+PASS 2026-05-14 AD 2.22 8.5.2 training route out: ... BANG BUA THONG 1000 ft -> area
+PASS 2026-05-14 AD 2.22 8.5.2 training route back: LAT LUM KAEO - PATHUMTHANI - 5 NM WEST - 3 NM WEST, 1000 ft
+PASS 2026-05-14 AD 2.22 8.6.2 note: traffic pattern light aircraft 800 ft (jet 1500, conventional 1000, helicopter 500)
+PASS 2026-05-14 AD 2.22 8.6.2 VFR radio failure: low approach between the runways at 500 ft
+PASS 2026-05-14 AD 2.22 9.2 light-aircraft training area = D72 (found D72)
+PASS 2026-07-09 AD 2.17 ATZ radius 5 NM
+PASS 2026-07-09 AD 2.17 ATZ upper limit 2000 ft AGL
+PASS 2026-07-09 AD 2.17 class C
+PASS 2026-07-09 AD 2.17 languages English, Thai
+PASS 2026-07-09 AD 2.18 TWR 118.1 MHz
+PASS 2026-07-09 AD 2.18 GND 121.9 and 122.5 MHz
+PASS 2026-07-09 AD 2.18 DEL 127.7 MHz
+PASS 2026-07-09 AD 2.18 ATIS arrival 126.4 MHz
+PASS 2026-07-09 AD 2.18 ATIS departure 118.55 MHz
+PASS 2026-07-09 AD 2.18 Don Mueang Approach 119.4 MHz
+PASS 2026-07-09 AD 2.20 4.1 03R/21L normally military, may be civil, H24, Don Mueang Tower
+PASS 2026-07-09 AD 2.20 4.2.1 outbound: turn east, leave at 45 deg to crosswind
+PASS 2026-07-09 AD 2.20 4.2.2 join 45 deg mid-downwind east of RWY
+PASS 2026-07-09 AD 2.20 4.2.2 heights 1500 jet / 1000 conventional / 800 light / 500 helicopter
+PASS 2026-07-09 AD 2.20 4.2.3 no straight-in without Tower approval
+PASS 2026-07-09 AD 2.20 21L vacate right, hold short of 21R (item 6.3, TWY S)
+PASS 2026-07-09 AD 2.20 take-off/landing need Tower clearance (item 7.3)
+PASS 2026-07-09 AD 2.22 IAS 250 kt at or below 10 000 ft (item 4.1.2)
+PASS 2026-07-09 AD 2.22 8.1 VFR by day: ground visibility 5 km, ceiling 1500 ft
+PASS 2026-07-09 AD 2.22 8.2 VFR by night at VTBD: ATC may authorize, treated as special VFR
+PASS 2026-07-09 AD 2.22 8.4.1 special VFR ground visibility 1500 m
+PASS 2026-07-09 AD 2.22 8.5.1 VFR entry/exit daylight only
+PASS 2026-07-09 AD 2.22 8.5.2 light-aircraft routes designed for < 130 kt
+PASS 2026-07-09 AD 2.22 8.5.2 j) reporting-point table found (26 points)
+PASS 2026-07-09 AD 2.22 8.5.2 training route out: ... BANG BUA THONG 1000 ft -> area
+PASS 2026-07-09 AD 2.22 8.5.2 training route back: LAT LUM KAEO - PATHUMTHANI - 5 NM WEST - 3 NM WEST, 1000 ft
+PASS 2026-07-09 AD 2.22 8.6.2 note: traffic pattern light aircraft 800 ft (jet 1500, conventional 1000, helicopter 500)
+PASS 2026-07-09 AD 2.22 8.6.2 VFR radio failure: low approach between the runways at 500 ft
+PASS 2026-07-09 AD 2.22 9.2 light-aircraft training area = D72 (found D72)
+PASS 2026-10-29 AD 2.17 ATZ radius 5 NM
+PASS 2026-10-29 AD 2.17 ATZ upper limit 2000 ft AGL
+PASS 2026-10-29 AD 2.17 class C
+PASS 2026-10-29 AD 2.17 languages English, Thai
+PASS 2026-10-29 AD 2.18 TWR 118.1 MHz
+PASS 2026-10-29 AD 2.18 GND 121.9 and 122.5 MHz
+PASS 2026-10-29 AD 2.18 DEL 127.7 MHz
+PASS 2026-10-29 AD 2.18 ATIS arrival 126.4 MHz
+PASS 2026-10-29 AD 2.18 ATIS departure 118.55 MHz
+PASS 2026-10-29 AD 2.18 Don Mueang Approach 119.4 MHz
+PASS 2026-10-29 AD 2.20 4.1 03R/21L normally military, may be civil, H24, Don Mueang Tower
+PASS 2026-10-29 AD 2.20 4.2.1 outbound: turn east, leave at 45 deg to crosswind
+PASS 2026-10-29 AD 2.20 4.2.2 join 45 deg mid-downwind east of RWY
+PASS 2026-10-29 AD 2.20 4.2.2 heights 1500 jet / 1000 conventional / 800 light / 500 helicopter
+PASS 2026-10-29 AD 2.20 4.2.3 no straight-in without Tower approval
+PASS 2026-10-29 AD 2.20 21L vacate right, hold short of 21R (item 6.3, TWY S)
+PASS 2026-10-29 AD 2.20 take-off/landing need Tower clearance (item 7.3)
+PASS 2026-10-29 AD 2.22 IAS 250 kt at or below 10 000 ft (item 4.1.2)
+PASS 2026-10-29 AD 2.22 8.1 VFR by day: ground visibility 5 km, ceiling 1500 ft
+PASS 2026-10-29 AD 2.22 8.2 VFR by night at VTBD: ATC may authorize, treated as special VFR
+PASS 2026-10-29 AD 2.22 8.4.1 special VFR ground visibility 1500 m
+PASS 2026-10-29 AD 2.22 8.5.1 VFR entry/exit daylight only
+PASS 2026-10-29 AD 2.22 8.5.2 light-aircraft routes designed for < 130 kt
+PASS 2026-10-29 AD 2.22 8.5.2 j) reporting-point table found (26 points)
+PASS 2026-10-29 AD 2.22 8.5.2 training route out: ... BANG BUA THONG 1000 ft -> area
+PASS 2026-10-29 AD 2.22 8.5.2 training route back: LAT LUM KAEO - PATHUMTHANI - 5 NM WEST - 3 NM WEST, 1000 ft
+PASS 2026-10-29 AD 2.22 8.6.2 note: traffic pattern light aircraft 800 ft (jet 1500, conventional 1000, helicopter 500)
+PASS 2026-10-29 AD 2.22 8.6.2 VFR radio failure: low approach between the runways at 500 ft
+PASS 2026-10-29 AD 2.22 9.2 light-aircraft training area = D6A,D6B (found D6A,D6B)
+OK: 0 failed check(s); run 2026-11-19

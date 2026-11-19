@@ -1,0 +1,80 @@
+[momentum] ISA SL: rho=1.2250 ideal static T(700kW)=17.77 kN; FM needed for AC.T0=11.5kN: 0.521; T at FM 0.5/0.6/0.7: 11.20/12.64/14.01 kN
+[momentum] VTBD 31C: rho=1.1602 ideal static T(700kW)=17.45 kN; FM needed for AC.T0=11.5kN: 0.535; T at FM 0.5/0.6/0.7: 10.99/12.42/13.76 kN
+[momentum] induced velocity at disk for T=11.5kN SL: 31.7 m/s; slipstream far wake 2vi=63.4 m/s
+
+[constant speed 2000 rpm, 700 kW] V(kt) beta75 J T_BEM(kN) eta  | current AC thrustAvail(kN)
+rho 1.225 0kt beta=26.8 J=0.000 T=12.36 eta=0.000 vi=39.0 | cur 11.50
+rho 1.225 40kt beta=25.0 J=0.253 T=11.93 eta=0.351 vi=28.2 | cur 10.59
+rho 1.225 60kt beta=24.8 J=0.380 T=11.15 eta=0.491 vi=23.7 | cur 9.71
+rho 1.225 80kt beta=25.0 J=0.506 T=10.26 eta=0.603 vi=19.8 | cur 8.78
+rho 1.225 88kt beta=25.2 J=0.557 T=9.90 eta=0.640 vi=18.4 | cur 8.42
+rho 1.225 95kt beta=25.4 J=0.601 T=9.59 eta=0.669 vi=17.3 | cur 8.12
+rho 1.225 120kt beta=26.5 J=0.759 T=8.51 eta=0.751 vi=13.9 | cur 7.12
+rho 1.225 150kt beta=28.2 J=0.949 T=7.38 eta=0.814 vi=11.0 | cur 6.14
+rho 1.225 200kt beta=31.8 J=1.265 T=5.90 eta=0.867 vi=7.9 | cur 4.92
+rho 1.160 0kt beta=28.5 J=0.000 T=11.55 eta=0.000 vi=39.1 | cur 11.50
+rho 1.160 40kt beta=26.2 J=0.253 T=11.56 eta=0.340 vi=28.7 | cur 10.59
+rho 1.160 60kt beta=25.9 J=0.380 T=10.89 eta=0.480 vi=24.3 | cur 9.71
+rho 1.160 80kt beta=25.9 J=0.506 T=10.08 eta=0.593 vi=20.5 | cur 8.78
+rho 1.160 88kt beta=26.1 J=0.557 T=9.74 eta=0.630 vi=19.1 | cur 8.42
+rho 1.160 95kt beta=26.2 J=0.601 T=9.45 eta=0.660 vi=18.0 | cur 8.12
+rho 1.160 120kt beta=27.2 J=0.759 T=8.43 eta=0.743 vi=14.5 | cur 7.12
+rho 1.160 150kt beta=28.8 J=0.949 T=7.33 eta=0.808 vi=11.5 | cur 6.14
+rho 1.160 200kt beta=32.2 J=1.265 T=5.88 eta=0.865 vi=8.3 | cur 4.92
+
+[flight idle] P_idle, beta_stop, V -> mode, rpm, T
+P=0kW stop=8 88kt: governing rpm=2000 beta=8.6 J=0.557 T=-724 N
+P=0kW stop=8 120kt: governing rpm=2000 beta=14.1 J=0.759 T=-434 N
+P=0kW stop=10 88kt: on stop rpm=1841 beta=10.0 J=0.605 T=-524 N
+P=0kW stop=10 120kt: governing rpm=2000 beta=14.1 J=0.759 T=-434 N
+P=0kW stop=12 88kt: on stop rpm=1643 beta=12.0 J=0.678 T=-344 N
+P=0kW stop=12 120kt: governing rpm=2000 beta=14.1 J=0.759 T=-434 N
+P=20kW stop=8 88kt: governing rpm=2000 beta=9.6 J=0.557 T=-184 N
+P=20kW stop=8 120kt: governing rpm=2000 beta=14.7 J=0.759 T=-81 N
+P=20kW stop=10 88kt: on stop rpm=1952 beta=10.0 J=0.570 T=-126 N
+P=20kW stop=10 120kt: governing rpm=2000 beta=14.7 J=0.759 T=-81 N
+P=20kW stop=12 88kt: on stop rpm=1749 beta=12.0 J=0.636 T=67 N
+P=20kW stop=12 120kt: governing rpm=2000 beta=14.7 J=0.759 T=-81 N
+P=40kW stop=8 88kt: governing rpm=2000 beta=10.4 J=0.557 T=307 N
+P=40kW stop=8 120kt: governing rpm=2000 beta=15.2 J=0.759 T=261 N
+P=40kW stop=10 88kt: governing rpm=2000 beta=10.4 J=0.557 T=307 N
+P=40kW stop=10 120kt: governing rpm=2000 beta=15.2 J=0.759 T=261 N
+P=40kW stop=12 88kt: on stop rpm=1840 beta=12.0 J=0.605 T=458 N
+P=40kW stop=12 120kt: governing rpm=2000 beta=15.2 J=0.759 T=261 N
+current model idle thrust at 88 kt: 379 N
+
+[windmill] engine failed (P=0), governor holds <=2000 rpm, 100 kt and 120 kt
+100 kt: governing rpm=2000 beta=10.8 D_windmill=574 N
+120 kt: governing rpm=2000 beta=14.1 D_windmill=434 N
+100 kt feathered (beta75=81): D_feather=62 N  blade area 0.660 m2 CD_on_blade_area=0.061
+120 kt feathered (beta75=81): D_feather=89 N  blade area 0.660 m2 CD_on_blade_area=0.061
+
+[reverse] static BEM (J=0) at negative beta, 1825 rpm (Caravan TCDS max reverse rpm used as analogue)
+beta -5: CT=-0.0062 CP=0.0083 T=-0.23 kN P=23 kW ok=false
+beta -10: CT=-0.0110 CP=0.0062 T=-0.42 kN P=17 kW ok=false
+beta -15: CT=-0.0071 CP=0.0042 T=-0.27 kN P=12 kW ok=false
+beta -20: CT=-0.0041 CP=0.0028 T=-0.16 kN P=8 kW ok=false
+beta -15 at 40 kt: CT=-0.1920 CP=0.0634 T=-7.31 kN P=179 kW momentum-valid=false
+beta -15 at 60 kt: CT=-0.2219 CP=0.0689 T=-8.44 kN P=194 kW momentum-valid=false
+beta -15 at 80 kt: CT=-0.2476 CP=0.0753 T=-9.42 kN P=213 kW momentum-valid=false
+
+[P-factor/normal force] body FRD; vIp=[v,w]; prop disk 3.94 m ahead of CG (src/70-aircraft.js:183)
+rotation/climb max power: 80kt a=10 b=0 beta75=25.9 T=10152N Fy=-0 Fz=-258 | hub moments Mx=-3345 My=-0 Mz=-568 N m | about CG: yaw -568 pitch 1015 | thrust offset dy=0.056 m dz=-0.000 m | rudder to cancel yaw -2.77 deg, aileron to cancel torque 7.33 deg | Cn=-3.48e-3 Cm=3.84e-2
+Vref approach power: 88kt a=5 b=0 beta75=14.1 T=2551N Fy=0 Fz=-102 | hub moments Mx=-716 My=0 Mz=-212 N m | about CG: yaw -212 pitch 403 | thrust offset dy=0.083 m dz=0.000 m | rudder to cancel yaw -0.85 deg, aileron to cancel torque 1.30 deg | Cn=-1.07e-3 Cm=1.26e-2
+Vref sideslip 5deg: 88kt a=0 b=5 beta75=14.1 T=2551N Fy=-102 Fz=0 | hub moments Mx=-716 My=-212 Mz=0 N m | about CG: yaw -403 pitch -212 | thrust offset dy=-0.000 m dz=-0.083 m | rudder to cancel yaw -1.62 deg, aileron to cancel torque 1.30 deg | Cn=-2.04e-3 Cm=-6.63e-3
+climb sideslip 5deg: 80kt a=0 b=5 beta75=25.9 T=10104N Fy=-130 Fz=0 | hub moments Mx=-3345 My=-286 Mz=0 N m | about CG: yaw -512 pitch -286 | thrust offset dy=-0.000 m dz=-0.028 m | rudder to cancel yaw -2.49 deg, aileron to cancel torque 7.33 deg | Cn=-3.13e-3 Cm=-1.08e-2
+axial: 80kt a=0 b=0 beta75=25.9 T=10088N Fy=-0 Fz=0 | hub moments Mx=-3345 My=0 Mz=0 N m | about CG: yaw 0 pitch -0 | thrust offset dy=-0.000 m dz=0.000 m | rudder to cancel yaw 0.00 deg, aileron to cancel torque 7.33 deg | Cn=1.58e-19 Cm=-2.55e-17
+
+[gyro] Ip=14 kg m2, Omega=209.4 rad/s, H=2932 kg m2/s
+pitch rate 5 deg/s -> yaw moment N = H q = 256 N m
+pitch rate 10 deg/s -> yaw moment N = H q = 512 N m
+pitch rate 20 deg/s -> yaw moment N = H q = 1024 N m
+  rudder for 10 deg/s pitch at 60 kt: 4.43 deg
+  rudder for 10 deg/s pitch at 88 kt: 2.06 deg
+[torque] full power torque Q=3342 N m (2465 lbf ft)
+  aileron to cancel full-power torque at 60 kt: 13.02 deg
+  aileron to cancel full-power torque at 80 kt: 7.33 deg
+  aileron to cancel full-power torque at 88 kt: 6.05 deg
+  ground: torque taken by main gear, delta N per wheel = Q/track = 1078 N
+
+[cost] bem() N=20 with 300-step phi scan: 0.458 ms/call

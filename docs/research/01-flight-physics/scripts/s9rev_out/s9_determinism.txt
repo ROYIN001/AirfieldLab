@@ -1,0 +1,9 @@
+calm: repeat bit-identical=true; base TD s=309.495 m vs=-129.4 fpm tl=0.000 score=100
+   libm +1ulp: TD s=309.495 vs=-129.4 tl=0.000 score=100 | libm -1ulp: TD s=309.495 vs=-129.4 tl=0.000 score=100
+   end-state difference |Δx| (m): +ulp 6.12e-13, -ulp 7.63e-13
+xl: repeat bit-identical=true; base TD s=343.173 m vs=-46.2 fpm tl=7.279 score=88
+   libm +1ulp: TD s=343.173 vs=-46.2 tl=7.279 score=88 | libm -1ulp: TD s=343.173 vs=-46.2 tl=7.279 score=88
+   end-state difference |Δx| (m): +ulp 8.54e-12, -ulp 2.93e-12
+calm 1e-9 m perturbation, |Δpos| (m): t40:4.6e-10 t60:4.5e-10 t80:4.5e-10
+xl 1e-9 m perturbation, |Δpos| (m): t40:2.4e-10 t60:2.4e-10 t80:2.4e-10
+exit 0

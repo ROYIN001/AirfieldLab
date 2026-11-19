@@ -1,0 +1,194 @@
+{
+ "vref": [
+  {
+   "af": "NG",
+   "flap": "UP",
+   "m": 1280,
+   "kias": 83,
+   "src": "LD3 approach_table (flaps-failed approach)",
+   "VS_kcas": 63.8,
+   "CL": 1.434
+  },
+  {
+   "af": "NG",
+   "flap": "T/O",
+   "m": 1280,
+   "kias": 78,
+   "src": "LD3",
+   "VS_kcas": 60,
+   "CL": 1.624
+  },
+  {
+   "af": "NG",
+   "flap": "LDG",
+   "m": 1280,
+   "kias": 77,
+   "src": "LD3",
+   "VS_kcas": 59.2,
+   "CL": 1.667
+  },
+  {
+   "af": "NG",
+   "flap": "UP",
+   "m": 1100,
+   "kias": 78,
+   "src": "LD3",
+   "VS_kcas": 60,
+   "CL": 1.396
+  },
+  {
+   "af": "NG",
+   "flap": "LDG",
+   "m": 1100,
+   "kias": 72,
+   "src": "LD3",
+   "VS_kcas": 55.4,
+   "CL": 1.638
+  },
+  {
+   "af": "legacy",
+   "flap": "UP",
+   "m": 1150,
+   "kias": 73,
+   "src": "LD6 p.4B-9",
+   "VS_kcas": 56.2,
+   "CL": 1.63
+  },
+  {
+   "af": "legacy",
+   "flap": "UP",
+   "m": 1200,
+   "kias": 76,
+   "src": "LD6 p.4B-9",
+   "VS_kcas": 58.5,
+   "CL": 1.569
+  },
+  {
+   "af": "legacy",
+   "flap": "LDG",
+   "m": 1150,
+   "kias": 71,
+   "src": "LD6 p.4A-34",
+   "VS_kcas": 54.6,
+   "CL": 1.723
+  },
+  {
+   "af": "legacy",
+   "flap": "LDG",
+   "m": 1200,
+   "kias": 73,
+   "src": "LD6 p.4A-34",
+   "VS_kcas": 56.2,
+   "CL": 1.7
+  }
+ ],
+ "stall": [
+  {
+   "af": "NG",
+   "flap": "UP",
+   "m": 1310,
+   "kt": 66,
+   "src": "LD3",
+   "CL_if_cas": 1.374
+  },
+  {
+   "af": "NG",
+   "flap": "LDG",
+   "m": 1310,
+   "kt": 60,
+   "src": "LD3",
+   "CL_if_cas": 1.662
+  },
+  {
+   "af": "NG",
+   "flap": "LDG",
+   "m": 1310,
+   "kt": 58,
+   "src": "LD4 brochure, KCAS",
+   "CL_if_cas": 1.779
+  },
+  {
+   "af": "legacy",
+   "flap": "UP",
+   "m": 1150,
+   "kt": 52,
+   "src": "LD6 p.5-8",
+   "CL_if_cas": 1.9
+  },
+  {
+   "af": "legacy",
+   "flap": "LDG",
+   "m": 1150,
+   "kt": 49,
+   "src": "LD6 p.5-8",
+   "CL_if_cas": 2.14
+  },
+  {
+   "af": "legacy",
+   "flap": "LDG",
+   "m": 1200,
+   "kt": 52,
+   "src": "LD6 p.5-8 (MÄM 40-227)",
+   "CL_if_cas": 1.983
+  }
+ ],
+ "ratio_legacy_over_NG": {
+  "UP": 1.137,
+  "LDG": 1.034
+ },
+ "bank_1150": {
+  "rows": [
+   [
+    0,
+    52
+   ],
+   [
+    30,
+    57
+   ],
+   [
+    45,
+    66
+   ],
+   [
+    60,
+    79
+   ]
+  ],
+  "vs0FromBank": [
+   {
+    "phi": 45,
+    "kias": 66,
+    "VS0_cas": 55.5
+   },
+   {
+    "phi": 60,
+    "kias": 79,
+    "VS0_cas": 55.86
+   }
+  ],
+  "ias_reads_low_kt": [
+   3.5,
+   3.86
+  ]
+ },
+ "legacy_1200_vs_sqrt_mass": {
+  "UP": {
+   "table": 53,
+   "from1150": 53.1
+  },
+  "T/O": {
+   "table": 52,
+   "from1150": 52.1
+  },
+  "LDG": {
+   "table": 52,
+   "from1150": 50.1
+  }
+ },
+ "ng_up_vref_at_1200kg": {
+  "kias": 80.4,
+  "legacy": 76,
+  "diff_kt": 4.4
+ }
+}

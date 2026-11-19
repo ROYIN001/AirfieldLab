@@ -1,0 +1,110 @@
+{
+ "type": "c172r",
+ "mode": "static",
+ "T0_input": 2933,
+ "legacy": {
+  "propulsion": {
+   "P": 119310,
+   "eta": 1.1338,
+   "T0": 2933,
+   "idle": 0
+  },
+  "aero": {
+   "CD0": 0.06061,
+   "K": 0.06817,
+   "CL0": 0.25,
+   "CLa": 5.17,
+   "CLflap": 0.321,
+   "CDflap": 0.0193,
+   "CDgear": 0,
+   "Cm0": -0.0206,
+   "Cma": -0.942,
+   "Cmflap": -0.0864,
+   "aStall": 18.3,
+   "aStallFlap": 0.57
+  }
+ },
+ "notes": [
+  "polar from glide 66.0 KCAS E 9.114: CD0s 0.0606 Ks 0.0682; idle 0 (POH glide is at idle, windmilling)",
+  "climb fit (static): target Vy 78.1 KCAS ROC 720 fpm → T0 2933 N, Vc 46.1 m/s",
+  "WARNING eta 1.13 > 0.95: P too low for the sim's thrust law at this ROC"
+ ],
+ "targets": {
+  "VS1": 52,
+  "VS0": 47,
+  "Vy": 78.1,
+  "roc": 720,
+  "glide": {
+   "speed_kt": 65,
+   "ratio": 9.114
+  }
+ },
+ "check": {
+  "stall_clean": {
+   "CLmax": 1.4647,
+   "V_CLmax_eas": 51.881,
+   "V_CLmax_cas": 51.885,
+   "nz": 0.94789,
+   "alpha_deg": 15.49,
+   "t": 25.475,
+   "rate": 1.0253,
+   "VSR_eas": 53.288,
+   "VSR_cas": 53.292,
+   "Vmin_eas": 50.637,
+   "de_end_deg": -20.775,
+   "ias0": 78
+  },
+  "stall_full": {
+   "CLmax": 1.7858,
+   "V_CLmax_eas": 47.07,
+   "V_CLmax_cas": 47.074,
+   "nz": 0.95131,
+   "alpha_deg": 15.833,
+   "t": 24.275,
+   "rate": 0.98577,
+   "VSR_eas": 48.26,
+   "VSR_cas": 48.263,
+   "Vmin_eas": 46.181,
+   "de_end_deg": -22,
+   "ias0": 71
+  },
+  "climb": {
+   "Vy_kt": 68.49,
+   "ROCmax_fpm": 730.6,
+   "Vy_grid_kt": 68,
+   "ROC_grid_fpm": 730.48,
+   "Vx_kt": 64,
+   "gammaMax_deg": 6.3725,
+   "atVy": {
+    "ias": 68,
+    "V": 35.037,
+    "alpha": 7.4046,
+    "de": -6.6319,
+    "gamma": 6.0797,
+    "theta": 13.484,
+    "roc_fpm": 730.48,
+    "LoverD": -9.3887
+   },
+   "edge": false
+  },
+  "glide": {
+   "Vbg_kt": 65.832,
+   "LD": 9.1134,
+   "Vbg_grid_kt": 66,
+   "LD_grid": 9.1133,
+   "sink_fpm": 762.19,
+   "edge": false
+  },
+  "takeoff": {
+   "VR": 49,
+   "groundRoll_m": 282.9,
+   "tLiftoff_s": 16.237,
+   "V_LOF_kt": 62.395,
+   "dist50ft_m": 486.46,
+   "V50_kt": 65.696
+  }
+ },
+ "excessTW": 0.087,
+ "takeoff_VR_kcas": 49,
+ "takeoff_theta_deg": 12
+}

@@ -1,0 +1,31 @@
+Gamma=281.4: ratio linear=4.98 clip12deg=3.92 clip8deg=2.75; vmax(core)=17.9 m/s
+Gamma=140: ratio linear=2.48 clip12deg=2.48 clip8deg=2.31; vmax(core)=8.9 m/s
+Gamma=70: ratio linear=1.24 clip12deg=1.24 clip8deg=1.24; vmax(core)=4.5 m/s
+Gamma=35: ratio linear=0.62 clip12deg=0.62 clip8deg=0.62; vmax(core)=2.2 m/s
+ratio 1 at Gamma=56.5 m2/s (clip none)
+ratio 1 at Gamma=56.5 m2/s (clip 12)
+ratio 0.5 at Gamma=28.2 m2/s (clip none)
+ratio 0.5 at Gamma=28.2 m2/s (clip 12)
+eps*=0.01: Sarpkaya T_L=9.00  Tss(hazard model, N*=0)=5.28
+eps*=0.05: Sarpkaya T_L=4.84  Tss(hazard model, N*=0)=3.23
+eps*=0.088: Sarpkaya T_L=3.96  Tss(hazard model, N*=0)=2.52
+eps*=0.19: Sarpkaya T_L=2.73  Tss(hazard model, N*=0)=1.54
+eps*=0.2535: Sarpkaya T_L=2.25  Tss(hazard model, N*=0)=1.17
+eps*=0.41: Sarpkaya T_L=1.57  Tss(hazard model, N*=0)=0.56
+eps*=1: Sarpkaya T_L=0.80  Tss(hazard model, N*=0)=-0.57
+OB R=600m zm=50m um=6 m/s (11.7 kt), centre 2000 m before TD (GP h=344 ft): Fbar=0.094 at 342 ft dV=19.9 kt wmin=-562 fpm | Vicroy(rp=1.1212R): Fbar=0.085 dV=19.8 kt wmin=-447 fpm
+OB R=600m zm=50m um=8 m/s (15.6 kt), centre 2000 m before TD (GP h=344 ft): Fbar=0.126 at 341 ft dV=26.5 kt wmin=-749 fpm | Vicroy(rp=1.1212R): Fbar=0.114 dV=26.5 kt wmin=-596 fpm
+OB R=600m zm=50m um=10 m/s (19.4 kt), centre 2000 m before TD (GP h=344 ft): Fbar=0.158 at 341 ft dV=33.2 kt wmin=-936 fpm | Vicroy(rp=1.1212R): Fbar=0.142 dV=33.1 kt wmin=-744 fpm
+OB R=600m zm=50m um=12 m/s (23.3 kt), centre 2000 m before TD (GP h=344 ft): Fbar=0.190 at 340 ft dV=39.8 kt wmin=-1123 fpm | Vicroy(rp=1.1212R): Fbar=0.171 dV=39.7 kt wmin=-893 fpm
+OB R=600m zm=50m um=15 m/s (29.2 kt), centre 2000 m before TD (GP h=344 ft): Fbar=0.238 at 339 ft dV=49.7 kt wmin=-1404 fpm | Vicroy(rp=1.1212R): Fbar=0.215 dV=49.6 kt wmin=-1117 fpm
+OB R=600m zm=50m um=18 m/s (35.0 kt), centre 2000 m before TD (GP h=344 ft): Fbar=0.287 at 339 ft dV=59.7 kt wmin=-1685 fpm | Vicroy(rp=1.1212R): Fbar=0.259 dV=59.5 kt wmin=-1340 fpm
+25.341: H=30 ft: Uds/Fg (sea level) = 37.2 ft/s EAS = 11.33 m/s; U(s=H/2)=0.500*Uds
+25.341: H=60 ft: Uds/Fg (sea level) = 41.7 ft/s EAS = 12.72 m/s; U(s=H/2)=0.500*Uds
+25.341: H=107 ft: Uds/Fg (sea level) = 46.0 ft/s EAS = 14.01 m/s; U(s=H/2)=0.500*Uds
+25.341: H=200 ft: Uds/Fg (sea level) = 51.0 ft/s EAS = 15.55 m/s; U(s=H/2)=0.500*Uds
+25.341: H=350 ft: Uds/Fg (sea level) = 56.0 ft/s EAS = 17.07 m/s; U(s=H/2)=0.500*Uds
+Delta alpha for 3 m/s vertical gust at 95 kt = 3.51 deg; Delta n (quasi-steady, no pitch) = 0.292
+h=100: ETSO su/sw=1.60 Lu=260 | 8785C su/sw=1.72 Lu=505 Lw=100
+h=300: ETSO su/sw=1.34 Lu=540 | 8785C su/sw=1.41 Lu=840 Lw=300
+h=700: ETSO su/sw=1.16 Lu=950 | 8785C su/sw=1.12 Lu=984 Lw=700
+h=900: ETSO su/sw=1.12 Lu=1123 | 8785C su/sw=1.03 Lu=998 Lw=900
