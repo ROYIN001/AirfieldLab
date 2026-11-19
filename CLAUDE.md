@@ -16,6 +16,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Run: `python3 -m http.server 8080 -d dist`, open http://localhost:8080 (needs HTTP: the page fetches its data).
 - Physics tests (Node ≥ 18, no dependencies): `node test/geo.test.mjs`, `node test/flight.test.mjs`,
   `node test/runways.test.mjs`, `node test/assist.test.mjs`, `node test/stall.test.mjs`.
+- Keyboard map test: `node --test test/keys.test.mjs` (research round 1 T-I-07, T-I-08; loads `src/18-keys.js` itself).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function`, so those three files must stay DOM-free.
 - Screenshots: `test/shots.mjs <set>` (Playwright + Chrome, SwiftShader). Paths inside it point at the original
   cloud workspace (`/home/claude/...`, `/opt/npm-tools`, vendored three.js); adjust before use.
@@ -26,6 +27,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 00-head.js | three.js imports (OrbitControls, BufferGeometryUtils) |
 | 10-atmo.js | pure: constants (KT, FT, NM, DEG, RAD, G0), USSA-1976 `atmosphere(h, isaDev)`, NOAA sun position, sky radiance |
 | 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
+| 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge` |
 | 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()`, `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
@@ -56,10 +58,14 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Verified: autoland on 21R, 21L, 03L, 03R in calm and 15 kt gusty crosswind, scores 94–100.
 
 ## Controls (current)
-- Keyboard: W/S or ↑/↓ pitch, A/D or ←/→ roll, Q/E rudder, Shift/Ctrl throttle, B brake, C camera, T take control,
-  P pause, R restart. Keys already ramp linearly (`readInputs` in 90-app.js: pitch 2.0/s, roll and rudder 2.5/s,
-  release 5/s). Research round 1 §11 finds the ramps too fast, and Ctrl (throttle down) held with W makes Ctrl+W,
-  which closes the Chrome tab before the page can block it.
+- Keyboard (physical keys, `KeyboardEvent.code`, so a Thai layout works; map in `src/18-keys.js`): W/S or ↑/↓
+  pitch, A/D or ←/→ roll, Q/E rudder, = / - (or PageUp/PageDown, Numpad 9/3) throttle, B brake, C camera,
+  T take control, P pause, R restart. No Ctrl, Meta or Alt in the map, and keys are ignored while one is held:
+  Ctrl (the old throttle-down key) with W made Ctrl+W, which closes the Chrome tab before the page can block it
+  (research round 1 §11.4.5). C/T/P/R act once per press (key repeat ignored); while flying, bound keys do not
+  scroll the page; held keys are released when the window loses focus or the tab is hidden. Keys ramp linearly
+  (`readInputs` in 90-app.js: pitch 2.0/s, roll and rudder 2.5/s, release 5/s); research round 1 §11 finds the
+  ramps too fast (its task list, item 10).
 - Touch: virtual stick, throttle rail, brake button.
 
 ## Research reports (docs/research/)

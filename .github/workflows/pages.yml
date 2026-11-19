@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 22
       - name: Physics checks
-        run: node test/geo.test.mjs && node test/runways.test.mjs
+        run: node test/geo.test.mjs && node test/runways.test.mjs && node --test test/keys.test.mjs
       - name: Build
         run: node build.mjs
       - uses: actions/upload-pages-artifact@v3

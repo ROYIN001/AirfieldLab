@@ -328,20 +328,22 @@ async function main() {
   $('#tabTrain').onclick = () => setMode('train');
   $('#btnFs').onclick = () => { viewport.classList.toggle('fs'); $('#btnFs').textContent = viewport.classList.contains('fs') ? 'ออกจากเต็มจอ' : 'เต็มจอ'; };
 
-  // ── input: keyboard, touch stick, throttle, brake ──
-  const KEYMAP = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'dn', KeyS: 'dn', ArrowLeft: 'lt', KeyA: 'lt', ArrowRight: 'rt', KeyD: 'rt', KeyQ: 'rl', KeyE: 'rr', ShiftLeft: 'tu', ShiftRight: 'tu', ControlLeft: 'td', ControlRight: 'td', KeyB: 'br' };
+  // ── input: keyboard (map and rules in 18-keys.js), touch stick, throttle, brake ──
   window.addEventListener('keydown', (e) => {
     if (e.target && /input|select|textarea/i.test(e.target.tagName)) return;
-    const k = KEYMAP[e.code];
-    if (k) { app.keys.add(k); if (app.mode === 'train' && app.train.state === 'fly' && /^Arrow/.test(e.code)) e.preventDefault(); }
-    if (app.mode !== 'train') return;
-    if (e.code === 'KeyC') { const order = ['chase', 'cockpit', 'tower', 'side', 'free']; setTrainCam(order[(order.indexOf(app.trainCam) + 1) % order.length]); }
-    if (e.code === 'KeyT' && app.train.state === 'fly') $('#btnTake').click();
-    if (e.code === 'KeyP' && app.train.state === 'fly') { app.train.warp = app.train.warp ? 0 : 1; refreshLive(); }
-    if (e.code === 'KeyR' && app.train.state !== 'setup') startFlight();
+    const act = resolveKey(e.code, { ctrl: e.ctrlKey, meta: e.metaKey, alt: e.altKey });   // null with Ctrl, Meta or Alt
+    if (!act) return;
+    if (app.mode === 'train' && app.train.state === 'fly') e.preventDefault();   // arrows, PageUp/PageDown must not scroll
+    if (!TOGGLE_ACTIONS.has(act)) { app.keys.add(act); return; }
+    if (app.mode !== 'train' || !isToggleEdge(e)) return;   // toggles once per press, not on key repeat
+    if (act === 'cam') { const order = ['chase', 'cockpit', 'tower', 'side', 'free']; setTrainCam(order[(order.indexOf(app.trainCam) + 1) % order.length]); }
+    if (act === 'take' && app.train.state === 'fly') $('#btnTake').click();
+    if (act === 'pause' && app.train.state === 'fly') { app.train.warp = app.train.warp ? 0 : 1; refreshLive(); }
+    if (act === 'restart' && app.train.state !== 'setup') startFlight();
   });
-  window.addEventListener('keyup', (e) => { const k = KEYMAP[e.code]; if (k) app.keys.delete(k); });
+  window.addEventListener('keyup', (e) => { const act = DEFAULT_KEYMAP[e.code]; if (act) app.keys.delete(act); });
   window.addEventListener('blur', () => app.keys.clear());
+  document.addEventListener('visibilitychange', () => { if (document.hidden) app.keys.clear(); });
   const stick = $('#stick'), knob = $('#stickKnob'); const touchStick = { on: false, x: 0, y: 0 };
   const stickMove = (e) => { const r = stick.getBoundingClientRect(); const R = r.width / 2 - 20; let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2); const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } touchStick.x = dx / R; touchStick.y = dy / R; knob.style.transform = `translate(${dx}px, ${dy}px)`; };
   stick.addEventListener('pointerdown', (e) => { touchStick.on = true; stick.setPointerCapture(e.pointerId); stickMove(e); });
