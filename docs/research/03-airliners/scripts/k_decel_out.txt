@@ -1,0 +1,15 @@
+737 AB1: 1.22 m/s^2; from 135 kt GS, 1 s delay: 2048 m; time 57 s (single-rate approx)
+737 AB2: 1.52 m/s^2; from 135 kt GS, 1 s delay: 1652 m; time 45.6 s (single-rate approx)
+737 AB3: 2.19 m/s^2; from 135 kt GS, 1 s delay: 1168 m; time 31.6 s (single-rate approx)
+737 MAX: 4.27 m/s^2 (>80 kt), 3.66 (<80 kt); from 135 kt GS, 1 s delay: 668 m; time 16.3 s (single-rate approx)
+A320 LO (1.7, 4 s): from 130 kt GS: 1583 m; from 120 kt: 1368 m
+A320 LO (2.0, 2 s): from 130 kt GS: 1252 m; from 120 kt: 1076 m
+A320 MED (3.0, 2 s): from 130 kt GS: 879 m; from 120 kt: 759 m
+manual max braking mu_eff 0.35: decel 3.43 m/s^2; from 135 kt 772 m
+manual max braking mu_eff 0.45: decel 4.41 m/s^2; from 135 kt 616 m
+737 max reverse decel at 130 kt 1.26 m/s^2, at 60 kt 1 m/s^2
+AB2 target 1.52 m/s^2 vs reverse 1.26 m/s^2 + aero/rolling drag: brakes do ~17 % of decel at 130 kt (rest from reverse)
+reverse to idle: Boeing 60 kt = 30.87 m/s ; Airbus 70 kt = 36.01 m/s ; ATR ~40 kt = 20.58 m/s
+737 AB3: 130 -> 60 kt in 16.4 s
+A320 MED: 130 -> 70 kt in 10.3 s
+LDA needed for 1,000 m certified LD: dry dispatch 1667 m, wet 1917 m; time-of-arrival actual LD x1.15 = 1150 m

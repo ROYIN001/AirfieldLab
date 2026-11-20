@@ -11,8 +11,17 @@ const GEO = (() => {
 function llToNE(lat, lon) { return [(lat - ARP.lat) * DEG * GEO.M, (lon - ARP.lon) * DEG * GEO.N * GEO.cosp]; }
 function neToLL(n, e) { return [ARP.lat + n / GEO.M * RAD, ARP.lon + e / (GEO.N * GEO.cosp) * RAD]; }
 
-// PAPI distance from threshold derived from the published MEHT (eye height over the threshold at 2°50′).
-const papiFromMEHT = (ft) => Math.round(ft * FT / Math.tan((2 + 50 / 60) * DEG) / 5) * 5;
+// PAPI (ICAO Annex 14 §5.3.5, 3° setting): four units on the left of each landing threshold, the inner one 15 m outside
+// the runway edge and 9 m apart, light centre PAPI_GEOM.h above the ground (the light sprites in 60-lights.js use it).
+// Settings from the inner unit outward: 3°30′, 3°10′, 2°50′, 2°30′.
+const PAPI_GEOM = { h: 0.64, off: [15, 24, 33, 42], ang: [3.5, 3 + 10 / 60, 2 + 50 / 60, 2.5] };
+// AIP AD 2.14 publishes MEHT but not the PAPI distance, so the distance is an estimate solved from MEHT in the same
+// geometry the sim draws and colours: an eye on the centre line at MEHT over the threshold sits exactly on the lower
+// edge of the on-slope signal, i.e. sees the 2°50′ unit (33 m outside the edge, light at h) at 2°50′.
+function papiFromMEHT(ft, w) {
+  const r = (ft * FT - PAPI_GEOM.h) / Math.tan(PAPI_GEOM.ang[2] * DEG), t = w / 2 + PAPI_GEOM.off[2];
+  return Math.round(Math.sqrt(r * r - t * t) * 10) / 10;
+}
 
 const RWY_DATA = [
   {
@@ -66,7 +75,7 @@ RWY_DATA.forEach((r, ri) => r.ends.forEach((E, k) => {
   }
   RWY_END[E.id] = {
     id: E.id, rwy: R, ri, k, u, r: [-u[1], u[0]], thr, far, lda, w: R.w, hdg: wrap360(Math.atan2(u[1], u[0]) * RAD),
-    disp: E.disp || 0, als: E.als, tdz: E.tdz, papi: papiFromMEHT(E.mehtFt), appr: a, aim, locDist,
+    disp: E.disp || 0, als: E.als, tdz: E.tdz, papi: papiFromMEHT(E.mehtFt, R.w), meht: E.mehtFt * FT, appr: a, aim, locDist,
     gpAntenna: a.gp ? along(llToNE(...a.gp)) : null,
   };
 }));

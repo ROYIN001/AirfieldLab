@@ -1,0 +1,45 @@
+737-800 nacelle MTW 0.48 m, pitch 0°, lever 3.2 m: bank to contact 13.6°
+737-800 nacelle MTW 0.48 m, pitch -2.5°, lever 3.2 m: bank to contact 9.6°
+737-800 nacelle MTW 0.48 m, pitch -2.5°, lever 5 m: bank to contact 7.4°
+737-800 nacelle OEW 0.64 m, pitch 0°, lever 3.2 m: bank to contact 18.2°
+737-800 nacelle OEW 0.64 m, pitch -2.5°, lever 3.2 m: bank to contact 14.2°
+737-800 nacelle OEW 0.64 m, pitch -2.5°, lever 5 m: bank to contact 11.9°
+737-800 nacelle MTW, pitch 0, extra strut compression 0.10 m: 10.7°
+observed: VH-YIW 10.3° at pitch -2.5° (ATSB AO-2016-042); EI-DAL 11.4° right MLG compressed (AAIB 5/2010)
+autobrake low typ 3 kt/s: 1.54 m/s^2 (5.1 ft/s^2, 0.157 g)
+autobrake medium typ 6 kt/s: 3.09 m/s^2 (10.1 ft/s^2, 0.315 g)
+max pedal 8 kt/s: 4.12 m/s^2 (13.5 ft/s^2, 0.42 g)
+max pedal 10 kt/s: 5.14 m/s^2 (16.9 ft/s^2, 0.525 g)
+A320 LO 1.7 m/s^2 = 3.3 kt/s = 5.6 ft/s^2
+A320 LO 2.0 m/s^2 = 3.89 kt/s = 6.6 ft/s^2
+A320 MED 3.0 m/s^2 = 5.83 kt/s = 9.8 ft/s^2
+A320 MAX cmd 6.0 m/s^2 = 11.66 kt/s = 19.7 ft/s^2
+737 AB1 4 ft/s^2 = 1.22 m/s^2 = 2.37 kt/s
+737 AB2 5 ft/s^2 = 1.52 m/s^2 = 2.96 kt/s
+737 AB3 7.2 ft/s^2 = 2.19 m/s^2 = 4.27 kt/s
+737 MAX 12 ft/s^2 = 3.66 m/s^2 = 7.11 kt/s
+737 MAX 14 ft/s^2 = 4.27 m/s^2 = 8.29 kt/s
+737-800 F1 8.5° @2°/s: t = 4.25 s
+737-800 F1 8.5° @2.5°/s: t = 3.4 s
+737-800 F1 8.5° @3°/s: t = 2.83 s
+737-800 F5 8° @2.5°/s: t = 3.2 s
+A330 10° @3°/s: t = 3.33 s
+A320 15° @3°/s: t = 5 s
+dispatch dry: LDA >= LD/0.6 = 1667 m; wet x1.15 = 1917 m
+AC 91-79B Table 3-1 (with reverse) for actual LD 1000 m: dry 1670, good 1920, poor 3400 m
+FSF BN 8.5: 5 kt tailwind +10 % -> 1100 m; 5 kt headwind -2.5 % -> 975 m; 1,000 ft elevation +5 % -> 1050 m
+FSF tailwind 10 kt: x1.21 compounded or x1.20 linear; AC 91-79B 10 kt: x1.21
+25.473 MLW: 10 ft/s = 600 fpm = 3.048 m/s
+25.473 MTOW: 6 ft/s = 360 fpm = 1.829 m/s
+Airbus LOAD15 RALR: 9 ft/s = 540 fpm = 2.743 m/s
+G-DHJH LOAD15: 11.5 ft/s = 690 fpm = 3.505 m/s
+G-DHJH FDR / severe: 14 ft/s = 840 fpm = 4.267 m/s
+ATR gear design 600 fpm: 10 ft/s = 3.048 m/s
+ATR reserve 720 fpm: 12 ft/s = 3.658 m/s
+VH-FVZ 928 fpm: 15.5 ft/s = 4.714 m/s
+Boeing max command speed: min(Vref+20, VFE-5): Vref30 137.1 F30 VFE 175 -> 157.1 kt
+A330 GS mini dHW 15 kt, h 800 ft, 0 s below 400 ft: k 1 -> +15 kt
+A330 GS mini dHW 15 kt, h 300 ft, 0 s below 400 ft: k 1 -> +15 kt
+A330 GS mini dHW 15 kt, h 300 ft, 12.5 s below 400 ft: k 0.665 -> +9.98 kt
+A330 GS mini dHW 15 kt, h 300 ft, 25 s below 400 ft: k 0.33 -> +4.95 kt
+A330 GS mini dHW 15 kt, h 200 ft, 40 s below 400 ft: k 0.33 -> +4.95 kt

@@ -11,8 +11,11 @@ const DD = { '03L': [3700, 3850, 3700, 3700], '21R': [3700, 3850, 3700, 3700], '
 for (const [id, [tora, toda, asda]] of Object.entries(DD)) ok('T-A05', toda - tora === 150 && asda === tora, id);
 for (const [id, rdh] of [['21R', 54], ['21L', 53], ['03L', 55], ['03R', 50]]) { setActiveRunway(id); ok('T-A06', Math.abs(gpHeight(0) - rdh * FT) <= 0.01, id + ' gp(0) ' + gpHeight(0).toFixed(3)); }
 setActiveRunway('21R');
-for (const [id, d, meht] of [['03L', 440, 71.85], ['21R', 405, 65.42], ['03R', 390, 63.35], ['21L', 395, 63.81]]) {
-  const E = RWY_END[id]; ok('T-A07', E.papi === d && Math.abs(E.papi * Math.tan((2 + 50 / 60) * DEG) - meht * FT) <= 0.25, id + ' papi ' + E.papi);
+// 19 Nov 2026: papiFromMEHT now solves the distance in the sim's light geometry (light 0.64 m high, 2°50′ unit 33 m
+// outside the edge) instead of round5(MEHT / tan 2°50′) = 440 / 405 / 390 / 395 m; see test/papi.test.mjs.
+for (const [id, d, meht] of [['03L', 424.9, 71.85], ['21R', 384.8, 65.42], ['03R', 373.1, 63.35], ['21L', 376.0, 63.81]]) {
+  const E = RWY_END[id], eye = 0.64 + Math.hypot(E.papi, E.w / 2 + 33) * Math.tan((2 + 50 / 60) * DEG);
+  ok('T-A07', Math.abs(E.papi - d) <= 0.1 && Math.abs(eye - meht * FT) <= 0.01, id + ' papi ' + E.papi);
 }
 for (const id of ['03L', '21R', '21L']) ok('T-A08', RWY_END[id].papi > RWY_END[id].aim, id + ' papi-aim ' + (RWY_END[id].papi - RWY_END[id].aim).toFixed(1));
 ok('T-A09', Math.abs(RWY_END['03L'].hdg - 29) <= 0.5 && Math.abs(RWY_END['21R'].hdg - 209) <= 0.5, 'hdg ' + RWY_END['03L'].hdg.toFixed(3));

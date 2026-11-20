@@ -1,0 +1,32 @@
+b737_800 {
+  x: 2.159,
+  y: 4.902,
+  z: 1.11,
+  sta: 16.485,
+  hEng: 1.59,
+  alt_jsbsim_cg_dx: 2.515,
+  jenkinson_y: 4.836
+}
+a320 { x: 4.453, y: 5.755, z: 1.24, sta: 11.857, hEng: 1.47 }
+a321 { x: 4.453, y: 5.755, z: 1.24, sta: 16.125, hEng: 1.47 }
+a330_300 {
+  x: 3.184,
+  y: 9.401,
+  z: 2.149,
+  sta: null,
+  hEng_ifCG3p6: 1.451,
+  dx_vs_AERORP: 4.184
+}
+axis pitch 2.2 toe 0: [ 0.99926, 0, -0.03839 ]  axis pitch 2.2 yaw 1: [ 0.99911, 0.01745, -0.03839 ]
+b737_800: TOGA F/eng 94.5 kN at 145 kt; My(2 eng) 209.7 kN m, dCm 0.1267; OEI N 463.2 kN m, dCn 0.0340
+a320ceo: TOGA F/eng 84.9 kN at 135 kt; My(2 eng) 210.6 kN m, dCm 0.1482; OEI N 488.5 kN m, dCn 0.0423
+a320neo: TOGA F/eng 94.6 kN at 135 kt; My(2 eng) 234.6 kN m, dCm 0.1652; OEI N 544.4 kN m, dCn 0.0449
+a321neo: TOGA F/eng 111.5 kN at 140 kt; My(2 eng) 276.7 kN m, dCm 0.1811; OEI N 641.9 kN m, dCn 0.0492
+a330_300: TOGA F/eng 257.5 kN at 140 kt; My(2 eng) 1106.7 kN m, dCm 0.1419; OEI N 2421.2 kN m, dCn 0.0374
+legacy thrustAvail fits: {
+  b737_800: { T0: 233980, eta: 0.8, P: 27873000, Vc: 95.3, maxErr: 0.0421 },
+  a320ceo: { T0: 209060, eta: 0.8, P: 24251000, Vc: 92.8, maxErr: 0.0426 },
+  a320neo: { T0: 241280, eta: 0.8, P: 25214000, Vc: 83.6, maxErr: 0.0464 },
+  a321neo: { T0: 286100, eta: 0.8, P: 30148000, Vc: 84.3, maxErr: 0.0461 },
+  a330_300: { T0: 632600, eta: 0.8, P: 75596000, Vc: 95.6, maxErr: 0.0422 }
+}

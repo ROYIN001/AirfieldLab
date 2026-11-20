@@ -1,0 +1,191 @@
+== 1. anchors ==
+Jenkinson Vapp 136 kt @179 t: CL = 1.619  -> if Vapp=VLS=1.23VS1g: CLmax_FULL = 2.45 ; if Vapp=VLS+5: 2.64 ; Jenkinson CLmax_LDG 2.73 (S 363.1) -> S 361.6: 2.741 ; CL@Vapp*1.3^2 = 2.725
+Jenkinson V2 144 kt @217 t: CL = 1.751  -> V2=1.13VS1g: CLmax_TO = 2.236 ; CL@V2*1.2^2 (S 363.1) = 2.511 (Jenkinson 2.51)
+TSB C-GHLM V2 162 kt @222.7 t CONF1+F: CL@V2 = 1.42  -> lower bound CLmax(1+F) = CL*1.13^2 = 1.813 ; VR 157 kt CL = 1.512
+ICAO cat C (VAT<141 kt, VAT=1.23VSR @MLW 187 t): CLmax_FULL > 2.381
+
+== 2. chosen CLmax (1-g, S 361.6) == {
+  CONF0: 1.26,
+  CONF1: 1.8,
+  'CONF1+F': 2.1,
+  CONF2: 2.24,
+  CONF3: 2.32,
+  FULL: 2.45
+}  clean via A320 1.316*cos29.7/cos25 = 1.261
+
+== 3. VS1g (kt CAS, ISA SL, CAS=EAS) ==
+CONF0    131.4  141.1  150.2  157.6  167  179.3
+CONF1    109.9  118.1  125.7  131.8  139.7  150
+CONF1+F  101.8  109.3  116.4  122.1  129.3  138.9
+CONF2    98.5  105.8  112.7  118.2  125.2  134.4
+CONF3    96.8  104  110.7  116.1  123.1  132.1
+FULL     94.2  101.2  107.7  113  119.8  128.6
+masses 130000 150000 170000 187000 210000 242000
+VLS FULL (1.23): 115.9 124.5 132.5 139 147.3 158.1 
+VLS CONF3 (1.23): 119.1 127.9 136.2 142.8 151.4 162.5
+VAPP FULL = VLS+5: 120.9 129.5 137.5 144 152.3 163.1
+VAT @MLW 187 t = 139 kt -> category C ; margin 2 kt; @179 t VLS 136
+
+== 4. takeoff 242 t == {
+  VS1g_1F: 138.9,
+  V2min_1F: 156.9,
+  VS1g_2: 134.4,
+  V2min_2: 151.9,
+  VS1g_3: 132.1,
+  V2min_3: 149.3
+}
+scale TSB ratio V2/VS1g(1+F) @222.7 t = 1.216 ; VR/V2 = 0.969
+V2 typical CONF2 (1.13*1.03 VS1g) = 156.5  VR = V2-5 = 151.5
+
+== 5. field lengths ==
+TOFL scale W^2/T from Jenkinson 2320 m @217 t: 2737 m = 8979 ft; Raymer TOP raw 217t 2692 242t 3175 ; calibrated 2737
+LFL scale W from Jenkinson 1600 m @179 t ->187 t: 1672 m = 5484 ft; actual = LFL/1.667: 1003 m; @179 t actual 960
+ground roll check: Vtd (VLS-3) = 136 kt; decel for 0.6*LFL/1.667 roll? distance at 1.7/3.0 m/s2: 1440 816 m
+
+== 6. tyre == {
+  perTyre_lb: 62922,
+  perTyre_kN: 279.9,
+  p_est_psi: 204.8,
+  p_est_kPa: 1412,
+  p_est_bar: 14.12,
+  rated_load_kN_54x21: 304.7,
+  rated_p_kPa: 1538,
+  speed_rating_mps: 105.05,
+  gs_limit_mps: 104.95,
+  OD_m: 1.4,
+  width_m: 0.53,
+  nose_OD_m: 1.05,
+  nose_w_m: 0.395
+}
+
+== 7. LEMAC_STA = 28.953  (CG25 ที่ 30.77 m STA); HT c/4 STA = 59.37  VT c/4 STA = 58.27 ; datum(-200) 6.382 m หน้าจมูก
+
+== 8. wake == {
+  b0: 47.36,
+  Vapp187: 144,
+  ISA: { Gamma0: 426.7, w0: 1.434 },
+  DMK_35C: { Gamma0: 456.3, w0: 1.534 },
+  rhoHot: 1.1455,
+  MTOW_V2_ISA: { Gamma0: 508.2, w0: 1.708 }
+}
+
+== 9. units == {
+  MTOW_lb: 533519,
+  MLW_lb: 412264,
+  fuel_kg: 76561,
+  S_ft2: 3892,
+  MAC_in: 286.2,
+  AR: 10.056,
+  AR_jenk: 9.265,
+  VMO_mps: 169.77,
+  VFE: { CONF1: 240, 'CONF1+F': 215, CONF2: 196, CONF3: 186, FULL: 180 },
+  VLE_mps: 128.61,
+  ceiling_ft: 41010,
+  qf72_CAS_kt: 270
+}
+== Geometry-derived (M 0.21) ==
+{
+  A: 10.056,
+  aw: 4.563,
+  at: 3.885,
+  Av_eff: 2.449,
+  av: 2.707,
+  deda: 0.278,
+  VH: 0.793,
+  VV: 0.057,
+  CLa: 5.072,
+  h_acwb: 0.075,
+  h_n: 0.47,
+  Cmq: -24,
+  Cmadot: -6.06,
+  CLq: 5.55,
+  CLadot: 1.54,
+  CLde: 0.352,
+  Cmde: -1.387,
+  CLih: 0.705,
+  Cmih: -2.773
+}
+
+== Cruise anchor QF72 == {
+  rho: 0.34833,
+  a: 295.07,
+  TAS_kt: 470.3,
+  q_Pa: 10196,
+  CL: 0.493,
+  CLa_M: 6.654,
+  CL0_M_for_alpha2p5: 0.202,
+  CL0_clean_lowM: 0.116
+}
+EAS kt 250.8 (CAS ~270 kt ATSB; ต่าง = compressibility)
+
+== Lift per CONF (CLa 5.072 /rad = 0.0885 /deg) ==
+CONF0 alpha* implied by CL0_clean 14.05 (chosen pattern 13 )
+CONF0    CLmax 1.26  alpha_CLmax 14.1  CL0 0.116  dCL0 vs clean 0  dCD0 0  k 0.041  | OpenAP formula dCD0 0  k 0.041
+CONF1    CLmax 1.8  alpha_CLmax 20  CL0 0.129  dCL0 vs clean 0.014  dCD0 0.004  k 0.0406  | OpenAP formula dCD0 0.002  k 0.041
+CONF1+F  CLmax 2.1  alpha_CLmax 20  CL0 0.429  dCL0 vs clean 0.314  dCD0 0.01  k 0.0422  | OpenAP formula dCD0 0.0022  k 0.0399
+CONF2    CLmax 2.24  alpha_CLmax 19.5  CL0 0.614  dCL0 vs clean 0.498  dCD0 0.02  k 0.044  | OpenAP formula dCD0 0.0026  k 0.0392
+CONF3    CLmax 2.32  alpha_CLmax 18.5  CL0 0.782  dCL0 vs clean 0.666  dCD0 0.03  k 0.044  | OpenAP formula dCD0 0.0034  k 0.0382
+FULL     CLmax 2.45  alpha_CLmax 17.5  CL0 1.001  dCL0 vs clean 0.885  dCD0 0.05  k 0.0452  | OpenAP formula dCD0 0.0048  k 0.037
+
+== Trim approach FULL gear down 187 t, VAPP 144 kt, ISA SL, 3 deg ==
+{
+  CL: 1.509,
+  alpha_deg: 5.74,
+  theta_deg: 2.74,
+  CD: 0.189,
+  L_D: 7.99,
+  L_D_openapFlap: 12.07,
+  T_total_kN: 133.7,
+  T_per_engine_kN: 66.8,
+  T_over_W: 0.0729,
+  sink_fpm: 763
+}
+approach FULL 170 t VAPP 137.5 kt: alpha 5.68 theta 2.68 T kN 121.5
+CONF3 VAPP 147.8 kt: {
+  CL: 1.432,
+  alpha_deg: 7.33,
+  theta_deg: 4.33,
+  L_D: 9.17,
+  T_total_kN: 104
+}
+V2 CONF2 (1.13 VS1g): CL 1.754 alpha 12.88 deg, L/D 9.89 ; OEI climb grad (T 316.3 kN, 242 t): 3.22 %
+TSB lift-off 152 kt 13.7 deg 221.2 t CONF1+F: CL_req 1.602  minus thrust (2*0.85*316.3 kN est) 1.508  model free-air CL 1.642  model + elevator -15 deg 1.55  model*1.10 GE + elev 1.714
+TSB VR 157 kt 222.7 t: CL req 1.512 alpha req 12.22 deg; tailstrike 10.4 deg -> CL 1.35
+
+== Cruise M0.82 FL370 185.3 t == {
+  deda: 0.371,
+  CLq: 6.98,
+  CLadot: 2.59,
+  CLde: 0.443,
+  Cmde: -1.744,
+  Cmq: -30.19,
+  Cmadot: -10.18,
+  h_n: 0.441,
+  Cma_cg28: -1.072
+}  approach Cma_cg28 -0.963
+CLalpha vs Mach (1/rad): [[0.2,5.065],[0.4,5.274],[0.5,5.45],[0.6,5.694],[0.7,6.035],[0.76,6.308],[0.8,6.529],[0.82,6.654],[0.86,6.943]]
+Mcrit(CL 0.5) = 0.764  Mcrit(QF72 CL) = 0.765  MDD (dCDw 0.002) = 0.864  table CL0.5: [[0.74,0],[0.78,0],[0.8,0.00004],[0.82,0.0002],[0.84,0.00068],[0.86,0.00173],[0.88,0.00367]]
+QF72 cruise: CD 0.0321 L/D 15.33 drag kN 118.5 per engine 59.3
+L/Dmax clean = 16.65  at CL 0.733 ; FULL+gear: 8.02  (OpenAP flap formula: 12.87 ) ; gear dCD (OpenAP formula, MTOW 242 t): 0.0144
+
+== VMCA est (tau_r 0.58, rudder 30 deg, y_e 9.40 m, no bank credit, no windmill drag): T 0.85*316.3 kN -> 122.2 kt; static T -> 132.5 kt; with windmill drag +10% moment: 139 ; 1.13 VSR CONF1+F @130 t = 115 ; Cndr -0.0915
+
+== Modes: approach FULL 187 t 144 kt SL CG 28% ==
+alpha_deg 5.74 Cma -0.963 Cmq -24 Cmadot -6.06 CLa 5.072 n/alpha 3.36 g/rad
+short period { re: -0.4029, im: 0.4252, wn: 0.5858, zeta: 0.688, T_s: 14.78 }  CAP 0.102
+phugoid { re: -0.0011, im: -0.1448, wn: 0.1448, zeta: 0.007, T_s: 43.38 }
+lat derivs {"CYb":-0.5053,"CYp":0.0395,"CYr":0.3142,"CYdr":0.1963,"Clb":-0.2011,"Clp":-0.4828,"Clr":0.265,"Clda":0.1347,"Cldr":0.0115,"Cnb":0.046,"Cnp":-0.1504,"Cnr":-0.1968,"Cnda":-0.0305,"Cndr":-0.0911}
+Dutch roll { re: -0.0134, im: 0.5, wn: 0.5002, zeta: 0.027, T_s: 12.57 }  roll tau_s 0.988  spiral lambda -0.0366  T1/2 18.9 s
+
+== Modes: cruise M0.82 FL370 185.3 t CG 28% (QF72) ==
+alpha_deg 2.5 Cma -1.072 Cmq -30.19 Cmadot -10.18 CLa 6.654 n/alpha 13.5 g/rad
+short period { re: -0.4743, im: 0.801, wn: 0.9309, zeta: 0.51, T_s: 7.84 }  CAP 0.064
+phugoid { re: -0.0016, im: -0.0516, wn: 0.0516, zeta: 0.031, T_s: 121.82 }
+lat derivs {"CYb":-0.5466,"CYp":0.0642,"CYr":0.3495,"CYdr":0.2203,"Clb":-0.1759,"Clp":-0.6384,"Clr":0.1446,"Clda":0.18,"Cldr":0.0186,"Cnb":0.0637,"Cnp":-0.0911,"Cnr":-0.1711,"Cnda":-0.0133,"Cndr":-0.1014}
+Dutch roll { re: -0.0268, im: 0.6552, wn: 0.6558, zeta: 0.041, T_s: 9.59 }  roll tau_s 0.834  spiral lambda -0.012  T1/2 57.8 s
+
+== legacy: CL0 0.116  CLa 5.072  aStall 16.59  aStallFlap 4.16  CLflap 0.885  CDflap(FULL) 0.05  CDgear 0.014  (check FULL max 2.45 )
+  CONF1: flap fraction 0.015 -> legacy CLmax 1.278 vs target 1.8
+  CONF1+F: flap fraction 0.354 -> legacy CLmax 1.677 vs target 2.1
+  CONF2: flap fraction 0.563 -> legacy CLmax 1.925 vs target 2.24
+  CONF3: flap fraction 0.753 -> legacy CLmax 2.153 vs target 2.32

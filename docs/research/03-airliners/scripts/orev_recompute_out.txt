@@ -1,0 +1,68 @@
+== A. LOC dot (T-O-01) ==
+21R: width 3.006 deg, 1 dot 0.7515 deg, uA/deg 99.8, 1/4 dot at THR 13.12 m, GP origin 314.1 m
+03L: width 2.997 deg, 1 dot 0.7492 deg, uA/deg 100.1, 1/4 dot at THR 13.12 m, GP origin 319.9 m
+21L: width 3.556 deg, 1 dot 0.8890 deg, uA/deg 84.4, 1/4 dot at THR 13.12 m, GP origin 308.2 m
+21R repo: width 3.005 deg, 1 dot 0.7512 deg, uA/deg 99.8, 1/4 dot at THR 13.12 m, GP origin 314.1 m
+1/3 dot on 21R = 0.250 deg; 25 uA = 0.333 dot; GS 1 dot ICAO 0.12*3 = 0.36 deg; FAA 1.4/4 = 0.350 deg
+
+== B. wheel path on 21R (aim 314.1 m, RDH 54 ft) ==
+b737: wheels over THR 12.222 m (40.1 ft), wheel GPI 233.2 m, s(400 ft) -2093 m, s(350) -1802, s(200) -930, s(100) -348
+a320: wheels over THR 11.579 m (38.0 ft), wheel GPI 220.9 m, s(400 ft) -2105 m, s(350) -1815, s(200) -942, s(100) -361
+a330: wheels over THR 7.899 m (25.9 ft), wheel GPI 150.7 m, s(400 ft) -2176 m, s(350) -1885, s(200) -1012, s(100) -431
+atr: wheels over THR 14.159 m (46.5 ft), wheel GPI 270.2 m, s(400 ft) -2056 m, s(350) -1765, s(200) -893, s(100) -311
+
+== C. flare closed forms ==
+737 142.1 kt: tau 4.9326 s, flare 8.100 s, sink 0.7415 m/s (146.0 fpm), sF -57.6 m, sTD 534.6 m (1754 ft)
+110 kt prior art: hF 35.46 ft (10.81 m), TD from THR 1334 ft (406.5 m), from wheel GPI 569 ft; V*tau=const 42 ft: TD from THR 1514 ft (461.3 m)
+125 kt prior art: hF 41.94 ft (12.78 m), TD from THR 1512 ft (460.8 m), from wheel GPI 747 ft; V*tau=const 42 ft: TD from THR 1514 ft (461.3 m)
+140 kt prior art: hF 48.41 ft (14.75 m), TD from THR 1704 ft (519.5 m), from wheel GPI 939 ft; V*tau=const 42 ft: TD from THR 1514 ft (461.3 m)
+a320 133.6 kt: VS 709.1 fpm, hF 47.27 ft, tau 5.073 s, hB-equiv 3.87 m, flare 7.880 s, sF -54.0 m, sTD 487.6 m (1600 ft)
+a330 140 kt: VS 743.0 fpm, hF 49.53 ft, tau 5.012 s, hB-equiv 3.82 m, flare 8.019 s, sF -137.4 m, sTD 440.2 m (1444 ft)
+T-O-05 hF(VS): 400->45.00 ft/13.72 m/2.03 m/s, 709->47.27 ft/14.41 m/3.60 m/s, 750->50.00 ft/15.24 m/3.81 m/s, 800->53.33 ft/16.26 m/4.06 m/s, 1000->60.00 ft/18.29 m/5.08 m/s
+
+== D. kinematic sims (RK4 for lag) ==
+737 L1v lag0: hF 50.0 ft, sF -58, TD s 535 m, flare 8.10 s, sink 0.742 m/s (146 fpm), retard 2.29 s at s 110
+a320 L2 lag0: hF 47.3 ft, sF -54, TD s 488 m, flare 7.88 s, sink 0.762 m/s (150 fpm), retard 1.72 s at s 64
+a320 L2 lag0 (10 ft): hF 47.3 ft, sF -54, TD s 488 m, flare 7.88 s, sink 0.762 m/s (150 fpm), retard 4.93 s at s 285
+a330 L2 lag0: hF 49.5 ft, sF -137, TD s 440 m, flare 8.02 s, sink 0.762 m/s (150 fpm), retard 1.89 s at s -1
+a330 L2 lag0 (10 ft): hF 49.5 ft, sF -137, TD s 440 m, flare 8.02 s, sink 0.762 m/s (150 fpm), retard 5.08 s at s 228
+737 L1v lag1: hF 50.0 ft, sF -58, TD s 408 m, flare 6.37 s, sink 1.018 m/s (200 fpm), retard 2.00 s at s 89
+a320 L2 lag1: hF 47.3 ft, sF -54, TD s 377 m, flare 6.27 s, sink 1.030 m/s (203 fpm), retard 1.55 s at s 52
+a320 L2 lag1 (10 ft): hF 47.3 ft, sF -54, TD s 377 m, flare 6.27 s, sink 1.030 m/s (203 fpm), retard 4.07 s at s 225
+a330 L2 lag1: hF 49.5 ft, sF -137, TD s 320 m, flare 6.35 s, sink 1.037 m/s (204 fpm), retard 1.68 s at s -16
+a330 L2 lag1 (10 ft): hF 49.5 ft, sF -137, TD s 320 m, flare 6.35 s, sink 1.037 m/s (204 fpm), retard 4.17 s at s 163
+trainer 75 kt H 1: hF 15.9 ft, sF 202, TD s 417 m, flare 5.57 s, sink 0.220 m/s (43 fpm)
+trainer 88 kt H 1.37: hF 18.7 ft, sF 179, TD s 447 m, flare 5.92 s, sink 0.220 m/s (43 fpm)
+trainer 95 kt H 1.37: hF 20.2 ft, sF 171, TD s 468 m, flare 6.09 s, sink 0.220 m/s (43 fpm)
+
+== E. 737 RETARD (min of 27 ft and 2.5 s) ==
+130 kt: tau 5.392 s, t(27 ft) 2.499 s -> RETARD at 2.499 s
+142.1 kt: tau 4.933 s, t(27 ft) 2.287 s -> RETARD at 2.287 s
+155 kt: tau 4.522 s, t(27 ft) 2.096 s -> RETARD at 2.096 s
+
+== F. LAND engagement ==
+VS 600: 388.0 ft (118.3 m)
+VS 709: 385.8 ft (117.6 m)
+VS 800: 384.0 ft (117.0 m)
+VS 1000: 380.0 ft (115.8 m)
+
+== G. quantiles and sigma limits ==
+z: 1e-5 4.265, 1e-6 4.753, 1e-7 5.199, 1e-8 5.612
+sigma_x <= 80.26 m (mean 441.5); AC20-57A sigma_x <= 114.30 m, sigma_y <= 4.115 m; sigma_sink <= 0.481 m/s
+737: sigma_y <= 3.817 m
+A320: sigma_y <= 3.618 m
+A330: sigma_y <= 3.292 m
+ATR: sigma_y <= 3.987 m
+
+== H. winds on 21R course 208.72 ==
+209/20: HW 20.00 XW 0.10 -> {"a320":true,"b737":true,"b737_xw25":true,"a330":true}
+250/25: HW 18.79 XW 16.49 -> {"a320":true,"b737":true,"b737_xw25":true,"a330":true}
+270/24: HW 11.53 XW 21.05 -> {"a320":false,"b737":false,"b737_xw25":true,"a330":false}
+30/12: HW -12.00 XW -0.27 -> {"a320":false,"b737":true,"b737_xw25":true,"a330":false}
+180/40: HW 35.08 XW -19.22 -> {"a320":false,"b737":false,"b737_xw25":false,"a330":false}
+200/40: HW 39.54 XW -6.06 -> {"a320":false,"b737":false,"b737_xw25":false,"a330":false}
+
+== I. conversions ==
+kt 10=5.1444 15=7.7167 17=8.7456 20=10.2889 25=12.8611 29=14.9189 30=15.4333 35=18.0056 40=20.5778 64=32.9244 84=43.2133
+ft 9200=2804.160 1000=304.800 2500=762.000 600=182.880 500=152.400 250=76.200 160=48.768 100=30.480 80=24.384 50=15.240 20=6.096 10=3.048
+360 fpm = 1.8288 m/s; 2.4 ft/s = 0.7315; 0.7 ft/s = 0.2134; 12 ft = 3.6576 m; 8 kt/100ft = 4.1156 m/s per 30.48 m
