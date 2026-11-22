@@ -111,6 +111,12 @@
      "range": [
       0.9,
       1
+     ],
+     "compare": "V_SR",
+     "target": "VS_POH_KCAS/√nominal",
+     "report_only": [
+      "Vmin",
+      "nz_Vmin"
      ]
     },
     "u": "-",
@@ -122,7 +128,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: nz ที่ความเร็วต่ำสุดของการ stall 1 kt/s ใช้แปลง POH stall speed (ซึ่งเป็นความเร็วต่ำสุด) เป็น V_1g: CLmax_1g = 2·m·g·nz/(ρ0·S·V²); ซิมรอบที่ 1 วัดได้ 0.949 (แฟลปลง) และ 0.985 (clean); 14 CFR 25.103 นิยาม V_SR = V_CLmax/√nz; AC 23-8C ให้ลดความเร็ว ≤ 1 kt/s"
+    "note": "ค่าประมาณ: nz ที่ความเร็วต่ำสุดของการ stall 1 kt/s ใช้แปลง POH stall speed (ซึ่งเป็นความเร็วต่ำสุด) เป็น V_1g: CLmax_1g = 2·m·g·nz/(ρ0·S·V²); 14 CFR 25.103 นิยาม V_SR = V_CLmax/√nz; AC 23-8C ให้ลดความเร็ว ≤ 1 kt/s; นิยามการเทียบทั้งโครงการ (R2-04, 22 พ.ย. 2026): เทียบ V_SR 1 g ของซิม (lm_card.stallTest) กับ VS ของ POH (KCAS)/√0.95 (lm_polar.vsrTarget) ไม่เทียบ Vmin ของซิม; stallTest รายงาน Vmin และ nz_Vmin เป็นข้อมูลเท่านั้น เพราะในซิมวันนี้ Vmin เกิดหลัง CL break (ความเร็วเริ่มมาตรฐาน: 1.1–2.6 s หลัง CLmax ที่ nz 0.19–0.58) และเลื่อนได้ 0.8–5 kt เมื่อความเร็วเริ่มเปลี่ยน 1.2–1.5 Vs ขณะที่ V_SR เลื่อนไม่เกิน 0.03 kt; ค่า 0.949 (แฟลปลง) และ 0.985 (clean) ที่ซิมรอบที่ 1 วัดได้คือ nz ที่ CLmax ไม่ใช่ที่ Vmin (nz ที่ Vmin ของการทดสอบเดียวกันคือ 0.52 และ 0.22)"
    },
    "flap_map": {
     "v": {
@@ -429,7 +435,25 @@
      "polar_from": "POH best glide speed + ratio at idle (idle = 0)",
      "climb_from": "POH Vy + ROC",
      "known_bias_Vy_kt": -8,
-     "known_bias_note": "single polar for all thrust states"
+     "known_bias_note": "single polar for all thrust states",
+     "static_needs": [
+      "performance.ROC_SL_fpm"
+     ],
+     "vy_needs": [
+      "performance.ROC_SL_fpm",
+      "speeds.VY_kt"
+     ],
+     "vy_bounds": {
+      "T0": [
+       0.7,
+       1.3
+      ],
+      "eta": [
+       0.5,
+       1.5
+      ]
+     },
+     "vy_no_solution": "keep the static fit, report the reachable Vy"
     },
     "u": "-",
     "scope": "sim",
@@ -1317,7 +1341,7 @@
     "src": [
      "LH1",
      "LH2",
-     "R1"
+     "R1:V19"
     ],
     "conf": "กลาง",
     "est": false,
@@ -1398,7 +1422,7 @@
      "LH13",
      "LH15",
      "LH30",
-     "R1"
+     "R1:V19"
     ],
     "conf": "ต่ำ",
     "est": true,
@@ -1439,7 +1463,7 @@
       "sev": "minor",
       "pts": 3,
       "src": [
-       "R1",
+       "R1:V19",
        "LH1"
       ],
       "th": "สูงกว่า glide path เกิน 1 dot ลดกำลังเล็กน้อยแล้วรักษาความเร็ว อย่าดันหัวลงแรง"
@@ -1449,7 +1473,7 @@
       "sev": "major",
       "pts": 6,
       "src": [
-       "R1",
+       "R1:V19",
        "LH1"
       ],
       "th": "ต่ำกว่า glide path เกิน 1 dot เพิ่มกำลังพร้อมยกหัวเล็กน้อย อย่าเก็บแฟลป"
@@ -1592,7 +1616,7 @@
       "pts": 5,
       "src": [
        "LH1",
-       "R1"
+       "R1:V19"
       ],
       "th": "ล้อหน้าแตะก่อนล้อหลัก ยกหัวให้ถึง attitude ลงจอด"
      },
@@ -1602,7 +1626,7 @@
       "pts": 0,
       "src": [
        "LH1",
-       "R1"
+       "R1:V19"
       ],
       "th": "แตะพื้นแรง (อัตราจมเกิน 360 fpm) flare ให้ต่อเนื่องจนล้อแตะ"
      },
@@ -1611,7 +1635,7 @@
       "sev": "critical",
       "pts": 0,
       "src": [
-       "R1"
+       "R1:V19"
       ],
       "th": "แตะพื้นแรงมาก (เกิน 600 fpm) ต้องตรวจโครงสร้างเครื่อง"
      },
@@ -1630,7 +1654,7 @@
       "sev": "minor",
       "pts": 0,
       "src": [
-       "R1"
+       "R1:V19"
       ],
       "th": "แตะพื้นห่างเส้นกลางรันเวย์"
      },
@@ -1640,7 +1664,7 @@
       "pts": 0,
       "src": [
        "LH5",
-       "R1"
+       "R1:V19"
       ],
       "th": "แตะพื้นก่อน threshold"
      },
@@ -1669,7 +1693,7 @@
       "sev": "critical",
       "pts": 0,
       "src": [
-       "R1"
+       "R1:V19"
       ],
       "th": "ออกนอกรันเวย์"
      },
@@ -1860,7 +1884,7 @@
      "LH0",
      "LH2",
      "LH3",
-     "R1"
+     "R1:V19"
     ],
     "conf": "กลาง",
     "est": true,
@@ -1882,7 +1906,7 @@
     "scope": "sim",
     "src": [
      "LH0",
-     "R1"
+     "R1:V19"
     ],
     "conf": "กลาง",
     "est": false,
@@ -9258,7 +9282,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],
@@ -11761,7 +11786,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],
@@ -13388,7 +13414,7 @@
      "u": "m2, -",
      "scope": "aircraft",
      "src": [
-      "R1:params-trainer.json",
+      "R1:params-trainer.json#controls.pitch.S_e",
       "LP27"
      ],
      "conf": "ต่ำ",
@@ -13407,7 +13433,7 @@
      "u": "m2, -",
      "scope": "aircraft",
      "src": [
-      "R1:params-trainer.json",
+      "R1:params-trainer.json#controls.roll.S_a_each",
       "LP27"
      ],
      "conf": "ต่ำ",
@@ -13423,7 +13449,7 @@
      "u": "m2, -",
      "scope": "aircraft",
      "src": [
-      "R1:params-trainer.json",
+      "R1:params-trainer.json#controls.yaw.S_r",
       "LP27"
      ],
      "conf": "ต่ำ",
@@ -19478,7 +19504,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],
@@ -25874,7 +25901,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],
@@ -32411,7 +32439,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],
@@ -33989,7 +34018,7 @@
      "u": "m2, -",
      "scope": "aircraft",
      "src": [
-      "R1:params-trainer.json",
+      "R1:params-trainer.json#controls.pitch.S_e",
       "LP27"
      ],
      "conf": "ต่ำ",
@@ -34008,7 +34037,7 @@
      "u": "m2, -",
      "scope": "aircraft",
      "src": [
-      "R1:params-trainer.json",
+      "R1:params-trainer.json#controls.roll.S_a_each",
       "LP27"
      ],
      "conf": "ต่ำ",
@@ -34024,7 +34053,7 @@
      "u": "m2, -",
      "scope": "aircraft",
      "src": [
-      "R1:params-trainer.json",
+      "R1:params-trainer.json#controls.yaw.S_r",
       "LP27"
      ],
      "conf": "ต่ำ",
@@ -36111,14 +36140,15 @@
      },
      {
       "case": "T-LP-03",
-      "conditions": "เหมือนบน แฟลป UP",
-      "quantity": "Vmin/V_SR ของการทดสอบ 1 kt/s (สมมติฐาน POH → 1 g: √0.95 = 0.975)",
-      "expected": 0.975,
-      "tolerance": 0.01,
-      "unit": "-",
-      "src": "[LM1]",
-      "current": 0.938,
-      "pass": false
+      "conditions": "เหมือนบน แฟลป UP ล้อขึ้น เริ่มลดความเร็วที่ 1.20 / 1.35 / 1.50 Vs (95 / 107 / 119 kt)",
+      "quantity": "ช่วงของ V_SR 1 g (สูงสุด − ต่ำสุด) ตามนิยามการเทียบ stall ของโครงการ (เทียบ V_SR กับ VS/√0.95 ไม่เทียบ Vmin)",
+      "expected": 0,
+      "tolerance": 0.3,
+      "unit": "kt",
+      "src": "[LM1][LM2]; common_light.methods.stall_nz_at_vmin",
+      "current": 0.0112,
+      "pass": true,
+      "note": "ข้อมูลเท่านั้น: Vmin 78.13 / 74.1 / 78.02 kt (ช่วง 4.03 kt), nz ที่ Vmin 0.54 / 0.31 / 0.24, nz ที่ CLmax 0.995 / 0.926 / 1.02"
      },
      {
       "case": "T-LP-04",
@@ -40055,7 +40085,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],
@@ -41048,7 +41079,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],
@@ -44709,7 +44741,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],
@@ -50032,7 +50065,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],
@@ -57454,7 +57488,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],
@@ -59764,7 +59799,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],
@@ -61355,7 +61391,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],
@@ -63346,7 +63383,8 @@
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
      "LH30",
      "LM3"
     ],

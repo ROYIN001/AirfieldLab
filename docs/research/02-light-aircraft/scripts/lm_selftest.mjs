@@ -6,7 +6,8 @@
 // controls.surfaces.<s> (D2), training_mass object (D3), _na ["*"] (D5), trainer_r2 resolution against the trainer_r1 base,
 // lm_lib.validate() checks (D1, D3, D4, D6, est/note) and lm_merge --strict; T-LM-31 tolerance guidance of lm_tolerance
 // (lateral-directional modes, gap 17); T-LM-32 (22 Nov 2026) the copies of simulator code (simCLtrim, scoreToday) equal
-// the simulator they run on. Exit code 1 on any failure.
+// the simulator they run on; T-LM-33 (R2-04) the stall comparison (V_SR, nz at Vmin); T-LM-34 (R2-06, in lm_legacy_fit.tests)
+// legacy fit without speeds.VY_kt, --T0 and the vy-mode bounds. Exit code 1 on any failure.
 // node scripts/lm_selftest.mjs [--json]
 import fs from 'node:fs';
 import path from 'node:path';
@@ -49,7 +50,7 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
   const m = res.merged?.common_light?.methods;
   if (m) {
     const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-    const [ine, der, crd, eng] = await Promise.all(['lm_inertia.mjs', 'lm_derivs.mjs', 'lm_card.mjs', 'lm_engine.mjs'].map(f => import('./' + f)));
+    const [ine, der, crd, eng, pol, lfit] = await Promise.all(['lm_inertia.mjs', 'lm_derivs.mjs', 'lm_card.mjs', 'lm_engine.mjs', 'lm_polar.mjs', 'lm_legacy_fit.mjs'].map(f => import('./' + f)));
     const r3 = x => Math.round(x * 1000) / 1000;
     let n = 0;
     n += !same(m.radii?.v, ine.RADII);
@@ -57,9 +58,35 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
     n += !same(m.lm_card_defaults?.v, crd.DEFAULTS);
     n += !same(m.fuel_density?.v, eng.FUEL_DENSITY);
     n += m.engine_lapse?.v?.ind_friction?.f !== 0.10 || m.engine_lapse?.v?.gagg_ferrar?.k !== 7.55;
+    n += m.stall_nz_at_vmin?.v?.nominal !== pol.NZ_AT_VMIN || m.stall_nz_at_vmin?.v?.compare !== 'V_SR';   // R2-04
+    n += !same(m.legacy_fit?.v?.vy_bounds, lfit.FIT_BOUNDS);                                                  // R2-06
     check('T-LM-22', 'methods JSON vs script constants (mismatches)', n, 0, 0);
   }
   check('T-LM-23', 'lm_merge common_light ERRORS + CONFLICTS', res.errors.length + res.conflicts.length, 0, 0);
+}
+// T-LM-23 extended (R2-03): every src code has a line in the reference section of its owner file (prefix → file,
+// schema-ext.md §4) or is an existing round-1 code R1:<X>n / R1:params-trainer.json[#path]; lm_merge --strict makes it an error
+{
+  const L = await import('./lm_lib.mjs');
+  const { spawnSync } = await import('node:child_process');
+  const os = await import('node:os');
+  const full = L.mergeDir(path.join(HERE, '..'), {});
+  check('T-LM-23', 'src codes without a reference line, whole folder (src_ref WARN)', full.checks.filter(c => c.check === 'src_ref' && c.level === 'warn').length, 0, 0);
+  const sec = L.refSection('# t\n## 99.1 อื่น\n| LC5 | x |\n## 99.2 แหล่งอ้างอิง\n| รหัส | ชื่อ |\n|---|---|\n| LC1 | a |\n| [LB2] | b |\n'
+    + '1. [LM3] c\n- [R1:V19] d\n| LC7, LC8 | ข้ามหัวข้อ |\nอ้างข้ามหัวข้อ: [LC9]\n### 99.2.1 ย่อย\n- [LP4] e\n## 99.3 ถัดไป\n| LC6 | f |\n');
+  check('T-LM-23', 'refSection: defined = LC1 LB2 LM3 R1:V19 LP4 (not LC5/LC6 outside, not LC7/8/9 cross-refs)', [...sec.ids.keys()].join(' ') === 'LC1 LB2 LM3 R1:V19 LP4' ? 1 : 0, 1, 0);
+  const idx = L.loadRefIndex(path.join(HERE, '..'));
+  const cases = [['LC1', 0], ['LM29', 0], ['R1:V19', 0], ['R1:params-trainer.json', 0], ['R1:params-trainer.json#controls.yaw.S_r', 0],
+    ['LC999', 1], ['LZ1', 1], ['R1:V99', 1], ['R1:Q1', 1], ['R1', 1], ['LC1 p5-12', 1], ['R1:params-trainer.json#controls.pitch.nope', 1]];
+  check('T-LM-23', 'srcProblem on 12 codes (7 bad) classified right', cases.filter(([s, bad]) => !!L.srcProblem(s, 'interference.downwash.eps0', idx) === !!bad).length, cases.length, 0);
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lm-selftest-src-'));
+  const block = src => '# t\n\n```json\n' + JSON.stringify({ common_light: { methods: { zz: { v: 1, u: '-', scope: 'sim', src, conf: 'กลาง', est: false, note: '' } } } }) + '\n```\n';
+  const run = a => spawnSync(process.execPath, [path.join(HERE, 'lm_merge.mjs'), '--dir', dir, '--dry', '--quiet', ...a], { encoding: 'utf8', timeout: 20000 }).status;
+  fs.writeFileSync(path.join(dir, '99-test.md'), block(['LC999']));
+  const bad = run([]) * 10 + run(['--strict']);
+  fs.writeFileSync(path.join(dir, '99-test.md'), block(['LC1', 'R1:V19']));
+  check('T-LM-23', 'lm_merge exit: LC999 default/--strict, LC1+R1:V19 --strict (100·a + 10·b + c)', bad * 10 + run(['--strict']), 10, 0);
+  fs.rmSync(dir, { recursive: true, force: true });
 }
 // T-LM-24 (review 2026-11-18): CLI robustness of the shared tools other topics call.
 //   (a) lm_derivs on a card without tail geometry must stop with exit 1 and name the missing paths (it used to print NaN silently)
@@ -205,6 +232,19 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
       bad += ev.score().total !== scoreToday([{ wow: [false, false, false] }, td], P); m++;
     }
   check('T-LM-32', `lh_eval.scoreToday = Evaluator.score (mismatches of ${m} touchdowns)`, bad, 0, 0);
+}
+// T-LM-33 (R2-04, plan PR B5): the project's stall comparison. stallTest reports nz at Vmin, and V_SR (the number compared
+// with VS_POH/√0.95) does not depend on the start speed of the 1 kt/s entry while Vmin does. trainer_r1, both detents.
+{
+  const { stallTest, simCLmax } = await import('./lm_card.mjs');
+  applyAC(M, buildAC(loadType('trainer_r1'), {}));
+  for (const [nm, f, g] of [['UP', 0, 0], ['LDG', 1, 1]]) {
+    const vs = Math.sqrt(2 * M.AC.m * 9.80665 / (1.225 * M.AC.S * simCLmax(M.AC, f).CL)) / 0.514444;
+    const s = [1.2, 1.35, 1.5].map(k => stallTest(M, { ias0: Math.round(k * vs), flaps: f, gear: g }));
+    const spread = a => Math.max(...a) - Math.min(...a);
+    check('T-LM-33', `${nm}: V_SR spread over start 1.20/1.35/1.50 Vs (kt)`, spread(s.map(x => x.VSR_eas)), 0, 0.3);
+    check('T-LM-33', `${nm}: nz_Vmin reported, below nz at CLmax (count)`, s.filter(x => Number.isFinite(x.nz_Vmin) && x.nz_Vmin < x.nz).length, 3, 0);
+  }
 }
 if (process.argv.includes('--json')) console.log(JSON.stringify(rows, null, 1));
 else for (const x of rows) console.log(`${x.ok ? 'PASS' : 'FAIL'} ${x.id.padEnd(8)} ${x.what.padEnd(48)} got ${String(x.got).padEnd(9)} exp ${x.exp} ± ${x.tol}`);

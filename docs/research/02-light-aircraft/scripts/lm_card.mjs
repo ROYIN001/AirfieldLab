@@ -514,11 +514,18 @@ export function casFromTas(M, V, h, isaDev = 0) {
   const Mach = V / atm.a, qc = atm.p * (Math.pow(1 + 0.2 * Mach * Mach, 3.5) - 1);
   return a0 * Math.sqrt(5 * (Math.pow(qc / p0 + 1, 2 / 7) - 1)) / KT;
 }
-/** 1-g stall at idle, 1 kt/s, wings level (v10_perf §1). Speeds are the sim's EAS ("ias") and CAS. */
+/**
+ * 1-g stall at idle, 1 kt/s, wings level (v10_perf §1). Speeds are the sim's EAS ("ias") and CAS.
+ * Project stall comparison (R2-04, common_light.methods.stall_nz_at_vmin): VSR (= V at CLmax / √nz at CLmax, 14 CFR
+ * 25.103) is the number compared with a POH/AFM stall speed, as lm_polar.vsrTarget(VS_POH KCAS) = VS_POH/√0.95.
+ * Vmin and the fields at Vmin are reported for the record only: in today's sim Vmin comes after the CL break of the
+ * Beard–McLain blend (nz_Vmin far below 0.95) and moves with the start speed, while VSR does not.
+ * nz is the lift load factor at CLmax (kept under its old name); nz_Vmin, CL_Vmin, alpha_Vmin_deg, t_Vmin at Vmin.
+ */
 export function stallTest(M, { ias0, h = 3000 * FT, flaps, gear, rate = 1.0 }) {
   const { AC } = M;
   const { ac, T } = startTrimmed(M, { ias: ias0, h, flaps, gear, gammaDeg: 0 }); const a = ac.air;
-  let thC = a.theta, deI = T.de, vmin = 1e9, clmax = 0, rec = {}, tSat = 0; const t0 = ac.t, i0 = a.ias / KT;
+  let thC = a.theta, deI = T.de, vmin = 1e9, clmax = 0, rec = {}, atMin = {}, tSat = 0; const t0 = ac.t, i0 = a.ias / KT;
   ac.cmd.thr = 0;
   while (ac.t - t0 < 70) {
     const tgt = i0 - (ac.t - t0) * rate, err = a.ias / KT - tgt;
@@ -529,11 +536,25 @@ export function stallTest(M, { ias0, h = 3000 * FT, flaps, gear, rate = 1.0 }) {
     ac.step(dtS);
     const nz = a.CL * a.qbar * AC.S / (AC.m * G0);
     if (a.CL > clmax) { clmax = a.CL; rec = { V_CLmax_eas: a.ias / KT, V_CLmax_cas: casFromTas(M, a.V, a.h), nz, alpha_deg: a.alpha * RAD, t: ac.t - t0, rate: (i0 - a.ias / KT) / (ac.t - t0) }; }
-    vmin = Math.min(vmin, a.ias / KT);
+    if (a.ias / KT < vmin) { vmin = a.ias / KT; atMin = { nz_Vmin: nz, CL_Vmin: a.CL, alpha_Vmin_deg: a.alpha * RAD, t_Vmin: ac.t - t0 }; }
     tSat = ac.de <= -AC.deUp + 1e-3 ? tSat + dtS : 0;
     if ((tSat > 1 && a.q < -2 * DEG) || a.alpha > 25 * DEG) break;
   }
-  return { CLmax: clmax, ...rec, VSR_eas: rec.V_CLmax_eas / Math.sqrt(rec.nz), VSR_cas: rec.V_CLmax_cas / Math.sqrt(rec.nz), Vmin_eas: vmin, de_end_deg: ac.de * RAD, ias0 };
+  return { CLmax: clmax, ...rec, VSR_eas: rec.V_CLmax_eas / Math.sqrt(rec.nz), VSR_cas: rec.V_CLmax_cas / Math.sqrt(rec.nz), Vmin_eas: vmin, ...atMin, de_end_deg: ac.de * RAD, ias0 };
+}
+/** Start speed (KEAS) of the stall test at detent d: validation.stall_test[d.name], else 1.35 × the sim's trimmed 1-g stall speed. */
+export function stallStartIAS(ac, info, d) {
+  const s = info.stallStart?.[d.name];
+  if (s) return s;
+  const cl = simCLmax(ac, d.f).CL;
+  return Math.round(1.35 * Math.sqrt(2 * ac.m * G0 / (RHO0 * ac.S * cl)) / KT);
+}
+/** The stall test of detent d exactly as runCard flies it (gear up only for the clean detent of a retractable type), with KIAS. */
+export function stallAt(M, ac, info, d) {
+  const gear = info.retract && d.f === 0 ? 0 : 1;
+  const r = stallTest(M, { ias0: stallStartIAS(ac, info, d), flaps: d.f, gear });
+  const tab = info.ias2cas(d.name);
+  return { f: +d.f.toFixed(4), gear, ...r, VSR_kias: tab.has ? tab.inv(r.VSR_cas) : null, Vmin_kias: tab.has ? tab.inv(r.Vmin_eas) : null };
 }
 const parabolicPeak = (rows, key, xk = 'ias') => {
   let i = rows.reduce((bi, r, j) => (r[key] > rows[bi][key] ? j : bi), 0);
@@ -583,14 +604,7 @@ export function landingTest(M, { maxBrake = false, dist = 5500 } = {}) {
 export function runCard(M, ac, info, opts = {}) {
   const out = { stall: {}, trim: {}, climb: null, glide: {}, modes: {}, takeoff: null, landing: {} };
   // 1) stall per detent (idle, 1 kt/s); clean with gear up when retractable
-  for (const d of info.dets) {
-    const gear = info.retract && d.f === 0 ? 0 : 1;
-    let ias0 = info.stallStart?.[d.name];
-    if (!ias0) { const cl = simCLmax(ac, d.f).CL; const vs = Math.sqrt(2 * ac.m * G0 / (RHO0 * ac.S * cl)) / KT; ias0 = Math.round(1.35 * vs); }
-    const r = stallTest(M, { ias0, flaps: d.f, gear });
-    const tab = info.ias2cas(d.name);
-    out.stall[d.name] = { f: +d.f.toFixed(4), gear, ...r, VSR_kias: tab.has ? tab.inv(r.VSR_cas) : null, Vmin_kias: tab.has ? tab.inv(r.Vmin_eas) : null };
-  }
+  for (const d of info.dets) out.stall[d.name] = stallAt(M, ac, info, d);
   if (opts.quick) return out;
   const vs1 = out.stall[info.dets[0].name].VSR_eas;
   // 2) climb at SL (h 30 m), full throttle, clean; 3) glide zero thrust and idle, clean, 3000 ft
@@ -627,8 +641,8 @@ function fmtTable(id, ac, res, trace) {
   L.push(`# lm_card ${id}: m ${f(ac.m, 0)} kg, S ${ac.S} m2, b ${ac.b} m, P ${f(ac.P / 1000, 0)} kW, T0 ${f(ac.T0, 0)} N, idle ${ac.idle}`);
   if (trace) { L.push('\n## mapping'); for (const r of trace) L.push(`${r.field.padEnd(10)} ${typeof r.value === 'number' ? (+r.value.toPrecision(5)) : JSON.stringify(r.value).slice(0, 60)}  ← ${r.from}  [${r.rule}]${r.flag ? ' (' + r.flag + ')' : ''}`); }
   L.push('\n## stall (idle, 1 kt/s, 3000 ft, wings level)');
-  L.push('detent  f      gear  V_SR KEAS  V_SR KCAS  V_SR KIAS  Vmin KEAS  CLmax   alpha   nz     rate kt/s  de_end');
-  for (const [k, s] of Object.entries(res.stall)) L.push(`${k.padEnd(7)} ${f(s.f, 3).padEnd(6)} ${String(s.gear).padEnd(5)} ${f(s.VSR_eas).padEnd(10)} ${f(s.VSR_cas).padEnd(10)} ${f(s.VSR_kias).padEnd(10)} ${f(s.Vmin_eas).padEnd(10)} ${f(s.CLmax, 3).padEnd(7)} ${f(s.alpha_deg).padEnd(7)} ${f(s.nz, 3).padEnd(6)} ${f(s.rate, 2).padEnd(10)} ${f(s.de_end_deg)}`);
+  L.push('detent  f      gear  V_SR KEAS  V_SR KCAS  V_SR KIAS  Vmin KEAS  CLmax   alpha   nz     rate kt/s  de_end  nz@Vmin  Vmin−CLmax s');
+  for (const [k, s] of Object.entries(res.stall)) L.push(`${k.padEnd(7)} ${f(s.f, 3).padEnd(6)} ${String(s.gear).padEnd(5)} ${f(s.VSR_eas).padEnd(10)} ${f(s.VSR_cas).padEnd(10)} ${f(s.VSR_kias).padEnd(10)} ${f(s.Vmin_eas).padEnd(10)} ${f(s.CLmax, 3).padEnd(7)} ${f(s.alpha_deg).padEnd(7)} ${f(s.nz, 3).padEnd(6)} ${f(s.rate, 2).padEnd(10)} ${f(s.de_end_deg).padEnd(7)} ${f(s.nz_Vmin, 3).padEnd(8)} ${f(s.t_Vmin - s.t, 2)}`);
   if (res.climb) {
     L.push(`\n## climb SL full throttle clean: Vy ${f(res.climb.Vy_kt)} kt (grid ${res.climb.Vy_grid_kt}), ROC ${f(res.climb.ROCmax_fpm, 0)} fpm (grid ${f(res.climb.ROC_grid_fpm, 0)}), Vx ${f(res.climb.Vx_kt)} kt, gamma max ${f(res.climb.gammaMax_deg, 2)} deg`);
     for (const [k, g] of Object.entries(res.glide)) L.push(`glide ${k}: Vbg ${f(g.Vbg_kt)} kt, L/D ${f(g.LD, 2)} (grid ${f(g.LD_grid, 2)}), sink ${f(g.sink_fpm, 0)} fpm`);

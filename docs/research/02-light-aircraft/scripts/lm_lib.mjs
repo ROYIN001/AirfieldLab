@@ -167,7 +167,7 @@ export function mergeDir(dir, opts = {}) {
     if (via) { coverage[id].resolved = true; coverage[id].via = via; coverage[id].base = via.filter(x => bases[x] && !full[x]).map(x => baseInfo[x]?.from || x); }
   }
   const res = { merged, origin, errors, warnings, conflicts, coverage, stats, files, nBlocks, nExamples, nBad, bases: baseInfo };
-  res.checks = opts.checks === false ? [] : validate(res, { r1, pool, bases, strict: !!opts.strict, only: ONLY });
+  res.checks = opts.checks === false ? [] : validate(res, { r1, pool, bases, strict: !!opts.strict, only: ONLY, refs: opts.refs === false ? null : loadRefIndex(dir, { r1Dir: opts.r1Dir }) });
   if (opts.strict) for (const c of res.checks) if (c.level === 'warn') errors.push(`[strict] ${c.id} ${c.check}: ${c.msg}`);
   // leaf-format warnings (extra fields, est without a note, empty src, v null, _inherits not found) count too, so
   // "--strict exits 0" means "0 warnings", the rule CLAUDE.md gives for every JSON edit (plan PR B5)
@@ -392,7 +392,77 @@ export const CHECK_NAMES = {
   scope: 'scope ตามหมวด (D4)', est: 'est กับคำว่า "ค่าประมาณ" ใน note', est_conf: 'est:true แต่ conf สูง',
   training_mass: 'รูปแบบ training_mass (D3)', speeds: 'มี speeds.VREF_kt / VAPP_kt (D1)', vapp_vref: 'VAPP ≥ VREF (D1)',
   xfile_vapp: 'Vapp ของ 08/09 = speeds.VAPP_kt ของบัตร ±0.5 kt (D1)', detent: 'ชื่อ detent ใน 08/09 = ชื่อในบัตร (D6)',
+  src_ref: 'รหัสใน src มีบรรทัดในแหล่งอ้างอิงของไฟล์เจ้าของ หรือเป็น R1: ที่มีจริง (T-LM-23)',
 };
+
+// ───────────── src codes → reference sections (R2-03, T-LM-23 extended) ─────────────
+/** Owner topic file of each round-2 source-code prefix (schema-ext.md §4 table). */
+export const SRC_OWNER = {
+  LM: '01-methods.md', LS: '02-thai-schools.md', LB: '03-open-models.md', LC: '04-c172s.md', LD: '05-da40.md',
+  LT: '06-da42.md', LP: '07-turboprop-trainers.md', LH: '08-handling.md', LO: '09-procedures.md', LE: '10-c172r.md',
+  LF: '11-c152.md', LG: '12-p2006t.md', LN: '13-other-trainers.md',
+};
+/** Round-1 prefix letter → topic file in docs/research/01-flight-physics/ (schema-ext.md §4, last paragraph). */
+export const R1_OWNER = {
+  A: '01-aero.md', U: '02-interference.md', P: '03-propeller.md', E: '04-turboprop.md', F: '05-turbofan.md', C: '06-controls.md',
+  G: '07-gear.md', W: '08-wind.md', N: '09-numerics.md', V: '10-validation.md', I: '11-input.md', S: '12-other-sims.md',
+};
+/** 07-turboprop-trainers.md:393: a class value copied from round-1 params-trainer.json at the same path (or at #<path>). */
+export const R1_PARAMS_TOKEN = 'R1:params-trainer.json';
+const REF_HEAD = /^(#{2,3})\s+[\d.]+\s+แหล่งอ้างอิง\s*$/;            // "## 04.13 แหล่งอ้างอิง", "## 1.11 แหล่งอ้างอิง"
+const REF_DEF = [
+  /^\|\s*\[?((?:R1:)?[A-Z]{1,2}\d+)\]?\s*\|/,                         // table row, one code in the first cell: "| LC1 |", "| [LB1] |"
+  /^\s*(?:\d+\.|[-*])\s+\[((?:R1:)?[A-Z]{1,2}\d+)\]/,                  // list item: "1. [LM1] …", "- [LP1] …", "- [R1:V19] …"
+];
+/** The reference section(s) of one topic text: {head: first heading line | null, ids: Map code → line}. A row whose first
+ *  cell lists several codes ("| LM0, LM1 |") or a prose line ("อ้างข้ามหัวข้อ: [LC1] …") is a cross-reference, not a definition. */
+export function refSection(text) {
+  const lines = text.split('\n'), ids = new Map(); let head = null;
+  for (let i = 0; i < lines.length; i++) {
+    const m = REF_HEAD.exec(lines[i]); if (!m) continue;
+    head ??= i + 1;
+    for (let j = i + 1; j < lines.length; j++) {
+      const h = /^(#+)\s/.exec(lines[j]); if (h && h[1].length <= m[1].length) break;
+      for (const re of REF_DEF) { const d = re.exec(lines[j]); if (d) { if (!ids.has(d[1])) ids.set(d[1], j + 1); break; } }
+    }
+  }
+  return { head, ids };
+}
+const _refCache = new Map();
+/** Reference index: round-2 owner files (dir first, then this script's folder), round-1 topic files, round-1 params. */
+export function loadRefIndex(dir, { r1Dir = null } = {}) {
+  const key = `${dir}|${r1Dir || ''}`;
+  if (_refCache.has(key)) return _refCache.get(key);
+  const find = (ds, f) => ds.map(d => path.join(d, f)).find(p => fs.existsSync(p));
+  const r2 = {};
+  for (const f of new Set(Object.values(SRC_OWNER))) { const p = find([dir, path.join(HERE, '..')], f); r2[f] = p ? { file: p, ...refSection(fs.readFileSync(p, 'utf8')) } : null; }
+  const r1d = [r1Dir, path.join(dir, '..', '01-flight-physics'), path.join(HERE, '..', '..', '01-flight-physics'), process.env.AIRFIELDLAB_R1_DIR]
+    .filter(Boolean).find(d => fs.existsSync(path.join(d, R1_OWNER.V)));
+  const r1 = {};
+  if (r1d) for (const f of Object.values(R1_OWNER)) { const p = path.join(r1d, f); r1[f] = fs.existsSync(p) ? { file: p, ...refSection(fs.readFileSync(p, 'utf8')) } : null; }
+  const pf = (r1d ? [path.join(r1d, 'params-trainer.json')] : []).concat(r1ParamsCandidates()).find(f => fs.existsSync(f));
+  const out = { r2, r1, r1Dir: r1d || null, r1Params: pf ? JSON.parse(fs.readFileSync(pf, 'utf8')) : null };
+  _refCache.set(key, out);
+  return out;
+}
+/** null when code s (in the src of the leaf at per-type path ps) resolves, else a Thai message. */
+export function srcProblem(s, ps, idx) {
+  let m;
+  const inSec = (f, code, r, label) => !r ? `${s}: ไม่พบไฟล์เจ้าของ ${label}${f}` : !r.head ? `${s}: ${label}${f} ไม่มีหัวข้อ "แหล่งอ้างอิง"`
+    : r.ids.has(code) ? null : `${s}: ไม่มีบรรทัดในส่วนแหล่งอ้างอิงของ ${label}${f} (หัวข้อที่บรรทัด ${r.head})`;
+  if ((m = /^(L[A-Z])\d+$/.exec(s))) return SRC_OWNER[m[1]] ? inSec(SRC_OWNER[m[1]], s, idx.r2[SRC_OWNER[m[1]]], '') : `${s}: คำนำหน้า ${m[1]} ไม่มีไฟล์เจ้าของ (schema-ext.md §4)`;
+  if ((m = /^R1:([A-Z])\d+$/.exec(s))) {
+    if (!R1_OWNER[m[1]]) return `${s}: ตัวอักษร ${m[1]} ไม่ใช่คำนำหน้าของรอบที่ 1`;
+    if (!idx.r1Dir) return null;   // round-1 folder absent: cannot check (mergeDir adds one info row)
+    return inSec(R1_OWNER[m[1]], s.slice(3), idx.r1[R1_OWNER[m[1]]], '01-flight-physics/');
+  }
+  if (s === R1_PARAMS_TOKEN || s.startsWith(R1_PARAMS_TOKEN + '#')) {
+    if (!idx.r1Params) return null;
+    const p = s.includes('#') ? s.slice(s.indexOf('#') + 1) : ps;
+    return leaf(idx.r1Params, p) ? null : `${s}: params-trainer.json ของรอบที่ 1 ไม่มี leaf ${p} (ใช้ ${R1_PARAMS_TOKEN}#<path ของรอบที่ 1> หรือรหัส R1:<X>)`;
+  }
+  return `${JSON.stringify(s)}: ไม่ใช่รูปแบบรหัส (L?n ของรอบที่ 2, R1:?n ของรอบที่ 1 หรือ ${R1_PARAMS_TOKEN})`;
+}
 
 /**
  * Checks on a mergeDir result. Returns [{level: 'warn'|'info', id, check, msg, where}]. 'warn' becomes an ERROR with
@@ -400,16 +470,19 @@ export const CHECK_NAMES = {
  * (training_mass, speeds, vapp_vref, xfile_vapp, detent) look at the resolved card of every id (variants included),
  * so a value inherited from the parent is checked against the variant's own speeds.
  */
-export function validate(res, { r1 = null, pool = null, bases = {}, only = null } = {}) {
+export function validate(res, { r1 = null, pool = null, bases = {}, only = null, refs = null } = {}) {
   const out = [];
   const add = (level, id, check, msg, where = '') => out.push({ level, id, check, msg, where });
   const merged = res.merged, origin = res.origin || {};
   pool = pool ?? merged;
+  if (refs && !refs.r1Dir) add('info', 'common_light', 'src_ref', 'ไม่พบโฟลเดอร์ 01-flight-physics: ไม่ได้ตรวจรหัส R1:');
   // leaf checks
   for (const id of Object.keys(merged)) {
     (function rec(o, p) {
       if (isLeaf(o)) {
         const ps = p.join('.'), where = origin[`${id}.${ps}`] || '';
+        // T-LM-23 (R2-03): every src code has a line in its owner file's reference section, or is an existing R1: code
+        if (refs && Array.isArray(o.src)) for (const s of o.src) { const pr = srcProblem(s, ps, refs); if (pr) add('warn', id, 'src_ref', `${ps}: ${pr}`, where); }
         if (ps.startsWith('_')) return;
         if (id === 'common_light') { if (!['environment', 'sim'].includes(o.scope)) add('warn', id, 'scope', `${ps}: scope "${o.scope}" → common_light ใช้ "environment" หรือ "sim"`, where); }
         else { const exp = expectedScope(ps, r1); if (exp && o.scope !== exp) add('warn', id, 'scope', `${ps}: scope "${o.scope}" → "${exp}"`, where); }

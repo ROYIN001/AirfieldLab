@@ -534,13 +534,13 @@ FADEC: นักบินมีคันเดียวเป็น load % ร�
         "note": "ค่าประมาณ: รัศมีไจเรชันไร้มิติแบบ Roskam Part V (Ixx = m(b·Rx/2)², Iyy = m(L·Ry/2)², Izz = m(((b+L)/2)·Rz/2)²) หาย้อนจาก inertia ที่วัดจริง (TM-80163, FAA-RD-71-6/TN D-6643 Navion) และจากโมเดล JSBSim 1.3.3 (c172x, pa28, c310, pc7, t6texan2 ที่น้ำหนักรวมของไฟล์) แล้วเฉลี่ยตามกลุ่ม; leave-one-out ของ single_prop ผิด 0.4–42 % (TM-80163 +27/+29/+31 %, Navion Ixx +42 %); twin_prop มีแค่ C310 (ถังปลายปีก) ไม่เหมาะกับ DA42; range = ค่าต่ำสุด–สูงสุดของกลุ่ม; scripts/lm_inertia.mjs"
       },
       "stall_nz_at_vmin": {
-        "v": {"nominal": 0.95, "range": [0.9,1]},
+        "v": {"nominal": 0.95, "range": [0.9,1], "compare": "V_SR", "target": "VS_POH_KCAS/√nominal", "report_only": ["Vmin", "nz_Vmin"]},
         "u": "-",
         "scope": "sim",
         "src": ["LM1", "LM2", "R1:V19"],
         "conf": "ต่ำ",
         "est": true,
-        "note": "ค่าประมาณ: nz ที่ความเร็วต่ำสุดของการ stall 1 kt/s ใช้แปลง POH stall speed (ซึ่งเป็นความเร็วต่ำสุด) เป็น V_1g: CLmax_1g = 2·m·g·nz/(ρ0·S·V²); ซิมรอบที่ 1 วัดได้ 0.949 (แฟลปลง) และ 0.985 (clean); 14 CFR 25.103 นิยาม V_SR = V_CLmax/√nz; AC 23-8C ให้ลดความเร็ว ≤ 1 kt/s"
+        "note": "ค่าประมาณ: nz ที่ความเร็วต่ำสุดของการ stall 1 kt/s ใช้แปลง POH stall speed (ซึ่งเป็นความเร็วต่ำสุด) เป็น V_1g: CLmax_1g = 2·m·g·nz/(ρ0·S·V²); 14 CFR 25.103 นิยาม V_SR = V_CLmax/√nz; AC 23-8C ให้ลดความเร็ว ≤ 1 kt/s; นิยามการเทียบทั้งโครงการ (R2-04, 22 พ.ย. 2026): เทียบ V_SR 1 g ของซิม (lm_card.stallTest) กับ VS ของ POH (KCAS)/√0.95 (lm_polar.vsrTarget) ไม่เทียบ Vmin ของซิม; stallTest รายงาน Vmin และ nz_Vmin เป็นข้อมูลเท่านั้น เพราะในซิมวันนี้ Vmin เกิดหลัง CL break (ความเร็วเริ่มมาตรฐาน: 1.1–2.6 s หลัง CLmax ที่ nz 0.19–0.58) และเลื่อนได้ 0.8–5 kt เมื่อความเร็วเริ่มเปลี่ยน 1.2–1.5 Vs ขณะที่ V_SR เลื่อนไม่เกิน 0.03 kt; ค่า 0.949 (แฟลปลง) และ 0.985 (clean) ที่ซิมรอบที่ 1 วัดได้คือ nz ที่ CLmax ไม่ใช่ที่ Vmin (nz ที่ Vmin ของการทดสอบเดียวกันคือ 0.52 และ 0.22)"
       },
       "flap_map": {
         "v": {"default": "lift", "lift": "f = ΔCL0(detent)/ΔCL0(full)", "deflection": "f = δf/δf_full"},
@@ -707,7 +707,11 @@ FADEC: นักบินมีคันเดียวเป็น load % ร�
           "polar_from": "POH best glide speed + ratio at idle (idle = 0)",
           "climb_from": "POH Vy + ROC",
           "known_bias_Vy_kt": -8,
-          "known_bias_note": "single polar for all thrust states"
+          "known_bias_note": "single polar for all thrust states",
+          "static_needs": ["performance.ROC_SL_fpm"],
+          "vy_needs": ["performance.ROC_SL_fpm", "speeds.VY_kt"],
+          "vy_bounds": {"T0": [0.7,1.3], "eta": [0.5,1.5]},
+          "vy_no_solution": "keep the static fit, report the reachable Vy"
         },
         "u": "-",
         "scope": "sim",
