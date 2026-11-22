@@ -6,11 +6,11 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { makeCircuit, toNE, windLeg, TYPES, FT, NM, SM, KT, defaultOffset, turnRadius } from './lo_lib.mjs';
 
-// Repo root: relative to this folder first (docs/research/02-light-aircraft/scripts -> four levels up), then
-// $AIRFIELDLAB_ROOT, then the default of lm_card.mjs (same convention as the shared tools).
+// Repo root: $AIRFIELDLAB_ROOT first (lm_ci.mjs points it at the pinned sim snapshot), then the repo this folder sits
+// in (docs/research/02-light-aircraft/scripts -> four levels up), the same order as lm_card.mjs.
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const IN_REPO = path.resolve(HERE, '..', '..', '..', '..');
-const ROOT = fs.existsSync(path.join(IN_REPO, 'test', 'harness.mjs')) ? IN_REPO : (process.env.AIRFIELDLAB_ROOT || decodeURIComponent(new URL('../../../../', import.meta.url).pathname).replace(/\/$/, ''));
+const ROOT = process.env.AIRFIELDLAB_ROOT || IN_REPO;
 const { M } = await import(pathToFileURL(path.join(ROOT, 'test', 'harness.mjs')).href);
 const OUT = new URL('./out/', import.meta.url);
 

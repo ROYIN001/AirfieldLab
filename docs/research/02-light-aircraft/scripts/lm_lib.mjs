@@ -17,6 +17,7 @@
 //    The merged params-light.json does not copy them; _meta.bases says where they come from.
 //  - `_na` with v ["*"] marks every remaining round-1 per-type path as deliberately absent (coverage missing 0).
 //  - coverage is also given for inheriting ids, on the resolved card.
+//  - with {strict:true} the leaf-format warnings also become errors (B5, 22 Nov 2026).
 //  - validate(): WARN-level checks (errors with {strict:true}): scope by category (D4), est flag vs note,
 //    training_mass shape (D3), VAPP >= VREF on every resolved id (D1), 08 ops.attitude_power.final.ias_kt and
 //    09 procedures.stabilised.Vapp = the card's speeds.VAPP_kt (D1), flap detent names in 08/09 (D6).
@@ -26,6 +27,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const HERE = path.dirname(fileURLToPath(import.meta.url));
+// Where the test scripts write their result files: $LM_OUT_DIR when set (lm_ci.mjs points it at a temp folder so a
+// CI run never changes the repo), otherwise scripts/out as before. Inputs that live in scripts/out (fixtures, cached
+// network results such as lo_aip_check.json) are still read from HERE/out.
+export const OUT_DIR = process.env.LM_OUT_DIR ? path.resolve(process.env.LM_OUT_DIR) : path.join(HERE, 'out');
+export function outFile(name) { fs.mkdirSync(OUT_DIR, { recursive: true }); return path.join(OUT_DIR, name); }
 export const SCOPES = new Set(['aircraft', 'engine', 'propeller', 'gear', 'environment', 'sim']);
 export const CONFS = new Set(['สูง', 'กลาง', 'ต่ำ']);
 export const ID_RE = /^[a-z][a-z0-9_]*$/;
@@ -163,6 +169,9 @@ export function mergeDir(dir, opts = {}) {
   const res = { merged, origin, errors, warnings, conflicts, coverage, stats, files, nBlocks, nExamples, nBad, bases: baseInfo };
   res.checks = opts.checks === false ? [] : validate(res, { r1, pool, bases, strict: !!opts.strict, only: ONLY });
   if (opts.strict) for (const c of res.checks) if (c.level === 'warn') errors.push(`[strict] ${c.id} ${c.check}: ${c.msg}`);
+  // leaf-format warnings (extra fields, est without a note, empty src, v null, _inherits not found) count too, so
+  // "--strict exits 0" means "0 warnings", the rule CLAUDE.md gives for every JSON edit (plan PR B5)
+  if (opts.strict) for (const w of warnings) errors.push(`[strict] ${w}`);
   return res;
 }
 

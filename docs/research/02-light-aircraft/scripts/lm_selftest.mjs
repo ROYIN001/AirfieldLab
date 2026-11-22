@@ -5,7 +5,8 @@
 // and T-LM-24 (CLI robustness of lm_derivs / lm_polar); T-LM-25…30 (19 Nov 2026): control travel from the leaf
 // controls.surfaces.<s> (D2), training_mass object (D3), _na ["*"] (D5), trainer_r2 resolution against the trainer_r1 base,
 // lm_lib.validate() checks (D1, D3, D4, D6, est/note) and lm_merge --strict; T-LM-31 tolerance guidance of lm_tolerance
-// (lateral-directional modes, gap 17). Exit code 1 on any failure.
+// (lateral-directional modes, gap 17); T-LM-32 (22 Nov 2026) the copies of simulator code (simCLtrim, scoreToday) equal
+// the simulator they run on. Exit code 1 on any failure.
 // node scripts/lm_selftest.mjs [--json]
 import fs from 'node:fs';
 import path from 'node:path';
@@ -171,6 +172,39 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
       for (const c of T.cards) { const r = c.range[cls][q]; if (r[0] < leafT[key][q][0] - 1e-9 || r[1] > leafT[key][q][1] + 1e-9) bad++; }
     check('T-LM-31', 'methods.lateral_mode_tolerance envelopes lm_tolerance (cards outside)', bad, 0, 0);
   }
+}
+// T-LM-32 (plan PR B5, 22 Nov 2026): the copies of simulator code in the scripts still equal the simulator they run on
+// (the commit pinned in scripts/sim-snapshot.json under lm_ci.mjs). (a) lm_card.simCLtrim (stallBlend + the CL line) against
+// Aircraft.deriv's CL at the same α and trim elevator, out of ground effect; (b) lh_eval.scoreToday against Evaluator.score
+// on a grid of touchdowns. A failure after re-pinning means a copy must be updated together with the expected values.
+{
+  const { simCLtrim, simTrimDe, simStallBlend } = await import('./lm_card.mjs');
+  const { scoreToday } = await import('./lh_eval.mjs');
+  applyAC(M, buildAC(loadType('trainer_r1'), {}));
+  const AC = M.AC, DEG = Math.PI / 180, V = 50;
+  let dCL = 0, dSig = 0, n = 0;
+  for (const f of [0, 0.5, 1]) for (let aDeg = -4; aDeg <= 26; aDeg += 1) {
+    const a = aDeg * DEG, ac = new M.Aircraft();
+    ac.flaps = f; ac.gearPos = 1; ac.de = simTrimDe(AC, f, a); ac.adot = 0;
+    const s = new Float64Array(13); s[2] = -1500; s[3] = V * Math.cos(a); s[5] = V * Math.sin(a); s[6] = 1;
+    const diag = { wow: [], load: [] }; ac.deriv(s, new Float64Array(13), diag);
+    dCL = Math.max(dCL, Math.abs(diag.CL - simCLtrim(AC, f, a)));
+    dSig = Math.max(dSig, Math.abs(diag.sig - simStallBlend(a, (AC.aStall + AC.aStallFlap * f) * DEG)));
+    n++;
+  }
+  check('T-LM-32', `simCLtrim = sim CL (max |ΔCL|, ${n} pts α −4…26°, f 0/0.5/1)`, dCL, 0, 1e-6);
+  check('T-LM-32', 'simStallBlend = sim stallBlend (max |Δσ|)', dSig, 0, 1e-9);
+  const ev = new M.Flight().ev, P = { Vref: AC.Vref };
+  let bad = 0, m = 0;
+  // one value inside every band of every part (sink 180/360/600 fpm, position 0/220/300/600/750/900 m, centre line 2/5/10 m, …)
+  for (const sink of [100, 190, 250, 400, 500, 700]) for (const s of [-10, 210, 250, 450, 650, 800, 950]) for (const y of [1, 3, 7, 12]) for (const dv of [-14, -10, -3, 8, 15])
+    for (const phi of [2, 5, 8]) for (const crab of [-2, 5, -8]) for (const latV of [0.5, 1.2, 2]) for (const nose of [false, true]) {
+      const td = { vs: -sink, s, y, ias: AC.Vref + dv, phi, crab, latV, wow: nose ? [true, false, false] : [false, true, true] };
+      ev.td = { vsFpm: td.vs, s, tl: y, ias: td.ias, bank: phi, crab, drift: latV, noseFirst: nose, onRunway: s >= 0 && s <= M.FIELD.rwyLen && Math.abs(y) <= M.FIELD.rwyWid / 2 };
+      ev.events = [];
+      bad += ev.score().total !== scoreToday([{ wow: [false, false, false] }, td], P); m++;
+    }
+  check('T-LM-32', `lh_eval.scoreToday = Evaluator.score (mismatches of ${m} touchdowns)`, bad, 0, 0);
 }
 if (process.argv.includes('--json')) console.log(JSON.stringify(rows, null, 1));
 else for (const x of rows) console.log(`${x.ok ? 'PASS' : 'FAIL'} ${x.id.padEnd(8)} ${x.what.padEnd(48)} got ${String(x.got).padEnd(9)} exp ${x.exp} ± ${x.tol}`);

@@ -99,7 +99,15 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   shared with round 3. `params-light.json` is merged by `scripts/lm_merge.mjs`; `scripts/lm_lib.mjs` `loadType(id)`
   resolves a card, and `scripts/lm_card.mjs` `buildAC(card)` / `applyAC(M, ac)` load it into the current sim for tests.
   The card owns `speeds.VREF_kt` / `VAPP_kt`; handling (08) and procedures (09) quote it. After editing any JSON block,
-  `node docs/research/02-light-aircraft/scripts/lm_merge.mjs --coverage --dry --strict` must report 0 warnings.
+  `node docs/research/02-light-aircraft/scripts/lm_merge.mjs --coverage --dry --strict` must report 0 warnings
+  (`--strict` exits 1 on any warning).
+- Research CI: `.github/workflows/research.yml` runs `node docs/research/02-light-aircraft/scripts/lm_ci.mjs` on
+  changes to `docs/research/**` (lm_merge --strict, lm_selftest, ls_tests, lh_tests, lo_tests). The scripts that fly
+  cards run against the simulator commit pinned in `02-light-aircraft/scripts/sim-snapshot.json` (src/ and
+  test/harness.mjs extracted to a temp folder through `AIRFIELDLAB_ROOT`), so a physics PR does not move them;
+  results go to `$LM_OUT_DIR`, never into the repo. `lm_ci.mjs --root .` runs the same checks on the working tree.
+  After a physics change, re-pin the commit and move the expected values in one PR (`lm_selftest` T-LM-32 checks
+  that the scripts' copies of `stallBlend` and `Evaluator.score` still match the pinned sim).
 - Read the relevant report before changing physics, input or data. Physics code changes wait until the owner
   approves the development plan that follows all five rounds.
 

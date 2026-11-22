@@ -113,13 +113,21 @@ function speedCAS(card, p, detName) {
 }
 
 // CL of the sim's blended stall model for alpha (rad), elevator from Cm trim, out of ground effect.
-// Mirrors Aircraft.deriv (src/20-flight.js:166-185) with q = adot = beta = 0 and phiGE = 1.
-export function simCLtrim(ac, f, alpha) {
-  const a0 = (ac.aStall + ac.aStallFlap * f) * DEG;
+// simStallBlend / simTrimDe / simCLtrim copy stallBlend and the CL / Cm lines of Aircraft.deriv (src/20-flight.js:145-185)
+// with q = adot = beta = 0 and phiGE = 1; lm_selftest T-LM-32 checks them against the pinned simulator (sim-snapshot.json).
+export function simStallBlend(alpha, a0) {
   const M = 55, e1 = Math.exp(-M * (alpha - a0)), e2 = Math.exp(M * (alpha + a0));
-  const sig = (1 + e1 + e2) / ((1 + e1) * (1 + e2));
+  return (1 + e1 + e2) / ((1 + e1) * (1 + e2));
+}
+/** elevator (rad) that zeroes the sim's pitching moment at α (rad), flap fraction f, clamped to the stops */
+export function simTrimDe(ac, f, alpha) {
+  const a0 = (ac.aStall + ac.aStallFlap * f) * DEG, sig = simStallBlend(alpha, a0);
   const cmNoDe = ac.Cm0 + ac.Cmflap * f + ac.Cma * alpha - sig * 0.25 * Math.max(0, alpha - a0);
-  const de = clamp(-cmNoDe / ac.Cmde, -ac.deUp, ac.deDn);
+  return clamp(-cmNoDe / ac.Cmde, -ac.deUp, ac.deDn);
+}
+export function simCLtrim(ac, f, alpha) {
+  const a0 = (ac.aStall + ac.aStallFlap * f) * DEG, sig = simStallBlend(alpha, a0);
+  const de = simTrimDe(ac, f, alpha);
   const CLlin = ac.CL0 + ac.CLflap * f + ac.CLa * alpha + ac.CLde * de;
   const sa = Math.sin(alpha), ca = Math.cos(alpha);
   return (1 - sig) * CLlin + sig * 2 * Math.sign(alpha) * sa * sa * ca;

@@ -6,31 +6,18 @@
 // result ("today"): the sim of today (src/20-flight.js through lm_card.loadSim) with the card loaded by
 // lm_card.buildAC/applyAC where the quantity exists there, today's Evaluator.score() for touchdowns, otherwise
 // "ไม่รองรับในซิมวันนี้".
-//   node lh_tests.mjs        → prints a table, writes out/lh_tests.json, exit code 1 on any failure
+//   node lh_tests.mjs        → prints a table, writes out/lh_tests.json ($LM_OUT_DIR/lh_tests.json when set), exit code 1 on any failure
 //   node lh_tests.mjs --md   → also prints the 08.9 markdown table
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { TYPES, CARD_IDS, attitude, iasToCas, fpmPerDeg, vsOnPath, balloon, run as runAttitude } from './lh_attitude.mjs';
-import { PROFILES, PROFILE_CARD, detect, score, synth, synthTakeoff, firstTouchdown } from './lh_eval.mjs';
+import { PROFILES, PROFILE_CARD, detect, score, synth, synthTakeoff, firstTouchdown, scoreToday } from './lh_eval.mjs';
+export { scoreToday };   // moved to lh_eval.mjs (22 Nov 2026) so lm_selftest T-LM-32 can import it without running these tests
 import { compute as computeStick, CFR23_143 } from './lh_stick.mjs';
-import { loadType, mergeDir, val, isObj, trainingMassKg } from './lm_lib.mjs';
+import { loadType, mergeDir, val, isObj, trainingMassKg, outFile } from './lm_lib.mjs';
 import { loadSim, buildAC, applyAC, trim, detents, flapMap, simCLtrim } from './lm_card.mjs';
 
-/** today's Evaluator.score() of src/20-flight.js (lines ~517-542) applied to the same touchdown, Vref = profile Vref */
-export function scoreToday(S, P) {
-  const i = firstTouchdown(S); if (i < 0) return null;
-  const td = S[i], sink = -td.vs, lerp = (a, b, f) => a + (b - a) * f;
-  const pSink = sink <= 180 ? 40 : sink <= 360 ? lerp(40, 30, (sink - 180) / 180) : sink <= 600 ? lerp(30, 10, (sink - 360) / 240) : 0;
-  const d = td.s, pPos = d < 0 || d > 900 ? 0 : (d >= 300 && d <= 600) ? 25 : (d >= 220 && d <= 750) ? 18 : 10;
-  const cl = Math.abs(td.y), pCl = cl <= 2 ? 15 : cl <= 5 ? 12 : cl <= 10 ? 6 : 0;
-  const dv = td.ias - P.Vref, pSpd = dv >= -8 && dv <= 5 ? 10 : dv >= -12 && dv <= 12 ? 6 : 2;
-  const noseFirst = td.wow[0] && !(td.wow[1] || td.wow[2]);
-  const att = (Math.abs(td.phi) <= 3 ? 4 : Math.abs(td.phi) <= 6 ? 2 : 0) + (Math.abs(td.crab) <= 3 ? 3 : Math.abs(td.crab) <= 6 ? 1.5 : 0) + (Math.abs(td.latV) <= 0.8 ? 3 : Math.abs(td.latV) <= 1.6 ? 1.5 : 0) - (noseFirst ? 5 : 0);
-  let total = pSink + pPos + pCl + pSpd + Math.max(0, att);
-  if (d < 0) total = Math.min(total, 20); if (sink > 600) total = Math.min(total, 35);
-  return Math.round(total);
-}
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEG = Math.PI / 180, RAD = 180 / Math.PI, KT = 0.514444, LBF = 4.44822;
@@ -208,6 +195,5 @@ if (process.argv.includes('--md')) {
   console.log('\n| id | เงื่อนไข | ปริมาณ | คาด | ส่วนเผื่อ | ที่มา | ผล (สคริปต์) | ผลโมเดลปัจจุบัน (ซิมวันนี้) |\n|---|---|---|---|---|---|---|---|');
   for (const r of results) console.log(`| ${r.id} | ${esc(r.cond)} | ${esc(r.qty)} | ${esc(r.exp)} | ${esc(r.tol)} | ${esc(r.src)} | ${esc(r.got)} ${r.pass ? '✓' : '✗'} | ${esc(r.today)} |`);
 }
-fs.mkdirSync(path.join(HERE, 'out'), { recursive: true });
-fs.writeFileSync(path.join(HERE, 'out', 'lh_tests.json'), JSON.stringify({ generated: 'lh_tests.mjs (19 Nov 2026)', pass: nPass, total: results.length, results }, null, 1) + '\n');
+fs.writeFileSync(outFile('lh_tests.json'), JSON.stringify({ generated: 'lh_tests.mjs (19 Nov 2026)', pass: nPass, total: results.length, results }, null, 1) + '\n');
 process.exitCode = nPass === results.length ? 0 : 1;

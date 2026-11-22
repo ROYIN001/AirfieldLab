@@ -121,6 +121,23 @@ export function firstTouchdown(S) {
   return -1;
 }
 
+/** today's Evaluator.score() of src/20-flight.js (lines ~520-545) applied to the same touchdown, Vref = profile Vref.
+ *  A copy of the sim's code: lm_selftest T-LM-32 checks it against Evaluator.score of the pinned simulator
+ *  (scripts/sim-snapshot.json). Off-runway is reduced to s < 0 and events (excursion, wingtip) are not modelled. */
+export function scoreToday(S, P) {
+  const i = firstTouchdown(S); if (i < 0) return null;
+  const td = S[i], sink = -td.vs, lerp = (a, b, f) => a + (b - a) * f;
+  const pSink = sink <= 180 ? 40 : sink <= 360 ? lerp(40, 30, (sink - 180) / 180) : sink <= 600 ? lerp(30, 10, (sink - 360) / 240) : 0;
+  const d = td.s, pPos = d < 0 || d > 900 ? 0 : (d >= 300 && d <= 600) ? 25 : (d >= 220 && d <= 750) ? 18 : 10;
+  const cl = Math.abs(td.y), pCl = cl <= 2 ? 15 : cl <= 5 ? 12 : cl <= 10 ? 6 : 0;
+  const dv = td.ias - P.Vref, pSpd = dv >= -8 && dv <= 5 ? 10 : dv >= -12 && dv <= 12 ? 6 : 2;
+  const noseFirst = td.wow[0] && !(td.wow[1] || td.wow[2]);
+  const att = (Math.abs(td.phi) <= 3 ? 4 : Math.abs(td.phi) <= 6 ? 2 : 0) + (Math.abs(td.crab) <= 3 ? 3 : Math.abs(td.crab) <= 6 ? 1.5 : 0) + (Math.abs(td.latV) <= 0.8 ? 3 : Math.abs(td.latV) <= 1.6 ? 1.5 : 0) - (noseFirst ? 5 : 0);
+  let total = pSink + pPos + pCl + pSpd + Math.max(0, att);
+  if (d < 0) total = Math.min(total, 20); if (sink > 600) total = Math.min(total, 35);
+  return Math.round(total);
+}
+
 /** run all detectors over a sampled series. opts.level 'ppl' | 'cpl' */
 export function detect(S, P, opts = {}) {
   const level = opts.level || 'ppl';
