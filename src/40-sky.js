@@ -71,6 +71,8 @@ function makeSkyMaterial(capture) {
         vec2 dh = normalize(d.xz + 1e-5);
         col += uNight * vec3(0.009, 0.005, 0.002) * pow(max(dot(dh, uCityDir), 0.0), 3.0) * exp(-max(d.y, 0.0) * 18.0);
         `}
+        // haze beyond the sky model's own (skyHazeBeta), integrated from the camera height upward along d
+        if (d.y > 0.0) col = mix(hzFogColor(d), col, exp(-uBetaSky * uHazeH * exp(-max(cameraPosition.y, 0.0) / uHazeH) / max(d.y, 0.02)));
         gl_FragColor = vec4(col, 1.0);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -97,6 +99,7 @@ function makeCloudMaterial() {
         vec3 col = uSunCol * light * 0.26 * smoothstep(-0.05, 0.25, uSunW.y) + uAmb * mix(1.0, 0.6, d) + uNight * vec3(0.004, 0.0025, 0.0012);
         float fog = 1.0 - exp(-pow(dist / 24000.0, 2.0));
         col = mix(col, hzFogColor(normalize(v)), fog);
+        col = mix(col, hzFogColor(normalize(v)), 1.0 - exp(-hazeDepth(uBetaSky, cameraPosition.y, v)));
         float a = clamp(d * 1.25, 0.0, 0.96) * (1.0 - smoothstep(24000.0, 37000.0, dist));
         gl_FragColor = vec4(col, a);
         #include <tonemapping_fragment>
@@ -128,7 +131,8 @@ class SkySystem {
     scene.add(this.sun, this.sun.target);
     this.state = { sunDir: [0, 1, 0], sunCol: [1, 1, 1], ambUp: [0.3, 0.3, 0.3], exposure: 0.6, night: 0, day: 1, lightsOn: 0 };
     this.cloudCover = 0.3; this.visibility = 20000;
-    scene.fog = new THREE.FogExp2(0x9aa8b8, 1e-4);
+    // FogExp2 switches three.js fog on; the patched fog chunk (30-render.js) reads its density as β (1/m), linear in distance
+    scene.fog = new THREE.FogExp2(0x9aa8b8, morBeta(this.visibility));
   }
 
   setTime(date) {
@@ -197,7 +201,9 @@ class SkySystem {
   setWeather({ cloud = this.cloudCover, visibility = this.visibility } = {}) {
     this.cloudCover = cloud; this.visibility = visibility;
     SU.uCloud.value.x = cloud;
-    this.scene.fog.density = 1.98 / visibility;
+    // visibility is MOR: β = ln20 / V at the ground (research round 4 §6.8), for the fog, the lights and the sky
+    SU.uBeta.value = this.scene.fog.density = morBeta(visibility);
+    SU.uBetaSky.value = skyHazeBeta(visibility);
     this.envDirty = true;
   }
 

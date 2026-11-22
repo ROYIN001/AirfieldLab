@@ -64,16 +64,28 @@ const SU = {
   uNoise: { value: null },
   uFogHz: { value: Array.from({ length: 16 }, () => new THREE.Vector3(0.5, 0.6, 0.7)) },
   uHazeH: { value: 1600 },
+  uBeta: { value: morBeta(SKY_VIS_M) },        // extinction at the ground (1/m) from the visibility (SkySystem.setWeather)
+  uBetaSky: { value: 0 },                      // the part of it the sky dome and clouds do not already show (skyHazeBeta)
   uSunW: { value: new THREE.Vector3(0, 1, 0) },
   uCloud: { value: new THREE.Vector4(0, 1 / 5200, 0, 0) },
   uCloudAlt: { value: 1700 },
   uTime: { value: 0 },
   uNight: { value: 0 },
 };
+// Haze optical depth from height h0 along the world vector v: the GLSL twin of hazeDepth() in 10-atmo.js.
+const HAZE_GLSL = /* glsl */`
+uniform float uHazeH;
+float hazeDepth(float beta, float h0, vec3 v) {
+  float k = v.y / uHazeH;
+  float m = abs(k) < 1e-3 ? 1.0 - k / 2.0 + k * k / 6.0 : (1.0 - exp(-k)) / k;
+  return beta * length(v) * exp(-max(h0, 0.0) / uHazeH) * m;
+}
+`;
 const GLSL_PRELUDE = /* glsl */`
 uniform sampler2D uNoise;
 uniform vec3 uFogHz[16];
-uniform float uHazeH;
+uniform float uBetaSky;
+${HAZE_GLSL}
 uniform vec3 uSunW;
 uniform vec4 uCloud;
 uniform float uCloudAlt;
@@ -105,21 +117,30 @@ float hash2i(ivec2 c) { return float(pcg2d(uvec2(c + 4096))) / 4294967296.0; }
 function patchShaderChunks() {
   const C = THREE.ShaderChunk;
   if (C.__airfieldPatched) return; C.__airfieldPatched = true;
+  // Fog is MOR haze (research round 4 §6.8, §7.4): Beer–Lambert on the distance to the camera, not on the depth along
+  // the view axis, with fogDensity = β = ln20 / V (SkySystem.setWeather) and the extinction thinning with height.
+  const depth = 'vFogDepth = - mvPosition.z;';
+  if (!C.fog_vertex.includes(depth)) console.warn('fog chunk changed; fog uses view depth');
+  C.fog_vertex = C.fog_vertex.replace(depth, 'vFogDepth = length( mvPosition.xyz );');
   C.fog_pars_vertex += '\n#ifdef USE_HZFOG\nvarying vec3 vFogW;\n#endif';
   C.fog_vertex += '\n#ifdef USE_HZFOG\nvFogW = ( vec4( mvPosition.xyz, 0.0 ) * viewMatrix ).xyz;\n#endif';
   C.fog_pars_fragment += '\n#ifdef USE_HZFOG\nvarying vec3 vFogW;\n#endif';
   C.fog_fragment = `#ifdef USE_FOG
-  #ifdef FOG_EXP2
-    float fogFactor = 1.0 - exp( - fogDensity * fogDensity * vFogDepth * vFogDepth );
+  #if defined( USE_HZFOG ) && defined( FOG_EXP2 )
+    float fogFactor = 1.0 - exp( - hazeDepth( fogDensity, cameraPosition.y, vFogW ) );
+    // three.js fogs after tone mapping and the output transform, so the haze colour (linear radiance, as the sky
+    // dome uses it) goes through both first, or thick fog would not match the sky at the horizon
+    vec3 fogC = hzFogColor( normalize( vFogW ) );
+    #ifdef TONE_MAPPING
+      fogC = toneMapping( fogC );
+    #endif
+    gl_FragColor.rgb = mix( gl_FragColor.rgb, linearToOutputTexel( vec4( fogC, 1.0 ) ).rgb, fogFactor );
   #else
-    float fogFactor = smoothstep( fogNear, fogFar, vFogDepth );
-  #endif
-  #ifdef USE_HZFOG
-    vec3 fdir = normalize( vFogW );
-    float hAvg = max( cameraPosition.y + 0.5 * vFogW.y, 0.0 );
-    fogFactor *= exp( - hAvg / uHazeH );
-    gl_FragColor.rgb = mix( gl_FragColor.rgb, hzFogColor( fdir ), fogFactor );
-  #else
+    #ifdef FOG_EXP2
+      float fogFactor = 1.0 - exp( - fogDensity * vFogDepth );
+    #else
+      float fogFactor = smoothstep( fogNear, fogFar, vFogDepth );
+    #endif
     gl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );
   #endif
 #endif`;

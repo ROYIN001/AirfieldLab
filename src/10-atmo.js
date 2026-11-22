@@ -166,3 +166,24 @@ function skyIrradianceUp(sun) {
 }
 
 const lum = (c) => 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+
+// ── Visibility as MOR (owner's research round 4, docs/research/04-weather.md §6.8; WMO-No. 8, ch. 9) ──
+// The meteorological optical range V is the path over which a beam keeps 5% of its light, so the extinction
+// coefficient at the ground is β = ln20 / V and the transmittance over s metres is exp(−β·s) (Beer–Lambert).
+// ln50 / V is Koschmieder's 2% contrast threshold, which the page used before (FogExp2 density 1.98 / V, squared).
+const LN20 = Math.log(20), LN50 = Math.log(50);
+const morBeta = (visM) => LN20 / visM;
+// Optical depth from height h0 along the world vector v = [x, y, z] (m), for extinction beta at the ground that falls
+// off as exp(−h / H): beta · |v| · exp(−h0 / H) · (1 − e^−k) / k with k = v.y / H, the exact mean of exp(−h / H) over
+// the straight path. H is the haze scale height (SU.uHazeH, 1,600 m: an estimate with no source yet, research §7.4).
+// hazeDepth in HAZE_GLSL (30-render.js) is the same formula for the shaders.
+function hazeDepth(beta, h0, v, H) {
+  const k = v[1] / H;
+  const m = Math.abs(k) < 1e-3 ? 1 - k / 2 + (k * k) / 6 : (1 - Math.exp(-k)) / k;
+  return beta * Math.hypot(v[0], v[1], v[2]) * Math.exp(-Math.max(h0, 0) / H) * m;
+}
+// The sky dome and the clouds come from their own scattering model, which looks like a clear day of about 20 km
+// (the page's default visibility; an estimate). Only the extinction beyond that greys them, so low visibility hides
+// the sky and the clouds while 20 km and 40 km leave them as they were.
+const SKY_VIS_M = 20000;
+const skyHazeBeta = (visM) => Math.max(0, morBeta(visM) - morBeta(SKY_VIS_M));

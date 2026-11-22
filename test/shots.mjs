@@ -1,7 +1,7 @@
 // Screenshots of the built page in headless Chrome with SwiftShader WebGL2.
 //   node test/shots.mjs <set> [views] [--dist <dir>] [--out <dir>] [--pin <three-pin.mjs>]
 //   sets: ci (the small set CI runs on every pull request), explore, train, layout, phone, final,
-//         vtbd [overview,terminal,...], all (explore + train + phone)
+//         vtbd [overview,terminal,...], vis (visibility by day and night), all (explore + train + phone)
 // Builds the working tree into .cache/shots-dist unless --dist names a built page (for example a build of main, to
 // compare before and after). PNGs go to shots/ unless --out says otherwise. three.js is served from
 // .cache/three-<version> (test/lib/three-pin.mjs downloads it once and checks its SHA-256), so a run does not depend on
@@ -27,7 +27,7 @@ const { chromium } = createRequire(import.meta.url)('playwright');
 const argv = process.argv.slice(2), opt = (k) => { const i = argv.indexOf(k); return i >= 0 ? argv.splice(i, 2)[1] : null; };
 const distArg = opt('--dist'), outArg = opt('--out'), pinArg = opt('--pin');
 const [set = 'explore', views] = argv;
-const SETS = ['ci', 'explore', 'train', 'layout', 'phone', 'final', 'vtbd', 'all'];
+const SETS = ['ci', 'explore', 'train', 'layout', 'phone', 'final', 'vtbd', 'vis', 'all'];
 if (!SETS.includes(set)) { console.error(`unknown set "${set}"; sets: ${SETS.join(', ')}`); process.exit(2); }
 
 const DIST = distArg ? path.resolve(distArg) : path.join(ROOT, '.cache/shots-dist');
@@ -105,6 +105,20 @@ const ev = (page, fn, arg) => page.evaluate(fn, arg);
 // one page per viewport; its context is closed afterwards so an idle page does not keep rendering on the CPU
 async function withPage(browser, vp, fn) { const page = await open(browser, vp); try { await fn(page); } finally { await page.context().close(); } }
 const evening = () => { const a = __app; const lp = a.localParts(a.app.date); a.app.date = a.makeDate(lp.y, lp.m, lp.d, 19 * 60 + 40); a.applyTime(); };
+// picks the visibility whose label the panel shows (e.g. '5 กม.'), so one script drives builds with different choices;
+// false if this build does not offer it
+const setVis = (label) => {
+  const a = __app, el = document.querySelector('#inVis'), was = a.app.visIdx;
+  for (let i = +el.min; i <= +el.max; i++) {
+    a.app.visIdx = i; a.applyWeather();
+    if (document.querySelector('#outVis').textContent === label) { el.value = i; return true; }
+  }
+  a.app.visIdx = was; a.applyWeather();
+  return false;
+};
+async function visShot(page, label, name) {
+  if (await ev(page, setVis, label)) { await frames(page, 4); await shot(page, name); } else logs.push(`skip ${name}: no ${label} in this build`);
+}
 
 const SHOTS = {
   async ci(b) {
@@ -117,6 +131,18 @@ const SHOTS = {
       await frames(page, 4); await shot(page, 'c4-night-approach.png');
     });
     await withPage(b, { width: 390, height: 844 }, async (page) => { await shot(page, 'c5-phone.png'); });
+  },
+  // visibility (MOR) by day and at night; the choices below 5 km exist only from plan B9 on
+  async vis(b) {
+    await withPage(b, { width: 960, height: 600 }, async (page) => {
+      await ev(page, () => __app.setView('runway', true));
+      for (const [label, name] of [['20 กม.', 'v1-runway-20km'], ['5 กม.', 'v2-runway-5km'], ['3 กม.', 'v3-runway-3km'], ['500 ม.', 'v4-runway-500m']]) await visShot(page, label, name + '.png');
+      await ev(page, () => __app.setView('overview', true)); await visShot(page, '10 กม.', 'v5-overview-10km.png');
+      await ev(page, () => { __app.setMode('train'); __app.startFlight(); const f = __app.app.flight; while (f.ac.t < 92) f.tick(f.dt); __app.setTrainCam('chase'); });
+      await visShot(page, '1.5 กม.', 'v6-chase-1500m.png');
+      await ev(page, evening); await ev(page, () => { __app.setMode('explore'); __app.setView('approach', true); });
+      await visShot(page, '5 กม.', 'v7-night-approach-5km.png'); await visShot(page, '500 ม.', 'v8-night-approach-500m.png');
+    });
   },
   async vtbd(b) {
     await withPage(b, { width: 1100, height: 680 }, async (page) => {
