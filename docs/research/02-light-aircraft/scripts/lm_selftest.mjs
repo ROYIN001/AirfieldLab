@@ -7,7 +7,9 @@
 // lm_lib.validate() checks (D1, D3, D4, D6, est/note) and lm_merge --strict; T-LM-31 tolerance guidance of lm_tolerance
 // (lateral-directional modes, gap 17); T-LM-32 (22 Nov 2026) the copies of simulator code (simCLtrim, scoreToday) equal
 // the simulator they run on; T-LM-33 (R2-04) the stall comparison (V_SR, nz at Vmin); T-LM-34 (R2-06, in lm_legacy_fit.tests)
-// legacy fit without speeds.VY_kt, --T0 and the vy-mode bounds. Exit code 1 on any failure.
+// legacy fit without speeds.VY_kt, --T0 and the vy-mode bounds; T-LM-23 extended (R2-03) src codes resolve to a reference
+// line (src_ref); T-LM-35 (R2-05) the open_model check; T-LM-36 (R2-01) schema-ext.md documents the methods leaves and the
+// piston.altitude.model values. Exit code 1 on any failure.
 // node scripts/lm_selftest.mjs [--json]
 import fs from 'node:fs';
 import path from 'node:path';
@@ -79,6 +81,8 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
   const cases = [['LC1', 0], ['LM29', 0], ['R1:V19', 0], ['R1:params-trainer.json', 0], ['R1:params-trainer.json#controls.yaw.S_r', 0],
     ['LC999', 1], ['LZ1', 1], ['R1:V99', 1], ['R1:Q1', 1], ['R1', 1], ['LC1 p5-12', 1], ['R1:params-trainer.json#controls.pitch.nope', 1]];
   check('T-LM-23', 'srcProblem on 12 codes (7 bad) classified right', cases.filter(([s, bad]) => !!L.srcProblem(s, 'interference.downwash.eps0', idx) === !!bad).length, cases.length, 0);
+  const nest = { common_light: { evaluator: { rules: { v: { a: { src: ['R1', 'LH1'] }, b: { src: ['R1:V19'] }, c: [{ src: ['LH999'] }] }, u: '-', scope: 'sim', src: ['LH0'], conf: 'กลาง', est: false, note: '' } } } };
+  check('T-LM-23', 'src lists inside v checked too (bare R1, LH999 → 2 src_ref WARN)', L.validate({ merged: nest, origin: {} }, { refs: idx }).filter(c => c.check === 'src_ref' && c.level === 'warn').length, 2, 0);
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lm-selftest-src-'));
   const block = src => '# t\n\n```json\n' + JSON.stringify({ common_light: { methods: { zz: { v: 1, u: '-', scope: 'sim', src, conf: 'กลาง', est: false, note: '' } } } }) + '\n```\n';
   const run = a => spawnSync(process.execPath, [path.join(HERE, 'lm_merge.mjs'), '--dir', dir, '--dry', '--quiet', ...a], { encoding: 'utf8', timeout: 20000 }).status;
@@ -245,6 +249,37 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
     check('T-LM-33', `${nm}: V_SR spread over start 1.20/1.35/1.50 Vs (kt)`, spread(s.map(x => x.VSR_eas)), 0, 0.3);
     check('T-LM-33', `${nm}: nz_Vmin reported, below nz at CLmax (count)`, s.filter(x => Number.isFinite(x.nz_Vmin) && x.nz_Vmin < x.nz).length, 3, 0);
   }
+}
+// T-LM-35 (R2-05, 03-open-models §03.5.2, T-LB-17/18): validate() check open_model on a synthetic card, and 0 WARN on the folder
+{
+  const L = await import('./lm_lib.mjs');
+  const lf = (v, u = '-', o = {}) => ({ v, u, scope: 'aircraft', src: ['LC1'], conf: 'กลาง', est: false, note: '', ...o });
+  const merged = { xo: {
+    speeds: { VS1_kt: lf(54.49, 'kt CAS'), VS0_kt: lf(48, 'kt CAS'), VY_kt: lf(95.6, 'kt CAS', { src: ['LB2'] }), VX_kt: lf(60, 'kt IAS', { src: ['LB2', 'LC1'] }) },
+    performance: { glide: lf({ speed_kt: 85, ratio: 10.5 }, 'kt IAS, -') },
+    validation: { openModels: { jsbsim_x: {
+      stall_vs: lf({ 0: 54.49, 30: 48.77 }, 'kt CAS', { src: ['LB1', 'LB2'] }), vy: lf(95.6, 'kt CAS', { src: ['LB1', 'LB2'] }),
+      glide_best_speed: lf(85, 'kt CAS', { src: ['LB1'] }), glide_ld_max: lf(10.46, '-', { src: ['LB1'] }) } } } } };
+  const C = L.validate({ merged, origin: {}, openSrc: new Map([['LB1', 'x'], ['LB2', 'x']]) }).filter(c => c.check === 'open_model');
+  const n = lvl => C.filter(c => c.level === lvl).length;
+  // WARN: VY src only LB2; VS1 54.49 and VY 95.6 digit for digit. info: VX mixed src; glide 85 (whole number); L/D 10.46 → 10.5
+  check('T-LM-35', 'open_model synthetic: 10·WARN + info (VY src LB2, VS1 54.49, VY 95.6 | VX mixed, glide 85, L/D 10.5)', n('warn') * 10 + n('info'), 33, 0);
+  const real = L.mergeDir(path.join(HERE, '..')).checks.filter(c => c.check === 'open_model');
+  check('T-LM-35', 'open_model on the folder: WARN (info rows are for review)', real.filter(c => c.level === 'warn').length, 0, 0);
+}
+// T-LM-36 (R2-01): schema-ext.md documents every common_light.methods leaf (a row "| `methods.<key>` |") and no key that
+// is gone, and lists the four piston.altitude.model values; the cards use only those four
+{
+  const L = await import('./lm_lib.mjs');
+  const doc = fs.readFileSync(path.join(HERE, '..', 'schema-ext.md'), 'utf8');
+  const res = L.mergeDir(path.join(HERE, '..'), { checks: false });
+  const keys = Object.keys(res.merged.common_light?.methods || {});
+  const rowsDoc = [...doc.matchAll(/^\| `methods\.([a-z_0-9]+)` \|/gm)].map(m => m[1]);
+  check('T-LM-36', `methods leaves without a schema-ext row + rows without a leaf (${keys.length} leaves)`, keys.filter(k => !rowsDoc.includes(k)).length + rowsDoc.filter(k => !keys.includes(k)).length, 0, 0);
+  const ENUM = ['gagg_ferrar', 'ind_friction', 'turbo_flat', 'table'];
+  check('T-LM-36', 'schema-ext lists piston.altitude.model = the 4 values', doc.includes(ENUM.map(x => '`"' + x + '"`').join(' | ')) ? 1 : 0, 1, 0);
+  const used = Object.keys(res.merged).map(id => L.leaf(res.merged[id], 'piston.altitude')?.v?.model).filter(Boolean);
+  check('T-LM-36', `cards with piston.altitude.model outside the 4 values (of ${used.length})`, used.filter(m => !ENUM.includes(m)).length, 0, 0);
 }
 if (process.argv.includes('--json')) console.log(JSON.stringify(rows, null, 1));
 else for (const x of rows) console.log(`${x.ok ? 'PASS' : 'FAIL'} ${x.id.padEnd(8)} ${x.what.padEnd(48)} got ${String(x.got).padEnd(9)} exp ${x.exp} ± ${x.tol}`);

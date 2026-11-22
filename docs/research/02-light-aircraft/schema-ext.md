@@ -19,6 +19,7 @@
 - `scope` `aircraft` | `engine` | `propeller` | `gear` (ค่ารายแบบ) · `environment` | `sim` (ค่าร่วม)
   - **อัปเดต 19 พ.ย. 2026 (D4)** scope ตามหมวดแรกของ path: `gear.*` → `gear`; `piston.*`, `turboprop.*`, `turbofan.*`, `engine.*` → `engine`; `propeller.*` → `propeller`; `airframe`, `aero`, `speeds`, `performance`, `controls`, `ops`, `procedures`, `validation`, `otherSims` → `aircraft`; หมวดอื่นของรอบที่ 1 (`interference.*`, `wind.*`, `input.*`) ใช้ scope เดียวกับ path นั้นในรอบที่ 1; `common_light` ใช้ `environment` หรือ `sim` เท่านั้น (`lm_merge` ตรวจ ข้อ 6)
 - `src` อาร์เรย์รหัสแหล่งในไฟล์หัวข้อของตัวเอง เช่น `["LC7"]` อ้างข้ามหัวข้อได้ เช่น `["LM3"]` หรือรอบที่ 1 `["R1:A11"]` ห้ามว่าง (ยกเว้น `_na`, `_inherits`)
+  - **อัปเดต 22 พ.ย. 2026 (R2-03)** รหัส `L?n` ต้องมีบรรทัดของตัวเอง (แถวตารางที่ช่องแรกมีรหัสเดียว หรือรายการ `- [L?n]`) ในส่วน "NN.x แหล่งอ้างอิง" ของไฟล์เจ้าของตามตารางข้อ 4; รหัส `R1:<X>n` ต้องมีในส่วนแหล่งอ้างอิงของไฟล์รอบที่ 1 ตามตัวอักษร (ย่อหน้าท้ายข้อ 4); `R1:params-trainer.json` คือค่าที่ path เดียวกันใน `params-trainer.json` ของรอบที่ 1 ถ้า path ต่างกันเขียน `R1:params-trainer.json#<path ของรอบที่ 1>`; คำว่า `R1` เปล่า ๆ ใช้ไม่ได้ `lm_merge` ตรวจทุกรหัส (ข้อ `src_ref` ในข้อ 6)
 - `conf` `สูง` (อ่านตรงจากเอกสารปฐมภูมิหรือคำนวณจากนิยาม) · `กลาง` (แหล่งทุติยภูมิหรือต้องตีความ) · `ต่ำ` (ประมาณจากหลักการหรือยังไม่ยืนยัน)
 - `est` `true` = **ค่าประมาณ** ต้องบอกวิธีได้มาใน `note` หรือเนื้อหา
   - **อัปเดต 19 พ.ย. 2026** `est: true` ต้องมีคำว่า "ค่าประมาณ" (อย่างน้อย "ประมาณ") ใน `note` และ `conf` เป็น `กลาง` หรือ `ต่ำ` ไม่ใช่ `สูง`; `est: false` ห้ามเขียนว่า "ค่าประมาณ" ใน `note` (ยกเว้นวลีปฏิเสธ เช่น "ไม่ใช่ค่าประมาณ") ค่าที่ได้จากการ fit หรือการคำนวณของโครงการเอง (เช่นรูปทรงใบพัดจาก BEM) เป็น `est: true` (`lm_merge` ตรวจ ข้อ 6)
@@ -100,6 +101,7 @@
 
 ### `speeds` (บัตรรายแบบ; `u` = `kt IAS` หรือ `kt CAS`)
 - `speeds.{VS0_kt, VS1_kt, VX_kt, VY_kt, VR_kt, VAPP_kt, VAPP_short_kt, VREF_kt, VG_kt, VA_kt, VNO_kt, VNE_kt, VLE_kt, VLO_kt}` (ใส่เท่าที่แบบนั้นมี; VA และ VG ที่ขึ้นกับมวลใช้ตาราง)
+  - **อัปเดต 22 พ.ย. 2026 (R2-04)** `VS0_kt`/`VS1_kt` เป็นความเร็วต่ำสุดตาม POH/AFM การทดสอบเทียบ VS (KCAS)/√0.95 กับ V_SR 1 g ของซิม (V/√nz ที่ CLmax, `lm_card.stallTest`) ตาม `common_light.methods.stall_nz_at_vmin` ไม่เทียบกับ Vmin ของซิม (Vmin และ nz ที่ Vmin เป็นข้อมูลเท่านั้น)
 - `speeds.VFE` — `{"<detent>": kt}`
 - เครื่องสองเครื่องยนต์: `speeds.{VMCA_kt, VYSE_kt, VXSE_kt, VSSE_kt}`
 - `speeds.ias_cas` — ตาราง KIAS → KCAS ตามแฟลปจาก POH/AFM (ซิมต้องใช้ CAS ในฟิสิกส์ IAS ใช้แสดงผลและเทียบเกณฑ์)
@@ -119,7 +121,13 @@
 - **ใหม่ `piston.*`** (scope `engine`) สำหรับเครื่องลูกสูบและดีเซล:
   - `piston.identity` — `{model, kind: "carb"|"fuel_injected"|"turbo_diesel", displacement_L, cylinders, tcds}`
   - `piston.ratings.{P_rated, rpm_rated, P_mcp, rpm_redline, rpm_idle, takeoff_time_limit_s}` — W, rpm
-  - `piston.altitude` — `{model: "gagg_ferrar"|"turbo_flat"|"table", coef…, critical_alt_m}` กำลังตามความหนาแน่น/ความสูง
+  - `piston.altitude` — `{model, f, critical_alt_m, max_operating_alt_m, table}` สัดส่วนกำลังคันเร่งเต็มต่อกำลังพิกัดตามความสูงและอุณหภูมิ (`u` = `-`) สูตรอยู่ใน 01-methods §01.6.1 และ `common_light.methods.engine_lapse`
+    - **อัปเดต 22 พ.ย. 2026 (R2-01)** `model` = `"gagg_ferrar"` | `"ind_friction"` | `"turbo_flat"` | `"table"`
+    - `gagg_ferrar` — $P/P_0 = \sigma - (1-\sigma)/7.55$ ลูกสูบไม่มี turbo ไม่มีฟิลด์เพิ่ม (ชื่อ enum สะกดตามที่บัตรและ `lm_engine` ใช้ ผู้แต่งสูตรคือ Gagg & Farrar)
+    - `ind_friction` — $P/P_r = (1+f)\,\frac{MAP}{MAP_r}\frac{N}{N_r}\sqrt{T_0/T} - f\,(N/N_r)^2$ (กำลัง indicated ∝ $p/\sqrt T$ ตาม NACA R-190 ลบกำลังเสียดทานที่ไม่ขึ้นกับอุณหภูมิ) ฟิลด์ `f` = กำลังเสียดทาน / กำลังพิกัด ไร้หน่วย **ค่าประมาณ** 0.10 (ช่วง 0.08–0.15) ไม่ใส่ `f` = 0.10 ตาม `lm_engine.lapse()` ใช้กับลูกสูบไม่มี turbo เมื่อมี ISA deviation (ค่าเริ่มของ AirfieldLab เพราะ VTBD อยู่ในเขตร้อน)
+    - `turbo_flat` — $P = P_r$ ถึง `critical_alt_m` (m; `null` = AFM ยังไม่ให้) เหนือจากนั้น `gagg_ferrar` ของ $\sigma/\sigma_{crit}$ (AE300, CD-135)
+    - `table` — `table` = `{"axes":{"h_ft":[…]},"data":[…]}` สัดส่วนกำลังสูงสุดตามความสูงจาก AFM (`lm_engine.lapse()` ยังไม่อ่าน)
+    - ฟิลด์เสริม: `max_operating_alt_m` (m, จาก AFM) ใช้ได้ทุก model; คีย์อื่นใน `v` (เช่น `vtbd_35C`, `at_8000ft_isa` ของ `p2006t`) เป็นผลคำนวณประกอบ ไม่ใช่อินพุต
   - `piston.power_map` — ตาราง P(rpm, MAP) หรือ P(load %) (FADEC) ; `piston.fuel` — `{fuel, bsfc_g_per_kWh, ff_table}`
   - `piston.dynamics.{tau_throttle_s, I_engine, friction_torque}` ; `piston.fadec` — การจับคู่คันเร่งเดียว → load % → รอบใบพัด (AE300)
 - เทอร์โบพร็อป: path ของรอบที่ 1 หัวข้อ 4 (`turboprop.*`)
@@ -154,8 +162,29 @@
 ### `validation`
 - `validation.trim_targets.<condition>` — α, θ, กำลัง, elevator ที่สภาพอ้างอิง (บัตรรายแบบ)
 - `validation.reference_modes.<condition>` — โหมดพลวัตของแบบจริงหรือจากงานวิชาการ (บัตรรายแบบ; ระบุแหล่ง)
-- `validation.openModels.<model>` — ผลวัดจากการรันโมเดลเปิด (หัวข้อ 03 เจ้าของ)
+- `validation.openModels.<model>` — ผลวัดจากการรันโมเดลเปิด (หัวข้อ 03 เจ้าของ) **อัปเดต 22 พ.ย. 2026 (R2-05)** ใช้เทียบเท่านั้น ห้ามคัดไปเป็นค่าใน `speeds.*` หรือ `performance.*` (รวม `performance.tests[].expected`) และห้ามใช้เป็นค่าคาดหวังของเทสต์ เป้าของบัตรมาจาก POH/AFM/TCDS ตามลำดับชั้นใน 03 §03.5.2 กติกาเต็มอยู่ใน [`scripts/README.md`](scripts/README.md)
 - path ของรอบที่ 1 `validation.*` ที่เป็น per-type (เช่น `hqClassCategory`) — บัตรรายแบบ
+
+### `common_light.methods` (หัวข้อ 01 เจ้าของ; ค่าคงที่ของวิธีประมาณและเครื่องมือ)
+
+**อัปเดต 22 พ.ย. 2026 (R2-01)** 14 leaf ใน `01-methods.md` §01.9 ทุกตัว scope `sim` ค่าใน `v` เป็นอ็อบเจกต์ (คีย์ตามคอลัมน์ "ความหมาย") leaf ที่ `lm_selftest` เทียบกับค่าคงที่ในสคริปต์ (T-LM-22, T-LM-31) ต้องแก้คู่กับสคริปต์เสมอ
+
+| path | หน่วย | scope | ค่าประมาณ | ความเชื่อมั่น | แหล่ง | ความหมาย (คีย์ใน `v`) | ใช้ที่ |
+|---|---|---|---|---|---|---|---|
+| `methods.radii` | - | sim | ใช่ | ต่ำ | LM15, LM5, LM6, LM9, LM7, LM8 | รัศมีไจเรชันไร้มิติแบบ Roskam ต่อกลุ่ม `single_prop`, `twin_prop`, `trainer_turboprop` แต่ละกลุ่ม `{Rx, Ry, Rz, n, range}`; Ixx = m(b·Rx/2)², Iyy = m(L·Ry/2)², Izz = m((b+L)/2·Rz/2)² ใช้เมื่อบัตรไม่มี inertia | §01.4, `lm_inertia.RADII` (T-LM-22) |
+| `methods.stall_nz_at_vmin` | - | sim | ใช่ | ต่ำ | LM1, LM2, R1:V19 | nz ที่ความเร็วต่ำสุดของการ stall ลดความเร็ว 1 kt/s `{nominal 0.95, range [0.9, 1], compare "V_SR", target "VS_POH_KCAS/√nominal", report_only ["Vmin", "nz_Vmin"]}` ใช้แปลงความเร็ว stall ใน POH เป็น CLmax 1 g: CLmax = 2·m·g·nz/(ρ0·S·V²) และกำหนดการเทียบ stall ของโครงการ (R2-04): V_SR 1 g ของซิมเทียบ VS/√0.95 ส่วน Vmin, nz_Vmin รายงานเท่านั้น | §01.5.1, `lm_polar.NZ_AT_VMIN`/`vsrTarget` (T-LM-22, T-LM-33) |
+| `methods.flap_map` | - | sim | | กลาง | LM0, R1:V19 | วิธีแปลงขั้นแฟลปจริงเป็น `AC.flaps` f ∈ [0, 1]: `default` `"lift"` (f = ΔCL0(detent)/ΔCL0(full)) หรือ `"deflection"` (f = δf/δf_full) | §01.1.2, `lm_card` |
+| `methods.polar_sim_form` | - | sim | | สูง | LM0, R1:V19 | สูตรแปลง polar พาราโบลา (E, CL*) เป็นรูปของซิม CD = CD0s + Ks·(CL − 0.15)²: `CL_offset` 0.15, สตริงสมการ `Ks`, `CD0s`, `CLstar`, `Emax` | §01.5.2, `lm_polar.toSimPolar` |
+| `methods.lm_card_defaults` | - | sim | ใช่ | ต่ำ | LM0, LM25, R1:V19 | ค่าที่ `lm_card.buildAC` ใช้เมื่อบัตรไม่มีข้อมูล: `eta` 0.8, `idle` 0.02, `figureOfMerit` 0.55, `gearStaticFrac` 0.3, `gearZeta` 0.6, `noseLoadFrac` 0.15, `strokeNose`/`strokeMain` 0.2 m, `VrefOverVs0` 1.3, `VappMinusVref` 5 kt, `Ixz_over_Ixx` 0 (ค่าที่ใช้ติดธง default ใน `--trace`) | §01.1.3, `lm_card.DEFAULTS` (T-LM-22) |
+| `methods.derivs_defaults` | - | sim | ใช่ | ต่ำ | LM10, LM11, LM12, LM13, LM14 | ค่าคงที่ของ `lm_derivs`: `clalpha` 5.969 1/rad (0.95·2π), `eta_h` 0.9, `etaV_fixed` null, `AvEffFactor` 1.55, `tauViscous` 0.85, `CmqWingFus` 1.1, `KnAileron` −0.2, `KiBody`/`zwOverDf`/`hhOverB` ตามตำแหน่งปีก high/mid/low, `fusVolCoef` 0.55, `tailconeDepth` 0.45 m | §01.3.2, `lm_derivs.DEFAULTS` (T-LM-22) |
+| `methods.derivs_accuracy` | % | sim | | กลาง | LM5, LM9, LM6, LM0 | ความผิดของ `lm_derivs` เทียบอนุพันธ์จากการบินจริง (TM-80163, TN D-6643) err = (\|est\|/\|ref\| − 1)·100: `median_abs_err_pct_flight` 14.5, `median_abs_err_pct_all` 17.6, `wrong_signs_all` 0, `n` 46, `err_pct` ต่ออนุพันธ์ต่อชุดตรวจ | §01.3.3 |
+| `methods.roll_lifting_line` | - | sim | ใช่ | กลาง | LM14, LM0 | สูตร lifting line แทน strip theory: `Clp` = −clα·A/(8·(A + 2·clα/π)), `KLL` = 1.5·A·(1+λ)/((A + 2·clα/π)·(1+3λ)) คูณ `applies_to` (Clβ ส่วน dihedral, Clδa), `KLL_typical` 0.54 | §01.3.1 |
+| `methods.engine_lapse` | - | sim | ใช่ | กลาง | LM16, LM27, LM17, LM0 | สูตรของ `piston.altitude.model`: `gagg_ferrar` `{eq, k 7.55}`, `ind_friction` `{eq, f 0.10}`, `turbo_flat` `{eq}` | §01.6.1, `lm_engine` (T-LM-14, T-LM-22) |
+| `methods.fuel_density` | kg/l | sim | ใช่ | กลาง | LM4, LM0 | ความหนาแน่นเชื้อเพลิง `avgas` 0.72, `jet` 0.80 ใช้แปลง l/h ↔ kg/h และหา BSFC จากตาราง cruise | §01.6.2, `lm_engine.FUEL_DENSITY` (T-LM-22) |
+| `methods.prop_bem_section` | - | sim | ใช่ | ต่ำ | LM0, R1:P10, LM22, LM24 | หน้าตัดใบพัดของ `lm_prop` (BEM + Prandtl tip loss): `cla_per_rad` 5.655, `a0_deg` ต่อใบพัด (`fixed_76x60` −3.5, `cs3_190` −3), `aStall_deg` [−10, 14], `cd0` 0.01, `kcd` 0.012, `cl_mindrag` 0.4, `post_stall_cd`, `blend_Mb_per_rad` 25, `rotational_delay` (Snel), `compressibility`, `chord_scale_fixed_76x60` 1.083 | §01.7 |
+| `methods.legacy_fit` | - | sim | ใช่ | ต่ำ | LM0, LM1 | วิธี fit ค่า legacy ของ `AC` (`lm_legacy_fit`): `modes` ["static", "vy"], `default` "static", `polar_from`, `climb_from`, `known_bias_Vy_kt` −8 (Vy ของซิมต่ำกว่า POH ในโหมด static), `known_bias_note`, `static_needs` (ROC), `vy_needs` (ROC + VY), `vy_bounds` {T0 [0.7, 1.3] × ค่า static, eta [0.5, 1.5]}, `vy_no_solution` (เก็บผล static และรายงาน Vy ที่ทำได้) (R2-06) | §01.8, `lm_legacy_fit.FIT_BOUNDS` (T-LM-22, T-LM-34) |
+| `methods.selftest_trainer` | - | sim | | สูง | R1:V19, LM0 | ค่า regression ของเครื่องมือ: `lm_card` กับ fixture `trainer_r1` ให้ `V_SR_kt` {LDG 71.86, UP 79.59} KEAS, `Vy_kt` 128, `ROC_fpm` 3225, `LD` {zero_thrust 16.46, idle 21.73}, `approach`/`cruise` `SP`, `DR` = [ωn rad/s, ζ], `tauR_s`, `spiral_t_half_s`, `takeoff_m`, `V50_kt`, `landing_50ft_maxbrake_m` 714 | §01.2.2, `lm_selftest` T-LM-01…07 |
+| `methods.lateral_mode_tolerance` | - | sim | ใช่ | ต่ำ | LM0, LM5, LM9, LM15, R1:V7 | ช่วงอัตราส่วน ค่าจริง / ค่าของบัตร ของ Dutch roll (`dr_wn`, `dr_zeta`) และ roll mode (`tauR`) ที่ approach เมื่ออนุพันธ์ lateral-directional มาจาก `lm_derivs`: `validated_class` (คลาส C172, Navion; dr_wn [0.9, 1.45]), `unvalidated_class` (หาง T, สองเครื่องยนต์, turboprop; `K_widen` 1.5, dr_wn [0.75, 1.55]); `spiral` และ `Cnda` ไม่เทียบตัวเลข | §01.3.4, `lm_tolerance` (T-LM-31) |
 
 ### อื่น ๆ
 - `interference.*`, `wind.*` (per-type), `input.*` (per-type) — path ของรอบที่ 1
@@ -164,7 +193,7 @@
 
 ## 6. การตรวจความสอดคล้องของ `lm_merge` (เพิ่ม 19 พ.ย. 2026)
 
-`lm_merge.mjs` (ผ่าน `lm_lib.validate()`) ตรวจ 8 ข้อหลังรวมบล็อก รายงานเป็น WARN ค่าเริ่มต้น พร้อมตารางสรุปต่อ id และไฟล์:บรรทัดที่ต้องแก้; `--strict` นับ WARN เป็น ERROR (exit 1); `--checks` พิมพ์ทุกข้อ; `--json-checks <file>` เขียนผลเป็น JSON รายละเอียดและผลรันล่าสุดอยู่ใน 01-methods §01.2.4
+`lm_merge.mjs` (ผ่าน `lm_lib.validate()`) ตรวจ 10 ข้อหลังรวมบล็อก (ข้อ `src_ref` และ `open_model` เพิ่ม 22 พ.ย. 2026, R2-03 และ R2-05) รายงานเป็น WARN ค่าเริ่มต้น พร้อมตารางสรุปต่อ id และไฟล์:บรรทัดที่ต้องแก้; `--strict` นับ WARN และคำเตือนรูปแบบ leaf (ฟิลด์เกิน, est ไม่มี note, src ว่าง, v null, `_inherits` ไม่พบ) เป็น ERROR (exit 1; CI ของงานวิจัยใช้โหมดนี้); `--checks` พิมพ์ทุกข้อ; `--json-checks <file>` เขียนผลเป็น JSON รายละเอียดและผลรันล่าสุดอยู่ใน 01-methods §01.2.4
 
 | ชื่อ | กฎ | ข้อตัดสิน |
 |---|---|---|
@@ -176,3 +205,5 @@
 | `vapp_vref` | VAPP ≥ VREF ใน KCAS | D1 |
 | `xfile_vapp` | 08 `ops.attitude_power.final.v.ias_kt` และ 09 `procedures.stabilised.v.Vapp` = `speeds.VAPP_kt` ±0.5 kt เว้นแต่ note บอก "แก้มวล"/"mass-corrected" (ลดเป็น info) | D1 |
 | `detent` | ชื่อแฟลปใน 08/09 อยู่ใน `aero.flaps.detents[].name` | D6 |
+| `src_ref` | ทุกรหัสใน `src` ของ leaf และในรายการ `src` ที่ซ้อนอยู่ใน `v` (เช่น `common_light.evaluator.rules`) มีบรรทัดในส่วนแหล่งอ้างอิงของไฟล์เจ้าของ หรือเป็นรหัสรอบที่ 1 ที่มีจริง (`R1:<X>n`, `R1:params-trainer.json[#path]`) ตามข้อ 1 | T-LM-23, R2-03 |
+| `open_model` | leaf `speeds.*`/`performance.*` ที่ `src` เป็นแหล่งโมเดลเปิดทั้งหมด (รายการในส่วนแหล่งอ้างอิงของไฟล์หัวข้อที่ชื่อหรือประเภทระบุ JSBSim, FlightGear, YASim, Aeromatic, MSFS หรือ "โมเดลเปิด") = WARN, ปนกับแหล่งอื่น = info; VS1/VS0/VY/ROC/ร่อน/ระยะวิ่งขึ้นของบัตรเท่ากับผลวัดทศนิยมใน `validation.openModels` ทุกหลัก = WARN, เท่ากันเมื่อปัดหรือเป็นจำนวนเต็ม = info | 03 §03.5.2, R2-05 |

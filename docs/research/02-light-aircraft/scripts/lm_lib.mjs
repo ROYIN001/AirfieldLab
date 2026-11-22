@@ -167,6 +167,7 @@ export function mergeDir(dir, opts = {}) {
     if (via) { coverage[id].resolved = true; coverage[id].via = via; coverage[id].base = via.filter(x => bases[x] && !full[x]).map(x => baseInfo[x]?.from || x); }
   }
   const res = { merged, origin, errors, warnings, conflicts, coverage, stats, files, nBlocks, nExamples, nBad, bases: baseInfo };
+  res.openSrc = openModelSources(dir, files);
   res.checks = opts.checks === false ? [] : validate(res, { r1, pool, bases, strict: !!opts.strict, only: ONLY, refs: opts.refs === false ? null : loadRefIndex(dir, { r1Dir: opts.r1Dir }) });
   if (opts.strict) for (const c of res.checks) if (c.level === 'warn') errors.push(`[strict] ${c.id} ${c.check}: ${c.msg}`);
   // leaf-format warnings (extra fields, est without a note, empty src, v null, _inherits not found) count too, so
@@ -393,7 +394,35 @@ export const CHECK_NAMES = {
   training_mass: 'รูปแบบ training_mass (D3)', speeds: 'มี speeds.VREF_kt / VAPP_kt (D1)', vapp_vref: 'VAPP ≥ VREF (D1)',
   xfile_vapp: 'Vapp ของ 08/09 = speeds.VAPP_kt ของบัตร ±0.5 kt (D1)', detent: 'ชื่อ detent ใน 08/09 = ชื่อในบัตร (D6)',
   src_ref: 'รหัสใน src มีบรรทัดในแหล่งอ้างอิงของไฟล์เจ้าของ หรือเป็น R1: ที่มีจริง (T-LM-23)',
+  open_model: 'speeds/performance ไม่คัดจาก validation.openModels (03 §03.5.2)',
 };
+
+// ───────────── open models are for comparison only (03-open-models.md §03.5.2, §03.6; T-LB-17, T-LB-18; R2-05) ─────────────
+/** A reference entry of a topic file (table row `| LB2 | …` / `| [LB2] | …`, list `- [LP25] …` or `8. [LM8] …`) whose
+ *  description or type names an open model, its software or a simulator; a type that says "ปฐมภูมิ" (a primary document
+ *  that merely sits on such a site, e.g. LM26 NASA CR-96008 on the JSBSim site) does not count unless it says "โมเดลเปิด". */
+export const OPEN_MODEL_RE = /JSBSim|FlightGear|FGMEMBERS|FGDATA|YASim|Aeromatic|X-Plane|MSFS|GeoFS|โมเดลเปิด/i;
+/** Map code → "file:line" of every open-model source in the reference lists of the topic files. */
+export function openModelSources(dir, files = null) {
+  const out = new Map();
+  for (const f of files ?? fs.readdirSync(dir).filter(x => x.endsWith('.md'))) {
+    fs.readFileSync(path.join(dir, f), 'utf8').split('\n').forEach((l, i) => {
+      const m = /^(?:\|\s*|-\s+|\d+\.\s+)\[?(L[A-Z]\d+)\]?[\s|]+(.*)$/.exec(l);
+      if (!m) return;
+      const [desc, type = ''] = m[2].split(/ — | \| /);
+      if (OPEN_MODEL_RE.test(desc + ' ' + type) && !(/ปฐมภูมิ/.test(type) && !/โมเดลเปิด|ซอฟต์แวร์/.test(type))) out.set(m[1], `${f}:${i + 1}`);
+    });
+  }
+  return out;
+}
+/** measured open-model quantity [leaf, sub-key or min/max of the flap keys] → card leaf [path, key inside v], unit factor */
+export const OPEN_MODEL_MAP = [
+  ['stall_vs', 'min', 'speeds.VS1_kt', null, 1], ['stall_vs', 'max', 'speeds.VS0_kt', null, 1],
+  ['vy', null, 'speeds.VY_kt', null, 1], ['roc_max', null, 'performance.ROC_SL_fpm', null, 60 / 0.3048],
+  ['glide_best_speed', null, 'performance.glide', 'speed_kt', 1], ['glide_ld_max', null, 'performance.glide', 'ratio', 1],
+  ['takeoff', 'ground_roll_m', 'performance.takeoff', 'ground_roll_m', 1], ['takeoff', 'over50ft_m', 'performance.takeoff', 'over50ft_m', 1],
+];
+
 
 // ───────────── src codes → reference sections (R2-03, T-LM-23 extended) ─────────────
 /** Owner topic file of each round-2 source-code prefix (schema-ext.md §4 table). */
@@ -482,7 +511,17 @@ export function validate(res, { r1 = null, pool = null, bases = {}, only = null,
       if (isLeaf(o)) {
         const ps = p.join('.'), where = origin[`${id}.${ps}`] || '';
         // T-LM-23 (R2-03): every src code has a line in its owner file's reference section, or is an existing R1: code
-        if (refs && Array.isArray(o.src)) for (const s of o.src) { const pr = srcProblem(s, ps, refs); if (pr) add('warn', id, 'src_ref', `${ps}: ${pr}`, where); }
+        if (refs) {
+          if (Array.isArray(o.src)) for (const s of o.src) { const pr = srcProblem(s, ps, refs); if (pr) add('warn', id, 'src_ref', `${ps}: ${pr}`, where); }
+          // src lists inside v (e.g. common_light.evaluator.rules.<rule>.src of 08) follow the same rule
+          (function nested(x, q) {
+            if (Array.isArray(x)) x.forEach((y, k) => nested(y, `${q}[${k}]`));
+            else if (isObj(x)) for (const [k, y] of Object.entries(x)) {
+              if (k === 'src' && Array.isArray(y) && y.every(z => typeof z === 'string')) for (const s of y) { const pr = srcProblem(s, ps, refs); if (pr) add('warn', id, 'src_ref', `${q}.src: ${pr}`, where); }
+              else nested(y, `${q}.${k}`);
+            }
+          })(o.v, `${ps}.v`);
+        }
         if (ps.startsWith('_')) return;
         if (id === 'common_light') { if (!['environment', 'sim'].includes(o.scope)) add('warn', id, 'scope', `${ps}: scope "${o.scope}" → common_light ใช้ "environment" หรือ "sim"`, where); }
         else { const exp = expectedScope(ps, r1); if (exp && o.scope !== exp) add('warn', id, 'scope', `${ps}: scope "${o.scope}" → "${exp}"`, where); }
@@ -563,6 +602,30 @@ export function validate(res, { r1 = null, pool = null, bases = {}, only = null,
       const pa = pv('pattern'); if (pa && isObj(pa.flapsAt)) for (const [k, x] of Object.entries(pa.flapsAt)) chk(`procedures.pattern.v.flapsAt.${k}`, x);
       for (const n of ['short_field', 'soft_field']) { const s = pv(n); if (s) for (const ph of ['takeoff', 'landing']) if (isObj(s[ph])) chk(`procedures.${n}.v.${ph}.flaps`, s[ph].flaps); }
       const ga = pv('go_around'); if (ga && Array.isArray(ga.flapsSeq)) ga.flapsSeq.forEach(x => chk('procedures.go_around.v.flapsSeq', x));
+    }
+    // open models are for comparison only (03 §03.5.2, R2-05): (a) a speeds.* / performance.* leaf written in this id's
+    // block may not rest on open-model sources alone (warn; mixed with other sources = info); (b) a card value may not
+    // equal a measured validation.openModels value with decimals digit for digit (warn); a whole-number match (sweep
+    // grid) or a match after rounding to the card's decimals = info, because POH numbers coincide (c172r glide 65 KIAS)
+    const openSrc = res.openSrc;
+    if (openSrc?.size && merged[id]) for (const ps of leafPaths(merged[id]).filter(p => /^(speeds|performance)\./.test(p))) {
+      const l = leaf(merged[id], ps), src = (Array.isArray(l.src) ? l.src : []).map(s => String(s).replace(/^\[|\]$/g, ''));
+      const om = src.filter(s => openSrc.has(s)), w = origin[`${id}.${ps}`] || '';
+      if (src.length && om.length === src.length) add('warn', id, 'open_model', `${ps}: src ${src.join(', ')} เป็นแหล่งโมเดลเปิดทั้งหมด (ค่าใน validation.openModels ใช้เทียบเท่านั้น เป้าต้องมาจาก POH/AFM/TCDS)`, w);
+      else if (om.length) add('info', id, 'open_model', `${ps}: src มีแหล่งโมเดลเปิด ${om.join(', ')} ปนกับแหล่งอื่น`, w);
+    }
+    const oms = isObj(card.validation?.openModels) ? card.validation.openModels : {};
+    for (const [m, o] of Object.entries(oms)) for (const [q, sub, ps, key, k] of OPEN_MODEL_MAP) {
+      const ol = isObj(o) ? o[q] : null; if (!isLeaf(ol)) continue;
+      let x = ol.v;
+      if (q === 'stall_vs' && isObj(x)) { const ks = Object.keys(x).filter(j => typeof x[j] === 'number').sort((a, b) => +a - +b); if (!ks.length) continue; x = x[sub === 'min' ? ks[0] : ks[ks.length - 1]]; }
+      else if (sub && isObj(x)) x = x[sub];
+      const cl = leaf(card, ps), y = cl ? (key ? (isObj(cl.v) ? cl.v[key] : undefined) : cl.v) : undefined;
+      if (typeof x !== 'number' || typeof y !== 'number') continue;
+      const w = whereOf(id, ps); if (/รับจาก/.test(w)) continue;   // inherited leaf: reported under the parent id
+      const xs = x * k, dec = (String(y).split('.')[1] || '').length, name = `${ps}${key ? '.' + key : ''}`, from = `validation.openModels.${m}.${q}${sub ? '.' + sub : ''}`;
+      if (Math.abs(xs - y) < 1e-9 && !Number.isInteger(xs)) add('warn', id, 'open_model', `${name} = ${y} เท่ากับผลวัด ${from} ทุกหลัก (ห้ามคัดค่าโมเดลเปิดไปเป็นเป้า)`, w);
+      else if (+xs.toFixed(dec) === y) add('info', id, 'open_model', `${name} = ${y} เท่ากับ ${from} = ${+xs.toFixed(3)}${Number.isInteger(xs) ? '' : ` เมื่อปัดเป็น ${dec} ตำแหน่ง`} (ตรวจว่า src เป็น POH/AFM/TCDS)`, w);
     }
   }
   return out;
