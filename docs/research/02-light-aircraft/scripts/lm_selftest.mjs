@@ -90,6 +90,10 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
   const bad = run([]) * 10 + run(['--strict']);
   fs.writeFileSync(path.join(dir, '99-test.md'), block(['LC1', 'R1:V19']));
   check('T-LM-23', 'lm_merge exit: LC999 default/--strict, LC1+R1:V19 --strict (100·a + 10·b + c)', bad * 10 + run(['--strict']), 10, 0);
+  // --strict also fails a card with round-1 per-type paths neither filled nor in _na (coverage missing > 0)
+  fs.writeFileSync(path.join(dir, '99-test.md'), '# t\n\n```json\n' + JSON.stringify({ xz: { airframe: { identity: { v: 'x', u: '-', scope: 'aircraft', src: ['LC1'], conf: 'กลาง', est: false, note: '' } } } }) + '\n```\n');
+  const cov = r => r.errors.filter(e => e.startsWith('[strict] coverage ')).length;
+  check('T-LM-23', 'mergeDir --strict coverage errors: card with missing round-1 paths + whole folder (10·a + b)', cov(L.mergeDir(dir, { strict: true })) * 10 + cov(L.mergeDir(path.join(HERE, '..'), { strict: true })), 10, 0);
   fs.rmSync(dir, { recursive: true, force: true });
 }
 // T-LM-24 (review 2026-11-18): CLI robustness of the shared tools other topics call.
@@ -206,25 +210,29 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
 }
 // T-LM-32 (plan PR B5, 22 Nov 2026): the copies of simulator code in the scripts still equal the simulator they run on
 // (the commit pinned in scripts/sim-snapshot.json under lm_ci.mjs). (a) lm_card.simCLtrim (stallBlend + the CL line) against
-// Aircraft.deriv's CL at the same α and trim elevator, out of ground effect; (b) lh_eval.scoreToday against Evaluator.score
+// Aircraft.deriv's CL at the same α and trim elevator, out of ground effect; (a2) the Cm line copied in lm_card.simTrimDe:
+// at its elevator (when not on a stop) the sim's pitch acceleration q̇ must be zero, so a change of the sim's Cm line fails
+// here (review of PR B5); (b) lh_eval.scoreToday against Evaluator.score
 // on a grid of touchdowns. A failure after re-pinning means a copy must be updated together with the expected values.
 {
   const { simCLtrim, simTrimDe, simStallBlend } = await import('./lm_card.mjs');
   const { scoreToday } = await import('./lh_eval.mjs');
   applyAC(M, buildAC(loadType('trainer_r1'), {}));
   const AC = M.AC, DEG = Math.PI / 180, V = 50;
-  let dCL = 0, dSig = 0, n = 0;
+  let dCL = 0, dSig = 0, dQ = 0, n = 0, nFree = 0;
   for (const f of [0, 0.5, 1]) for (let aDeg = -4; aDeg <= 26; aDeg += 1) {
     const a = aDeg * DEG, ac = new M.Aircraft();
     ac.flaps = f; ac.gearPos = 1; ac.de = simTrimDe(AC, f, a); ac.adot = 0;
     const s = new Float64Array(13); s[2] = -1500; s[3] = V * Math.cos(a); s[5] = V * Math.sin(a); s[6] = 1;
-    const diag = { wow: [], load: [] }; ac.deriv(s, new Float64Array(13), diag);
+    const diag = { wow: [], load: [] }, out = new Float64Array(13); ac.deriv(s, out, diag);
     dCL = Math.max(dCL, Math.abs(diag.CL - simCLtrim(AC, f, a)));
+    if (ac.de > -AC.deUp + 1e-9 && ac.de < AC.deDn - 1e-9) { dQ = Math.max(dQ, Math.abs(out[11])); nFree++; }
     dSig = Math.max(dSig, Math.abs(diag.sig - simStallBlend(a, (AC.aStall + AC.aStallFlap * f) * DEG)));
     n++;
   }
   check('T-LM-32', `simCLtrim = sim CL (max |ΔCL|, ${n} pts α −4…26°, f 0/0.5/1)`, dCL, 0, 1e-6);
   check('T-LM-32', 'simStallBlend = sim stallBlend (max |Δσ|)', dSig, 0, 1e-9);
+  check('T-LM-32', `simTrimDe = sim Cm trim: max |q̇| rad/s² (${nFree} pts off the stops)`, nFree ? dQ : NaN, 0, 1e-6);
   const ev = new M.Flight().ev, P = { Vref: AC.Vref };
   let bad = 0, m = 0;
   // one value inside every band of every part (sink 180/360/600 fpm, position 0/220/300/600/750/900 m, centre line 2/5/10 m, …)

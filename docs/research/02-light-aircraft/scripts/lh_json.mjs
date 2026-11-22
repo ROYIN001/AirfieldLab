@@ -365,7 +365,7 @@ for (const [id, r] of Object.entries(ST)) {
     controller: r.controller, fs_per_g_N: t.fs_per_g_N, fs_per_g_lbf: t.fs_per_g_lbf, grad_N_per_kt: t.grad_N_per_kt, flare_pull_N: t.flare_pull_N,
     model_fs_per_g_N: m ? { approach: m.approach.Fs_per_g_N, cruise: m.cruise.Fs_per_g_N } : null,
     bounds: { band_lbf_per_g: [r.band_lbf_per_g.min, r.band_lbf_per_g.max], cfr23_155_force_lbf: r.cfr23_155.force_lbf, cfr23_143_temporary_lbf: r.cfr23_143.temporary_pitch_lbf, cfr23_143_one_hand_lbf: r.cfr23_143.one_hand_lbf, cfr23_143_prolonged_lbf: r.cfr23_143.prolonged_lbf },
-  }, 'N/g, lbf/g, N/kt, N, lbf', ['LH0', 'R1:C12', 'R1:C16', 'LH30', 'LM3'], 'ต่ำ', true,
+  }, 'N/g, lbf/g, N/kt, N, lbf', ['LH0', 'R1:C12', 'R1:C16', 'R1:C20', 'LH30', 'LM3'], 'ต่ำ', true,
     `ค่าประมาณ (lh_stick.mjs): ${m ? `แบบจำลอง elevator reversible ของรอบที่ 1 §6 กับ controls.pitch.* ของบัตร${r.fallback_from ? ` (ขาด ${r.fallback_from.keys.join(', ')} ใช้ของ ${r.fallback_from.id})` : ''} ที่มวลฝึก ${m.mass_kg} kg ได้ Fs/g ${m.approach.Fs_per_g_N} N (approach ${m.approach.cas_kt} KCAS) / ${m.cruise.Fs_per_g_N} N (cruise ${m.cruise.cas_kt} KCAS); ${t.basis === 'hinge model inside the bounds' ? 'อยู่ในขอบเขต ใช้เป็นเป้า' : `อยู่นอกขอบเขต จึงตั้งเป้าที่ขอบ (${t.fs_per_g_lbf.cruise} lbf/g) และคูณความชันกับแรง flare ด้วยอัตราส่วนเดียวกัน ${t.scale_vs_model.cruise}`}` : `${r.no_hinge}: ใช้กลางแถบ`}; ขอบเขต: แถบ MIL-F-8785C Level 1 + 14 CFR 23.155 ของบัตร (หรือคำนวณ) และแรงชั่วคราว 23.143 หารด้วย (nL − 1) = ${r.nL - 1} g; flare_pull = แรงดึงจาก trim ที่ VAPP ถึง 1.05 VS0 (ไม่รวม ground effect); ซิมวันนี้ไม่มีโมเดลแรงที่คัน`));
 }
 

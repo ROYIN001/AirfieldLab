@@ -34,7 +34,8 @@ jobs:
         with:
           node-version: 22
       - name: Round 2 checks on the pinned simulator
-        # lm_merge --strict (0 warnings), lm_selftest, ls_tests, lh_tests, lo_tests; fails if a step fails or the run
+        # lm_merge --strict (0 warnings, 0 missing round-1 paths), params-light.json up to date, lm_selftest, ls_tests,
+        # lh_tests, lo_tests; fails if a step fails or the run
         # changes a file in the repo. The pinned commit is fetched by its SHA when the shallow clone lacks it.
         run: node docs/research/02-light-aircraft/scripts/lm_ci.mjs --out "$RUNNER_TEMP/research-out"
       - name: Same checks on this branch's src/ (information only)

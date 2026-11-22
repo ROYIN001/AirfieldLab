@@ -281,7 +281,7 @@ $$\psi_{crab}=\arcsin\frac{V_{xw}}{V},\qquad \beta_{wing\text{-}low}=\psi_{crab}
 
 **สิ่งที่เปลี่ยนตามความเร็วและ CG (หลักฟิสิกส์ ใช้ในซิม)** แรงที่คันต่อ g ($F/n$) แปรตาม static margin: CG ถอยหลังทำให้แรงต่อ g ลดลง (คันเบา ไวขึ้น) CG หน้าทำให้หนัก และต้องดึงมากตอน flare แรงต่อการเปลี่ยนความเร็วหลัง trim (speed stability) ต้องเป็นบวก คือเร็วขึ้นต้องดันคันไว้ ตามหลักเสถียรภาพสถิตตามยาวของ 14 CFR 23.173(a) (ช้ากว่าความเร็ว trim ต้องดึง เร็วกว่าต้องดัน) [LM3] ความไวของ aileron และ rudder ลดลงตาม $\bar q$ ตอน approach ช้า จึงต้องใช้ระยะคันมากขึ้น (ตรงกับ AFH เรื่อง crosswind roundout [LH1 p.9-17])
 
-**ค่าเป้าแรงที่คันต่อแบบ (ค่าประมาณ, ความเชื่อมั่นต่ำ; `ops.stick_force`, `scripts/lh_stick.mjs` [LH0])** ซิมวันนี้ไม่มีโมเดลแรงที่คัน เป้าจึงคำนวณจากแบบจำลอง elevator reversible ของรอบที่ 1 §6 [R1:C16] กับค่า `controls.pitch.*` ของบัตรแต่ละแบบ (gearing $G$, $S_e$, $\bar c_e$, $C_{h\alpha}$, $C_{h\delta}$, $C_{h,tab}$; C152 ขาด gearing และ $C_h$ จึงใช้ของ C172S)
+**ค่าเป้าแรงที่คันต่อแบบ (ค่าประมาณ, ความเชื่อมั่นต่ำ; `ops.stick_force`, `scripts/lh_stick.mjs` [LH0])** ซิมวันนี้ไม่มีโมเดลแรงที่คัน เป้าจึงคำนวณจากแบบจำลอง elevator reversible ของรอบที่ 1 §6 (สมการแรงที่คัน [R1:C20], ค่า hinge moment [R1:C16]) กับค่า `controls.pitch.*` ของบัตรแต่ละแบบ (gearing $G$, $S_e$, $\bar c_e$, $C_{h\alpha}$, $C_{h\delta}$, $C_{h,tab}$; C152 ขาด gearing และ $C_h$ จึงใช้ของ C172S)
 
 $$F_s=G\,\eta_t\,\bar q\,S_e\,\bar c_e\,\big(C_{h0}+C_{h\alpha}\alpha_t+C_{h\delta}\delta_e+C_{h,tab}\delta_t\big)$$
 
@@ -1791,6 +1791,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -2227,6 +2228,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -2681,6 +2683,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -3136,6 +3139,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -3593,6 +3597,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -4050,6 +4055,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -4500,6 +4506,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -4933,6 +4940,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -5414,6 +5422,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -5863,6 +5872,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -6347,6 +6357,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -6831,6 +6842,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -7280,6 +7292,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "R1:C12",
      "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -8414,7 +8427,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
 | LH37 | Aviation Safety Network, wikibase 184789: DA40 D ลงนอกสนามระหว่าง approach ฝึก 24 Feb 2016 (รายงาน 06/2016) | https://aviation-safety.net/wikibase/184789 | ฐานข้อมูลอุบัติเหตุ (ทุติยภูมิ) | © Flight Safety Foundation อ้างข้อเท็จจริงได้ ไม่ระบุชื่อผู้ดำเนินการ |
 | LH38 | Wikipedia, "Aircraft Accident Investigation Committee" (คณะกรรมการสอบสวนอุบัติเหตุอากาศยานของไทย, เปิดอ่าน 19 Nov 2026) | https://en.wikipedia.org/wiki/Aircraft_Accident_Investigation_Committee | สารานุกรม (ทุติยภูมิ) | CC BY-SA 4.0 ใช้เฉพาะข้อเท็จจริง (คำสั่งตั้งคณะกรรมการ; ไม่มีคลังรายงานออนไลน์ที่ระบุ) |
 | LC1, LC2, LC3, LC6 (บัตร 04 C172S); LE3 (บัตร 10 C172R); LF1 (บัตร 11 C152); LD1, LD2, LD3, LD4, LD6, LD7, LD8, LD13, LD14 (บัตร 05 DA40); LT1, LT2, LT3, LT4, LT5, LT6, LT9, LT10, LT16 (บัตร 06 DA42); LP2, LP5, LP9, LP15, LP18, LP19, LP20, LP21, LP27, LP29, LP31 (บัตร 07 เทอร์โบพร็อป); LG1, LG2, LG3, LG4, LG5, LG9 (= LH22), LG10 (บัตร 12 P2006T); LN3, LN5, LN11, LN14, LN18, LN22 (หัวข้อ 13 แบบอื่น); LM0, LM3 (หัวข้อ 01) | แหล่งที่อ้างข้ามหัวข้อ (LP19/LP21 เป็น flashcard ผู้ใช้ ความเชื่อมั่นต่ำ; LD13, LD14 เป็นกระทู้ผู้ใช้) | ดูรายการในไฟล์นั้น | | ตามที่ไฟล์ต้นทางระบุ |
-| R1:V19, R1:C12, R1:C16 | รอบที่ 1 (`docs/research/01-flight-physics/`): [V19] โค้ดซิม `src/20-flight.js` (Evaluator, Recorder) ใน `10-validation.md`; [C12] MIL-F-8785C (แถบ Level 1 ของแรงต่อ g) และ [C16] NACA Report 721 (ข้อมูล hinge moment ของแบบจำลอง elevator §6.2) ใน `06-controls.md`; §2.4 ground effect ใน `02-interference.md` [U7] | `docs/research/01-flight-physics/` | งานของโครงการ / ตามไฟล์รอบที่ 1 | – |
+| R1:V19, R1:C12, R1:C16, R1:C20 | รอบที่ 1 (`docs/research/01-flight-physics/`): [V19] โค้ดซิม `src/20-flight.js` (Evaluator, Recorder) ใน `10-validation.md`; [C12] MIL-F-8785C (แถบ Level 1 ของแรงต่อ g), [C16] NACA Report 721 (ข้อมูล hinge moment ของแบบจำลอง elevator §6.2) และ [C20] Bromfield & Gratton (สมการแรงที่คัน Eq. 1 ของแบบจำลองเดียวกัน) ใน `06-controls.md`; §2.4 ground effect ใน `02-interference.md` [U7] | `docs/research/01-flight-physics/` | งานของโครงการ / ตามไฟล์รอบที่ 1 | – |
 
 ## 08.12 งานที่แนะนำสำหรับ Claude Code
 | ลำดับ | งาน | ขนาด | ทดสอบ |

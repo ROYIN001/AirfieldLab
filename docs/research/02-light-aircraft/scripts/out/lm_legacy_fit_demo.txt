@@ -3,7 +3,7 @@
   climb fit (static): target Vy 74.0 KCAS ROC 730 fpm → T0 3500 N, Vc 31.5 m/s
 aero.legacy {"CD0":0.05769,"K":0.07524,"CL0":0.3,"CLa":5,"CLflap":0.6,"CDflap":0.045,"CDgear":0,"Cm0":0.04,"Cma":-0.85,"Cmflap":-0.1,"aStall":20.73,"aStallFlap":-0.31}
 propulsion.legacy {"P":134000,"eta":0.8219,"T0":3500,"idle":0}
-stall clean V_SR 49.2 KCAS, Vmin 47.0 (POH min-speed target 48.0), full V_SR 43.1, Vmin 41.4 (target 42.0)
+stall clean V_SR 49.2 KCAS (target VS1/√0.95 49.2; Vmin 47.7, nz at Vmin 0.31), full V_SR 43.1 (target 43.1; Vmin 41.8, nz at Vmin 0.72)
 climb Vy 65.8 kt ROC 745 fpm (target 74.0 / 730); glide 67.8 kt L/D 9.00 (target {"speed_kt":68,"ratio":9})
 takeoff ground roll 277 m, 50 ft 522 m
 # lm_legacy_fit demo_light (mode vy)
@@ -12,6 +12,6 @@ takeoff ground roll 277 m, 50 ft 522 m
   WARNING eta 1.30 > 0.95: P too low for the sim's thrust law at this ROC
 aero.legacy {"CD0":0.05769,"K":0.07524,"CL0":0.3,"CLa":5,"CLflap":0.6,"CDflap":0.045,"CDgear":0,"Cm0":0.04,"Cma":-0.85,"Cmflap":-0.1,"aStall":20.73,"aStallFlap":-0.31}
 propulsion.legacy {"P":134000,"eta":1.299,"T0":2615,"idle":0}
-stall clean V_SR 49.2 KCAS, Vmin 47.0 (POH min-speed target 48.0), full V_SR 43.1, Vmin 41.4 (target 42.0)
+stall clean V_SR 49.2 KCAS (target VS1/√0.95 49.2; Vmin 47.7, nz at Vmin 0.31), full V_SR 43.1 (target 43.1; Vmin 41.8, nz at Vmin 0.72)
 climb Vy 73.5 kt ROC 740 fpm (target 74.0 / 730); glide 67.8 kt L/D 9.00 (target {"speed_kt":68,"ratio":9})
 takeoff ground roll 317 m, 50 ft 569 m

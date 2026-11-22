@@ -113,8 +113,9 @@ function speedCAS(card, p, detName) {
 }
 
 // CL of the sim's blended stall model for alpha (rad), elevator from Cm trim, out of ground effect.
-// simStallBlend / simTrimDe / simCLtrim copy stallBlend and the CL / Cm lines of Aircraft.deriv (src/20-flight.js:145-185)
-// with q = adot = beta = 0 and phiGE = 1; lm_selftest T-LM-32 checks them against the pinned simulator (sim-snapshot.json).
+// simStallBlend / simTrimDe / simCLtrim copy stallBlend and the CL / Cm lines of Aircraft.deriv (src/20-flight.js)
+// with q = adot = beta = 0 and phiGE = 1; lm_selftest T-LM-32 checks them against the pinned simulator (sim-snapshot.json):
+// CL and the stall blend directly, the Cm line through a zero pitch acceleration at the simTrimDe elevator.
 export function simStallBlend(alpha, a0) {
   const M = 55, e1 = Math.exp(-M * (alpha - a0)), e2 = Math.exp(M * (alpha + a0));
   return (1 + e1 + e2) / ((1 + e1) * (1 + e2));
@@ -518,8 +519,9 @@ export function casFromTas(M, V, h, isaDev = 0) {
  * 1-g stall at idle, 1 kt/s, wings level (v10_perf §1). Speeds are the sim's EAS ("ias") and CAS.
  * Project stall comparison (R2-04, common_light.methods.stall_nz_at_vmin): VSR (= V at CLmax / √nz at CLmax, 14 CFR
  * 25.103) is the number compared with a POH/AFM stall speed, as lm_polar.vsrTarget(VS_POH KCAS) = VS_POH/√0.95.
- * Vmin and the fields at Vmin are reported for the record only: in today's sim Vmin comes after the CL break of the
- * Beard–McLain blend (nz_Vmin far below 0.95) and moves with the start speed, while VSR does not.
+ * Vmin and the fields at Vmin are reported for the record only: in today's sim Vmin usually comes 1.2–2.6 s after the CL
+ * break of the Beard–McLain blend (nz_Vmin 0.19–0.79 in 75 of the 76 standard-start runs of 22 Nov 2026; ct4 LDG reaches
+ * Vmin at CLmax) and moves 0.6–3.4 kt with the start speed, while VSR moves less than 0.03 kt.
  * nz is the lift load factor at CLmax (kept under its old name); nz_Vmin, CL_Vmin, alpha_Vmin_deg, t_Vmin at Vmin.
  */
 export function stallTest(M, { ias0, h = 3000 * FT, flaps, gear, rate = 1.0 }) {

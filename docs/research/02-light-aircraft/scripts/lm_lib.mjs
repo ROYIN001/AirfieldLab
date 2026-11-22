@@ -173,6 +173,8 @@ export function mergeDir(dir, opts = {}) {
   // leaf-format warnings (extra fields, est without a note, empty src, v null, _inherits not found) count too, so
   // "--strict exits 0" means "0 warnings", the rule CLAUDE.md gives for every JSON edit (plan PR B5)
   if (opts.strict) for (const w of warnings) errors.push(`[strict] ${w}`);
+  // and every card covers the round-1 per-type paths (filled or in _na), the "missing 0" the README promises (review of B5)
+  if (opts.strict) for (const [id, c] of Object.entries(coverage)) if (c.missing?.length) errors.push(`[strict] coverage ${id}: ${c.missing.length} round-1 per-type path(s) neither filled nor in _na (first ${c.missing[0]})`);
   return res;
 }
 

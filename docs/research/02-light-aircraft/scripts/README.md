@@ -15,14 +15,15 @@ node docs/research/02-light-aircraft/scripts/lm_ci.mjs --root .   # ซิมข
 
 | ขั้น (`--only`) | คำสั่ง | ผลที่ต้องได้ (22 พ.ย. 2026) |
 |---|---|---|
-| `merge` | `lm_merge.mjs --coverage --dry --strict` | exit 0: ไม่มี ERRORS หรือ CONFLICTS, 0 WARN, path ของรอบที่ 1 ที่ขาด 0 ทุก id |
-| `selftest` | `lm_selftest.mjs` | 99/99 (T-LM-01…T-LM-36) |
+| `merge` | `lm_merge.mjs --coverage --dry --strict` | exit 0: ไม่มี ERRORS หรือ CONFLICTS, 0 WARN (รวมคำเตือนรูปแบบ leaf) และ path ของรอบที่ 1 ที่ขาด 0 ทุก id (`--strict` นับทั้งสามอย่างเป็น ERROR) |
+| `params` | `lm_merge.mjs --quiet --out $LM_OUT_DIR/params-light.json` | ไฟล์ที่ได้เหมือน `../params-light.json` ที่ commit ไว้ทุกไบต์ (ลืมรัน `lm_merge.mjs` หลังแก้บล็อก JSON = ไม่ผ่าน) |
+| `selftest` | `lm_selftest.mjs` | 101/101 (T-LM-01…T-LM-36) |
 | `fleet` | `ls_tests.mjs` | 10/10 |
 | `handling` | `lh_tests.mjs` | 67/67 |
 | `procedures` | `lo_tests.mjs` | 34/34 |
 
 - สคริปต์ที่บินบัตรในซิม (`lm_selftest`, `lh_tests`, `lo_tests`) หา repo จาก `AIRFIELDLAB_ROOT` ซึ่ง `lm_ci.mjs` ตั้งให้ชี้ไปที่ `src/` และ `test/harness.mjs` ของ commit ใน `sim-snapshot.json` PR ฟิสิกส์จึงไม่ทำให้ CI นี้แดง T-LM-32 ตรวจว่าสำเนาโค้ดซิมในสคริปต์ (`lm_card.simCLtrim` = stallBlend กับบรรทัด CL, `lh_eval.scoreToday` = `Evaluator.score`) ยังตรงกับซิมที่ตรึงไว้ เมื่อจะยกค่าคาดหวังไปใช้ฟิสิกส์ใหม่ ให้รัน `--root .` ดูค่าที่ขยับ แล้วแก้ค่าคาดหวังพร้อม commit ใน `sim-snapshot.json` ใน PR เดียวกัน
-- ไฟล์ผลลัพธ์เขียนลง `$LM_OUT_DIR` เมื่อตั้งไว้ (ไม่เช่นนั้นลง `out/`) และ `lm_ci.mjs` ล้มถ้าการรันทำให้ไฟล์ใน repo เปลี่ยน
+- ไฟล์ผลลัพธ์เขียนลง `$LM_OUT_DIR` เมื่อตั้งไว้ (ไม่เช่นนั้นลง `out/`) และ `lm_ci.mjs` ล้มถ้าการรันทำให้ไฟล์ใน repo เปลี่ยน (ไฟล์ใหม่ ไฟล์ที่ถูกลบ หรือไฟล์ที่ถูกเขียนทับ รวมไฟล์ที่ git ignore; โฟลเดอร์ `--out` ที่อยู่ใน repo ได้รับยกเว้น)
 - หลังแก้บล็อก JSON ในไฟล์หัวข้อใดก็ตาม `lm_merge.mjs --coverage --dry --strict` ต้องผ่าน แล้วรัน `lm_merge.mjs` (ไม่มี `--dry`) เพื่อสร้าง `../params-light.json` ใหม่ ห้ามแก้ไฟล์นั้นด้วยมือ
 - `lm_merge` อ่านไฟล์ `.md` ทุกไฟล์ที่อยู่ชั้นบนสุดของ `02-light-aircraft/` และเขียนชื่อไว้ใน `_meta.files` ของ `params-light.json` เอกสารของเครื่องมือจึงอยู่ในโฟลเดอร์นี้แทน
 
@@ -31,8 +32,9 @@ node docs/research/02-light-aircraft/scripts/lm_ci.mjs --root .   # ซิมข
 ที่มา: [01-methods §01.5.1](../01-methods.md), `common_light.methods.stall_nz_at_vmin`, งาน R2-04 (22 พ.ย. 2026)
 
 1. VS0 และ VS1 ใน POH/AFM เป็นความเร็วต่ำสุดของการลดความเร็ว 1 kt/s ซึ่ง nz ต่ำกว่า 1 เล็กน้อย เป้าของซิมจึงเป็น V_SR 1 g = VS (KCAS)/√0.95 (`lm_polar.vsrTarget`, ค่า 0.95 = `NZ_AT_VMIN`)
-2. ฝั่งซิมใช้ V_SR = V/√nz ที่จุด CLmax ของ `lm_card.stallTest` (เทียบ 14 CFR 25.103) ไม่ใช้ Vmin ของซิม เพราะในซิมวันนี้ Vmin เกิดหลัง CL break และเลื่อนได้หลาย kt ตามความเร็วเริ่ม ขณะที่ V_SR แทบไม่เปลี่ยน (T-LM-33, T-LP-03)
-3. `stallTest` รายงาน `Vmin`, `nz_Vmin`, `CL_Vmin`, `alpha_Vmin_deg` เป็นข้อมูลเท่านั้น ห้ามใช้เป็นเกณฑ์ผ่าน/ไม่ผ่าน
+2. ฝั่งซิมใช้ V_SR = V/√nz ที่จุด CLmax ของ `lm_card.stallTest` (เทียบ 14 CFR 25.103) ไม่ใช้ Vmin ของซิม เพราะในซิมวันนี้ Vmin มักเกิดหลัง CL break (75 ใน 76 การทดสอบของผลวันที่ 22 พ.ย. 2026) และเลื่อน 0.6–3.4 kt ตามความเร็วเริ่ม ขณะที่ V_SR แทบไม่เปลี่ยน (T-LM-33, T-LP-03)
+3. `stallTest` รายงาน `Vmin`, `nz_Vmin`, `CL_Vmin`, `alpha_Vmin_deg` เป็นข้อมูลเท่านั้น ห้ามใช้เป็นเกณฑ์ผ่าน/ไม่ผ่านในเทสต์ใหม่
+4. ขอบเขตวันนี้: ใช้กับ T-LP (07), `lm_legacy_fit.checkFit`, T-LM-19 และ T-LM-33 แล้ว แถวเดิมของหัวข้ออื่นยังตัดสินด้วย Vmin เทียบ VS ของ POH (T-LC-06–08, T-LD-05–07, T-LT-01–06, T-LE-05–07, T-LF-04–07, T-LG-01–04) หรือเทียบ V_SR กับ VS โดยไม่หาร √0.95 (T-LN-10–15) ให้อ่านผลของแถวเหล่านี้เป็นข้อมูล และย้ายมาใช้กติกานี้ในงาน C2 ของแผนพัฒนา (ตอนย้ายเทสต์ stall เข้า `test/types.test.mjs`)
 
 ## กติกา: รหัสแหล่งใน `src`
 
