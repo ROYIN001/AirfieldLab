@@ -364,8 +364,10 @@ async function main() {
       : 'จอยเกม: ต่อจอยแล้วกดปุ่มใดก็ได้บนจอยเพื่อเริ่มใช้';
   }
   window.addEventListener('gamepadconnected', (e) => {
-    const gp = e.gamepad; refreshPadTxt();
-    toast(gp.mapping === 'standard' ? `พบจอย ${padName(gp)} · ก้านซ้ายบังคับเครื่อง ไกซ้าย/ขวาเป็นหางเสือ ก้านขวาเป็นคันเร่ง` : `พบ ${padName(gp)} แต่ยังใช้ไม่ได้ ตอนนี้รองรับเฉพาะจอยเกมผังมาตรฐาน`, 4200);
+    const gp = e.gamepad, used = firstPad(); refreshPadTxt();
+    toast(gp.mapping !== 'standard' ? `พบ ${padName(gp)} แต่ยังใช้ไม่ได้ ตอนนี้รองรับเฉพาะจอยเกมผังมาตรฐาน`
+      : used && used.index !== gp.index ? `พบจอย ${padName(gp)} แต่ตอนนี้ใช้ ${padName(used)} อยู่ ถอดจอยนั้นออกก่อนถ้าต้องการใช้จอยใหม่`
+      : `พบจอย ${padName(gp)} · ก้านซ้ายบังคับเครื่อง ไกซ้าย/ขวาเป็นหางเสือ ก้านขวาเป็นคันเร่ง`, 4200);
   });
   window.addEventListener('gamepaddisconnected', (e) => {
     refreshPadTxt();
@@ -390,6 +392,11 @@ async function main() {
   const bb = $('#btnBrake'); let brakeHeld = false;
   bb.addEventListener('pointerdown', (e) => { brakeHeld = true; bb.classList.add('on'); bb.setPointerCapture(e.pointerId); });
   const brUp = () => { brakeHeld = false; bb.classList.remove('on'); }; bb.addEventListener('pointerup', brUp); bb.addEventListener('pointercancel', brUp);
+  // between flights (setup, replay, result) the gamepad's buttons still act, as C does on the keyboard
+  function padButtons() {
+    const gp = firstPad(); app.padIndex = gp ? gp.index : null;
+    for (const ev of app.pin.buttons(gp)) doAction(ev);
+  }
   // keys: held key actions this frame (app.keys.frame()); now: the frame time in ms
   function readInputs(dt, now, keys) {
     const I = app.input, gp = firstPad();
@@ -488,6 +495,7 @@ async function main() {
       app.demo.advance(dt); fl = app.demo;
     } else {
       fl = app.flight;
+      if (app.train.state !== 'fly') padButtons();
       if (app.train.state === 'fly') {
         readInputs(dt, now, keys);
         if (fl.pilot === 'man') Object.assign(fl.input, app.input);

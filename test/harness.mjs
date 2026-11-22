@@ -7,4 +7,4 @@ export const M = new Function('"use strict";\n' + src + `
 return { FIELD, AC, Aircraft, Flight, SCENARIOS, KT, FT, DEG, RAD, G0, papiSeen, ilsAt, gpHeight, atmosphere, wrapPi, rwyLocal, PAPI, densityAltitudeFt, sunPosition, setActiveRunway, RWY_END, RUNWAYS, llToNE, neToLL, ARP, windFrom, eulerToQ, qToR, qToEuler, mulR, mulRT, Wind,
   clamp, KeyState, INPUT_CFG, calBipolar, calUnipolar, restStats, suggestDeadzone, detectAxis, dzAxial, dzRadial, circleToSquare,
   expoCurve, powCurve, shapeAxis, shapeLever, keyRamp, KeyAxis, keyDir, flapNotch, brakePair, parseGamepadId, padLabel, readPad,
-  Arbiter, PilotInput };`)();
+  Arbiter, InputAxis, PilotInput };`)();

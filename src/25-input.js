@@ -157,21 +157,51 @@ function readPad(gp, prev = null, c = INPUT_CFG.pad) {
 
 // ── several sources on one axis (§11.5.4) ──
 // The source that moved last controls the axis, so a gamepad resting at the centre does not cancel the keyboard and
-// the keyboard can take over from a deflected stick. A source moves when its value leaves or returns to 0, changes by
-// more than eps since it last moved, or `act` says the user is working it (a key held, a finger on the touch stick).
-// The report also keeps the last source in control for 0.5 s once every source is at rest; with every source at 0
-// that changes no value, so only the value rule is kept.
+// the keyboard can take over from a deflected stick. A source moves when `edge` says it was just taken in hand (a key
+// went down or reversed, a finger touched the stick) or, if it is tracked, when its value leaves or returns to 0 or
+// changes by more than eps since it last moved. The keyboard is not tracked: its ramp and its self-centring move by
+// themselves, so only a key going down counts. The source in control is the one that moved last among the live ones
+// (default: value not 0); ties go to the lower index. When no source is live the last one keeps the axis, as in the
+// report (which then lets go after 0.5 s; with every source at 0 that changes no value, so the timer is left out).
 class Arbiter {
   constructor(n, eps = INPUT_CFG.moveEps) { this.t = new Array(n).fill(-Infinity); this.at = new Array(n).fill(0); this.eps = eps; this.src = -1; }
-  // v: each source's value now (0 = at rest); act: each source's "being worked" flag; returns the value in control
-  pick(now, v, act = []) {
+  // v: each source's value now; o.edge, o.live, o.track: per-source flags (track defaults to true). Returns the value
+  // of the source in control (0 when none has ever moved) and leaves its index in this.src.
+  pick(now, v, o = {}) {
+    const edge = o.edge || [], live = o.live, track = o.track || [];
     let best = -1;
     for (let i = 0; i < v.length; i++) {
-      if (act[i] || (v[i] !== 0) !== (this.at[i] !== 0) || Math.abs(v[i] - this.at[i]) > this.eps) { this.t[i] = now; this.at[i] = v[i]; }
-      if (v[i] !== 0 && (best < 0 || this.t[i] > this.t[best])) best = i;
+      const moved = edge[i] || (track[i] !== false && ((v[i] !== 0) !== (this.at[i] !== 0) || Math.abs(v[i] - this.at[i]) > this.eps));
+      if (moved) { this.t[i] = now; this.at[i] = v[i]; }
+      if ((live ? live[i] : v[i] !== 0) && (best < 0 || this.t[i] > this.t[best])) best = i;
     }
-    this.src = best;
-    return best < 0 ? 0 : v[best];
+    if (best >= 0) this.src = best;
+    return this.src < 0 ? 0 : v[this.src];
+  }
+}
+
+// One self-centring axis fed by the keyboard (source 0) and other sources (gamepad, touch stick). Switching sources
+// does not make the output jump (§11.5.4): keys that take over start their ramp from the output as it is; a stick that
+// takes over is followed at once only if the output was where the stick was a frame ago (so the output moves only as
+// far as the stick itself moved, as when a stick leaves its centre with the output at 0); otherwise the output runs to
+// the stick's value at the axis's return rate, then follows the stick. Keys held while another source has the axis
+// do nothing until they take it back by going down again, or until that source comes to rest.
+class InputAxis {
+  constructor(r, n) { this.r = r; this.key = new KeyAxis(r); this.arb = new Arbiter(n); this.dir = 0; this.v = 0; this.catchUp = false; this.last = new Array(n).fill(0); }
+  // dir: keys −1, 0 or +1; fine: Shift factor; v: the other sources' values (0 at rest); edge: their "taken in hand"
+  update(now, dt, dir, fine, v, edge) {
+    const k = this.key, keyEdge = dir !== 0 && dir !== this.dir, prev = this.arb.src;
+    this.dir = dir;
+    const vals = [k.v, ...v];
+    this.arb.pick(now, vals, { edge: [keyEdge, ...edge], live: [dir !== 0 || k.v !== 0, ...v.map((x) => x !== 0)], track: [false] });
+    const s = this.arb.src;
+    if (s === 0 && prev !== 0) { k.v = this.v; this.catchUp = false; }                  // keys take over where the output is
+    else if (s > 0 && s !== prev) this.catchUp = Math.abs(this.v - this.last[s]) > 1e-9;   // a stick: run to it if apart
+    this.last = vals;
+    const target = s === 0 ? k.update(dt, dir, fine) : (k.v = 0, s > 0 ? vals[s] : 0);
+    const step = this.r.back * dt, d = target - this.v;
+    if (!this.catchUp || Math.abs(d) <= step) { this.v = target; this.catchUp = false; } else this.v += Math.sign(d) * step;
+    return this.v;
   }
 }
 
@@ -181,30 +211,41 @@ class PilotInput {
   constructor(cfg = INPUT_CFG) { this.cfg = cfg; this.reset(); }
   reset() {
     const k = this.cfg.keys;
-    this.kx = new KeyAxis(k.roll); this.ky = new KeyAxis(k.pitch); this.kr = new KeyAxis(k.rud);
-    this.ax = new Arbiter(3); this.ay = new Arbiter(3); this.ar = new Arbiter(2);
-    this.padPrev = null; this.padUsed = false;
+    this.ax = new InputAxis(k.roll, 3); this.ay = new InputAxis(k.pitch, 3); this.ar = new InputAxis(k.rud, 2);
+    this.padPrev = null; this.padKey = null; this.padUsed = false; this.touchPrev = false;
   }
+  // the gamepad's buttons and channels, with button edges against the previous poll of the same pad (a different pad,
+  // or a gap with none, starts again without edges)
+  readPad(gp) {
+    const key = gp ? `${gp.index}|${gp.id}` : null;
+    if (key !== this.padKey) { this.padPrev = null; this.padKey = key; }
+    const p = readPad(gp, this.padPrev, this.cfg.pad);
+    this.padPrev = p ? p.pressed : null;
+    if (p && (p.x || p.y || p.rud || p.thrRate || p.brakeL || p.brakeR || p.events.length)) this.padUsed = true;
+    return p;
+  }
+  // between flights (setup, replay, result): only the gamepad's buttons, so B/○ switches the camera as C does
+  buttons(gp) { const p = this.readPad(gp); return p ? p.events : []; }
   // now in seconds. s.keys: held key actions this frame (KeyState.frame(), taps shorter than a frame included);
   // s.pad: a gamepad or null; s.touch: { x, y } while a finger is on the touch stick, else null; s.thr: throttle now
   // (the touch rail and the autothrottle set it too); s.brake: the touch brake button is held.
-  // Returns { x, y, rud, thr, brake, brakeL, brakeR, trim, events }: Flight.input takes the first five; brakeL/brakeR,
-  // trim and the gear and flap events wait for the model (one brake, auto-trim and fixed flaps and gear for now).
+  // Returns { x, y, rud, thr, brake, brakeL, brakeR, trim, events, src }: Flight.input takes the first five;
+  // brakeL/brakeR, trim and the gear and flap events wait for the model (one brake, auto-trim and fixed flaps and gear
+  // for now); src names the source in control of each stick axis (0 keys, 1 gamepad, 2 touch, −1 none yet).
   update(dt, now, s) {
     const c = this.cfg, K = s.keys || NO_KEYS, fine = K.has('fine') ? c.keys.fine : 1;
-    const dx = keyDir(K, 'lt', 'rt'), dy = keyDir(K, 'up', 'dn'), dr = keyDir(K, 'rl', 'rr');
-    const kx = this.kx.update(dt, dx, fine), ky = this.ky.update(dt, dy, fine), kr = this.kr.update(dt, dr, fine);
-    const p = readPad(s.pad, this.padPrev, c.pad), t = s.touch || null;
-    this.padPrev = p ? p.pressed : null;
-    if (p && (p.x || p.y || p.rud || p.thrRate || p.brakeL || p.brakeR || p.events.length)) this.padUsed = true;
+    const p = this.readPad(s.pad), t = s.touch || null, grab = !!t && !this.touchPrev;   // finger just went down
+    this.touchPrev = !!t;
+    const px = p ? p.x : 0, py = p ? p.y : 0, tx = t ? t.x : 0, ty = t ? t.y : 0;
     const [brakeL, brakeR] = brakePair(p ? p.brakeL : 0, p ? p.brakeR : 0, K.has('br') || s.brake ? 1 : 0);
     return {
-      x: this.ax.pick(now, [kx, p ? p.x : 0, t ? t.x : 0], [dx !== 0, false, !!t]),
-      y: this.ay.pick(now, [ky, p ? p.y : 0, t ? t.y : 0], [dy !== 0, false, !!t]),
-      rud: this.ar.pick(now, [kr, p ? p.rud : 0], [dr !== 0, false]),
-      thr: clamp(s.thr + (keyDir(K, 'td', 'tu') * c.keys.thrRate + (p ? p.thrRate : 0)) * dt, 0, 1),
+      x: this.ax.update(now, dt, keyDir(K, 'lt', 'rt'), fine, [px, tx], [false, grab]),
+      y: this.ay.update(now, dt, keyDir(K, 'up', 'dn'), fine, [py, ty], [false, grab]),
+      rud: this.ar.update(now, dt, keyDir(K, 'rl', 'rr'), fine, [p ? p.rud : 0], [false]),
+      thr: clamp(s.thr + (keyDir(K, 'td', 'tu') * c.keys.thrRate + (p ? p.thrRate : 0)) * dt, 0, 1),   // Shift: no change
       brake: Math.max(brakeL, brakeR), brakeL, brakeR,
       trim: p ? p.trim : 0, events: p ? p.events : [],
+      src: { x: this.ax.arb.src, y: this.ay.arb.src, rud: this.ar.arb.src },
     };
   }
 }

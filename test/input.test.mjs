@@ -11,6 +11,8 @@ const DT = 1 / 60;
 const near = (got, want, tol, msg) => assert.ok(Math.abs(got - want) <= tol, `${msg}: ${got} (want ${want} ± ${tol})`);
 const near2 = (got, want, tol, msg) => { near(got[0], want[0], tol, `${msg} [0]`); near(got[1], want[1], tol, `${msg} [1]`); };
 const P = { pitch: I.INPUT_CFG.keys.pitch, roll: I.INPUT_CFG.keys.roll, rud: I.INPUT_CFG.keys.rud };
+const btn = (v) => ({ pressed: v > 0.5, touched: v > 0, value: v });
+const pad = (axes, values = {}, mapping = 'standard') => ({ id: 'Test pad', mapping, connected: true, axes, buttons: Array.from({ length: 17 }, (_, i) => btn(values[i] || 0)) });
 const frames = (n, v, dir, r, fine = 1) => { for (let i = 0; i < n; i++) v = I.keyRamp(v, dir, DT, r, fine); return v; };
 
 test('T-I-01: dead zone 0.08 + expo 0.5 chain', () => {
@@ -33,6 +35,13 @@ test('T-C-14: gamepad shaping is odd, monotonic, 0 at the dead-zone edge and ±1
   assert.equal(I.shapeAxis(0.6, { gain: 2 }), 1, 'gain saturates at 1');
   near(I.shapeAxis(0.5, { cal: { min: -1, center: 0.1, max: 0.9 } }), 0.5, 1e-12, 'calibrated about the measured centre');
   assert.equal(I.shapeAxis(NaN, { dz: 0.08 }), 0, 'NaN reads as centre');
+  // the same on a standard gamepad: a mirrored reading gives mirrored channels, the dead-zone edge gives 0
+  for (const [ax, b] of [[[0.5, 0.6, 0, -0.4], { 6: 0.2, 7: 0.7 }], [[0.9, -0.3, 0, 0.8], { 7: 1 }], [[-0.05, 1, 0, -1], { 6: 0.4 }]]) {
+    const p = I.readPad(pad(ax, b)), m = I.readPad(pad(ax.map((v) => -v), { 6: b[7] || 0, 7: b[6] || 0 }));
+    for (const k of ['x', 'y', 'rud', 'thrRate']) near(m[k], -p[k], 1e-12, `${k} mirrored at ${ax}`);
+  }
+  assert.deepEqual([I.readPad(pad([0.08, 0, 0, 0])).x, I.readPad(pad([0, 0, 0, 0.15])).thrRate, I.readPad(pad([0, 0, 0, 0], { 7: 0.05 })).rud], [0, 0, 0]);
+  near(I.readPad(pad([-1, 0, 0, 0])).x, -1, 1e-12, 'full left'); near(I.readPad(pad([0, 0, 0, 0], { 6: 1 })).rud, -1, 1e-12, 'full left rudder');
 });
 
 test('T-I-02: radial, axial and outer dead zones, circle → square', () => {
@@ -141,9 +150,6 @@ test('T-I-11: vendor and product from Gamepad.id; the readable name', () => {
   assert.equal(I.padLabel('810-3-USB Gamepad'), 'USB Gamepad'); assert.equal(I.padLabel('T.16000M'), 'T.16000M'); assert.equal(I.padLabel(undefined), '');
 });
 
-const btn = (v) => ({ pressed: v > 0.5, touched: v > 0, value: v });
-const pad = (axes, values = {}, mapping = 'standard') => ({ id: 'Test pad', mapping, connected: true, axes, buttons: Array.from({ length: 17 }, (_, i) => btn(values[i] || 0)) });
-
 test('T-I-12: standard gamepad profile', () => {
   const p = I.readPad(pad([0.5, 0.6, 0, -0.4], { 6: 0.2, 7: 0.7 }));
   near(p.x, 0.3019, 0.0005, 'roll'); near(p.y, 0.3930, 0.0005, 'pitch: stick back = pull = +y, no sign change'); near(p.rud, 0.3635, 0.0005, 'rudder from the triggers');
@@ -162,48 +168,131 @@ test('T-I-12: standard gamepad profile', () => {
   assert.deepEqual([odd.x, odd.y, odd.rud, odd.thrRate], [0, 0, 0, 0]); assert.deepEqual(odd.pressed, [false, true, true]);
 });
 
-test('arbitration: the source that moved last controls the axis', () => {
+test('arbitration (§11.5.4): the source that moved last controls the axis', () => {
   // the report's examples (scripts/i11_gamepad_profile.mjs)
   const a1 = new I.Arbiter(2); a1.t = [10, 12]; a1.at = [0, 0.4]; assert.equal(a1.pick(12.1, [0, 0.4]), 0.4);
   const a2 = new I.Arbiter(2); a2.t = [12, 11]; a2.at = [0.2, 0.4]; assert.equal(a2.pick(12.1, [0.2, 0.4]), 0.2);
-  const a3 = new I.Arbiter(2); assert.equal(a3.pick(12, [0, 0]), 0);
-  // a gamepad resting at the centre does not cancel the keyboard
-  const a = new I.Arbiter(2);
-  assert.equal(a.pick(0, [0.1, 0], [true]), 0.1);
-  // the stick moves: it takes over; a key pressed later takes over again; when the key's ramp is back at 0 the
-  // stick, still deflected, has the axis
-  assert.equal(a.pick(1, [0.1, 0.3]), 0.3);
-  assert.equal(a.pick(2, [0.05, 0.3], [true]), 0.05);
-  assert.equal(a.pick(3, [0, 0.3]), 0.3);
-  // a stick that only jitters by less than eps does not count as moving
-  assert.equal(a.pick(4, [0.02, 0.31], [true]), 0.02); assert.equal(a.pick(5, [0.02, 0.305]), 0.02);
+  const a3 = new I.Arbiter(2); assert.equal(a3.pick(12, [0, 0]), 0); assert.equal(a3.src, -1);
+  // the keyboard is not tracked: only a key going down moves it, so its ramp and its self-centring never take the
+  // axis back from a stick
+  const a = new I.Arbiter(2), K = { track: [false] };
+  assert.equal(a.pick(0, [0.1, 0], { ...K, edge: [true] }), 0.1, 'a key went down; the gamepad rests at 0');
+  assert.equal(a.pick(1, [0.3, 0.4], K), 0.4, 'the stick moved: it takes over');
+  assert.equal(a.pick(2, [0.6, 0.41], K), 0.41, 'the key ramp keeps changing, the stick only jitters: no change');
+  assert.equal(a.pick(3, [0.6, 0.41], { ...K, edge: [true] }), 0.6, 'a key going down takes the axis back');
+  assert.equal(a.pick(4, [0, 0], K), 0); assert.equal(a.src, 0, 'every source at rest: the last one keeps the axis');
 });
 
-test('PilotInput: keys, Shift, gamepad and touch through one frame', () => {
-  const pi = new I.PilotInput(), S = (...a) => new Set(a);
-  let t = 0, r;
-  const step = (s, n = 1) => { for (let i = 0; i < n; i++) { t += DT; r = pi.update(DT, t, { thr: 0.3, ...s }); } return r; };
-  step({ keys: S('dn', 'rt', 'rr') }, 18);
+const S = (...a) => new Set(a);
+// PilotInput at `hz` frames per second. Every frame where the source in control of an axis changes, the output must
+// not jump (§11.5.4): it moves by no more than the axis's return rate × dt, unless a stick took over an output that
+// sat where the stick was a frame before, in which case it moves only as far as the stick itself did.
+function rig(hz = 60) {
+  const pi = new I.PilotInput(), dt = 1 / hz, K = I.INPUT_CFG.keys, back = { x: K.roll.back, y: K.pitch.back, rud: K.rud.back };
+  let t = 0, last = null, lastSrc = null, switches = 0;
+  const srcVals = (s) => { const p = I.readPad(s.pad || null), tc = s.touch || null;
+    return { x: [null, p ? p.x : 0, tc ? tc.x : 0], y: [null, p ? p.y : 0, tc ? tc.y : 0], rud: [null, p ? p.rud : 0] }; };
+  const step = (s, n = 1) => {
+    let r;
+    for (let i = 0; i < n; i++) {
+      t += dt; r = pi.update(dt, t, { thr: 0.3, ...s });
+      const sv = srcVals(s);
+      if (last) for (const k of ['x', 'y', 'rud']) if (r.src[k] !== last.src[k]) {
+        switches++;
+        const j = r.src[k], ownMove = j > 0 && last[k] === lastSrc[k][j] && r[k] === sv[k][j];
+        assert.ok(ownMove || Math.abs(r[k] - last[k]) <= back[k] * dt + 1e-12, `${k} jumped ${last[k]} → ${r[k]} when the source changed to ${j}`);
+      }
+      last = r; lastSrc = sv;
+    }
+    return r;
+  };
+  return { pi, step, dt, switches: () => switches };
+}
+
+test('PilotInput: keys, Shift, throttle, brakes and gamepad buttons through one frame', () => {
+  const { pi, step } = rig();
+  let r = step({ keys: S('dn', 'rt', 'rr') }, 18);
   near(r.y, 0.15, 1e-9, 'pull'); near(r.x, 0.3, 1e-9, 'roll right'); near(r.rud, 0.3, 1e-9, 'rudder right');
-  step({ keys: S() }, 60); assert.deepEqual([r.x, r.y, r.rud], [0, 0, 0], 'self-centred');
-  step({ keys: S('up', 'fine') }, 120); near(r.y, -0.5, 1e-9, 'push with Shift: half travel');
+  r = step({ keys: S() }, 60); assert.deepEqual([r.x, r.y, r.rud], [0, 0, 0], 'self-centred');
+  r = step({ keys: S('dn', 'fine') }, 18); near(r.y, 0.075, 1e-9, 'Shift halves the rate (0.25/s)');
+  r = step({ keys: S('dn', 'fine') }, 600); near(r.y, 0.5, 1e-9, 'and the travel');
+  r = step({ keys: S('fine') }); near(r.y, 0.5 - 2.5 * DT, 1e-12, 'but not the return rate');
   step({ keys: S() }, 60);
-  // throttle: keys and the right stick add their rates; brakes from B, the bumpers and the touch button
+  // throttle: keys and the right stick add their rates; Shift leaves the throttle alone
   near(step({ keys: S('tu') }).thr, 0.3 + 0.35 * DT, 1e-12, 'throttle key');
+  near(step({ keys: S('tu', 'fine') }).thr, 0.3 + 0.35 * DT, 1e-12, 'throttle key with Shift: same rate');
   near(step({ pad: pad([0, 0, 0, -1]) }).thr, 0.3 + 0.5 * DT, 1e-12, 'throttle stick');
   near(step({ keys: S('tu'), pad: pad([0, 0, 0, 1]) }).thr, 0.3 - 0.15 * DT, 1e-12, 'key up and stick down add');
-  assert.deepEqual([step({ pad: pad([0, 0, 0, 0], { 5: 1 }) }).brake, r.brakeL, r.brakeR], [1, 0, 1]);
-  assert.deepEqual([step({ keys: S('br') }).brakeL, r.brakeR], [1, 1]); assert.equal(step({ brake: true }).brake, 1); assert.equal(step({}).brake, 0);
-  // a resting gamepad leaves the keys in control; a moved stick takes over; the touch stick wins while touched
-  step({ keys: S('dn'), pad: pad([0.03, 0.02, 0, 0]) }, 30); near(r.y, 0.25, 1e-9, 'keys over a resting pad');
-  step({ keys: S(), pad: pad([0, 0, 0, 0]) }, 30); assert.equal(r.y, 0);
-  near(step({ pad: pad([0, 1, 0, 0]) }).y, 1, 1e-12, 'stick pulled fully');
-  near(step({ pad: pad([0, 1, 0, 0]), touch: { x: 0, y: -0.4 } }).y, -0.4, 1e-12, 'touch stick');
+  // brakes from B, the bumpers and the touch button
+  r = step({ pad: pad([0, 0, 0, 0], { 5: 1 }) }); assert.deepEqual([r.brake, r.brakeL, r.brakeR], [1, 0, 1]);
+  r = step({ keys: S('br') }); assert.deepEqual([r.brakeL, r.brakeR], [1, 1]);
+  assert.equal(step({ brake: true }).brake, 1); assert.equal(step({}).brake, 0);
   assert.equal(pi.padUsed, true);
-  // pad buttons: events from the second poll on; a pad that goes away and comes back starts again without events
-  step({ pad: pad([0, 0, 0, 0], { 1: 1 }) }); assert.deepEqual(r.events, ['cam']);
-  step({}); assert.deepEqual(step({ pad: pad([0, 0, 0, 0], { 1: 1 }) }).events, [], 'first poll after a gap fires nothing');
-  pi.reset(); assert.equal(pi.padUsed, false); assert.equal(step({ keys: S('dn') }).y, 0.5 * DT);
+  // pad buttons: events from the second poll of the same pad on; after a gap, or from another pad, none on the first
+  const padAt = (index, id, b) => ({ ...pad([0, 0, 0, 0], b), index, id });
+  step({ pad: padAt(0, 'A', {}) }); assert.deepEqual(step({ pad: padAt(0, 'A', { 1: 1 }) }).events, ['cam']);
+  step({}); assert.deepEqual(step({ pad: padAt(0, 'A', { 1: 1 }) }).events, [], 'first poll after a gap fires nothing');
+  step({ pad: padAt(0, 'A', {}) });
+  assert.deepEqual(step({ pad: padAt(1, 'B', { 1: 1, 9: 1 }) }).events, [], 'a different pad: its held buttons do not fire');
+  assert.deepEqual(step({ pad: padAt(1, 'B', { 1: 1, 9: 1 }) }).events, []);
+  assert.deepEqual(pi.buttons(padAt(1, 'B', { 0: 1, 1: 1, 9: 1 })), ['take'], 'between flights: buttons only');
+  assert.deepEqual(pi.buttons(null), []);
+});
+
+test('PilotInput: a stick moved after a held key takes over, without a jump', () => {
+  const { step, switches } = rig(), py = I.readPad(pad([0, 0.6, 0, 0])).y;
+  let r = step({ keys: S('dn') }, 60); near(r.y, 0.5, 1e-9, 'key held 1 s'); assert.equal(r.src.y, 0);
+  r = step({ keys: S('dn'), pad: pad([0, 0.6, 0, 0]) });
+  assert.equal(r.src.y, 1, 'the stick moved last: it has the axis though the key is still held');
+  near(r.y, 0.5 - 2.5 * DT, 1e-12, 'output runs to the stick at the return rate');
+  r = step({ keys: S('dn'), pad: pad([0, 0.6, 0, 0]) }, 120); near(r.y, py, 1e-12, 'then follows the stick'); assert.equal(r.src.y, 1);
+  r = step({ keys: S('dn'), pad: pad([0, 0.8, 0, 0]) }); near(r.y, I.readPad(pad([0, 0.8, 0, 0])).y, 1e-12, 'directly');
+  // the stick goes back to the centre with the key still held: the key takes over where the output is
+  r = step({ keys: S('dn'), pad: pad([0, 0, 0, 0]) }); assert.equal(r.src.y, 0);
+  near(r.y, I.readPad(pad([0, 0.8, 0, 0])).y + 0.5 * DT, 1e-12, 'the key ramp starts from the output');
+  // a key going down takes the axis from a deflected stick, and starts from the stick's value
+  step({ keys: S(), pad: pad([0, -0.6, 0, 0]) }, 60);
+  r = step({ keys: S('dn'), pad: pad([0, -0.6, 0, 0]) }); assert.equal(r.src.y, 0);
+  near(r.y, -py + 2.5 * DT, 1e-12, 'reversing from the stick value at the return rate');
+  // from a centred output a stick leaving its centre is followed at once, so the gamepad adds no lag after the keys
+  step({}, 60); r = step({ keys: S('dn') }, 30); r = step({}, 30); assert.deepEqual([r.y, r.src.y], [0, 0]);
+  r = step({ pad: pad([0, 0.6, 0, 0]) }); assert.equal(r.src.y, 1); near(r.y, py, 1e-12, 'stick followed at once');
+  // a stick held deflected through a key tap: once the key ramp is home the output runs back to the stick, no jump
+  r = step({ keys: S('up'), pad: pad([0, 0.6, 0, 0]) }, 12); assert.equal(r.src.y, 0, 'the tap took the axis');
+  r = step({ pad: pad([0, 0.6, 0, 0]) }, 30); assert.equal(r.src.y, 1, 'the deflected stick has it again');
+  near(r.y, py, 1e-12, 'and the output has run back to it');
+  assert.ok(switches() >= 4, `${switches()} switches checked`);
+});
+
+test('PilotInput: touch stick against the keys, and no flip-flop at 144 Hz', () => {
+  const { step } = rig();
+  let r = step({ keys: S('dn') }, 30); r = step({}, 30); assert.deepEqual([r.y, r.src.y], [0, 0], 'keys used, then centred');
+  r = step({ touch: { x: 0, y: -0.4 } }); assert.equal(r.src.y, 2, 'a finger on the stick takes the axis');
+  assert.equal(r.y, -0.4, 'from a centred output it is followed at once, as before (the touch stick is absolute)');
+  r = step({ keys: S('dn'), touch: { x: 0, y: -0.4 } }); assert.equal(r.src.y, 0, 'a key going down takes over from a still finger');
+  near(r.y, -0.4 + 2.5 * DT, 1e-12, 'from the touch value');
+  r = step({ keys: S('dn'), touch: { x: 0, y: -0.4 } }, 30); assert.equal(r.src.y, 0, 'a finger that does not move does not take it back');
+  r = step({ keys: S('dn'), touch: { x: 0, y: -0.2 } }); assert.equal(r.src.y, 2, 'a finger that moves does');
+  r = step({}, 30); assert.equal(r.y, 0, 'finger lifted, key released: centre');
+  // 144 Hz: a held key and a stick held still never trade the axis frame by frame
+  const f = rig(144); let src = [];
+  f.step({ keys: S('rt') }, 72);
+  for (let i = 0; i < 288; i++) src.push(f.step({ keys: S('rt'), pad: pad([0.5, 0, 0, 0]) }).src.x);
+  assert.deepEqual([...new Set(src)], [1], 'the stick keeps the roll axis');
+  src = []; f.step({ keys: S('lt'), pad: pad([0.5, 0, 0, 0]) });
+  for (let i = 0; i < 288; i++) src.push(f.step({ keys: S('lt'), pad: pad([0.5, 0, 0, 0]) }).src.x);
+  assert.deepEqual([...new Set(src)], [0], 'the opposite key took it and keeps it');
+});
+
+test('PilotInput: reset clears every channel, even with keys and sticks deflected', () => {
+  const { pi, step } = rig();
+  step({ keys: S('dn', 'lt', 'rl'), pad: pad([0.7, 0.7, 0, 0], { 1: 1 }) }, 90);
+  step({ keys: S('dn', 'lt', 'rl'), touch: { x: 0.5, y: 0.5 } }, 10);
+  pi.reset();
+  const r = pi.update(DT, 100, { thr: 0.3, keys: S() });
+  assert.deepEqual([r.x, r.y, r.rud, r.src.x, r.src.y, r.src.rud, pi.padUsed], [0, 0, 0, -1, -1, -1, false]);
+  assert.deepEqual(pi.update(DT, 100 + DT, { thr: 0.3, pad: pad([0, 0, 0, 0], { 1: 1 }) }).events, [], 'no stale button edge');
+  near(pi.update(DT, 100 + 2 * DT, { thr: 0.3, keys: S('dn') }).y, 0.5 * DT, 1e-12, 'keys ramp from 0 again');
 });
 
 test('the app reads the gamepad and applies PilotInput (src/90-app.js wiring)', () => {
@@ -212,7 +301,14 @@ test('the app reads the gamepad and applies PilotInput (src/90-app.js wiring)', 
   assert.match(app, /const keys = app\.keys\.frame\(\);/, 'held keys and taps are read once per frame');
   assert.match(app, /app\.pin\.update\(dt, now \/ 1000, \{ keys, pad/, 'readInputs goes through app.pin.update');
   assert.match(app, /try \{ pads = navigator\.getGamepads \? navigator\.getGamepads\(\) : \[\]; \} catch/, 'getGamepads guarded (permissions policy)');
-  assert.match(app, /addEventListener\('gamepaddisconnected'[\s\S]{0,400}?app\.train\.warp = 0/, 'a pad lost in manual flight pauses');
+  assert.match(app, /I\.x = r\.x; I\.y = r\.y; I\.rud = r\.rud; I\.thr = r\.thr; I\.brake = r\.brake;/, 'every channel reaches app.input');
+  assert.match(app, /if \(fl\.pilot === 'man'\) Object\.assign\(fl\.input, app\.input\)/, 'and the flight');
+  assert.match(app, /for \(const ev of r\.events\) doAction\(ev\)/, 'gamepad buttons in a flight run the same actions as the keys');
+  assert.match(app, /for \(const ev of app\.pin\.buttons\(gp\)\) doAction\(ev\)/, 'and between flights');
+  assert.match(app, /if \(app\.train\.state !== 'fly'\) padButtons\(\);/);
+  assert.match(app, /addEventListener\('gamepaddisconnected'[\s\S]{0,200}?if \(e\.gamepad\.index !== app\.padIndex\) return;[\s\S]{0,120}?if \(app\.mode === 'train' && app\.train\.state === 'fly' && app\.flight\.pilot === 'man' && app\.pin\.padUsed && app\.train\.warp\) \{\s*app\.train\.warp = 0; refreshLive\(\);/, 'only the pad being read, lost in a manual flight it was flying, pauses');
+  assert.match(app, /const firstPad = \(\) => \{ const l = listPads\(\); return \(l && l\.find\(\(gp\) => gp\.mapping === 'standard'\)\) \|\| null; \};/, 'the lowest-index standard pad is read');
+  assert.match(app, /addEventListener\('gamepadconnected'[\s\S]{0,200}?used && used\.index !== gp\.index/, 'a second pad is told which one is in use');
   assert.match(app, /app\.pin\.reset\(\)/, 'a new flight resets the input layer');
   assert.doesNotMatch(app, /ramp = \(v, tgt, r\)/, 'no second key ramp in the app');
 });

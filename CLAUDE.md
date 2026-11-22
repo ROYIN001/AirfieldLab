@@ -41,7 +41,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions + `frame()` with sub-frame taps; `app.keys`) |
 | 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
-| 25-input.js | pure: `INPUT_CFG` (estimates from research §11), calibration and dead-zone helpers, `shapeAxis` / `shapeLever`, `keyRamp` + `KeyAxis`, `readPad` (W3C standard gamepad), `Arbiter` (last-moved source wins), `PilotInput` (one frame from keys, pad and touch; `app.pin`) |
+| 25-input.js | pure: `INPUT_CFG` (estimates from research §11), calibration and dead-zone helpers, `shapeAxis` / `shapeLever`, `keyRamp` + `KeyAxis`, `readPad` (W3C standard gamepad), `Arbiter` (last-moved source wins) + `InputAxis` (no jump on a switch), `PilotInput` (one frame from keys, pad and touch; `app.pin`) |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()`, `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
 | 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` |
@@ -87,12 +87,17 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   §11.4.2): pitch 0.5/s up and 2.5/s back, roll 1.0/3.0, rudder 1.0/2.0, faster when the opposite key undoes a
   deflection; Shift held halves the rate and the travel (fine mode); a key pressed and released between two frames
   still counts for one frame.
-- Gamepad (W3C Gamepad API, read once per frame in `readInputs`; only the "standard" mapping drives the aircraft,
-  other devices wait for a binding page): left stick roll and pitch (scaled radial dead zone 0.08, expo 0.5), triggers
-  rudder (right − left), right stick up/down throttle rate 0.5/s, bumpers brakes, A/✕ take control, B/○ camera,
-  Start pause. Browsers list no pad until a button is pressed. A pad lost while it flies the aircraft pauses the
-  flight. Keyboard, pad and touch stick share an axis: the source that moved last controls it. D-pad trim, D-pad
-  flaps, Y gear and split brakes are read but wait for the model.
+- Gamepad (W3C Gamepad API, read once per frame in `readInputs`, the lowest-index standard pad; only the "standard"
+  mapping drives the aircraft, other devices wait for a binding page): left stick roll and pitch (scaled radial dead
+  zone 0.08, expo 0.5), triggers rudder (right − left), right stick up/down throttle rate 0.5/s, bumpers brakes,
+  A/✕ take control, B/○ camera (also between flights, like C), Start pause. Browsers list no pad until a button is
+  pressed. A pad lost while it flies the aircraft pauses the flight. D-pad trim, D-pad flaps, Y gear and split brakes
+  are read but wait for the model.
+- Keyboard, pad and touch stick share an axis (`InputAxis` in `src/25-input.js`, research §11.5.4): the source that
+  moved last controls it. A key counts as moving only when it goes down (its ramp and self-centring do not), a finger
+  when it touches or moves the stick, a stick when it leaves the centre or moves by more than 0.02. Switching never
+  makes the value jump: keys continue from the current value, and the output runs to a stick's value at the axis's
+  return rate (pitch 2.5/s, roll 3/s, rudder 2/s) before following it.
 - Touch: virtual stick, throttle rail, brake button.
 
 ## Research reports (docs/research/)
