@@ -25,15 +25,23 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches,
   in types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview`
-  command line). Autoland score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is
-  a loose 50); touchdown points and every mode value have regression bands. A physics change that moves them updates
-  the test in the same PR.
+  command line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers
+  every file the page imports). Autoland score floors sit just under the values measured on 2026-11-19 (the assist
+  robot's floor is a loose 50); touchdown points and every mode value have regression bands. A physics change that
+  moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, and
   `test/keys.test.mjs` evaluates `18-keys.js` the same way, so those four files must stay DOM-free. `build.mjs`
   exports `assemble()`, `build()`, `dataFiles()`, `checkPr()` and `previewHtml()` for the page test.
-- Screenshots: `test/shots.mjs <set>` (Playwright + Chrome, SwiftShader). Paths inside it point at the original
-  cloud workspace (`/home/claude/...`, `/opt/npm-tools`, vendored three.js); adjust before use.
+- Screenshots: `node test/shots.mjs <set> [--dist <built page>] [--out <dir>]` (Playwright + Chrome, SwiftShader;
+  sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `all`). It builds the working tree into
+  `.cache/shots-dist` unless `--dist` is given, writes PNGs to `shots/`, and serves three.js r186 from
+  `.cache/three-r186` (downloaded once by `test/lib/three-pin.mjs` and checked against pinned SHA-256s). Playwright
+  is not a repo dependency: it is found in `node_modules/` or on `NODE_PATH`; `SHOTS_CHROME=chrome` uses the
+  installed Google Chrome. It exits 1 if the page does not load, throws, logs an error or misses a file.
+  `.github/workflows/shots.yml` runs the `ci` set (5 images, about 3 min) on the PR and on its base for pull
+  requests that touch `src/`, `data/` or the harness, and keeps them as the Actions artifact `shots-pr-<n>`
+  (`before/`, `after/`). SwiftShader draws on the CPU: compare the images by eye, never time them.
 
 ## Source layout (concatenated in this order into the `/*__APP__*/` marker of `src/template.html`)
 | file | role |
