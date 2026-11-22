@@ -294,6 +294,7 @@ canvas.chart { width: 100%; height: 230px; display: block; background: var(--ink
           <div class="blk"><h2>PAPI ที่นักบินเห็น</h2><p class="hint" id="papiTxt">—</p></div>
           <div class="btns"><button class="ghost" id="btnTake" type="button">รับช่วงบังคับเอง</button><button class="ghost" id="btnRestart" type="button">เริ่มใหม่</button></div>
           <div class="row"><span class="hint">ความเร็วเวลา</span><div class="seg" id="segWarp"><button type="button" data-w="1">×1</button><button type="button" data-w="2">×2</button><button type="button" data-w="0">หยุด</button></div></div>
+          <label class="toggle"><input type="checkbox" id="chkHorn" checked>เสียงเตือน stall (แตรเตือนก่อน stall ราว 7 kt)</label>
         </div>
         <div id="trResult" class="pane" style="padding:0" hidden>
           <header class="ph"><p class="eyebrow">ผลการร่อนลงจอด</p><div class="score"><b id="scTotal">—</b><div><span id="scGrade">—</span><br><small id="scSub">จาก 100 คะแนน</small></div></div></header>

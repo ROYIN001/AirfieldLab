@@ -337,8 +337,11 @@ async function main() {
     if (act === 'pause' && app.train.state === 'fly') { app.train.warp = app.train.warp ? 0 : 1; refreshLive(); }
     if (act === 'restart' && app.train.state !== 'setup') startFlight();
   }
+  // Text fields, sliders and selects keep their keys; a checkbox (the #chkHorn mute in the flight pane) must not
+  // swallow the flight keys after a click leaves focus on it.
   window.addEventListener('keydown', (e) => {
-    if (e.target && /input|select|textarea/i.test(e.target.tagName)) return;
+    const tg = e.target;
+    if (tg && (/^(select|textarea)$/i.test(tg.tagName) || (/^input$/i.test(tg.tagName) && !/^(checkbox|radio)$/i.test(tg.type)))) return;
     const k = app.keys.down(e, { train: app.mode === 'train', flying: app.mode === 'train' && app.train.state === 'fly' });
     if (k.prevent) e.preventDefault();   // arrows, PageUp/PageDown must not scroll the page while flying
     if (!k.fire) return;                 // held keys are tracked by app.keys; toggles fire once per press
@@ -502,6 +505,76 @@ async function main() {
   let calloutUntil = 0;
   function callout(txt, warn = false, ms = 1100) { const c = $('#callout'); c.textContent = txt; c.classList.toggle('warn', warn); c.classList.add('on'); calloutUntil = performance.now() + ms; }
   const CALL_TXT = { 1000: '1000', 500: '500', 400: '400', 300: '300', 200: 'MINIMUMS', 100: '100', 50: '50', 40: '40', 30: '30', 20: '20', 10: '10' };
+  // ── Stall-warning horn (Web Audio): a continuous tone while f.ev.stallHorn is on. A continuous horn as in the C152
+  //    [LH13] (docs/research/02-light-aircraft/08-handling.md); a visual cue alone is not enough (14 CFR 23.207(b)
+  //    [A22]). Tone, filter and level are estimates (ค่าประมาณ): the research gives no frequency or waveform.
+  //    Browsers start audio only after a user gesture, so the context is made or resumed on the first one in the
+  //    training mode.
+  //    The #chkHorn mute is per viewer (research 01-aero.md §1.6 proposes an off switch for every sound channel);
+  //    14 CFR 23.207(f) allows a mute only on aerobatic types and asks it to re-arm, a certification rule that a
+  //    trainer app does not have to copy. ──
+  const horn = (() => {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    const HZ = 1000, LP_HZ = 2800, LEVEL = 0.14, ATTACK = 0.012, RELEASE = 0.03;   // Hz, Hz, gain, s (time constants)
+    let ctx = null, gain = null, on = false, muted = store.get('afl-horn', '1') === '0';
+    let lastSet = 0, frameDt = 1 / 60, idleSince = null, lastResume = -1e9;
+    // resume() and suspend() return promises that a browser may reject (e.g. resume outside a gesture); the next
+    // gesture retries through unlock(), so a rejection is ignored.
+    const ctxCall = (fn) => { try { const p = ctx[fn](); if (p && p.catch) p.catch(() => {}); } catch (e) { /* ignore */ } };
+    const flying = () => app.mode === 'train' && app.train.state === 'fly';
+    function unlock() {
+      // Only in the training mode: explore never sounds the horn, so it opens no audio device. The click on the start
+      // button (or the R key) is a gesture in the training mode, so the context still starts on one.
+      if (!Ctx || muted || app.mode !== 'train') return;
+      try {
+        if (!ctx) {
+          ctx = new Ctx(); gain = ctx.createGain(); gain.gain.value = 0;
+          const osc = ctx.createOscillator(), lp = ctx.createBiquadFilter();
+          osc.type = 'square'; osc.frequency.value = HZ; lp.type = 'lowpass'; lp.frequency.value = LP_HZ;
+          osc.connect(lp); lp.connect(gain); gain.connect(ctx.destination); osc.start();
+        }
+        if (ctx.state !== 'running' && !document.hidden) ctxCall('resume');
+      } catch (e) { /* no audio: the HUD word still shows */ }
+    }
+    // Called every frame. While the horn is wanted, each call re-issues the attack and arms a release ahead on the
+    // audio clock (2.5 frame intervals, 0.25–1 s), so the horn stays continuous on slow frames (23.207(c): until the
+    // stall) and fades out by itself when frames stop without a visibilitychange (a claude.ai artifact runs in a
+    // cross-origin iframe: scrolled out of view or display:none, rAF stops but the page stays 'visible'); the interval
+    // is the last one measured, so a stop keeps the short fade. Ramps only (setTargetAtTime), so no clicks. Outside a
+    // flight the context is suspended after 2 s without the horn and resumed when a flight is running again.
+    function set(want) {
+      const nowMs = performance.now(), dtF = (nowMs - lastSet) / 1000; lastSet = nowMs;
+      if (dtF > 0 && dtF < 5) frameDt = dtF;
+      want = !!want && !muted && !document.hidden;
+      if (!ctx) return;
+      const g = gain.gain, t = ctx.currentTime;
+      if (want) { const hold = Math.min(1, Math.max(0.25, 2.5 * frameDt)); g.cancelScheduledValues(t); g.setTargetAtTime(LEVEL, t, ATTACK); g.setTargetAtTime(0, t + hold, RELEASE); }
+      else if (on) g.setTargetAtTime(0, t, RELEASE);
+      on = want;
+      if (want || flying()) {
+        idleSince = null;
+        if (ctx.state === 'suspended' && !muted && !document.hidden && nowMs - lastResume > 1000) { lastResume = nowMs; ctxCall('resume'); }
+      } else if (idleSince == null) idleSince = nowMs;
+      else if (nowMs - idleSince > 2000 && ctx.state === 'running') ctxCall('suspend');
+    }
+    function hide(h) {
+      if (!ctx) return;
+      if (h) {   // ramp down first, then suspend, so hiding the tab does not click
+        on = false; gain.gain.cancelScheduledValues(ctx.currentTime); gain.gain.setTargetAtTime(0, ctx.currentTime, 0.005);
+        setTimeout(() => { if (document.hidden) ctxCall('suspend'); }, 60);
+      } else if (!muted && flying()) ctxCall('resume');
+    }
+    function mute(m) {
+      muted = m; store.set('afl-horn', m ? '0' : '1');
+      if (m) { set(false); if (ctx) setTimeout(() => { if (muted) ctxCall('suspend'); }, 150); }
+      else unlock();   // the checkbox change runs inside the click, so the context may start or resume here
+    }
+    return { unlock, set, hide, mute, get muted() { return muted; } };
+  })();
+  for (const t of ['pointerdown', 'pointerup', 'keydown', 'touchend']) window.addEventListener(t, horn.unlock, { capture: true, passive: true });
+  document.addEventListener('visibilitychange', () => horn.hide(document.hidden));   // rAF stops while hidden: silence it here
+  $('#chkHorn').checked = !horn.muted;
+  $('#chkHorn').onchange = (e) => horn.mute(!e.target.checked);
   function gateRows(el, f, live) {
     const a = f.ac.air, rows = [];
     const g5 = f.ev.gates.g500, g2 = f.ev.gates.g200;
@@ -537,7 +610,7 @@ async function main() {
       ];
       $('#scRows').innerHTML = rows.map(([n, v, p]) => `<span>${n}</span><em>${v}</em><i>${Math.max(0, p.pts).toFixed(0)}/${p.max}</i><div class="bar"><div style="width:${Math.max(0, p.pts) / p.max * 100}%"></div></div>`).join('')
         + (stop != null ? `<span>ระยะวิ่งจนหยุด</span><em>${fmt(stop)} ม.</em><i></i>` : '')
-        + f.ev.events.map((e) => `<span style="color:var(--warn)">${{ stall: 'มีสัญญาณเตือนสตอล', excursion: 'ออกนอกทางวิ่ง', wingtip: 'ปลายปีกแตะพื้น', crash: 'กระแทกพื้นแรงเกินไป' }[e.k] || e.k}</span><em></em><i></i>`).join('');
+        + f.ev.events.map((e) => `<span style="color:var(--warn)">${{ stall: 'เกือบ stall: มุมปะทะเข้าใกล้มุม stall', excursion: 'ออกนอกทางวิ่ง', wingtip: 'ปลายปีกแตะพื้น', crash: 'กระแทกพื้นแรงเกินไป' }[e.k] || e.k}</span><em></em><i></i>`).join('');
     }
     gateRows($('#gatesR'), f, false);
     requestAnimationFrame(() => drawDebrief($('#chart'), f));
@@ -583,7 +656,7 @@ async function main() {
         if (!prevTd && fl.ev.td) { const td = fl.ev.td; toast(`แตะพื้น ${fmt(-td.vsFpm)} fpm · ห่างหัวทางวิ่ง ${fmt(td.s)} ม.`, 3800); }
         if (fl.ev.lastCallout && fl.ev.lastCallout !== prevCall && app.trainCam !== 'free') callout(CALL_TXT[fl.ev.lastCallout.v] || fl.ev.lastCallout.v, false, 900);
         const a = fl.ac.air;
-        if (!a.onGround && a.ias > 40 * KT && a.alpha > (AC.aStall + AC.aStallFlap * fl.ac.flaps - 4) * DEG) callout('STALL', true, 400);
+        if (fl.ev.stallHorn) callout('STALL', true, 400);
         else if (!a.onGround && a.h < 300 && a.vs / FT * 60 < -1200) callout('SINK RATE', true, 400);
         else if (!a.onGround && a.h < 300 && a.h > 15 && a.gsDots < -1.6 && a.s < 0) callout('GLIDESLOPE', true, 400);
         if ((fl.finishedAt != null && fl.ac.t - fl.finishedAt > 2.5) || (fl.crashed && !app.resultShown)) { if (!app.resultShown) { app.resultShown = true; showResult(); } }
@@ -593,6 +666,7 @@ async function main() {
       }
       running = !fl.ev.done || fl.ac.thr > 0.06;
     }
+    horn.set(app.mode === 'train' && app.train.state === 'fly' && app.train.warp > 0 && fl && !fl.crashed && fl.ev.stallHorn);
     // aircraft pose
     if (recF) poseFrom([recF.n, recF.e, recF.d], recF.q, { de: recF.de, da: recF.da, dr: recF.dr, flaps: recF.fl, gearPos: recF.gr, steer: 0 }, dt, true);
     else if (fl) { const ac = fl.ac; poseFrom(ac.x, [ac.x[6], ac.x[7], ac.x[8], ac.x[9]], { de: ac.de, da: ac.da, dr: ac.dr, flaps: ac.flaps, gearPos: ac.gearPos, steer: ac.steer }, dt, running); }

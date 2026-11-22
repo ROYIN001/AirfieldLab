@@ -108,6 +108,15 @@ const AC = {
   Cm0: 0.045, Cma: -0.72, Cmq: -12.5, Cmadot: -4.5, Cmde: -1.15, Cmflap: -0.10,
   Cnb: 0.075, Cnp: -0.055, Cnr: -0.14, Cnda: -0.010, Cndr: -0.072,
   aStall: 17.0, aStallFlap: -2.5,   // blend centre; effective CLmax ≈ 3° below it
+  // Stall warning (horn + HUD) set by α, linear in flap like aStall: 10.71° clean, 6.87° landing flaps. Research
+  // round 1 design values (docs/research/01-flight-physics/01-aero.md §1.6 and T-A-07, scripts/expected.mjs), about
+  // 7 kt above the 1-g stall (6.8–7.3 kt trimmed in this model, test/stall.test.mjs). 14 CFR 23.207(c) [A22] asks
+  // for at least 5 kt. Set by α, so V_warn/Vs is the same at any weight and load factor; the knot margin scales
+  // with √(n·W) (below about 0.54 W clean or 0.47 W with flaps it would drop under 5 kt; J1 re-checks per type).
+  // Release only 0.5° below it and after 0.5 s on (A5 design choice, no source), so a gust spike sounds as a short
+  // chirp instead of a click. Onset is immediate, so the margin and the lead time in a fast pull are kept.
+  // Estimates (ค่าประมาณ) for this fictional type; per-type values come in plan item J1, D2 re-checks T-A-07.
+  aWarn: 10.71, aWarnFlap: -3.84, aWarnHyst: 0.5, aWarnMinOn: 0.5,   // deg, deg per unit flap, deg, s
   P: 700e3, eta: 0.80, T0: 11500, idle: 0.045,
   deUp: 22 * DEG, deDn: 15 * DEG, daMax: 20 * DEG, drMax: 25 * DEG,
   gear: [
@@ -485,11 +494,16 @@ class PilotLaws {
   }
 }
 
+// Stall-warning angle of attack (rad) at flap position f (0…1), from AC.aWarn / AC.aWarnFlap. The one definition the
+// Evaluator uses and test/stall.test.mjs checks (T-A-07, 14 CFR 23.207 [A22]).
+const aWarnAt = (f) => (AC.aWarn + AC.aWarnFlap * f) * DEG;
+
 // ── Landing evaluation: stabilized-approach gates, touchdown, rollout ──
 class Evaluator {
   constructor() {
     this.gates = {}; this.td = null; this.events = []; this.maxT = 0; this.stopS = null; this.callouts = []; this.done = false;
     this.lastH = Infinity; this.stallWarn = false; this.unstable = false;
+    this.stallHorn = false; this.hornOnT = 0;   // stall warning, every step (horn + HUD); stallWarn latches the debrief stall event
   }
   gateCheck(ac, name) {
     const a = ac.air;
@@ -511,6 +525,13 @@ class Evaluator {
     }
     this.lastRa = a.hWheel / FT;
     this.lastH = hft;
+    // Stall warning for the horn and the HUD (14 CFR 23.207 [A22]): on at once at α ≥ α_warn(flaps); off only below
+    // α_warn − aWarnHyst and after aWarnMinOn s; off on the ground and at 40 kt or less. Not latched and not logged:
+    // the debrief 'stall' event below keeps its own criterion (about 1 kt above the stall).
+    const aW = aWarnAt(ac.flaps);
+    if (a.onGround || a.ias <= 40 * KT) this.stallHorn = false;
+    else if (a.alpha >= aW) { if (!this.stallHorn) this.hornOnT = ac.t; this.stallHorn = true; }
+    else if (this.stallHorn && a.alpha < aW - AC.aWarnHyst * DEG && ac.t - this.hornOnT >= AC.aWarnMinOn) this.stallHorn = false;
     if (!a.onGround && a.ias > 40 * KT && (a.stall > 0.25 || a.alpha > (AC.aStall + AC.aStallFlap * ac.flaps - 4) * DEG)) { if (!this.stallWarn) this.events.push({ t: ac.t, k: 'stall' }); this.stallWarn = true; }
     if (!this.td && (a.wow[1] || a.wow[2] || a.wow[0])) {
       const crs = FIELD.rwyHdg * DEG;

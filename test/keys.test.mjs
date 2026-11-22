@@ -111,6 +111,7 @@ test('the app applies these decisions (src/90-app.js wiring)', () => {
   assert.match(app, /addEventListener\('keydown',[\s\S]{0,300}?app\.keys\.down\(e,/, 'keydown goes through app.keys.down');
   assert.match(app, /if \(k\.prevent\) e\.preventDefault\(\)/, 'keydown applies prevent');
   assert.match(app, /if \(!k\.fire\) return;/, 'toggles only when fire');
+  assert.match(app, /addEventListener\('keydown',[\s\S]{0,200}?!\/\^\(checkbox\|radio\)\$\/i\.test\(tg\.type\)/, 'a focused checkbox (#chkHorn) does not swallow flight keys');
   assert.match(app, /addEventListener\('keyup', \(e\) => app\.keys\.up\(e\)\)/, 'keyup goes through app.keys.up');
   assert.match(app, /addEventListener\('blur', \(\) => app\.keys\.clear\(\)\)/, 'blur clears');
   assert.match(app, /addEventListener\('visibilitychange', \(\) => \{ if \(document\.hidden\) app\.keys\.clear\(\); \}\)/, 'hidden tab clears');

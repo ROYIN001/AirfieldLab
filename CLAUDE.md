@@ -20,8 +20,13 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   (quote the glob: a bare `node --test` would also run `test/shots.mjs`, `test/harness.mjs`, `test/lib/*.mjs` and
   the research scripts under `docs/research/` whose names match Node's default test patterns).
   `geo` (AIP geometry), `flight` (start trim, parked, autoland per wind), `runways` (autoland on all four ends),
-  `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01), `modes` (trim, linearise and
-  MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `keys` (keyboard map and key handling,
+  `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01; stall-warning margin T-A-07:
+  static trimmed margin 7 ± 1 kt at five flap settings from the Evaluator's `aWarnAt(flaps)`, 1 kt/s deceleration with
+  the Evaluator flag ≥ 5 kt above the stall, both corrected to 1 g, and on through the stall; the flag by α at 70 and
+  120 kt, its release (hysteresis, minimum on-time, off on the ground); seed 5: no warning on the four calm autolands
+  and, as a regression guard only, none above 50 ft in the gusty crosswind; the HUD and horn wiring in
+  `src/90-app.js`), `modes` (trim, linearise and MIL-F-8785C Level 1 modes with regression bands, research
+  T-V-01…T-V-06), `keys` (keyboard map and key handling,
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `papi` (PAPI distance from MEHT, colour
   bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `input` (shaping, key ramps, the
   sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
@@ -55,7 +60,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `17-siting.js` the same way, so those six files must stay DOM-free. The siting and lights tests also evaluate `48-data.js` and `60-lights.js`:
   these two may use three.js and the DOM inside their functions, never at the top level. `test/lib/png.mjs` reads the
   land-use PNGs (8-bit greyscale) with `node:zlib`. `build.mjs` exports `assemble()`, `build()`, `dataFiles()`,
-  `checkPr()` and `previewHtml()` for the page test.
+  `checkPr()` and `previewHtml()` for the page test. `M` from `test/harness.mjs` also includes `Evaluator` and `aWarnAt`.
 - Screenshots: `node test/shots.mjs <set> [--dist <built page>] [--out <dir>] [--pin <three-pin.mjs>]` (Playwright +
   Chrome, SwiftShader; sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `vis`, `all`). It builds the
   working tree into `.cache/shots-dist` unless `--dist` is given, writes PNGs to `shots/`, and serves three.js from
@@ -88,7 +93,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 60-lights.js | point-sprite lights with directional colour (`LightSet`); `airfieldLights(field, data)` is the whole lighting layout as data, `alsStands(E)` the approach light stands, `taxiEdgeLights(af)` the places of the taxiway edge lights, `buildAirfieldLights` draws the lights |
 | 70-aircraft.js | trainer model, control-surface and gear animation |
 | 80-hud.js | conformal HUD, ILS/PAPI widget, debrief charts |
-| 90-app.js | UI, camera presets and hotspots (Thai), input, training flow, frame loop |
+| 90-app.js | UI, camera presets and hotspots (Thai), input, training flow, stall-warning horn (Web Audio), frame loop |
 
 ## Frames and units
 - Physics: NED metres, origin at the ARP (13°54′51.74″N 100°36′20.49″E), d down, ground at d = 0. Body FRD,
@@ -106,17 +111,25 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Generic two-seat turboprop trainer (fictional): m 2250 kg, S 16.3 m², b 10.2 m, P 700 kW, static thrust 11.5 kN.
 - Linear stability derivatives in `AC`, stall by Beard–McLain blending (M = 55, α_stall 17°, −2.5° with flaps),
   ground effect, spring-damper gear with tanh tyre friction, RK4 at 240 Hz.
+- Stall warning by α (`AC.aWarn` 10.71°, `aWarnFlap` −3.84°/flap, so 6.87° with landing flaps; estimates from research
+  T-A-07): about 7 kt above the stall, 14 CFR 23.207. `Evaluator.stallHorn` comes on at once, goes off 0.5° below after
+  at least 0.5 s, and is off on the ground; it drives the horn and the HUD STALL word.
 - Wind: 1/7-power shear + MIL-F-8785C Dryden turbulence (first-order).
 - Autopilot: LOC/GS tracking, flare, decrab, rollout, braking. `PilotLaws`: ASSIST (attitude command, auto-rudder,
   auto-throttle) and DIRECT (surface deflections + auto-trim).
 - Evaluator: stabilised gates at 500 and 200 ft, callouts, touchdown score (sink 40, position 25, centre line 15,
-  speed 10, attitude 10). Touchdown window 300–600 m is "perfect".
+  speed 10, attitude 10). Touchdown window 300–600 m is "perfect". The debrief `'stall'` event (near stall:
+  stall blend σ (`air.stall`) > 0.25 or α > α_stall(flaps) − 4°) is separate from the warning and not scored.
 - Verified (`test/runways.test.mjs`, seed 5): autoland on 21R, 21L, 03L, 03R in calm scores 100/100/100/93 and in
   15 kt gusty crosswind 88/88/90/78. Measured baseline over the turbulence seeds the app draws (7–1006, 1,000
   autolands each, 2026-11-19): 10 kt headwind on 03L 89–100 (median 100); 10 kt crosswind on 03L 81–97 (median
-  96); 15 kt gusty crosswind on 21R 35–97 (median 85), where 51 flights log a stall warning and 2 (seeds 42 and
+  96); 15 kt gusty crosswind on 21R 35–97 (median 85), where 51 flights log the near-stall event and 2 (seeds 42 and
   559) bounce and are flagged as a crash about 5 s after touchdown. Seeds 1–10 give 74–94 in the gusty crosswind
-  on all four runways. Calm has no turbulence, so its scores do not depend on the seed.
+  on all four runways. Calm has no turbulence, so its scores do not depend on the seed. With the A5 horn, 95 of 100
+  gusty-crosswind autolands on 21R (seeds 7–106) hear short chirps, 69 of them above 20 ft and 39 above 50 ft, because
+  the autopilot flies Vref with no gust allowance; with seed 5 the horn starts in APP at 29–50 ft on all four runway
+  ends (round 2's `stall_warning` check counts anything above 20 ft). Open for the owner: flap α_warn 7.77° (about
+  5 kt) or a Vref gust additive.
 
 ## Visibility (current)
 - The visibility choice (500 m to 40 km, default 20 km) is MOR (WMO-No. 8; research round 4 §6.8): extinction
@@ -250,6 +263,11 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   (Safari remembers a refusal until it is closed); a frame whose Permissions Policy blocks the sensors, or no reading
   within 2 s, turns the option off with a Thai message. Whether the claude.ai artifact viewer allows the sensors has
   not been checked on a phone (it is a cross-origin frame and offers no device-motion capability, so probably not).
+- Stall-warning horn (Web Audio, starts after the first click or key press in the training mode, never in explore;
+  silent when paused, outside a flight or with the tab hidden; the audio context is suspended after 2 s outside a
+  flight; continuous on slow frames, and fades out by itself 2.5 frame intervals (0.25–1 s) after frames stop);
+  checkbox `#chkHorn` in the flight pane turns it off (saved per viewer; flight keys still work while it has focus);
+  no key.
 
 ## Research reports (docs/research/)
 - The owner's 5-round research program lives in `docs/research/`: `01-flight-physics.md`, `02-light-aircraft.md`,
