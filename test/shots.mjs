@@ -1,11 +1,13 @@
 // Screenshots of the built page in headless Chrome with SwiftShader WebGL2.
-//   node test/shots.mjs <set> [views] [--dist <dir>] [--out <dir>]
+//   node test/shots.mjs <set> [views] [--dist <dir>] [--out <dir>] [--pin <three-pin.mjs>]
 //   sets: ci (the small set CI runs on every pull request), explore, train, layout, phone, final,
 //         vtbd [overview,terminal,...], all (explore + train + phone)
 // Builds the working tree into .cache/shots-dist unless --dist names a built page (for example a build of main, to
-// compare before and after). PNGs go to shots/ unless --out says otherwise. three.js r186 is served from
-// .cache/three-r186 (test/lib/three-pin.mjs downloads it once and checks its SHA-256), so a run does not depend on
-// the CDN. Chrome: Playwright's own Chromium, or SHOTS_CHROME=chrome for the installed Google Chrome, or a path to a
+// compare before and after). PNGs go to shots/ unless --out says otherwise. three.js is served from
+// .cache/three-<version> (test/lib/three-pin.mjs downloads it once and checks its SHA-256), so a run does not depend on
+// the CDN; --pin adds the pin of another build (the base of a PR that changes three.js). Math.random is seeded, so two
+// runs draw the same turbulence and demo seeds; cloud drift and flashing lights still follow the time since load.
+// Chrome: Playwright's own Chromium, or SHOTS_CHROME=chrome for the installed Google Chrome, or a path to a
 // Chrome binary. Playwright is not a dependency of the repo: it is found in node_modules/ or on NODE_PATH
 // (CI runs `npm install --no-save playwright`).
 // SwiftShader renders on the CPU: compare the images by eye, never time them (research plan B8, P1).
@@ -13,15 +15,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { build } from '../build.mjs';
-import { ensureThree } from './lib/three-pin.mjs';
+import { ensureThree, CACHE_DIR } from './lib/three-pin.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = createRequire(import.meta.url)('playwright');
 
 const argv = process.argv.slice(2), opt = (k) => { const i = argv.indexOf(k); return i >= 0 ? argv.splice(i, 2)[1] : null; };
-const distArg = opt('--dist'), outArg = opt('--out');
+const distArg = opt('--dist'), outArg = opt('--out'), pinArg = opt('--pin');
 const [set = 'explore', views] = argv;
 const SETS = ['ci', 'explore', 'train', 'layout', 'phone', 'final', 'vtbd', 'all'];
 if (!SETS.includes(set)) { console.error(`unknown set "${set}"; sets: ${SETS.join(', ')}`); process.exit(2); }
@@ -31,7 +33,11 @@ if (!distArg) build({ out: DIST });
 if (!fs.existsSync(path.join(DIST, 'index.html'))) { console.error(`no index.html in ${DIST}`); process.exit(2); }
 const OUT = path.resolve(outArg || path.join(ROOT, 'shots'));
 fs.mkdirSync(OUT, { recursive: true });
-const THREE = await ensureThree(path.join(ROOT, '.cache/three-r186'));
+const THREE = await ensureThree(path.join(ROOT, CACHE_DIR));
+if (pinArg) {
+  const pin = await import(pathToFileURL(path.resolve(pinArg)).href);
+  Object.assign(THREE, await pin.ensureThree(path.join(ROOT, `.cache/three-${pin.THREE_VERSION}`)));
+}
 
 const logs = [];
 let failed = false;
@@ -41,9 +47,25 @@ const TYPES = { '.html': 'text/html', '.json': 'application/json', '.png': 'imag
 async function open(browser, vp, quality = 'balanced') {
   const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 1, hasTouch: vp.width < 700, isMobile: false });
   await ctx.addInitScript((q) => { try { localStorage.setItem('afl-quality', q); } catch (e) {} }, quality);
+  // a seeded generator (mulberry32) in place of Math.random, the same sequence in every run
+  await ctx.addInitScript(() => {
+    let a = 20261122;
+    Math.random = () => {
+      a = (a + 0x6d2b79f5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  });
+  // a three.js file this harness has not pinned would hang the page's module load until the timeout: stop at once
+  let stop; const stopped = new Promise((_, rej) => { stop = rej; }); stopped.catch(() => {});
   await ctx.route('**/*', (route) => {
     const u = route.request().url();
     if (THREE[u]) return route.fulfill({ status: 200, contentType: 'text/javascript', body: fs.readFileSync(THREE[u]) });
+    if (u.startsWith('https://cdn.jsdelivr.net/npm/three@')) {
+      const msg = `three.js file not pinned: ${u} (for another three.js version pass --pin with that build's test/lib/three-pin.mjs)`;
+      fail(msg); stop(new Error(msg)); return route.abort();
+    }
     if (u.startsWith('http://vtbd.test/')) {
       const rel = decodeURIComponent(u.slice(17).split(/[?#]/)[0] || 'index.html'), f = path.resolve(DIST, rel);
       if (f.startsWith(DIST + path.sep) && fs.existsSync(f)) return route.fulfill({ status: 200, contentType: TYPES[path.extname(f)] || 'application/octet-stream', body: fs.readFileSync(f) });
@@ -60,7 +82,7 @@ async function open(browser, vp, quality = 'balanced') {
   page.on('pageerror', (e) => fail('[pageerror] ' + e.message));
   const t0 = Date.now();
   await page.goto('http://vtbd.test/index.html');
-  await page.waitForFunction(() => document.querySelector('#loading')?.classList.contains('done') || document.querySelector('#loadMsg')?.classList.contains('err'), null, { timeout: 240000 });
+  await Promise.race([stopped, page.waitForFunction(() => document.querySelector('#loading')?.classList.contains('done') || document.querySelector('#loadMsg')?.classList.contains('err'), null, { timeout: 240000 })]);
   const err = await page.evaluate(() => document.querySelector('#loadMsg')?.classList.contains('err') ? document.querySelector('#loadMsg').textContent : '');
   if (err) throw new Error('the page did not load: ' + err);
   logs.push(`loaded ${vp.width}x${vp.height} in ${((Date.now() - t0) / 1000).toFixed(1)} s`);

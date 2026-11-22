@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assemble } from '../build.mjs';
-import { THREE_VERSION, THREE_CDN, THREE_FILES } from './lib/three-pin.mjs';
+import { THREE_VERSION, THREE_CDN, THREE_FILES, CACHE_DIR } from './lib/three-pin.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const { js, tpl } = assemble();
@@ -32,4 +32,11 @@ test('every three.js file the page imports is pinned with a SHA-256', () => {
   // three.module.js imports ./three.core.js (r160 and later)
   for (const f of ['build/three.module.js', 'build/three.core.js', ...addons]) assert.ok(f in THREE_FILES, `${f} is not pinned`);
   for (const [f, h] of Object.entries(THREE_FILES)) assert.match(h, /^[0-9a-f]{64}$/, f);
+});
+
+test('the CI cache holds the folder the harness reads three.js from', () => {
+  const yml = fs.readFileSync(new URL('../.github/workflows/shots.yml', import.meta.url), 'utf8');
+  assert.equal(CACHE_DIR, `.cache/three-${THREE_VERSION}`);
+  assert.match(yml, /path: \.cache\/three-\*\n\s+key: three-\$\{\{ hashFiles\('test\/lib\/three-pin\.mjs'\) \}\}/);
+  assert.match(fs.readFileSync(new URL('./shots.mjs', import.meta.url), 'utf8'), /ensureThree\(path\.join\(ROOT, CACHE_DIR\)\)/);
 });

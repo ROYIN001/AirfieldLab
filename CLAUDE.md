@@ -33,15 +33,18 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, and
   `test/keys.test.mjs` evaluates `18-keys.js` the same way, so those four files must stay DOM-free. `build.mjs`
   exports `assemble()`, `build()`, `dataFiles()`, `checkPr()` and `previewHtml()` for the page test.
-- Screenshots: `node test/shots.mjs <set> [--dist <built page>] [--out <dir>]` (Playwright + Chrome, SwiftShader;
-  sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `all`). It builds the working tree into
-  `.cache/shots-dist` unless `--dist` is given, writes PNGs to `shots/`, and serves three.js r186 from
-  `.cache/three-r186` (downloaded once by `test/lib/three-pin.mjs` and checked against pinned SHA-256s). Playwright
-  is not a repo dependency: it is found in `node_modules/` or on `NODE_PATH`; `SHOTS_CHROME=chrome` uses the
-  installed Google Chrome. It exits 1 if the page does not load, throws, logs an error or misses a file.
-  `.github/workflows/shots.yml` runs the `ci` set (5 images, about 3 min) on the PR and on its base for pull
-  requests that touch `src/`, `data/` or the harness, and keeps them as the Actions artifact `shots-pr-<n>`
-  (`before/`, `after/`). SwiftShader draws on the CPU: compare the images by eye, never time them.
+- Screenshots: `node test/shots.mjs <set> [--dist <built page>] [--out <dir>] [--pin <three-pin.mjs>]` (Playwright +
+  Chrome, SwiftShader; sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `all`). It builds the working
+  tree into `.cache/shots-dist` unless `--dist` is given, writes PNGs to `shots/`, and serves three.js from
+  `.cache/three-<version>` (downloaded once by `test/lib/three-pin.mjs`, through `HTTPS_PROXY` when set, and checked
+  against pinned SHA-256s; `--pin` adds another build's pin). Math.random is seeded, so runs draw the same turbulence
+  and demo seeds; cloud drift and flashing lights still differ between runs. Playwright is not a repo dependency: it
+  is found in `node_modules/` or on `NODE_PATH`; `SHOTS_CHROME=chrome` uses the installed Google Chrome. It exits 1
+  if the page does not load, throws, logs an error, misses a file or asks for an unpinned three.js file.
+  `.github/workflows/shots.yml` runs the `ci` set (5 images, about 3 min) on the PR and on its base (with the base's
+  pin) for pull requests that touch `src/`, `data/` or the harness, and keeps them as the Actions artifact
+  `shots-pr-<n>` (`before/`, `after/`); a push to main that changes the pin refreshes the three.js cache for all
+  PRs. SwiftShader draws on the CPU: compare the images by eye, never time them.
 
 ## Source layout (concatenated in this order into the `/*__APP__*/` marker of `src/template.html`)
 | file | role |
