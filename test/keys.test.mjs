@@ -28,7 +28,8 @@ test('T-I-07: no modifier keys in the keymap; keys pressed with Ctrl, Meta or Al
 test('pressing Ctrl, Meta or Alt releases held flight keys; Shift does not', () => {
   const k = new K.KeyState();
   k.down(ev('KeyS'), FLY); assert.ok(k.has('dn'));
-  k.down(ev('ShiftLeft', { shiftKey: true }), FLY); assert.ok(k.has('dn'), 'Shift keeps the held key');
+  k.down(ev('ShiftLeft', { shiftKey: true }), FLY); assert.ok(k.has('dn'), 'Shift keeps the held key'); assert.ok(k.has('fine'), 'and is held itself');
+  k.down(ev('KeyD', { shiftKey: true }), FLY); assert.ok(k.has('rt'), 'a key pressed with Shift is a flight key');
   k.down(ev('ControlLeft', { ctrlKey: true }), FLY); assert.equal(k.size, 0, 'Ctrl releases it');
   k.down(ev('KeyA'), FLY); k.down(ev('AltLeft', { altKey: true }), FLY); assert.equal(k.size, 0, 'Alt releases it');
 });
@@ -66,10 +67,11 @@ test('two keys held: releasing one keeps the other; toggles are never held; modi
   }
 });
 
-test('throttle on = / − , PageUp / PageDown and Numpad 9 / 3, not on Shift or Ctrl', () => {
+test('throttle on = / − , PageUp / PageDown and Numpad 9 / 3, not on Shift or Ctrl; Shift is the fine mode', () => {
   for (const c of ['Equal', 'PageUp', 'Numpad9']) assert.equal(K.resolveKey(c), 'tu', c);
   for (const c of ['Minus', 'PageDown', 'Numpad3']) assert.equal(K.resolveKey(c), 'td', c);
-  for (const c of ['ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight']) assert.equal(K.resolveKey(c), null, c);
+  for (const c of ['ControlLeft', 'ControlRight']) assert.equal(K.resolveKey(c), null, c);
+  for (const c of ['ShiftLeft', 'ShiftRight']) assert.equal(K.resolveKey(c), 'fine', c);   // research round 1 §11.4.4
   const k = new K.KeyState();
   k.down(ev('PageUp'), FLY); assert.ok(k.has('tu')); k.up(ev('PageUp')); assert.ok(!k.has('tu'));
   assert.equal(K.resolveKey('toString'), null);   // no inherited properties
@@ -100,7 +102,7 @@ test('while flying, every bound key blocks the page default (no scrolling); othe
 
 test('every toggle and held action has a key', () => {
   const acts = new Set(Object.values(K.DEFAULT_KEYMAP));
-  for (const a of ['up', 'dn', 'lt', 'rt', 'rl', 'rr', 'tu', 'td', 'br', 'cam', 'take', 'pause', 'restart']) assert.ok(acts.has(a), a);
+  for (const a of ['up', 'dn', 'lt', 'rt', 'rl', 'rr', 'tu', 'td', 'br', 'fine', 'cam', 'take', 'pause', 'restart']) assert.ok(acts.has(a), a);
 });
 
 test('the app applies these decisions (src/90-app.js wiring)', () => {

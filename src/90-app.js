@@ -63,7 +63,7 @@ const app = {
   view: 'overview', trainCam: 'chase', spot: null,
   wind: { fromDeg: 40, kt: 9 }, visIdx: 2, cloudIdx: 1,
   train: { state: 'setup', scn: 'xr', dist: 5556, pilot: 'ap', assist: true, autoThr: true, warp: 1, rwy: '03L' },
-  input: { x: 0, y: 0, rud: 0, thr: 0.25, brake: 0 }, keys: new KeyState(),
+  input: { x: 0, y: 0, rud: 0, thr: 0.25, brake: 0 }, keys: new KeyState(), pin: new PilotInput(), padIndex: null,
 };
 if (!QUALITY[app.q]) app.q = 'balanced';
 const VIS = [5000, 10000, 20000, 40000], VIS_T = ['5 กม.', '10 กม.', '20 กม.', '40 กม.'];
@@ -289,7 +289,7 @@ async function main() {
   function startFlight() {
     setActiveRunway(app.train.rwy);
     app.flight = new Flight(flightOpts());
-    Object.assign(app.input, { x: 0, y: 0, rud: 0, thr: app.flight.ac.thr, brake: 0 });
+    Object.assign(app.input, { x: 0, y: 0, rud: 0, thr: app.flight.ac.thr, brake: 0 }); app.pin.reset();
     app.train.state = 'fly'; app.train.warp = 1; app.resultShown = false;
     showTrainPane('fly'); refreshLive(); chase.init = false;
     $('#liveEyebrow').textContent = app.flight.pilot === 'ap' ? 'ออโต้ไพลอตกำลังบิน' : (app.flight.opts.assist ? 'บินเอง · มีระบบช่วย' : 'บินเอง · ควบคุมตรง');
@@ -328,20 +328,54 @@ async function main() {
   $('#tabTrain').onclick = () => setMode('train');
   $('#btnFs').onclick = () => { viewport.classList.toggle('fs'); $('#btnFs').textContent = viewport.classList.contains('fs') ? 'ออกจากเต็มจอ' : 'เต็มจอ'; };
 
-  // ── input: keyboard (map and rules in 18-keys.js), touch stick, throttle, brake ──
+  // ── input: keyboard (map and rules in 18-keys.js), gamepad and touch stick (shaped in 25-input.js), throttle, brake ──
+  function doAction(act) {   // toggles from a key or a gamepad button
+    if (act === 'cam') { const order = ['chase', 'cockpit', 'tower', 'side', 'free']; setTrainCam(order[(order.indexOf(app.trainCam) + 1) % order.length]); }
+    if (act === 'take' && app.train.state === 'fly') $('#btnTake').click();
+    if (act === 'pause' && app.train.state === 'fly') { app.train.warp = app.train.warp ? 0 : 1; refreshLive(); }
+    if (act === 'restart' && app.train.state !== 'setup') startFlight();
+  }
   window.addEventListener('keydown', (e) => {
     if (e.target && /input|select|textarea/i.test(e.target.tagName)) return;
     const k = app.keys.down(e, { train: app.mode === 'train', flying: app.mode === 'train' && app.train.state === 'fly' });
     if (k.prevent) e.preventDefault();   // arrows, PageUp/PageDown must not scroll the page while flying
     if (!k.fire) return;                 // held keys are tracked by app.keys; toggles fire once per press
-    if (k.act === 'cam') { const order = ['chase', 'cockpit', 'tower', 'side', 'free']; setTrainCam(order[(order.indexOf(app.trainCam) + 1) % order.length]); }
-    if (k.act === 'take' && app.train.state === 'fly') $('#btnTake').click();
-    if (k.act === 'pause' && app.train.state === 'fly') { app.train.warp = app.train.warp ? 0 : 1; refreshLive(); }
-    if (k.act === 'restart' && app.train.state !== 'setup') startFlight();
+    doAction(k.act);
   });
   window.addEventListener('keyup', (e) => app.keys.up(e));
   window.addEventListener('blur', () => app.keys.clear());
   document.addEventListener('visibilitychange', () => { if (document.hidden) app.keys.clear(); });
+  // Gamepads (W3C Gamepad): the browser lists none until a button is pressed (anti-fingerprinting), and getGamepads()
+  // throws when the host page turns the "gamepad" permissions policy off. Only the standard layout drives the aircraft;
+  // flight sticks, pedals and HOTAS report their axes in no fixed order and wait for a binding page.
+  function listPads() {   // connected gamepads, or null when this page may not use them
+    let pads;
+    try { pads = navigator.getGamepads ? navigator.getGamepads() : []; } catch (e) { return null; }
+    return Array.from(pads || []).filter((gp) => gp && gp.connected !== false);
+  }
+  const firstPad = () => { const l = listPads(); return (l && l.find((gp) => gp.mapping === 'standard')) || null; };
+  const padName = (gp) => padLabel(gp.id) || 'จอยเกม';
+  function refreshPadTxt() {
+    const l = listPads(), std = l && l.find((gp) => gp.mapping === 'standard');
+    $('#padTxt').textContent = !navigator.getGamepads ? 'จอยเกม: เบราว์เซอร์นี้ไม่รองรับ'
+      : !l ? 'จอยเกม: หน้านี้ใช้จอยไม่ได้ เพราะเบราว์เซอร์หรือหน้าที่ฝังหน้านี้ไว้ไม่อนุญาต'
+      : std ? `จอยเกม: ${padName(std)} พร้อมใช้`
+      : l.length ? `จอยเกม: พบ ${padName(l[0])} แต่ยังใช้ไม่ได้ ตอนนี้รองรับเฉพาะจอยเกมผังมาตรฐาน`
+      : 'จอยเกม: ต่อจอยแล้วกดปุ่มใดก็ได้บนจอยเพื่อเริ่มใช้';
+  }
+  window.addEventListener('gamepadconnected', (e) => {
+    const gp = e.gamepad; refreshPadTxt();
+    toast(gp.mapping === 'standard' ? `พบจอย ${padName(gp)} · ก้านซ้ายบังคับเครื่อง ไกซ้าย/ขวาเป็นหางเสือ ก้านขวาเป็นคันเร่ง` : `พบ ${padName(gp)} แต่ยังใช้ไม่ได้ ตอนนี้รองรับเฉพาะจอยเกมผังมาตรฐาน`, 4200);
+  });
+  window.addEventListener('gamepaddisconnected', (e) => {
+    refreshPadTxt();
+    if (e.gamepad.index !== app.padIndex) return;
+    app.padIndex = null;   // its last reading is gone with it, so no deflection stays behind
+    if (app.mode === 'train' && app.train.state === 'fly' && app.flight.pilot === 'man' && app.pin.padUsed && app.train.warp) {
+      app.train.warp = 0; refreshLive(); toast('จอยหลุดการเชื่อมต่อ หยุดเวลาไว้ก่อน กด P เพื่อบินต่อด้วยคีย์บอร์ด', 5000);
+    } else toast('จอยหลุดการเชื่อมต่อ');
+  });
+  refreshPadTxt();
   const stick = $('#stick'), knob = $('#stickKnob'); const touchStick = { on: false, x: 0, y: 0 };
   const stickMove = (e) => { const r = stick.getBoundingClientRect(); const R = r.width / 2 - 20; let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2); const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } touchStick.x = dx / R; touchStick.y = dy / R; knob.style.transform = `translate(${dx}px, ${dy}px)`; };
   stick.addEventListener('pointerdown', (e) => { touchStick.on = true; stick.setPointerCapture(e.pointerId); stickMove(e); });
@@ -356,13 +390,13 @@ async function main() {
   const bb = $('#btnBrake'); let brakeHeld = false;
   bb.addEventListener('pointerdown', (e) => { brakeHeld = true; bb.classList.add('on'); bb.setPointerCapture(e.pointerId); });
   const brUp = () => { brakeHeld = false; bb.classList.remove('on'); }; bb.addEventListener('pointerup', brUp); bb.addEventListener('pointercancel', brUp);
-  function readInputs(dt) {
-    const K = app.keys, I = app.input, ramp = (v, tgt, r) => v + clamp(tgt - v, -r * dt, r * dt);
-    const kx = (K.has('rt') ? 1 : 0) - (K.has('lt') ? 1 : 0), ky = (K.has('dn') ? 1 : 0) - (K.has('up') ? 1 : 0), kr = (K.has('rr') ? 1 : 0) - (K.has('rl') ? 1 : 0);
-    app._kx = ramp(app._kx || 0, kx, kx ? 2.5 : 5); app._ky = ramp(app._ky || 0, ky, ky ? 2.0 : 5); app._kr = ramp(app._kr || 0, kr, kr ? 2.5 : 5);
-    I.x = touchStick.on ? touchStick.x : app._kx; I.y = touchStick.on ? touchStick.y : app._ky; I.rud = app._kr;
-    if (K.has('tu')) I.thr = clamp(I.thr + 0.35 * dt, 0, 1); if (K.has('td')) I.thr = clamp(I.thr - 0.35 * dt, 0, 1);
-    I.brake = brakeHeld || K.has('br') ? 1 : 0;
+  // keys: held key actions this frame (app.keys.frame()); now: the frame time in ms
+  function readInputs(dt, now, keys) {
+    const I = app.input, gp = firstPad();
+    app.padIndex = gp ? gp.index : null;
+    const r = app.pin.update(dt, now / 1000, { keys, pad: gp, touch: touchStick.on ? touchStick : null, thr: I.thr, brake: brakeHeld });
+    I.x = r.x; I.y = r.y; I.rud = r.rud; I.thr = r.thr; I.brake = r.brake;
+    for (const ev of r.events) doAction(ev);   // gamepad buttons: take control, camera, pause (gear and flaps wait for the model)
     tknob.style.top = `${(1 - I.thr) * (rail.clientHeight - 26)}px`; $('#thrTxt').textContent = `THR ${Math.round(I.thr * 100)}%`;
   }
 
@@ -446,6 +480,7 @@ async function main() {
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
     const T = (now - t0) / 1000;
     SU.uTime.value = T;
+    const keys = app.keys.frame();   // held keys and taps since the last frame, read every frame so no tap goes stale
     let fl = null, running = true, recF = null;
     if (app.mode === 'explore') {
       const d = app.demo;
@@ -454,7 +489,7 @@ async function main() {
     } else {
       fl = app.flight;
       if (app.train.state === 'fly') {
-        readInputs(dt);
+        readInputs(dt, now, keys);
         if (fl.pilot === 'man') Object.assign(fl.input, app.input);
         const prevTd = !!fl.ev.td, prevCall = fl.ev.lastCallout;
         fl.advance(dt * app.train.warp);
