@@ -71,8 +71,9 @@ function makeSkyMaterial(capture) {
         vec2 dh = normalize(d.xz + 1e-5);
         col += uNight * vec3(0.009, 0.005, 0.002) * pow(max(dot(dh, uCityDir), 0.0), 3.0) * exp(-max(d.y, 0.0) * 18.0);
         `}
-        // haze beyond the sky model's own (skyHazeBeta), from the camera height out of the atmosphere along d
-        if (d.y > 0.0) col = mix(hzFogColor(d), col, exp(-hazeDepthUp(uBetaSky, cameraPosition.y, d.y)));
+        // haze beyond the sky model's own (skyHazeBeta), from the camera height out of the atmosphere along d; on screen
+        // also below the horizon line, where the dome shows the fog colour with the sun's disc and glow (and the city's)
+        ${capture ? 'if (d.y > 0.0) ' : ''}col = mix(hzFogColor(d), col, exp(-hazeDepthUp(uBetaSky, cameraPosition.y, d.y)));
         gl_FragColor = vec4(col, 1.0);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -106,6 +107,15 @@ function makeCloudMaterial() {
         #include <colorspace_fragment>
       }`,
   });
+}
+
+// Albedo of the ground in the image-based light (the capture's lower hemisphere): grass and concrete, an estimate.
+const G_ALB = [0.09, 0.11, 0.06];
+// The fog palette at azimuth az (radians, north through east), as hzFogColor() reads it in GLSL_PRELUDE (30-render.js).
+function hzFogAt(az) {
+  const P = SU.uFogHz.value, a = ((az / (2 * Math.PI)) % 1 + 1) % 1 * 16, i = Math.floor(a) % 16, f = a - Math.floor(a);
+  const p = P[i], q = P[(i + 1) % 16];
+  return [p.x + (q.x - p.x) * f, p.y + (q.y - p.y) * f, p.z + (q.z - p.z) * f];
 }
 
 class SkySystem {
@@ -171,17 +181,15 @@ class SkySystem {
     st.ambUp = amb;
     const L = lum(sc) * Math.max(sun[1], 0) + lum(amb);
     st.exposure = clamp(0.5 * Math.pow(15 / Math.max(L, 1e-5), 0.36), 0.3, 7);
-    const gAlb = [0.09, 0.11, 0.06];
-    const gr = [0, 1, 2].map((k) => gAlb[k] * (sc[k] * Math.max(sun[1], 0) + amb[k]) / Math.PI);
-    this.capMat.uniforms.uGround.value.set(...gr);
     // sun light
     const m = Math.max(sc[0], sc[1], sc[2], 1e-6);
     this.sun.color.setRGB(sc[0] / m, sc[1] / m, sc[2] / m);
-    this.sunMax = m; this.applySunHaze();
+    this.sunMax = m;
     // clouds
     this.cloudMat.uniforms.uSunCol.value.set(...sc);
     this.cloudMat.uniforms.uAmb.value.set(amb[0] / Math.PI * 0.95, amb[1] / Math.PI * 0.95, amb[2] / Math.PI * 0.95);
     this.updateFogPalette();
+    this.applySunHaze();
     this.envDirty = true;
   }
 
@@ -209,11 +217,16 @@ class SkySystem {
   }
 
   // Direct sunlight crosses the same extra haze as the sun disc in the sky dome, from the ground up (its shadows and the
-  // cloud shadows fade with it); at 20 and 40 km it keeps its full strength.
+  // cloud shadows fade with it). The ground in the image-based light (the capture below the horizon) is lit by that
+  // sunlight and by the sky the capture shows through the haze, so in fog the undersides of the aircraft and the eaves
+  // no longer see a sunlit ground. At 20 and 40 km neither changes. Needs the fog palette of the current sun.
   applySunHaze() {
-    const s = this.state.sunDir;
-    const T = s[1] > -0.02 ? Math.exp(-hazeDepthUp(skyHazeBeta(this.visibility), 0, s[1], SU.uHazeH.value)) : 0;
+    const st = this.state, s = st.sunDir, sc = st.sunCol, H = SU.uHazeH.value, beta = skyHazeBeta(this.visibility);
+    const T = sunHazeT(this.visibility, s[1], H);
     this.sun.intensity = (this.sunMax || 0) * T;
+    const sky = beta > 0 ? skyIrradianceUp(s, beta, H, hzFogAt) : st.ambUp;
+    const gr = [0, 1, 2].map((k) => (G_ALB[k] * (sc[k] * Math.max(s[1], 0) * T + sky[k])) / Math.PI);
+    this.capMat.uniforms.uGround.value.set(...gr);
   }
 
   updateEnv(force = false) {

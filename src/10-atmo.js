@@ -147,17 +147,21 @@ function sunColor(sunY) {
   return [0.115, 0.165, 0.30].map((t) => SUN_I * Math.exp(-t * am) * vis);
 }
 
-// Irradiance on an up-facing surface from the sky dome (numerical, 24×8 samples)
-function skyIrradianceUp(sun) {
+// Irradiance on an up-facing surface from the sky dome (numerical, 24×8 samples). With extra haze (extinction beta at
+// the ground, 1/m, scale height H), each direction keeps exp(−hazeDepthUp) of the sky, as the sky dome draws it from
+// the ground, and takes the rest from fog(az): the colour the haze shows at azimuth az (radians, north through east).
+function skyIrradianceUp(sun, beta = 0, H, fog) {
   const s = [0, 0, 0];
   const NA = 24, NE = 8;
   for (let j = 0; j < NE; j++) {
     const el = ((j + 0.5) / NE) * (Math.PI / 2);
     const dO = Math.cos(el) * (Math.PI / 2 / NE) * (2 * Math.PI / NA);
+    const t = beta > 0 ? Math.exp(-hazeDepthUp(beta, 0, Math.sin(el), H)) : 1;
     for (let i = 0; i < NA; i++) {
       const az = ((i + 0.5) / NA) * 2 * Math.PI;
       const d = [Math.cos(el) * Math.sin(az), Math.sin(el), -Math.cos(el) * Math.cos(az)];
-      const L = skyFull(d, sun);
+      let L = skyFull(d, sun);
+      if (t < 1) { const F = fog(az); L = [0, 1, 2].map((k) => L[k] * t + F[k] * (1 - t)); }
       const w = Math.sin(el) * dO;
       s[0] += L[0] * w; s[1] += L[1] * w; s[2] += L[2] * w;
     }
@@ -191,3 +195,6 @@ const hazeDepthUp = (beta, h0, dy, H) => (beta * H * Math.exp(-Math.max(h0, 0) /
 // the sky, the clouds and the direct sunlight while 20 km and 40 km leave them as they were.
 const SKY_VIS_M = 20000;
 const skyHazeBeta = (visM) => Math.max(0, morBeta(visM) - morBeta(SKY_VIS_M));
+// The share of the direct sunlight that crosses that extra haze from the ground towards the sun (sunY = sine of its
+// elevation): 1 at 20 km and above, and 0 once the sun is more than 0.02 below the horizon, where sunColor is already 0.
+const sunHazeT = (visM, sunY, H) => (sunY > -0.02 ? Math.exp(-hazeDepthUp(skyHazeBeta(visM), 0, sunY, H)) : 0);
