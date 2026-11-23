@@ -5,8 +5,10 @@
 // Builds the working tree into .cache/shots-dist unless --dist names a built page (for example a build of main, to
 // compare before and after). PNGs go to shots/ unless --out says otherwise. three.js is served from
 // .cache/three-<version> (test/lib/three-pin.mjs downloads it once and checks its SHA-256), so a run does not depend on
-// the CDN; --pin adds the pin of another build (the base of a PR that changes three.js). Math.random is seeded, so two
-// runs draw the same turbulence and demo seeds; cloud drift and flashing lights still follow the time since load.
+// the CDN; --pin adds the pin of another build (the base of a PR that changes three.js). Math.random is seeded, and the
+// stream starts again at each flight the harness starts, so the training flights draw the same turbulence seed in
+// every run and in both builds (three.js draws from it for each object it creates, a count a PR may change). The demo
+// flight in explore, cloud drift and flashing lights follow the time since load, so they differ between runs.
 // Chrome: Playwright's own Chromium, or SHOTS_CHROME=chrome for the installed Google Chrome, or a path to a
 // Chrome binary. Playwright is not a dependency of the repo: it is found in node_modules/ or on NODE_PATH
 // (CI runs `npm install --no-save playwright`).
@@ -17,7 +19,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { build } from '../build.mjs';
-import { ensureThree, CACHE_DIR } from './lib/three-pin.mjs';
+import { ensureThree, CACHE_DIR, cacheDir } from './lib/three-pin.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = createRequire(import.meta.url)('playwright');
@@ -36,7 +38,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const THREE = await ensureThree(path.join(ROOT, CACHE_DIR));
 if (pinArg) {
   const pin = await import(pathToFileURL(path.resolve(pinArg)).href);
-  Object.assign(THREE, await pin.ensureThree(path.join(ROOT, `.cache/three-${pin.THREE_VERSION}`)));
+  Object.assign(THREE, await pin.ensureThree(path.join(ROOT, cacheDir(pin.THREE_VERSION))));
 }
 
 const logs = [];
@@ -47,9 +49,11 @@ const TYPES = { '.html': 'text/html', '.json': 'application/json', '.png': 'imag
 async function open(browser, vp, quality = 'balanced') {
   const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 1, hasTouch: vp.width < 700, isMobile: false });
   await ctx.addInitScript((q) => { try { localStorage.setItem('afl-quality', q); } catch (e) {} }, quality);
-  // a seeded generator (mulberry32) in place of Math.random, the same sequence in every run
+  // a seeded generator (mulberry32) in place of Math.random, the same sequence in every run; __shotsSeed() starts it again
   await ctx.addInitScript(() => {
-    let a = 20261122;
+    const SEED = 20261122;
+    let a = SEED;
+    window.__shotsSeed = () => { a = SEED; };
     Math.random = () => {
       a = (a + 0x6d2b79f5) | 0;
       let t = Math.imul(a ^ (a >>> 15), 1 | a);
@@ -85,6 +89,8 @@ async function open(browser, vp, quality = 'balanced') {
   await Promise.race([stopped, page.waitForFunction(() => document.querySelector('#loading')?.classList.contains('done') || document.querySelector('#loadMsg')?.classList.contains('err'), null, { timeout: 240000 })]);
   const err = await page.evaluate(() => document.querySelector('#loadMsg')?.classList.contains('err') ? document.querySelector('#loadMsg').textContent : '');
   if (err) throw new Error('the page did not load: ' + err);
+  // every flight the harness starts draws its seed from the start of the stream
+  await page.evaluate(() => { const go = __app.startFlight; __app.startFlight = (...a) => { __shotsSeed(); return go(...a); }; });
   logs.push(`loaded ${vp.width}x${vp.height} in ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   return page;
 }

@@ -25,26 +25,28 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches,
   in types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview`
-  command line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers
-  every file the page imports). Autoland score floors sit just under the values measured on 2026-11-19 (the assist
-  robot's floor is a loose 50); touchdown points and every mode value have regression bands. A physics change that
-  moves them updates the test in the same PR.
+  command line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers every
+  file the page imports; both three.js cache folders sit inside the CI cache; the harness fails fast on an unpinned
+  file, fetches through the proxy and seeds each flight). Autoland score floors sit just under the values measured on
+  2026-11-19 (the assist robot's floor is a loose 50); touchdown points and every mode value have regression bands. A
+  physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, and
   `test/keys.test.mjs` evaluates `18-keys.js` the same way, so those four files must stay DOM-free. `build.mjs`
   exports `assemble()`, `build()`, `dataFiles()`, `checkPr()` and `previewHtml()` for the page test.
 - Screenshots: `node test/shots.mjs <set> [--dist <built page>] [--out <dir>] [--pin <three-pin.mjs>]` (Playwright +
-  Chrome, SwiftShader; sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `all`). It builds the working
-  tree into `.cache/shots-dist` unless `--dist` is given, writes PNGs to `shots/`, and serves three.js from
+  Chrome, SwiftShader; sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `all`). It builds the
+  working tree into `.cache/shots-dist` unless `--dist` is given, writes PNGs to `shots/`, and serves three.js from
   `.cache/three-<version>` (downloaded once by `test/lib/three-pin.mjs`, through `HTTPS_PROXY` when set, and checked
-  against pinned SHA-256s; `--pin` adds another build's pin). Math.random is seeded, so runs draw the same turbulence
-  and demo seeds; cloud drift and flashing lights still differ between runs. Playwright is not a repo dependency: it
-  is found in `node_modules/` or on `NODE_PATH`; `SHOTS_CHROME=chrome` uses the installed Google Chrome. It exits 1
-  if the page does not load, throws, logs an error, misses a file or asks for an unpinned three.js file.
-  `.github/workflows/shots.yml` runs the `ci` set (5 images, about 3 min) on the PR and on its base (with the base's
-  pin) for pull requests that touch `src/`, `data/` or the harness, and keeps them as the Actions artifact
-  `shots-pr-<n>` (`before/`, `after/`); a push to main that changes the pin refreshes the three.js cache for all
-  PRs. SwiftShader draws on the CPU: compare the images by eye, never time them.
+  against pinned SHA-256s; `--pin` adds another build's pin). Math.random is seeded and starts again at each flight
+  the harness starts, so training flights draw the same turbulence seed in every run and in both builds; the demo
+  flight in explore, cloud drift and flashing lights follow the time since load and differ between runs. Playwright is
+  not a repo dependency: it is found in `node_modules/` or on `NODE_PATH`; `SHOTS_CHROME=chrome` uses the installed
+  Google Chrome. It exits 1 if the page does not load, throws, logs an error, misses a file or asks for an unpinned
+  three.js file. `.github/workflows/shots.yml` runs the `ci` set (5 images, about 3 min) on the PR and on its base
+  (with the base's pin) for pull requests that touch `src/`, `data/` or the harness, and keeps them as the Actions
+  artifact `shots-pr-<n>` (`before/`, `after/`); a push to main that changes the pin refreshes the three.js cache for
+  all PRs. SwiftShader draws on the CPU: compare the images by eye, never time them.
 
 ## Source layout (concatenated in this order into the `/*__APP__*/` marker of `src/template.html`)
 | file | role |
