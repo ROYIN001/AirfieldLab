@@ -28,7 +28,10 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `src/90-app.js`), `modes` (trim, linearise and MIL-F-8785C Level 1 modes with regression bands, research
   T-V-01…T-V-06), `keys` (keyboard map and key handling,
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `papi` (PAPI distance from MEHT, colour
-  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `input` (shaping, key ramps, the
+  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `controls` (`air.nz`/`air.ny`,
+  research T-C-01: trimmed 95 kt glide nz 1.00 ± 0.02, parked nz 1, level turn nz ≈ 1/cos φ at 30° and 45°,
+  elevator pull-up Δnz 1.00 ± 0.15 as in T-C-06, a rudder step whose sideslip gives ny < 0, and nz/ny against finite
+  differences of the velocity), `input` (shaping, key ramps, the
   sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
   phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
@@ -114,6 +117,14 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Stall warning by α (`AC.aWarn` 10.71°, `aWarnFlap` −3.84°/flap, so 6.87° with landing flaps; estimates from research
   T-A-07): about 7 kt above the stall, 14 CFR 23.207. `Evaluator.stallHorn` comes on at once, goes off 0.5° below after
   at least 0.5 s, and is off on the ground; it drives the horn and the HUD STALL word.
+- Load factor `air.nz` / `air.ny` (g, body axes) from the specific force (aero + thrust + gear, no gravity), set in
+  `updateAir()` (research round 1 task 5, T-C-01): cos θ cos φ in unaccelerated flight (≈ 1 near
+  level, 0.978 at θ 12°), 1 when parked; ny + = to the right (ny < 0 when β > 0). Nothing reads it yet
+  (HUD, Evaluator and Recorder do not); at touchdown the linear gear damper makes it peak at first contact
+  (1.8 g at 130 fpm, 2.2 g at 200 fpm), so keep it out of scoring and hard-landing checks until the new strut model
+  (`07-gear.md` task 1); on the ground ny carries the velocity-based tyre side force (`07-gear.md` §7.0, §7.12 task 3)
+  and reaches 0.2–0.4 g at a crosswind touchdown (21R autoland, seed 5: 0.41 g in `xr`, 0.29 g in `xl`, 0.17 g in
+  `head`, against ≤ 0.11 g in the air), so a HUD ball or side-load use waits for that tyre model too.
 - Wind: 1/7-power shear + MIL-F-8785C Dryden turbulence (first-order).
 - Autopilot: LOC/GS tracking, flare, decrab, rollout, braking. `PilotLaws`: ASSIST (attitude command, auto-rudder,
   auto-throttle) and DIRECT (surface deflections + auto-trim).

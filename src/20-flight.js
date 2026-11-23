@@ -306,7 +306,15 @@ class Aircraft {
     a.antS = ant.s; a.antH = -(x[2] + pAnt[2]);
     a.eye = [x[0] + pEye[0], x[1] + pEye[1], -(x[2] + pEye[2])];   // n, e, height of the pilot's eye
     a.p = x[10]; a.q = x[11]; a.r = x[12];
-    a.nz = 0;
+    // Load factor from the specific force in body axes (aero + thrust + gear, no gravity): f_NED = v̇ − [0, 0, g]
+    // from the derivative just computed, nz = −(Rᵀf)_z / g (cos θ cos φ in unaccelerated flight, ≈ 1 near level;
+    // 1 parked), ny = (Rᵀf)_y / g (+ = to the right, the ball goes left). Research round 1 task list item 5,
+    // 06-controls.md §6.7.4 note 4, T-C-01. On the ground both carry gear-model artefacts: the linear gear damper
+    // makes nz peak at first contact (07-gear.md §7.0, T-G-06), so it is not yet a hard-landing measure, and ny
+    // carries the velocity-based tyre side force (07-gear.md §7.0, §7.12 task 3), 0.2–0.4 g at a crosswind
+    // touchdown, so a HUD ball or side-load use on the ground waits for that tyre model too.
+    const fb = mulRT(R, [this.tmp[3], this.tmp[4], this.tmp[5] - G0]);
+    a.nz = -fb[2] / G0; a.ny = fb[1] / G0;
   }
 
   // Trimmed, wings-level state on the extended centre line of runway 03
