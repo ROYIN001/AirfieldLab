@@ -182,8 +182,12 @@ function hazeDepth(beta, h0, v, H) {
   const m = Math.abs(k) < 1e-3 ? 1 - k / 2 + (k * k) / 6 : (1 - Math.exp(-k)) / k;
   return beta * Math.hypot(v[0], v[1], v[2]) * Math.exp(-Math.max(h0, 0) / H) * m;
 }
+// The same haze from height h0 out of the atmosphere along a direction whose vertical component is dy > 0: the limit of
+// hazeDepth for an endless path, beta · H · exp(−h0 / H) / dy, with dy held at 0.02 or more near the horizon. The sky
+// dome uses it (hazeDepthUp in HAZE_GLSL), and so does the direct sunlight (SkySystem.applySunHaze).
+const hazeDepthUp = (beta, h0, dy, H) => (beta * H * Math.exp(-Math.max(h0, 0) / H)) / Math.max(dy, 0.02);
 // The sky dome and the clouds come from their own scattering model, which looks like a clear day of about 20 km
 // (the page's default visibility; an estimate). Only the extinction beyond that greys them, so low visibility hides
-// the sky and the clouds while 20 km and 40 km leave them as they were.
+// the sky, the clouds and the direct sunlight while 20 km and 40 km leave them as they were.
 const SKY_VIS_M = 20000;
 const skyHazeBeta = (visM) => Math.max(0, morBeta(visM) - morBeta(SKY_VIS_M));

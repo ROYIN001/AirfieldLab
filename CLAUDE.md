@@ -28,9 +28,10 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers every file the
   page imports; both three.js cache folders sit inside the CI cache; the harness fails fast on an unpinned file,
   fetches through the proxy and seeds each flight), `visibility` (MOR helpers in `10-atmo.js`, research VIS-1…VIS-3,
-  and that the sky, the fog chunk, the lights and the visibility choices use them). Autoland score floors sit just
-  under the values measured on 2026-11-19 (the assist robot's floor is a loose 50); touchdown points and every mode
-  value have regression bands. A physics change that moves them updates the test in the same PR.
+  the haze mixed before the sRGB encode, and that the sky, the fog, the lights, the sunlight and the visibility
+  choices use them). Autoland score floors sit just under the values measured on 2026-11-19 (the assist robot's floor
+  is a loose 50); touchdown points and every mode value have regression bands. A physics change that moves them
+  updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, and
   `test/keys.test.mjs` evaluates `18-keys.js` the same way, so those four files must stay DOM-free. `build.mjs`
@@ -53,7 +54,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | file | role |
 |---|---|
 | 00-head.js | three.js imports (OrbitControls, BufferGeometryUtils) |
-| 10-atmo.js | pure: constants (KT, FT, NM, DEG, RAD, G0), USSA-1976 `atmosphere(h, isaDev)`, NOAA sun position, sky radiance, MOR visibility (`morBeta`, `hazeDepth`, `skyHazeBeta`) |
+| 10-atmo.js | pure: constants (KT, FT, NM, DEG, RAD, G0), USSA-1976 `atmosphere(h, isaDev)`, NOAA sun position, sky radiance, MOR visibility (`morBeta`, `hazeDepth`, `hazeDepthUp`, `skyHazeBeta`) |
 | 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions; `app.keys`) |
 | 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
@@ -93,11 +94,16 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 ## Visibility (current)
 - The visibility choice (500 m to 40 km, default 20 km) is MOR (WMO-No. 8; research round 4 §6.8): extinction
   β = ln20 / V at the ground, Beer–Lambert on the distance to the camera, thinning with height as exp(−h / 1,600 m)
-  (`uHazeH`, an estimate with no source yet). The fog chunk, the light sprites, the sky dome and the clouds share
-  `hazeDepth`; the sky and clouds only take the haze beyond a 20 km day (estimate), since their own model already
-  shows that much. three.js fogs after tone mapping, so the fog colour is tone-mapped first.
-- Airfield lights are on at night and by day at 5 statute miles or less (FAA JO 7110.65BB para 3-4-5; no Thai or
-  ICAO day threshold found in a public source).
+  (`uHazeH`, an estimate with no source yet). The fog, the clouds and the light sprites call `hazeDepth`; the sky dome
+  and the direct sunlight use its limit for an endless path, `hazeDepthUp`. The sky, the clouds and the sunlight take
+  only the haze beyond a 20 km day (estimate), since their own model already shows that much, so 20 and 40 km look
+  as before and thick fog hides the sun and its shadows.
+- three.js applies fog after tone mapping and the sRGB encode, so the haze is put in front of `colorspace_fragment`
+  instead: it mixes in display-linear light (a black object at V keeps 5% contrast on screen) with a tone-mapped fog
+  colour (full fog matches the sky at the horizon).
+- Airfield lights are on at night and by day at 5 statute miles or less: the FAA rule for approach lights by day
+  (JO 7110.65BB para 3-4-5), used for all airfield lights because no Thai or ICAO day threshold was found in a public
+  source.
 
 ## Controls (current)
 - Keyboard (physical keys, `KeyboardEvent.code`, so a Thai layout works; map in `src/18-keys.js`): W/S or ↑/↓

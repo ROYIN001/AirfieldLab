@@ -72,13 +72,17 @@ const SU = {
   uTime: { value: 0 },
   uNight: { value: 0 },
 };
-// Haze optical depth from height h0 along the world vector v: the GLSL twin of hazeDepth() in 10-atmo.js.
+// Haze optical depth from height h0 along the world vector v, and out of the atmosphere along a direction with vertical
+// component dy: the GLSL twins of hazeDepth() and hazeDepthUp() in 10-atmo.js.
 const HAZE_GLSL = /* glsl */`
 uniform float uHazeH;
 float hazeDepth(float beta, float h0, vec3 v) {
   float k = v.y / uHazeH;
   float m = abs(k) < 1e-3 ? 1.0 - k / 2.0 + k * k / 6.0 : (1.0 - exp(-k)) / k;
   return beta * length(v) * exp(-max(h0, 0.0) / uHazeH) * m;
+}
+float hazeDepthUp(float beta, float h0, float dy) {
+  return beta * uHazeH * exp(-max(h0, 0.0) / uHazeH) / max(dy, 0.02);
 }
 `;
 const GLSL_PRELUDE = /* glsl */`
@@ -117,32 +121,36 @@ float hash2i(ivec2 c) { return float(pcg2d(uvec2(c + 4096))) / 4294967296.0; }
 function patchShaderChunks() {
   const C = THREE.ShaderChunk;
   if (C.__airfieldPatched) return; C.__airfieldPatched = true;
-  // Fog is MOR haze (research round 4 §6.8, §7.4): Beer–Lambert on the distance to the camera, not on the depth along
-  // the view axis, with fogDensity = β = ln20 / V (SkySystem.setWeather) and the extinction thinning with height.
+  // Fog is MOR haze (research round 4 §6.8, §7.4): Beer–Lambert on the distance to the camera (vFogW, not the depth
+  // along the view axis), with fogDensity = β = ln20 / V (SkySystem.setWeather) and the extinction thinning with height.
+  // three.js runs tonemapping_fragment, colorspace_fragment and then fog_fragment, so the haze goes in front of the
+  // sRGB encode instead: mixed in display-linear light, a black object at the reported visibility keeps exactly 5%
+  // luminance contrast on screen whatever the tone curve (mixed after the encode it kept about 10%). The haze colour is
+  // linear radiance, as in the sky dome, so it is tone-mapped first and full fog matches the sky at the horizon.
   const depth = 'vFogDepth = - mvPosition.z;';
   if (!C.fog_vertex.includes(depth)) console.warn('fog chunk changed; fog uses view depth');
   C.fog_vertex = C.fog_vertex.replace(depth, 'vFogDepth = length( mvPosition.xyz );');
   C.fog_pars_vertex += '\n#ifdef USE_HZFOG\nvarying vec3 vFogW;\n#endif';
   C.fog_vertex += '\n#ifdef USE_HZFOG\nvFogW = ( vec4( mvPosition.xyz, 0.0 ) * viewMatrix ).xyz;\n#endif';
   C.fog_pars_fragment += '\n#ifdef USE_HZFOG\nvarying vec3 vFogW;\n#endif';
-  C.fog_fragment = `#ifdef USE_FOG
-  #if defined( USE_HZFOG ) && defined( FOG_EXP2 )
-    float fogFactor = 1.0 - exp( - hazeDepth( fogDensity, cameraPosition.y, vFogW ) );
-    // three.js fogs after tone mapping and the output transform, so the haze colour (linear radiance, as the sky
-    // dome uses it) goes through both first, or thick fog would not match the sky at the horizon
+  C.colorspace_fragment = `#if defined( USE_FOG ) && defined( USE_HZFOG ) && defined( FOG_EXP2 )
+  {
     vec3 fogC = hzFogColor( normalize( vFogW ) );
     #ifdef TONE_MAPPING
       fogC = toneMapping( fogC );
     #endif
-    gl_FragColor.rgb = mix( gl_FragColor.rgb, linearToOutputTexel( vec4( fogC, 1.0 ) ).rgb, fogFactor );
+    gl_FragColor.rgb = mix( gl_FragColor.rgb, fogC, 1.0 - exp( - hazeDepth( fogDensity, cameraPosition.y, vFogW ) ) );
+  }
+#endif
+` + C.colorspace_fragment;
+  // three.js's own fog, left for a material without the haze (none in the page today), linear in the distance
+  C.fog_fragment = `#if defined( USE_FOG ) && !( defined( USE_HZFOG ) && defined( FOG_EXP2 ) )
+  #ifdef FOG_EXP2
+    float fogFactor = 1.0 - exp( - fogDensity * vFogDepth );
   #else
-    #ifdef FOG_EXP2
-      float fogFactor = 1.0 - exp( - fogDensity * vFogDepth );
-    #else
-      float fogFactor = smoothstep( fogNear, fogFar, vFogDepth );
-    #endif
-    gl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );
+    float fogFactor = smoothstep( fogNear, fogFar, vFogDepth );
   #endif
+  gl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );
 #endif`;
   const key = 'getDirectionalLightInfo( directionalLight, directLight );';
   if (!C.lights_fragment_begin.includes(key)) console.warn('lights chunk changed; cloud shadows off');

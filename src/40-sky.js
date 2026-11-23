@@ -71,8 +71,8 @@ function makeSkyMaterial(capture) {
         vec2 dh = normalize(d.xz + 1e-5);
         col += uNight * vec3(0.009, 0.005, 0.002) * pow(max(dot(dh, uCityDir), 0.0), 3.0) * exp(-max(d.y, 0.0) * 18.0);
         `}
-        // haze beyond the sky model's own (skyHazeBeta), integrated from the camera height upward along d
-        if (d.y > 0.0) col = mix(hzFogColor(d), col, exp(-uBetaSky * uHazeH * exp(-max(cameraPosition.y, 0.0) / uHazeH) / max(d.y, 0.02)));
+        // haze beyond the sky model's own (skyHazeBeta), from the camera height out of the atmosphere along d
+        if (d.y > 0.0) col = mix(hzFogColor(d), col, exp(-hazeDepthUp(uBetaSky, cameraPosition.y, d.y)));
         gl_FragColor = vec4(col, 1.0);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -177,7 +177,7 @@ class SkySystem {
     // sun light
     const m = Math.max(sc[0], sc[1], sc[2], 1e-6);
     this.sun.color.setRGB(sc[0] / m, sc[1] / m, sc[2] / m);
-    this.sun.intensity = sun[1] > -0.02 ? m : 0;
+    this.sunMax = m; this.applySunHaze();
     // clouds
     this.cloudMat.uniforms.uSunCol.value.set(...sc);
     this.cloudMat.uniforms.uAmb.value.set(amb[0] / Math.PI * 0.95, amb[1] / Math.PI * 0.95, amb[2] / Math.PI * 0.95);
@@ -204,7 +204,16 @@ class SkySystem {
     // visibility is MOR: β = ln20 / V at the ground (research round 4 §6.8), for the fog, the lights and the sky
     SU.uBeta.value = this.scene.fog.density = morBeta(visibility);
     SU.uBetaSky.value = skyHazeBeta(visibility);
+    this.applySunHaze();
     this.envDirty = true;
+  }
+
+  // Direct sunlight crosses the same extra haze as the sun disc in the sky dome, from the ground up (its shadows and the
+  // cloud shadows fade with it); at 20 and 40 km it keeps its full strength.
+  applySunHaze() {
+    const s = this.state.sunDir;
+    const T = s[1] > -0.02 ? Math.exp(-hazeDepthUp(skyHazeBeta(this.visibility), 0, s[1], SU.uHazeH.value)) : 0;
+    this.sun.intensity = (this.sunMax || 0) * T;
   }
 
   updateEnv(force = false) {
