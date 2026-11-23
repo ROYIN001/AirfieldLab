@@ -353,7 +353,7 @@ class Aircraft {
     this.de = this.cmd.de = de; this.da = this.cmd.da = 0; this.dr = this.cmd.dr = 0;
     this.thr = this.cmd.thr = thr; this.brake = this.cmd.brake = 0; this.steer = 0;
     this.adot = 0; this.aPrev = null; this.t = 0;
-    this.updateAir(0);
+    this.updateAir(0); this.gen = (this.gen || 0) + 1;   // a jump: Flight.renderPose restarts its interpolation (§9.7)
     return { alpha, de, thr, th, psi };
   }
 
@@ -361,7 +361,7 @@ class Aircraft {
   setParked(n, e, psi) {
     const x = this.x; const q = eulerToQ(0, 0.5 * DEG, psi);
     x.set([n, e, -1.30, 0, 0, 0, q[0], q[1], q[2], q[3], 0, 0, 0]);
-    this.thr = this.cmd.thr = 0; this.brake = this.cmd.brake = 1; this.updateAir(0);
+    this.thr = this.cmd.thr = 0; this.brake = this.cmd.brake = 1; this.updateAir(0); this.gen = (this.gen || 0) + 1;
   }
 }
 
@@ -581,6 +581,13 @@ class Evaluator {
   }
 }
 
+// Quaternion nlerp on the shorter arc: a[ia..ia+3] → b[ib..ib+3] at u, into out (replay and render interpolation)
+const qNlerp = (a, ia, b, ib, u, out) => {
+  const s = a[ia] * b[ib] + a[ia + 1] * b[ib + 1] + a[ia + 2] * b[ib + 2] + a[ia + 3] * b[ib + 3] < 0 ? -1 : 1;
+  for (let i = 0; i < 4; i++) out[i] = a[ia + i] + (s * b[ib + i] - a[ia + i]) * u;
+  const l = Math.hypot(out[0], out[1], out[2], out[3]); for (let i = 0; i < 4; i++) out[i] /= l;
+  return out;
+};
 // ── Recorder for replay and the debrief charts (10 Hz) ──
 class Recorder {
   constructor() { this.f = []; this.next = 0; }
@@ -600,11 +607,9 @@ class Recorder {
     let lo = 0, hi = f.length - 1;
     while (hi - lo > 1) { const m = (lo + hi) >> 1; if (f[m].t <= t) lo = m; else hi = m; }
     const A = f[lo], B = f[hi], u = (t - A.t) / (B.t - A.t);
-    let qb = B.q; if (A.q[0] * qb[0] + A.q[1] * qb[1] + A.q[2] * qb[2] + A.q[3] * qb[3] < 0) qb = qb.map((v) => -v);
-    const q = A.q.map((v, i) => lerp(v, qb[i], u)); const ql = Math.hypot(...q);
     const o = {};
     for (const k in A) if (typeof A[k] === 'number') o[k] = lerp(A[k], B[k], u);
-    o.q = q.map((v) => v / ql);
+    o.q = qNlerp(A.q, 0, B.q, 0, u, [0, 0, 0, 0]);
     return o;
   }
 }
@@ -634,6 +639,7 @@ class Flight {
     this.input = { x: 0, y: 0, rud: 0, thr: trim.thr, brake: 0 };
     this.acc = 0; this.dt = 1 / 240; this.finishedAt = null; this.oatC = oatC; this.windSpec = wind;
     this.crashed = false;
+    this.xPrev = new Float64Array(13); this.sPrev = new Float64Array(6); this.keepPrev();   // state before the last tick (render interpolation)
   }
   setPilot(p) {
     if (p === this.pilot) return;
@@ -647,13 +653,43 @@ class Flight {
     }
     this.pilot = p;
   }
+  // Fixed-step accumulator (research 01-flight-physics/09-numerics.md §9.4 and §9.12 task 1; round 1 task list item 6;
+  // T-N-07, T-N-08): ε = 1e-9 s (ค่าประมาณ, §9.8 accumulatorEpsilon) snaps frame times that land one ulp under a whole
+  // number of steps (ideal float ms timestamps k·1000/f at 120 Hz gave 1/2/3 steps; browser rAF times, rounded to
+  // 0.1 ms, still mix 3/4/5 at 60 Hz and renderPose hides it), at most ceil(0.1/dt) = 24 steps per frame, any backlog
+  // beyond one step dropped at the cap, a negative frame time ignored. Returns the number of steps taken.
   advance(realDt) {
-    this.acc += Math.min(realDt, 0.1);
+    const h = this.dt, maxN = Math.ceil(0.1 / h);
+    this.acc += Math.min(Math.max(realDt, 0), 0.1);
     let n = 0;
-    while (this.acc >= this.dt && n < 60) { this.tick(this.dt); this.acc -= this.dt; n++; }
+    while (this.acc >= h - 1e-9 && n < maxN) { this.tick(h); this.acc -= h; n++; }
+    if (n === maxN) this.acc = Math.min(this.acc, h);
+    if (this.acc < 0) this.acc = 0;
+    return n;
+  }
+  // The constructor and tick() call it, and renderPose() too when ac.setApproach or ac.setParked has run since (ac.gen),
+  // so a new Flight (start, R restart, a new demo) or a reset on a live one draws the new state at once, also with no
+  // tick (paused, setup preview) (09-numerics.md §9.7: xPrev = x right after setApproach or setParked).
+  keepPrev() {
+    const a = this.ac, s = this.sPrev; this._gen = a.gen;
+    this.xPrev.set(a.x); s[0] = a.de; s[1] = a.da; s[2] = a.dr; s[3] = a.flaps; s[4] = a.gearPos; s[5] = a.steer;
+  }
+  // Pose to draw (09-numerics.md §9.12 task 2; round 1 task list item 7; T-N-09): between the state before the last tick
+  // and the current one at α = acc/dt, so the picture moves with the frame clock and lags the physics by at most one
+  // step, 1/240 s (Fiedler [N8]). Position and surfaces by lerp, attitude by nlerp on the shorter arc (≤ 1° per step,
+  // as Recorder.at; §9.7). The HUD keeps the latest state.
+  renderPose(out = { p: [0, 0, 0], q: [1, 0, 0, 0], de: 0, da: 0, dr: 0, flaps: 0, gearPos: 0, steer: 0 }) {
+    if (this.ac.gen !== this._gen) this.keepPrev();
+    const u = clamp(this.acc / this.dt, 0, 1), A = this.xPrev, B = this.ac.x, S = this.sPrev, a = this.ac;
+    for (let i = 0; i < 3; i++) out.p[i] = A[i] + (B[i] - A[i]) * u;
+    qNlerp(A, 6, B, 6, u, out.q);
+    out.de = lerp(S[0], a.de, u); out.da = lerp(S[1], a.da, u); out.dr = lerp(S[2], a.dr, u);
+    out.flaps = lerp(S[3], a.flaps, u); out.gearPos = lerp(S[4], a.gearPos, u); out.steer = lerp(S[5], a.steer, u);
+    return out;
   }
   tick(dt) {
     const ac = this.ac;
+    this.keepPrev();             // before the crash check, so a frozen flight draws still; direct tick() callers too
     if (this.crashed) return;
     const apC = this.ap.guidance();
     if (this.pilot === 'ap') this.ap.update(dt);

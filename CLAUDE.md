@@ -31,7 +31,16 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `controls` (`air.nz`/`air.ny`,
   research T-C-01: trimmed 95 kt glide nz 1.00 ± 0.02, parked nz 1, level turn nz ≈ 1/cos φ at 30° and 45°,
   elevator pull-up Δnz 1.00 ± 0.15 as in T-C-06, a rudder step whose sideslip gives ny < 0, and nz/ny against finite
-  differences of the velocity), `input` (shaping, key ramps, the
+  differences of the velocity), `numerics` (fixed-step accumulator and render interpolation, research T-N-07…T-N-09:
+  ideal float ms timestamps k·1000/f (as research s9_advance.mjs) give exactly 2 steps per frame at 120 Hz and 4 at
+  60 Hz; browser rAF times rounded to 0.1 ms keep a 3/4/5 mix at 60 Hz (1/2/3 at 120 Hz) that `renderPose` hides,
+  with sim time still equal to real time; `advance(30)` adds 0.1 s in 24 steps, a larger backlog is cut to one step
+  (acc = dt), `advance(0)` none; `renderPose` at 144 Hz moves V/f per frame within 5 mm RMS (also with 0.1 ms
+  timestamps, 2.5 mm), attitude within 0.005°; a new Flight draws its start state, `ac.setParked`/`setApproach` on a
+  live one draws the new state at once, a crashed one draws still; `qNlerp` and `Recorder.at` attitudes; as a
+  regression guard only (it held before A7 too), the gusty-crosswind autoland on 21R lands identically at 60 Hz,
+  144 Hz and jittery frames; the auto-pause, pause-message, tap-to-resume (CSS included) and pose and camera wiring in
+  `src/90-app.js`), `input` (shaping, key ramps, the
   sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
   phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
@@ -63,7 +72,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `17-siting.js` the same way, so those six files must stay DOM-free. The siting and lights tests also evaluate `48-data.js` and `60-lights.js`:
   these two may use three.js and the DOM inside their functions, never at the top level. `test/lib/png.mjs` reads the
   land-use PNGs (8-bit greyscale) with `node:zlib`. `build.mjs` exports `assemble()`, `build()`, `dataFiles()`,
-  `checkPr()` and `previewHtml()` for the page test. `M` from `test/harness.mjs` also includes `Evaluator` and `aWarnAt`.
+  `checkPr()` and `previewHtml()` for the page test. `M` from `test/harness.mjs` also includes `Evaluator`, `aWarnAt`,
+  `Recorder` and `qNlerp`.
 - Screenshots: `node test/shots.mjs <set> [--dist <built page>] [--out <dir>] [--pin <three-pin.mjs>]` (Playwright +
   Chrome, SwiftShader; sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `vis`, `all`). It builds the
   working tree into `.cache/shots-dist` unless `--dist` is given, writes PNGs to `shots/`, and serves three.js from
@@ -114,6 +124,12 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Generic two-seat turboprop trainer (fictional): m 2250 kg, S 16.3 m², b 10.2 m, P 700 kW, static thrust 11.5 kN.
 - Linear stability derivatives in `AC`, stall by Beard–McLain blending (M = 55, α_stall 17°, −2.5° with flaps),
   ground effect, spring-damper gear with tanh tyre friction, RK4 at 240 Hz.
+- Frame loop (research round 1 §9.4 and §9.7, T-N-07…T-N-09): `Flight.advance(realDt)` is a fixed-step accumulator
+  (ε 1e-9 s, at most 24 steps per frame, backlog beyond one step dropped, returns the steps). The constructor and
+  `tick()` keep the previous state (`xPrev`, `sPrev`; `Aircraft.setApproach`/`setParked` bump `ac.gen`, and
+  `renderPose()` then restarts from the new state), and `Flight.renderPose()` lerps position and surfaces and nlerps
+  attitude at α = acc/dt; the aircraft and cameras draw it (at most 1/240 s behind), the HUD reads the latest state. `qNlerp` is shared with `Recorder.at`. The other
+  tests step with `tick()`; only `numerics` goes through `advance`.
 - Stall warning by α (`AC.aWarn` 10.71°, `aWarnFlap` −3.84°/flap, so 6.87° with landing flaps; estimates from research
   T-A-07): about 7 kt above the stall, 14 CFR 23.207. `Evaluator.stallHorn` comes on at once, goes off 0.5° below after
   at least 0.5 s, and is off on the ground; it drives the horn and the HUD STALL word.
@@ -241,7 +257,11 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   Chrome tab before the page can block it (research round 1 §11.4.5). On macOS, Cmd's keyup also releases held keys
   (the browser sends no keyup for a key released while Cmd is down). C/T/P/R act once per press (key repeat
   ignored); while flying, bound keys do not scroll the page; held keys are released when the window loses focus or
-  the tab is hidden. Keys ramp linearly with frame time and self-centre (`src/25-input.js`, research round 1
+  the tab is hidden. Hiding the tab during a training flight also pauses it (warp 0, touch controls released), shows
+  "หยุดชั่วคราว — กด P เพื่อบินต่อ" on return (touch: "หยุดชั่วคราว — แตะข้อความนี้เพื่อบินต่อ"; a tap on the
+  message resumes, since full screen covers ×1; it sits above the instrument strip) until the flight runs again or
+  ends (another message may replace it for its 2.6 s, then it comes back), and never resumes by itself. Keys ramp
+  linearly with frame time and self-centre (`src/25-input.js`, research round 1
   §11.4.2): pitch 0.5/s up and 2.5/s back, roll 1.0/3.0, rudder 1.0/2.0, faster when the opposite key undoes a
   deflection; Shift held halves the rate and the travel (fine mode); a key pressed and released between two frames
   still counts for one frame.
@@ -276,9 +296,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   not been checked on a phone (it is a cross-origin frame and offers no device-motion capability, so probably not).
 - Stall-warning horn (Web Audio, starts after the first click or key press in the training mode, never in explore;
   silent when paused, outside a flight or with the tab hidden; the audio context is suspended after 2 s outside a
-  flight; continuous on slow frames, and fades out by itself 2.5 frame intervals (0.25–1 s) after frames stop);
-  checkbox `#chkHorn` in the flight pane turns it off (saved per viewer; flight keys still work while it has focus);
-  no key.
+  running flight, a paused one included; continuous on slow frames, and fades out by itself 2.5 frame intervals
+  (0.25–1 s) after frames stop); checkbox `#chkHorn` in the flight pane turns it off (saved per viewer; flight keys
+  still work while it has focus); no key.
 
 ## Research reports (docs/research/)
 - The owner's 5-round research program lives in `docs/research/`: `01-flight-physics.md`, `02-light-aircraft.md`,

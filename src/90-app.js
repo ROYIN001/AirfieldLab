@@ -471,6 +471,21 @@ async function main() {
   const bb = $('#btnBrake'); let brakeHeld = false;
   bb.addEventListener('pointerdown', (e) => { brakeHeld = true; bb.classList.add('on'); bb.setPointerCapture(e.pointerId); });
   const brUp = () => { brakeHeld = false; bb.classList.remove('on'); }; bb.addEventListener('pointerup', brUp); bb.addEventListener('pointercancel', brUp);
+  // Auto-pause when the tab is hidden (research 01-flight-physics/09-numerics.md §9.4 and task 1 of §9.12; round 1
+  // task list item 6): rAF stops while hidden [N9, N10], so stop the flight clock as the P key and the หยุด button
+  // do (warp 0), drop the touch stick, brake button and throttle drag (app.keys.clear above drops the keys), and say
+  // so in Thai when the tab shows again. Never resumes by itself: P, ×1 or a tap on the message does (touch screens
+  // have no P key, and full screen covers ×1). The message stays until the flight runs again or ends (frame()); another
+  // message may replace it for its 2.6 s, then frame() puts it back (pauseMsg is the wish, toast._pause what is shown).
+  const PAUSE_MSG = isTouch ? 'หยุดชั่วคราว — แตะข้อความนี้เพื่อบินต่อ' : 'หยุดชั่วคราว — กด P เพื่อบินต่อ';
+  let pauseMsg = false;
+  const showPause = () => { toast(PAUSE_MSG, Infinity); toast._pause = true; $('#toast').classList.add('tap'); };
+  document.addEventListener('visibilitychange', () => {
+    const flying = app.mode === 'train' && app.train.state === 'fly';
+    if (document.hidden) { stickUp(); brUp(); thrDrag = false; if (flying && app.train.warp) { app.train.warp = 0; refreshLive(); } }
+    else if (flying && !app.train.warp) { pauseMsg = true; showPause(); }
+  });
+  $('#toast').addEventListener('click', () => { if (toast._pause && app.train.state === 'fly' && !app.train.warp) { app.train.warp = 1; refreshLive(); } });
   // between flights (setup, replay, result) the gamepad's buttons still act, as C does on the keyboard
   function padButtons() {
     const gp = firstPad(); app.padIndex = gp ? gp.index : null;
@@ -491,6 +506,7 @@ async function main() {
   // ── per-frame aircraft pose from the simulation ──
   const Rm = new Array(9), basis = new THREE.Matrix4(), fwdV = new THREE.Vector3(), upV = new THREE.Vector3(), rtV = new THREE.Vector3();
   let propAngle = 0;
+  const rPose = { p: [0, 0, 0], q: [1, 0, 0, 0], de: 0, da: 0, dr: 0, flaps: 0, gearPos: 0, steer: 0 };   // Flight.renderPose output
   function poseFrom(x, q, surf, dt, running) {
     ned2w(x[0], x[1], x[2], ac3.group.position);
     qToR(q, Rm);
@@ -501,7 +517,7 @@ async function main() {
   }
 
   // ── HUD helpers ──
-  function toast(msg, ms = 2600) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._h); toast._h = setTimeout(() => t.classList.remove('on'), ms); }
+  function toast(msg, ms = 2600) { const t = $('#toast'); toast._pause = false; t.classList.remove('tap'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._h); if (ms < Infinity) toast._h = setTimeout(() => t.classList.remove('on'), ms); }
   let calloutUntil = 0;
   function callout(txt, warn = false, ms = 1100) { const c = $('#callout'); c.textContent = txt; c.classList.toggle('warn', warn); c.classList.add('on'); calloutUntil = performance.now() + ms; }
   const CALL_TXT = { 1000: '1000', 500: '500', 400: '400', 300: '300', 200: 'MINIMUMS', 100: '100', 50: '50', 40: '40', 30: '30', 20: '20', 10: '10' };
@@ -521,7 +537,7 @@ async function main() {
     // resume() and suspend() return promises that a browser may reject (e.g. resume outside a gesture); the next
     // gesture retries through unlock(), so a rejection is ignored.
     const ctxCall = (fn) => { try { const p = ctx[fn](); if (p && p.catch) p.catch(() => {}); } catch (e) { /* ignore */ } };
-    const flying = () => app.mode === 'train' && app.train.state === 'fly';
+    const flying = () => app.mode === 'train' && app.train.state === 'fly' && app.train.warp > 0;   // a paused flight idles too
     function unlock() {
       // Only in the training mode: explore never sounds the horn, so it opens no audio device. The click on the start
       // button (or the R key) is a gesture in the training mode, so the context still starts on one.
@@ -541,7 +557,8 @@ async function main() {
     // stall) and fades out by itself when frames stop without a visibilitychange (a claude.ai artifact runs in a
     // cross-origin iframe: scrolled out of view or display:none, rAF stops but the page stays 'visible'); the interval
     // is the last one measured, so a stop keeps the short fade. Ramps only (setTargetAtTime), so no clicks. Outside a
-    // flight the context is suspended after 2 s without the horn and resumed when a flight is running again.
+    // running flight (a paused one too, warp 0) the context is suspended after 2 s without the horn and resumed when a
+    // flight is running again; P, ×1 and the tap on the pause message resume it inside their gesture through unlock().
     function set(want) {
       const nowMs = performance.now(), dtF = (nowMs - lastSet) / 1000; lastSet = nowMs;
       if (dtF > 0 && dtF < 5) frameDt = dtF;
@@ -639,6 +656,9 @@ async function main() {
     const T = (now - t0) / 1000;
     SU.uTime.value = T;
     const keys = app.keys.frame();   // held keys and taps since the last frame, read every frame so no tap goes stale
+    if (pauseMsg && !(app.mode === 'train' && app.train.state === 'fly' && !app.train.warp)) {   // resumed, restarted or left: drop the pause message
+      pauseMsg = false; if (toast._pause) { toast._pause = false; $('#toast').classList.remove('on', 'tap'); }
+    } else if (pauseMsg && !$('#toast').classList.contains('on')) showPause();   // another message timed out while still paused
     let fl = null, running = true, recF = null;
     if (app.mode === 'explore') {
       const d = app.demo;
@@ -669,7 +689,7 @@ async function main() {
     horn.set(app.mode === 'train' && app.train.state === 'fly' && app.train.warp > 0 && fl && !fl.crashed && fl.ev.stallHorn);
     // aircraft pose
     if (recF) poseFrom([recF.n, recF.e, recF.d], recF.q, { de: recF.de, da: recF.da, dr: recF.dr, flaps: recF.fl, gearPos: recF.gr, steer: 0 }, dt, true);
-    else if (fl) { const ac = fl.ac; poseFrom(ac.x, [ac.x[6], ac.x[7], ac.x[8], ac.x[9]], { de: ac.de, da: ac.da, dr: ac.dr, flaps: ac.flaps, gearPos: ac.gearPos, steer: ac.steer }, dt, running); }
+    else if (fl) { const r = fl.renderPose(rPose); poseFrom(r.p, r.q, r, dt, running); }   // interpolated pose (T-N-09); the HUD reads fl.ac
     ac3.group.updateMatrixWorld(true);
     const acPos = ac3.group.position;
     // camera
