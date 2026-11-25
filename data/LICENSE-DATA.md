@@ -2,7 +2,8 @@
 
 The files in this folder are served beside the page: `node build.mjs` copies them into `dist/` with `index.html`.
 Research round 5 §11 (`docs/research/05-airport-city.md`) gives the licence rules; `test/licenses.test.mjs` checks
-this file, the page footer and `README.md` against `test/fixtures/license_policy.json`.
+this file, the page footer and `README.md` against `test/fixtures/license_policy.json`. The code of the repository
+is under the MIT licence (`LICENSE`); it does not change the licence of the files below, which stay under the ODbL.
 
 ## OpenStreetMap derived files (ODbL)
 
@@ -43,6 +44,6 @@ them (a Produced Work, such as the page or a screenshot) needs only the credit "
 
 ไฟล์ทั้งสี่ในโฟลเดอร์นี้สร้างจากแผนที่ OpenStreetMap จึงเป็นฐานข้อมูลอนุพันธ์ภายใต้ ODbL 1.0 ผู้ที่นำไปใช้ต่อต้องให้เครดิต
 "© ผู้ร่วมพัฒนา OpenStreetMap" และถ้าแจกจ่ายไฟล์ไม่ว่าจะดัดแปลงหรือไม่ ต้องแจกภายใต้ ODbL พร้อมข้อความนี้ เงื่อนไข
-share-alike ใช้กับไฟล์ข้อมูลเท่านั้น ไม่ใช้กับโค้ดใน `src/` (ดูสัญญาอนุญาตของโค้ดใน `README.md`) และภาพที่เรนเดอร์จากข้อมูลนี้ต้องมีเพียงเครดิต
+share-alike ใช้กับไฟล์ข้อมูลเท่านั้น ไม่ใช้กับโค้ด ซึ่งใช้สัญญาอนุญาต MIT ในไฟล์ `LICENSE` และภาพที่เรนเดอร์จากข้อมูลนี้ต้องมีเพียงเครดิต
 ค่าทางวิ่ง ไฟ และเครื่องช่วยเดินอากาศมาจาก AIP Thailand ซึ่งเป็นลิขสิทธิ์ของ กพท. repo ใช้เฉพาะตัวเลขและอ้างรอบ AIRAC
 ข้อมูลในเกมใช้เพื่อการฝึกเท่านั้น ไม่ใช้เพื่อการเดินอากาศจริง

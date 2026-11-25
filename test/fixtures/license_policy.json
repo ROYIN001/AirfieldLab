@@ -3,6 +3,7 @@
   "src": "docs/research/05-airport-city.md §11 (round 5, plan item A4); gpl_guard from docs/research/01-flight-physics/12-other-sims.md T-S-11 (round 1, R1-4)",
   "conf": "กลาง",
   "note": "test/licenses.test.mjs reads this file. The keys follow the §11 JSON block, except aip_cycle_current: T-K05 takes the cycle from test/fixtures/aip_vtbd_current.json. Changes to forbidden_sources, gpl_guard_allowlist or legacy_data_without_fields need the owner's approval in the pull request.",
+  "code_license": {"spdx": "MIT", "file": "LICENSE", "decided": "the owner, on a decision card, 2026-11-25 (research round 5 §12 P3-9)", "scope": "the code and the repository's own text; the files listed as ODbL in data/LICENSE-DATA.md stay under the ODbL 1.0, AIP values are facts © CAAT, and sources quoted in docs/research keep their own licences"},
   "required_footer_terms": ["OpenStreetMap", "ODbL", "AIP Thailand"],
   "conditional_footer_terms": {
    "data/city_v2.json": ["Overture Maps Foundation", "Google Open Buildings"],

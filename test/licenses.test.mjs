@@ -174,7 +174,21 @@ test('§11 item 4: data/LICENSE-DATA.md and README.md name the ODbL files, and e
   const sec = readme.slice(i).split(/\n## /)[0];
   for (const f of odbl) assert.ok(sec.includes('`' + f + '`'), `README names ${f} as ODbL`);
   assert.ok(sec.includes('(data/LICENSE-DATA.md)'), 'README links data/LICENSE-DATA.md');
-  // research round 5 §12 P3-9: the owner picks the code licence; README follows the LICENSE file either way
-  if (exists('LICENSE')) assert.ok(sec.includes('](LICENSE)'), 'README links the LICENSE file');
-  else assert.ok(sec.includes('ยังไม่มีไฟล์ `LICENSE`'), 'README says the code has no LICENSE yet');
+  // research round 5 §12 P3-9: the code licence the owner chose (MIT, 2026-11-25), linked from README
+  assert.ok(sec.includes('](LICENSE)') && sec.includes(POL.code_license.spdx), `README links LICENSE and names ${POL.code_license.spdx}`);
+});
+
+test('§12 P3-9 the code licence: LICENSE holds the full MIT text the owner chose, and the data notice keeps ODbL apart', () => {
+  const L = POL.code_license;
+  assert.equal(L.spdx, 'MIT');
+  const lic = read(L.file).replace(/\s+/g, ' ');
+  assert.match(lic, /^MIT License Copyright \(c\) 20\d\d \S/, 'title and copyright line');
+  // the two paragraphs of the MIT text that carry the grant and its one condition, word for word
+  for (const s of ['Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction',
+    'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.',
+    'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND'])
+    assert.ok(lic.includes(s), `LICENSE lacks: ${s.slice(0, 50)}…`);
+  // MIT for the code, ODbL for the OSM-derived files: the data notice says so in both languages
+  const data = read('data/LICENSE-DATA.md');
+  assert.ok(data.includes('MIT') && data.includes('`LICENSE`'), 'data/LICENSE-DATA.md names the code licence');
 });

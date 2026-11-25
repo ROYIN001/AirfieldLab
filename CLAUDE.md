@@ -30,12 +30,12 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `aip` (`RWY_DATA`, the derived
   geometry and the AIP facts in the Thai UI text against `test/fixtures/aip_vtbd_current.json`, research round 5
   T-A01…T-A19, T-A21, T-A22, T-A24, T-A25), `licenses` (footer credits and links, the cited AIRAC cycle, forbidden
-  sources and file types, `source`/`license` of data files, `data/LICENSE-DATA.md` and README, and no GPL/LGPL text
-  or JSBSim model outside the owner's allowlist: research round 5 §11 T-K01…T-K05 and round 1 §12 T-S-11, policy in
-  `test/fixtures/license_policy.json`), `page` (parses the assembled page module and checks the element ids the
-  scripts use). Autoland score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is a
-  loose 50); touchdown points and every mode value have regression bands. A physics change that moves them updates the
-  test in the same PR.
+  sources and file types, `source`/`license` of data files, `data/LICENSE-DATA.md`, README and the MIT `LICENSE`, and
+  no GPL/LGPL text or JSBSim model outside the owner's allowlist: research round 5 §11 T-K01…T-K05 and §12 P3-9, round 1
+  §12 T-S-11, policy in `test/fixtures/license_policy.json`), `page` (parses the assembled page module and checks the
+  element ids the scripts use). Autoland score floors sit just under the values measured on 2026-11-19 (the assist
+  robot's floor is a loose 50); touchdown points and every mode value have regression bands. A physics change that
+  moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, and
   `test/keys.test.mjs` evaluates `18-keys.js` the same way, so those four files must stay DOM-free. `build.mjs`
@@ -165,7 +165,8 @@ Suggested order, each with a Node test before tuning by feel in the browser:
 - Licences: `vtbd_af.json`, `land_in.png`, `land_out.png` and `city.json` are derived from OpenStreetMap and
   available under the ODbL 1.0 (`data/LICENSE-DATA.md`, which `node build.mjs` copies into `dist/` with them).
   `vtbd_af.json` and `city.json` predate the `source`/`license` field rule (`legacy_data_without_fields` in the
-  policy); a regenerated file gets the fields and leaves that list. The code has no `LICENSE` yet (the owner picks).
+  policy); a regenerated file gets the fields and leaves that list. The code is under MIT (`LICENSE`, the owner's choice on
+  2026-11-25); the ODbL files keep the ODbL.
 
 ## Working in the cloud (Claude Code on the web)
 - The owner works from the cloud so their computer can stay off. Test changes on the GitHub Pages site:
