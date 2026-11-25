@@ -53,7 +53,7 @@ test('RWY_DATA matches the fixture: thresholds, widths, MEHT, ILS idents, freque
         assert.ok(Math.hypot(g[0] - G[0], g[1] - G[1]) < 0.01, `${id} GP antenna position`);
       }
     } else {
-      assert.equal(a.tchFt, A.approach.tch_ft_assumed, `${id} RNP TCH (not published in AD 2.19; the research keeps 50 ft)`);
+      assert.equal(a.tchFt, A.approach.tch_ft, `${id} RNP TCH (AD 2.24 chart; AD 2.19 lists no ILS)`);
     }
   }
 });
@@ -96,10 +96,11 @@ test('T-A05 declared distances: TODA − TORA = the 150 m clearway, ASDA = TORA,
   }
 });
 
-test('T-A06 glide path crosses each threshold at the published RDH (03R: the assumed 50 ft TCH) ±0.01 m', () => {
+test('T-A06 the 3° glide path crosses each threshold at the published RDH (03R: the TCH of its RNP chart) ±0.01 m', () => {
   try {
     for (const id of ENDS) {
-      const P = AIP.ends[id].approach, ft = P.kind === 'ILS' ? P.rdh_ft : P.tch_ft_assumed;
+      const P = AIP.ends[id].approach, ft = P.kind === 'ILS' ? P.rdh_ft : P.tch_ft;
+      assert.equal(P.kind === 'ILS' ? P.gp_deg : P.vpa_deg, 3, `${id} published path angle (the sim flies 3° on every end)`);
       setActiveRunway(id);
       assert.ok(near(gpHeight(0), ft * FT, 0.01), `${id} gp(0) ${fx(gpHeight(0), 3)} m, AIP ${ft} ft`);
     }
@@ -148,10 +149,10 @@ test('T-A13 T-A16 localizers beyond the far threshold: 21R 300 m (±5), 21L betw
   assert.ok(v21L >= 222 && v21L <= 236, `21L ${fx(v21L)} m (AIP text 225 m, coordinates 232.6 m)`);
 });
 
-test('T-A14 T-A15 GP/DME 21R and 21L from AD 2.19 coordinates: ≈333/320 m in, 120 m off the centre line, between the runways', () => {
-  for (const [id, side] of [['21R', -1], ['21L', 1]]) {
+test('T-A14 T-A15 GP/DME 21R and 21L from AD 2.19 coordinates: 333 ±4 / 320 ±5 m in, 120 m off the centre line, between the runways', () => {
+  for (const [id, side, tolS] of [['21R', -1, 4], ['21L', 1, 5]]) {   // along-track tolerances of 5a-aip.md T-A14 and T-A15
     const P = AIP.ends[id].approach, [s, t] = stLL(id, P.gp);
-    assert.ok(near(s, P.pub_gp_from_thr_m, 5) && near(Math.abs(t), P.pub_gp_offset_m, 3) && Math.sign(t) === side, `${id} GP s ${fx(s)} m, t ${fx(t)} m`);
+    assert.ok(near(s, P.pub_gp_from_thr_m, tolS) && near(Math.abs(t), P.pub_gp_offset_m, 3) && Math.sign(t) === side, `${id} GP s ${fx(s)} m, t ${fx(t)} m`);
   }
 });
 
@@ -165,8 +166,8 @@ test('T-A18 DVOR/DME BKK: n −2,306.2 m, e −1,026.4 m; 324.7 m before THR 03L
   assert.ok(near(n, -2306.2, 1) && near(e, -1026.4, 1) && near(s, -324.7, 1) && near(t, 209.4, 1), `n ${fx(n)} e ${fx(e)} s ${fx(s)} t ${fx(t)}`);
 });
 
-test('T-A19 DME channels pair with the published VHF frequencies (ICAO Annex 10 Vol I, Table A)', () => {
-  // X channels: 108.00–112.25 MHz → 17X–59X, 112.30–117.95 MHz → 70X–126X, in 0.1 MHz steps
+test('T-A19 DME channels pair with the published VHF frequencies (47 CFR § 87.475, research [A17], as ICAO Annex 10)', () => {
+  // X channels in 0.1 MHz steps: 108.00–112.20 MHz → 17X–59X, 112.30–117.90 MHz → 70X–126X (Y channels sit 0.05 MHz up)
   const ch = (f) => (f <= 112.25 ? Math.round(17 + 10 * (f - 108.0)) : Math.round(70 + 10 * (f - 112.3))) + 'X';
   const pairs = ILS.map((id) => [id, AIP.ends[id].approach.loc_mhz, AIP.ends[id].approach.dme_ch]);
   pairs.push(['BKK', AIP.navaids['DVOR/DME BKK'].vor_mhz, AIP.navaids['DVOR/DME BKK'].dme_ch]);
@@ -201,19 +202,72 @@ test('T-A25 ATZ radius 5 NM = 9,260 m around the published ARP', () => {
   assert.equal(AIP.atz.centre, AIP.arp.published_current.dms);
 });
 
-test('the AIP facts quoted in the Thai UI text match the fixture (frequencies, MEHT, RDH, runway sizes)', () => {
+// The AIP facts quoted in the Thai UI text. Each quote is resolved to its runway end, ident or service and compared with
+// that one value (a value that is merely published somewhere else in the AIP does not pass), every quote of a kind is
+// checked (not just one copy), and each kind must be found at least as often as the UI quotes it today.
+test('the AIP facts quoted in the Thai UI text match the fixture (ILS ident, category and frequency, other frequencies, MEHT, RDH, runway sizes, 21L displacement and LDA, approach light lengths)', () => {
   const app = fs.readFileSync(new URL('../src/90-app.js', import.meta.url), 'utf8');
   const tpl = fs.readFileSync(new URL('../src/template.html', import.meta.url), 'utf8');
-  const freqs = new Set([
-    ...ILS.flatMap((id) => [AIP.ends[id].approach.loc_mhz, AIP.ends[id].approach.gp_mhz]),
-    AIP.navaids['DVOR/DME BKK'].vor_mhz, ...Object.values(AIP.comms_ad2_18).flat().filter(Number.isFinite),
-  ]);
-  const quoted = [...app.matchAll(/(\d{3}\.\d{1,2}) MHz/g)].map((m) => Number(m[1]));
-  assert.ok(quoted.length >= 4, `found ${quoted.length} frequencies`);
-  for (const f of quoted) assert.ok(freqs.has(f), `${f} MHz is not in AD 2.18/2.19`);
-  for (const m of app.matchAll(/MEHT (\d+\.\d+) ft \((\w+)\)/g)) assert.equal(Number(m[1]), AIP.ends[m[2]].papi.meht_ft, m[0]);
-  assert.match(app, new RegExp(`RDH ${AIP.ends['21R'].approach.rdh_ft} ft`));
-  const size = (id) => { const R = AIP.runways[id]; return `${R.len_m.toLocaleString('en-US')} × ${R.wid_m} ม.`; };
-  assert.ok(app.includes(size('03L/21R')) && app.includes(size('03R/21L')), 'runway sizes in the hotspot facts');
+  const byIdent = Object.fromEntries(ILS.map((id) => [AIP.ends[id].approach.ident, id]));
+  const SERVICE = { 'หอ': 'TWR', 'ภาคพื้น': 'GND', TWR: 'TWR', GND: 'GND', DEL: 'DEL', ATIS: 'ATIS' };
+  const uniq = (a) => [...new Set(a)];
+  const identsIn = (l) => uniq([...l.matchAll(/\b(I[A-Z]{3})\b/g)].map((m) => m[1]).filter((x) => x in byIdent));
+  const endsIn = (l) => uniq([...l.matchAll(/\b(\d\d[LR])\b/g)].map((m) => m[1]).filter((x) => x in AIP.ends));
+  const sizeOf = (rwy) => `${AIP.runways[rwy].len_m}×${AIP.runways[rwy].wid_m}`;
+  const n = (s) => Number(s.replace(/,/g, ''));
+  const count = {};
+  const seen = (k) => { count[k] = (count[k] || 0) + 1; };
+  app.split('\n').forEach((l, i) => {
+    const at = `src/90-app.js:${i + 1}`, ends = endsIn(l), idents = identsIn(l);
+    // the runway end a quote at index i is about: the only end the line names, else the last one named before it
+    const endAt = (i, what) => {
+      const id = ends.length === 1 ? ends[0] : [...l.slice(0, i).matchAll(/\b(\d\d[LR])\b/g)].map((m) => m[1]).filter((x) => x in AIP.ends).pop();
+      assert.ok(id, `${at}: cannot tell which runway end the ${what} belongs to (${ends.join(', ') || 'none named'})`); return id;
+    };
+    // "IBKK 109.3": an ILS ident and its LOC frequency, with or without "MHz"
+    for (const m of l.matchAll(/\b(I[A-Z]{3}) (\d{3}\.\d{1,2})\b/g)) {
+      assert.ok(m[1] in byIdent, `${at}: ${m[1]} is not an ILS of VTBD`);
+      assert.equal(Number(m[2]), AIP.ends[byIdent[m[1]]].approach.loc_mhz, `${at}: ${m[0]}`); seen('ident freq');
+    }
+    // every "x MHz": the label before it says whose frequency it is
+    for (const m of l.matchAll(/([^\s'"(\[]+) (\d{3}\.\d{1,2}) MHz/g)) {
+      const f = Number(m[2]), label = m[1];
+      if (label in byIdent) continue;                                         // checked above
+      if (label === 'GP') assert.equal(f, AIP.ends[endAt(m.index, 'GP frequency')].approach.gp_mhz, `${at}: ${m[0]}`);
+      else if (label in SERVICE) assert.ok(AIP.comms_ad2_18[SERVICE[label]].includes(f), `${at}: ${m[0]} is not a ${SERVICE[label]} frequency in AD 2.18`);
+      else { assert.equal(idents.length, 1, `${at}: "${m[0]}" names no service or ident`); assert.equal(f, AIP.ends[byIdent[idents[0]]].approach.loc_mhz, `${at}: ${m[0]}`); }
+      seen('MHz');
+    }
+    // "ILS CAT II · IBKK", "ILS CAT II ทาง 21R", "ทาง 21L มี ILS CAT I", or a lone "ILS CAT II" on a line about one ident
+    for (const m of l.matchAll(/ILS CAT (I{1,3})\b/g)) {
+      const after = l.slice(m.index + m[0].length), before = l.slice(0, m.index);
+      const id = after.match(/^ · (I[A-Z]{3})/)?.[1] ? byIdent[after.match(/^ · (I[A-Z]{3})/)[1]]
+        : after.match(/^ ทาง (\d\d[LR])/)?.[1] ?? before.match(/ทาง (\d\d[LR]) มี $/)?.[1]
+        ?? (idents.length === 1 ? byIdent[idents[0]] : undefined);
+      assert.ok(id, `${at}: cannot tell which runway "${m[0]}" is about`);
+      assert.equal(m[1], AIP.ends[id].approach.cat, `${at}: ${m[0]} (${id})`); seen('ILS CAT');
+    }
+    // MEHT: every number quoted after "MEHT" has the form "MEHT 65.42 ft (21R)"
+    const mehtQuotes = [...l.matchAll(/MEHT\s*\d/g)].length, meht = [...l.matchAll(/MEHT (\d+(?:\.\d+)?) ft \((\d\d[LR])\)/g)];
+    assert.equal(meht.length, mehtQuotes, `${at}: write MEHT as "MEHT <ft> ft (<runway end>)"`);
+    for (const m of meht) { assert.equal(Number(m[1]), AIP.ends[m[2]].papi.meht_ft, `${at}: ${m[0]}`); seen('MEHT'); }
+    // RDH: "RDH 54 ft" and "(RDH) 54 ฟุต" on a line about one runway end
+    for (const m of l.matchAll(/RDH\)? (\d+) (?:ft|ฟุต)/g)) { assert.equal(Number(m[1]), AIP.ends[endAt(m.index, 'RDH')].approach.rdh_ft, `${at}: ${m[0]}`); seen('RDH'); }
+    // runway sizes: "3,700 × 60 ม." and "ยาว 3,700 ม. กว้าง 60 ม.", checked against the runway the line is about when it
+    // names one runway (else against either runway: the pair must still be a published length and width)
+    const rwys = uniq(ends.map((id) => rwyOf(id).id));
+    for (const m of [...l.matchAll(/(\d,\d{3}) × (\d+) ม\./g), ...l.matchAll(/ยาว (\d,\d{3}) ม\. กว้าง (\d+) ม\./g)]) {
+      const got = `${n(m[1])}×${m[2]}`;
+      if (rwys.length === 1) assert.equal(got, sizeOf(rwys[0]), `${at}: ${m[0]} (${rwys[0]})`);
+      else assert.ok(Object.keys(AIP.runways).some((r) => sizeOf(r) === got), `${at}: ${m[0]} is neither runway`);
+      seen('size');
+    }
+    for (const m of l.matchAll(/(?:เลื่อน|อยู่ลึกจากปลายผิวทาง) (\d+) ม\./g)) { assert.equal(n(m[1]), AIP.ends[endAt(m.index, 'displacement')].disp_m, `${at}: ${m[0]}`); seen('disp'); }
+    for (const m of l.matchAll(/ระยะลงจอด (\d,\d{3}) ม\./g)) { assert.equal(n(m[1]), AIP.ends[endAt(m.index, 'LDA')].declared.lda, `${at}: ${m[0]}`); seen('LDA'); }
+    for (const m of l.matchAll(/ไฟนำร่อน(?:ยาว)? (\d+) ม\./g)) { assert.equal(n(m[1]), AIP.ends[endAt(m.index, 'approach light length')].als.len_m, `${at}: ${m[0]}`); seen('ALS'); }
+  });
+  // what the UI quotes today (src/90-app.js, 2026-11-25): fewer matches means a quote changed form and left the check
+  const floor = { 'ident freq': 4, MHz: 4, 'ILS CAT': 7, MEHT: 1, RDH: 2, size: 7, disp: 3, LDA: 3, ALS: 2 };
+  for (const [k, v] of Object.entries(floor)) assert.ok((count[k] || 0) >= v, `${k}: ${count[k] || 0} quotes found, expected at least ${v}`);
   for (const id of ['03L/21R', '03R/21L']) assert.ok(tpl.includes(`${id} ยาว ${AIP.runways[id].len_m.toLocaleString('en-US')} ม.`), `${id} length in the welcome text`);
 });

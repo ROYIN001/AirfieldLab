@@ -40,7 +40,7 @@ const RWY_DATA = [
     id: '03R/21L', w: 45, cl: false, conc: [0, 0],
     ends: [
       { id: '03R', thr: [dms(13, 53, 58.45), dms(100, 36, 5.50)], als: 'SALS300', tdz: false, mehtFt: 63.35,
-        appr: { kind: 'RNP', ident: 'RNP 03R', tchFt: 50 } },
+        appr: { kind: 'RNP', ident: 'RNP 03R', tchFt: 50 } },   // AD 2.24 chart RNAV/RNP RWY 03R: VPA 3.00°, TCH 50 ft
       { id: '21L', thr: [dms(13, 55, 28.33), dms(100, 36, 55.97)], disp: 350, als: 'CAT1', tdz: false, mehtFt: 63.81,
         appr: { kind: 'ILS', ident: 'IDMG', freq: '110.3', cat: 'I', loc: [dms(13, 53, 51.8), dms(100, 36, 1.8)], rdhFt: 53 } },
     ],

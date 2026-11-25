@@ -23,10 +23,11 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `papi` (PAPI distance from MEHT, colour
   bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `aip` (`RWY_DATA`, the derived
   geometry and the AIP facts in the Thai UI text against `test/fixtures/aip_vtbd_current.json`, research round 5
-  T-A01…T-A25), `licenses` (credits and the cited AIRAC cycle, research round 5 §11 T-K05), `page` (parses the
-  assembled page module and checks the element ids the scripts use). Autoland score floors sit just under the values
-  measured on 2026-11-19 (the assist robot's floor is a loose 50); touchdown points and every mode value have
-  regression bands. A physics change that moves them updates the test in the same PR.
+  T-A01…T-A19, T-A21, T-A22, T-A24, T-A25), `licenses` (the AIRAC cycle cited in the footer, `src/15-geo.js` and
+  this file, research round 5 §11 T-K05), `page` (parses the assembled page module and checks the element ids the
+  scripts use). Autoland score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is a
+  loose 50); touchdown points and every mode value have regression bands. A physics change that moves them updates the
+  test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, and
   `test/keys.test.mjs` evaluates `18-keys.js` the same way, so those four files must stay DOM-free. `build.mjs`

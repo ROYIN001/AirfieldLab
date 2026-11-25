@@ -382,9 +382,11 @@
     },
     "approach": {
      "kind": "RNP",
-     "note": "no ILS for 03R in AD 2.19; repo assumes TCH 50 ft (not published in AD 2.19)",
-     "tch_ft_assumed": 50,
-     "src": "repo"
+     "note": "no ILS for 03R in AD 2.19; VPA and TCH from the AD 2.24 chart RNAV/RNP RWY 03R (299599, page AD 2-VTBD-8-31, AIRAC 29 OCT 2026, read 18 NOV 2026)",
+     "vpa_deg": 3.0,
+     "tch_ft": 50,
+     "src": "5D [U6]",
+     "conf": "high"
     }
    },
    "21L": {
