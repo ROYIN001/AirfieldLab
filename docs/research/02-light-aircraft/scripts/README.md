@@ -17,7 +17,7 @@ node docs/research/02-light-aircraft/scripts/lm_ci.mjs --root .   # ซิมข
 |---|---|---|
 | `merge` | `lm_merge.mjs --coverage --dry --strict` | exit 0: ไม่มี ERRORS หรือ CONFLICTS, 0 WARN (รวมคำเตือนรูปแบบ leaf) และ path ของรอบที่ 1 ที่ขาด 0 ทุก id (`--strict` นับทั้งสามอย่างเป็น ERROR) |
 | `params` | `lm_merge.mjs --quiet --out $LM_OUT_DIR/params-light.json` | ไฟล์ที่ได้เหมือน `../params-light.json` ที่ commit ไว้ทุกไบต์ (ลืมรัน `lm_merge.mjs` หลังแก้บล็อก JSON = ไม่ผ่าน) |
-| `selftest` | `lm_selftest.mjs` | 124/124 (T-LM-01…T-LM-41) |
+| `selftest` | `lm_selftest.mjs` | 130/130 (T-LM-01…T-LM-41) |
 | `fleet` | `ls_tests.mjs` | 10/10 |
 | `handling` | `lh_tests.mjs` | 67/67 |
 | `procedures` | `lo_tests.mjs` | 34/34 |

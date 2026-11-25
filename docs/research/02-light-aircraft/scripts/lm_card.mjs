@@ -18,7 +18,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { HERE, loadType, val, leaf, isObj, isMainModule, trainingMass, iasCas } from './lm_lib.mjs';
+import { HERE, loadType, val, leaf, isObj, isMainModule, trainingMass, iasCas, LANDING_ALIASES } from './lm_lib.mjs';
 import { clmaxFromStall, toSimPolar } from './lm_polar.mjs';
 import { inertiaFromRadii, RADII } from './lm_inertia.mjs';
 
@@ -153,7 +153,7 @@ export function buildAC(card, opts = {}) {
   const tr = opts.trace || [];
   const T = (field, value, from, rule, flag = '') => { tr.push({ field, value, from, rule, flag }); return value; };
   const ac = {};
-  const cfgOrder = [opts.config, 'approach', 'landing', 'cruise', 'clean'];
+  const cfgOrder = [opts.config, 'approach', ...LANDING_ALIASES, 'cruise', 'clean'];   // same landing names as POINT_CFG.approach
 
   // mass and inertia (training_mass: number or the D3 object {kg, empty_kg, crew_kg, fuel_kg}, lm_lib.trainingMass)
   const tm = trainingMass(card), mtow = val(card, 'airframe.weights.MTOW');
@@ -219,8 +219,8 @@ export function buildAC(card, opts = {}) {
   for (const n of DERIV_NAMES) {
     if ((n === 'CD0' || n === 'K') && typeof leg[n] === 'number') { T(n, ac[n] = leg[n], 'aero.legacy.' + n, 'ตรง (รูปแบบของซิม K·(CL − 0.15)²)'); continue; }
     const v = val(card, 'aero.derivatives.' + n);
-    const order = n === 'CD0' || n === 'K' ? ['clean', 'cruise', ...cfgOrder] : cfgOrder;
-    const p = pickCfg(v, order);
+    const polar = n === 'CD0' || n === 'K';
+    const p = polar ? pickCfg(v, CLEAN_KEYS, { strict: true }) : pickCfg(v, cfgOrder);   // R2-07 review: the polar only from a clean key
     if (p) T(n, ac[n] = p.v, 'aero.derivatives.' + n + (p.key ? `.${p.key}` : ''), p.key ? `เลือก config "${p.key}"` : 'ตรง', p.fallback ? 'fallback' : '');
     else {
       const est = opts.derivEstimates?.[n];
@@ -231,7 +231,7 @@ export function buildAC(card, opts = {}) {
 
   // physical parabolic polar (aero.derivatives.CD0/K about CL = 0) → sim form about CL 0.15, same (L/D)max and CL*
   if (typeof leg.CD0 !== 'number' && typeof leg.K !== 'number') {
-    const pc = pickCfg(val(card, 'aero.derivatives.CD0'), ['clean', 'cruise', '0', 'UP'], { strict: true }), pk = pickCfg(val(card, 'aero.derivatives.K'), ['clean', 'cruise', '0', 'UP'], { strict: true });
+    const pc = pickCfg(val(card, 'aero.derivatives.CD0'), CLEAN_KEYS, { strict: true }), pk = pickCfg(val(card, 'aero.derivatives.K'), CLEAN_KEYS, { strict: true });
     if (pc && pk) { const sp = toSimPolar({ CD0: pc.v, K: pk.v });
       T('CD0', ac.CD0 = sp.CD0, 'aero.derivatives.CD0 + K', `แปลงเป็นรูปแบบซิม: (L/D)max ${sp.Emax.toFixed(2)} และ CL* ${sp.CLstar.toFixed(3)} คงเดิม`, 'converted');
       T('K', ac.K = sp.K, 'aero.derivatives.CD0 + K', 'Ks = 1/(2E(CL* − 0.15))', 'converted'); }
@@ -383,10 +383,11 @@ export function applyAC(M, ac) {
 // ───────────────────────── per-point derivative sets (R2-07) ─────────────────────────
 // aero.derivatives.<n> may be keyed by configuration ({cruise, approach}); buildAC picks ONE value per field (opts.config,
 // else 'approach' first), so before R2-07 runCard linearised the cruise point with the approach set. runCard now swaps in
-// the set of each linearisation point around its modes() call. Order per point: the point's own key, then its synonyms;
+// the set of each linearisation point around its modes() call. Order per point: the point's own key, then its synonyms
+// (approach: the landing names of lm_lib LANDING_ALIASES; the 14 cards keyed by config today use cruise/approach only);
 // a field with none of them keeps the value of the AC that runCard was given. CD0/K are left out: buildAC takes the
 // polar from aero.legacy or the clean/cruise value at every point (flap and gear drag are CDflap/CDgear).
-export const POINT_CFG = { cruise: ['cruise', 'clean', '0', 'UP', 'up', 'retracted'], approach: ['approach', 'landing'] };
+export const POINT_CFG = { cruise: ['cruise', 'clean', '0', 'UP', 'up', 'retracted'], approach: ['approach', ...LANDING_ALIASES] };
 /** {cruise: {field: value}, approach: {...}, keys: {cruise: {field: key}, ...}} for the config-keyed aero.derivatives of a card */
 export function derivSets(card) {
   const out = { cruise: {}, approach: {}, keys: { cruise: {}, approach: {} } };
@@ -612,8 +613,8 @@ export function glideSweep(M, { h = 3000 * FT, v0, v1, step = 1, thr = 0 }) {
  * Take-off to 50 ft wheel height, SL, calm: brakes on, full throttle 3 s, release, elevator 0 until IAS >= VR.
  * mode 'r1' (default; round-1 v10_perf §4, T-LM-07 590 m, and every card whose VR/θ/thrust was fitted with it): at VR an
  *   attitude command ramps from the ground attitude at 3 deg/s to theta (PI law); lift-off = first step with no wheel in
- *   contact and IAS > 0.5 VR. The PI elevator builds up only as the ramp error grows, so the nose wheel leaves 1.2–3.1 s
- *   after VR and the mains unload during the ramp at θ 3–8°, CL 0.8–1.14 (far below CLmax): V_LOF = VR + 6–19 kt and does
+ *   contact and IAS > 0.5 VR. The PI elevator builds up only as the ramp error grows, so the nose wheel leaves 1.1–3.1 s
+ *   after VR and the mains unload during the ramp at θ 1.9–8.3°, CL 0.82–1.15 (far below CLmax): V_LOF = VR + 5–19 kt and does
  *   not depend on theta once theta exceeds that attitude (R2-19).
  * mode 'rate' (R2-19, opt-in: validation.takeoff_test.mode / rate_dps): at VR a pitch-rate command of `rate` deg/s
  *   (PI on q, so the elevator winds up until the nose wheel lifts) until theta, then the same attitude hold as 'r1';

@@ -310,6 +310,15 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
   check('T-LM-37', 'c172s runCard cruise DR wn − buildAC(config cruise) DR wn', rc.modes.cruise.dr.wn - ref.dr.wn, 0, 1e-9);
   check('T-LM-37', 'c172s runCard cruise roll tau − buildAC(config cruise)', rc.modes.cruise.roll_tau - ref.roll.tau, 0, 1e-9);
   check('T-LM-37', 'c172s runCard modes: derivSet cruise / approach recorded (count)', (rc.modes.cruise.derivSet === 'cruise') + (rc.modes.approach.derivSet === 'approach'), 2, 0);
+  // the approach point keeps the approach set even when runCard is handed an AC built with the cruise set
+  const rs3 = L.applyAC(M, aC);
+  const rcC = L.runCard(M, aC, ci, { noGround: true });
+  rs3();
+  const aA = L.buildAC(c, { config: 'approach' }), rs4 = L.applyAC(M, aA), ca = L.cardInfo(c, aA);
+  const refA = L.modes(M, { ias: ca.approach.ias, h: ca.approach.h, flaps: 1, gear: 1, gammaDeg: ca.approach.gammaDeg }, { adot: true });
+  rs4();
+  check('T-LM-37', 'c172s runCard(AC config cruise) approach DR wn − buildAC(config approach) DR wn', rcC.modes.approach.dr.wn - refA.dr.wn, 0, 1e-9);
+  check('T-LM-37', 'c172s runCard(AC config cruise) approach roll tau − buildAC(config approach)', rcC.modes.approach.roll_tau - refA.roll.tau, 0, 1e-9);
 }
 // T-LM-38 (R2-07): a clean lookup never falls back to a flap-down key (p68c has CLmax_target only for flap 35)
 {
@@ -333,6 +342,19 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
   const d = loadType('da40ng');
   check('T-LM-39', `da40ng "0" → its clean row by alias (${Lb.iasCas(d, '0', { warn: false }).row})`, Lb.iasCas(d, '0', { warn: false }).how === 'alias' ? 1 : 0, 1, 0);
   check('T-LM-39', 'unknown detent name → how unknown (first row)', Lb.iasCas(c, 'nonsense', { warn: false }).how === 'unknown' ? 1 : 0, 1, 0);
+  // asymmetric weight: without row 10, flap 20 lies 2/3 of the way from row 0 to row 30
+  const c2 = structuredClone(c); delete Lb.leaf(c2, 'speeds.ias_cas').v['10'];
+  const u20 = Lb.iasCas(c2, '20', { warn: false }), u0 = Lb.iasCas(c2, '0'), u30 = Lb.iasCas(c2, '30');
+  check('T-LM-39', `c172s without row 10, flap 20: how interp (${u20.how}), w`, u20.how === 'interp' ? u20.w : NaN, 2 / 3, 1e-12);
+  check('T-LM-39', 'c172s without row 10: CAS(60 KIAS) − (⅓ row 0 + ⅔ row 30)', u20.f(60) - (u0.f(60) / 3 + 2 * u30.f(60) / 3), 0, 1e-9);
+  // a detent whose flap_deg is null is unknown (before: 0), and a landing alias over such detents has no angle
+  const c3 = structuredClone(d), dl = Lb.leaf(c3, 'aero.flaps.detents').v.map(e => ({ ...e, flap_deg: null }));
+  Lb.leaf(c3, 'aero.flaps.detents').v = dl;
+  const nn = String(dl.find(e => !/^-?\d+(\.\d+)?$/.test(String(e.name)) && !Lb.CLEAN_ALIASES.includes(String(e.name)))?.name);
+  check('T-LM-39', `detentDeg(da40ng with flap_deg null, "${nn}") and ("landing") are null (count)`, (Lb.detentDeg(c3, nn) === null) + (Lb.detentDeg(c3, 'landing') === null), 2, 0);
+  // only LDG unknown: "LDG", "full" and "landing" stay unknown instead of taking the T/O angle
+  const c4 = structuredClone(d); Lb.leaf(c4, 'aero.flaps.detents').v = Lb.leaf(c4, 'aero.flaps.detents').v.map(e => (e.name === 'LDG' ? { ...e, flap_deg: null } : e));
+  check('T-LM-39', 'da40ng with LDG flap_deg null: detentDeg LDG / full / landing null (count)', ['LDG', 'full', 'landing'].filter(n => Lb.detentDeg(c4, n) === null).length, 3, 0);
 }
 // T-LM-40 (R2-08): vx_vy and xfile_vy on synthetic cards (speeds.climb_basis labels the flap and mass of VX and VY)
 {

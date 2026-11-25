@@ -333,10 +333,12 @@ export const trainingMassKg = card => trainingMass(card)?.kg;
 export const CLEAN_ALIASES = ['clean', 'cruise', '0', 'UP', 'up', 'retracted'], LANDING_ALIASES = ['landing', 'full', 'FULL', 'LDG'];
 export function detentDeg(card, name) {
   const s = String(name), d = val(card, 'aero.flaps.detents');
-  if (Array.isArray(d)) { const x = d.find(e => String(e.name) === s); if (x && Number.isFinite(+x.flap_deg)) return +x.flap_deg; }
+  const deg = e => (e && e.flap_deg != null && e.flap_deg !== '' && Number.isFinite(+e.flap_deg) ? +e.flap_deg : null);   // null/'' = unknown, not 0
+  if (Array.isArray(d)) { const x = d.find(e => String(e.name) === s); if (x) { const g = deg(x); if (g != null) return g; if (LANDING_ALIASES.includes(s)) return null; } }
   if (/^-?\d+(\.\d+)?$/.test(s)) return +s;
   if (CLEAN_ALIASES.includes(s)) return 0;
-  if (LANDING_ALIASES.includes(s) && Array.isArray(d) && d.length) return Math.max(...d.map(e => +e.flap_deg).filter(Number.isFinite));
+  // a landing alias is the largest detent only when every detent's angle is known
+  if (LANDING_ALIASES.includes(s) && Array.isArray(d) && d.length) { const a = d.map(deg); if (a.every(x => x != null)) return Math.max(...a); }
   return null;
 }
 /** lookups of iasCas that did not find their row by name: {name, rows, how, used, w}; how = interp | nearest | unknown (warned once each) or alias */
