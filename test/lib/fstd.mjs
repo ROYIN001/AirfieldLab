@@ -4,7 +4,7 @@
 //  differences plus the quasi-steady α̇ correction A = (I − b·cᵀ)⁻¹·A0; eig4: Faddeev–LeVerrier + Durand–Kerner;
 //  modes: short period, phugoid, Dutch roll, roll and spiral with CAP; within / levelOf for the criteria.
 import { M } from '../harness.mjs';
-const { DEG, KT, G0, AC, FIELD, atmosphere, eulerToQ, qToR } = M;
+const { DEG, KT, G0, AC, eulerToQ, qToR } = M;
 const Rv = (R, v) => [0, 3, 6].map((i) => R[i] * v[0] + R[i + 1] * v[1] + R[i + 2] * v[2]);
 const RTv = (R, v) => [0, 1, 2].map((i) => R[i] * v[0] + R[i + 3] * v[1] + R[i + 6] * v[2]);
 
@@ -33,7 +33,7 @@ export function solve(A, b) {   // Gaussian elimination with partial pivoting
 // Wings-level trim at a flight-path angle: unknowns α, δe, thr; residuals u̇, ẇ, q̇.
 export function trim(ac, { ias, h, flaps = 0, gear = 0, gammaDeg = 0 }) {
   ac.flaps = flaps; ac.gearPos = gear; ac.adot = 0;
-  const rho = atmosphere(FIELD.elev + h, ac.isaDev).rho, V = ias * KT / Math.sqrt(rho / 1.225), g = gammaDeg * DEG;
+  const rho = ac.atm(h).rho, V = ias * KT / Math.sqrt(rho / 1.225), g = gammaDeg * DEG;
   const Y = (a) => [V * Math.cos(a), 0, V * Math.sin(a), 0, 0, 0, 0, a + g, 0];
   const res = (x) => { ac.de = x[1]; ac.thr = x[2]; const f = f9(ac, Y(x[0]), h); return [f[0], f[2], f[4]]; };
   let x = [4 * DEG, -2 * DEG, 0.4];

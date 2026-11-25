@@ -2,7 +2,8 @@
 // auto-throttle; what a phone player gets) and DIRECT (raw controls, with rudder pedals as on a keyboard or gamepad;
 // the touch controls have no rudder), calm and 15 kt gusty crosswind. On the runway the DIRECT robot steers with the
 // pedals (before this it held the sideslip rudder law on the ground and ran off the side in the crosswind). The score
-// floor here is a loose 50 (the robot is not a good pilot; measured 64–81). Then the autopilot's touchdown attitude.
+// floor here is a loose 50 (the robot is not a good pilot; measured 65–80 in the A8 default weather, 65–81 in dry ISA
+// just before A8, 64–81 on 2026-11-19). Then the autopilot's touchdown attitude.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { M } from './harness.mjs';
@@ -50,7 +51,8 @@ for (const [key, sc] of Object.entries({ calm: SCENARIOS.calm, xl: SCENARIOS.xl 
   });
 }
 
-// the autopilot touches down nose high (no nose-first landing)
+// the autopilot touches down nose high (no nose-first landing). xr scores 96 in the A8 default weather (97 in dry ISA
+// before A8, seed 5's gusts differ), 1 over the floor; the floor is unchanged.
 for (const key of ['calm', 'xr']) {
   test(`AP ${key}: nose-high touchdown, score ≥ 95`, () => {
     const f = new Flight({ wind: SCENARIOS[key], pilot: 'ap', seed: 5 });

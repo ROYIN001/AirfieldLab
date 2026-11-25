@@ -63,6 +63,7 @@ const app = {
   view: 'overview', trainCam: 'chase', spot: null,
   wind: { fromDeg: 40, kt: 9 }, visIdx: 5, cloudIdx: 1,
   train: { state: 'setup', scn: 'xr', dist: 5556, pilot: 'ap', assist: true, autoThr: true, warp: 1, rwy: '03L' },
+  wx: { ...WX_DEFAULT },   // OAT, QNH, dew point of the flights and the briefing (B10 WeatherState will set them)
   input: { x: 0, y: 0, rud: 0, thr: 0.25, brake: 0 }, keys: new KeyState(), pin: new PilotInput(), padIndex: null,
 };
 if (!QUALITY[app.q]) app.q = 'balanced';
@@ -270,10 +271,12 @@ async function main() {
     for (const b of $('#segTrTime').children) b.setAttribute('aria-pressed', String(Math.abs(+b.dataset.min - curMin) < 1));
     const man = app.train.pilot === 'man';
     $('#chkAssist').disabled = !man; $('#chkAt').disabled = !man || !app.train.assist;
-    const sc = SCENARIOS[app.train.scn], oat = 31;
-    const da = densityAltitudeFt(FIELD.elev, oat);
-    $('#brief').innerHTML = [['Vref', `${AC.Vref} kt`], ['Vapp', `${AC.Vapp} kt`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${oat}°C`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
-      .map(([k, v]) => `<div><small>${k}</small><b>${v}</b></div>`).join('');
+    const sc = SCENARIOS[app.train.scn], wx = app.wx, qnh = wx.qnh ?? P0_HPA;   // no QNH = 1013.25 hPa, as in Flight
+    // humid air at the field from QNH (research round 4, 04-weather.md §6.1, ATM-5); the old dry rule read ~420 ft low.
+    // QNH is shown as a METAR gives it, rounded down to a whole hPa (ICAO Annex 3 App. 3)
+    const da = densityAltitudeFt(airDensity(fieldPressure(qnh, FIELD.elev), wx.oatC, wx.dewC));
+    $('#brief').innerHTML = [['Vref', `${AC.Vref} kt`], ['Vapp', `${AC.Vapp} kt`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${fmt(wx.oatC)}°C`], ['จุดน้ำค้าง', wx.dewC == null ? '—' : `${fmt(wx.dewC)}°C`], ['QNH', `${Math.floor(qnh)} hPa`], ['ความชื้นสัมพัทธ์', wx.dewC == null ? '—' : `${fmt(relHumidity(wx.oatC, wx.dewC))}%`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
+      .map(([k, v]) => `<div><small>${k}</small><b>${v}</b></div>`).join('') + '<div style="grid-column: 1 / -1"><small>ค่าประมาณของวันทั่วไป: QNH เฉลี่ยทั้งปีและจุดน้ำค้างเฉลี่ยเวลา 11:00 น. จากสถิติ METAR ดอนเมือง 2016–2025 (Iowa Environmental Mesonet) · อุณหภูมิเป็นค่าเริ่มต้นของโปรแกรม</small></div>';
   }
   function refreshLive() { for (const b of $('#segWarp').children) b.setAttribute('aria-pressed', String(+b.dataset.w === app.train.warp)); $('#btnTake').textContent = app.flight && app.flight.pilot === 'ap' ? 'รับช่วงบังคับเอง' : 'ให้ออโต้ไพลอตบิน'; }
   function showTrainPane(which) { $('#trSetup').hidden = which !== 'setup'; $('#trLive').hidden = which !== 'fly'; $('#trResult').hidden = which !== 'result'; }
@@ -282,10 +285,10 @@ async function main() {
   let demoFirst = true;
   function newDemo() {
     setActiveRunway(inUse());
-    const f = new Flight({ wind: { fromDeg: app.wind.fromDeg, kt: app.wind.kt, turb: app.wind.kt > 12 ? 1.1 : 0.5 }, pilot: 'ap', dist: demoFirst ? 1700 : 5600, seed: Math.floor(Math.random() * 1e6) });
+    const f = new Flight({ wind: { fromDeg: app.wind.fromDeg, kt: app.wind.kt, turb: app.wind.kt > 12 ? 1.1 : 0.5 }, pilot: 'ap', dist: demoFirst ? 1700 : 5600, seed: Math.floor(Math.random() * 1e6), ...app.wx });
     demoFirst = false; return f;
   }
-  function flightOpts() { const sc = SCENARIOS[app.train.scn]; return { wind: sc, dist: app.train.dist, pilot: app.train.pilot, assist: app.train.assist, autoThr: app.train.autoThr, seed: 7 + Math.floor(Math.random() * 1000), oatC: 31, dh: app.train.pilot === 'man' ? 12 : 0, dtl: app.train.pilot === 'man' ? 40 : 0 }; }
+  function flightOpts() { const sc = SCENARIOS[app.train.scn]; return { wind: sc, dist: app.train.dist, pilot: app.train.pilot, assist: app.train.assist, autoThr: app.train.autoThr, seed: 7 + Math.floor(Math.random() * 1000), oatC: app.wx.oatC, qnh: app.wx.qnh, dewC: app.wx.dewC, dh: app.train.pilot === 'man' ? 12 : 0, dtl: app.train.pilot === 'man' ? 40 : 0 }; }
   function previewFlight() { setActiveRunway(app.train.rwy); app.flight = new Flight(flightOpts()); app.train.state = 'setup'; chase.init = false; }
   function startFlight() {
     if (app.tilt.want && !app.tilt.on) enableTilt();   // the option was kept from an earlier visit; this is a tap

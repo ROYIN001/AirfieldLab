@@ -40,7 +40,12 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   live one draws the new state at once, a crashed one draws still; `qNlerp` and `Recorder.at` attitudes; as a
   regression guard only (it held before A7 too), the gusty-crosswind autoland on 21R lands identically at 60 Hz,
   144 Hz and jittery frames; the auto-pause, pause-message, tap-to-resume (CSS included) and pose and camera wiring in
-  `src/90-app.js`), `input` (shaping, key ramps, the
+  `src/90-app.js`), `weather`
+  (humid air and QNH, research round 4 ATM-1…ATM-10 and the 12 monthly DERIVED rows of 04-weather.md §2.2; ATM-8 at
+  elevation 0 as the research computed it; `atmosphere()` with QNH and dew point, old 2-argument calls bit-identical;
+  Flight defaults, dry-ISA option, `qnh: null` = 1013.25 hPa, dew point read at the field, Td > T capped at saturation
+  in `airDensity`/`relHumidity` as in `atmosphere()`; `WX_DEFAULT` recomputed from the METAR statistics; the briefing,
+  training-flight and demo-flight wiring), `input` (shaping, key ramps, the
   sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
   phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
@@ -63,9 +68,10 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   table of every steady light; every taxiway edge light tried with separate geometry code, every place without one
   held to a cause, every free corner of a junction lit, no bare edge dark over 54 m, and the same places with every
   line drawn the other way round; the stands of
-  `alsStands` against the real pavements; every flash seen at 20, 30 and 60 frames a second). Autoland
-  score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is a loose 50); touchdown
-  points and every mode value have regression bands. A physics change that moves them updates the test in the same PR.
+  `alsStands` against the real pavements; every flash seen at 20, 30 and 60 frames a second).
+  Autoland score floors sit at or just under the values measured on 2026-11-19 and re-measured for A8 on
+  2026-11-23 (the assist robot's floor is a loose 50); touchdown points and every mode value have regression bands.
+  A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 25-input.js` with
   `new Function` in strict mode, `test/keys.test.mjs` evaluates `18-keys.js` and `test/siting.test.mjs` evaluates
@@ -73,7 +79,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   these two may use three.js and the DOM inside their functions, never at the top level. `test/lib/png.mjs` reads the
   land-use PNGs (8-bit greyscale) with `node:zlib`. `build.mjs` exports `assemble()`, `build()`, `dataFiles()`,
   `checkPr()` and `previewHtml()` for the page test. `M` from `test/harness.mjs` also includes `Evaluator`, `aWarnAt`,
-  `Recorder` and `qNlerp`.
+  `Recorder`, `qNlerp`, `WX_DEFAULT` and the humid-air functions of `10-atmo.js`.
 - Screenshots: `node test/shots.mjs <set> [--dist <built page>] [--out <dir>] [--pin <three-pin.mjs>]` (Playwright +
   Chrome, SwiftShader; sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `vis`, `all`). It builds the
   working tree into `.cache/shots-dist` unless `--dist` is given, writes PNGs to `shots/`, and serves three.js from
@@ -92,7 +98,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | file | role |
 |---|---|
 | 00-head.js | three.js imports (OrbitControls, BufferGeometryUtils) |
-| 10-atmo.js | pure: constants (KT, FT, NM, DEG, RAD, G0), USSA-1976 `atmosphere(h, isaDev)`, NOAA sun position, sky radiance, MOR visibility (`morBeta`, `hazeDepth`, `hazeDepthUp`, `skyHazeBeta`, `sunHazeT`) |
+| 10-atmo.js | pure: constants (KT, FT, NM, DEG, RAD, G0), USSA-1976 `atmosphere(h, isaDev, qnh, dewC, hDew)`, humid air (`satVap`, `relHumidity`, `dewPoint`, `fieldPressure`, `airDensity`, `densityAltitudeFt(ρ)`, `pressureAltitudeFt`; old rule `densityAltitudeDryFt`), NOAA sun position, sky radiance, MOR visibility (`morBeta`, `hazeDepth`, `hazeDepthUp`, `skyHazeBeta`, `sunHazeT`) |
 | 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
 | 17-siting.js | pure: where something tall may stand: obstacle limitation surfaces `olsHeight(e, n)`, approach light lanes `alsLaneOf`, `ALS` (length and spacing per system), `RWY_PAD`, `TWY_W`, `SiteIndex` (clearances from buildings, decks, aprons, taxiways, water; the land-use class under a point), `STATIONS` and `stationSites(af)`, `mappedSite`, `placeTrees`, `siteBuildings` (`buildingProblem`, `groundShare`); also `rwyST`, `rwyEN`, `onAnyRunway`, `pointInPoly`, `nearestOnLine`, `lineLength`, `pointAlong` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions + `frame()` with sub-frame taps; `app.keys`) |
@@ -141,22 +147,35 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   (`07-gear.md` task 1); on the ground ny carries the velocity-based tyre side force (`07-gear.md` §7.0, §7.12 task 3)
   and reaches 0.2–0.4 g at a crosswind touchdown (21R autoland, seed 5: 0.41 g in `xr`, 0.29 g in `xl`, 0.17 g in
   `head`, against ≤ 0.11 g in the air), so a HUD ball or side-load use waits for that tyre model too.
+- Air (plan A8, research round 4 §6.1–6.2, §13 item 1): `Aircraft.atm(h)` gives the ISA pressure profile scaled to
+  QNH, ISA lapse + isaDev, and humid air from the dew point measured at the field (constant mixing ratio, capped at
+  saturation); lift, drag and air data use it. Thrust (`thrustAvail(V)`) sees the air only through TAS: shaft power
+  is right as it is (flat rated to 37 °C, `01-flight-physics/04-turboprop.md`), and the static-thrust ρ term (≈ρ^{1/3}
+  by momentum theory, steeper in the BEM of `03-propeller.md` §3.2 and T-P-02; −0.5 % to −1.8 % at the default
+  weather) waits for the propeller model (next phase, item 2), which should take its air from `Aircraft.atm(h)`.
+  `Flight` takes `oatC`, `qnh`, `dewC`; `WX_DEFAULT` (20-flight.js, ค่าประมาณ) is OAT 31 °C, QNH 1009.3 hPa (annual
+  mean of the VTBD METARs 2016–2025, `docs/research/data/vtbd-metar-climo.json`), dew point 22.8 °C (annual mean at
+  11 LT, the hour nearest 31 °C): ρ 1.1437 kg/m³ (−1.4 % against dry ISA), RH 62 %, DA 2,300 ft in the briefing.
+  `new Flight({ qnh: 1013.25, dewC: null })` and a bare `new Aircraft()` keep the old dry ISA air bit for bit.
+  `app.wx` in 90-app.js feeds the briefing and the flights (B10 WeatherState will set it).
 - Wind: 1/7-power shear + MIL-F-8785C Dryden turbulence (first-order).
 - Autopilot: LOC/GS tracking, flare, decrab, rollout, braking. `PilotLaws`: ASSIST (attitude command, auto-rudder,
   auto-throttle) and DIRECT (surface deflections + auto-trim).
 - Evaluator: stabilised gates at 500 and 200 ft, callouts, touchdown score (sink 40, position 25, centre line 15,
   speed 10, attitude 10). Touchdown window 300–600 m is "perfect". The debrief `'stall'` event (near stall:
   stall blend σ (`air.stall`) > 0.25 or α > α_stall(flaps) − 4°) is separate from the warning and not scored.
-- Verified (`test/runways.test.mjs`, seed 5): autoland on 21R, 21L, 03L, 03R in calm scores 100/100/100/93 and in
-  15 kt gusty crosswind 88/88/90/78. Measured baseline over the turbulence seeds the app draws (7–1006, 1,000
-  autolands each, 2026-11-19): 10 kt headwind on 03L 89–100 (median 100); 10 kt crosswind on 03L 81–97 (median
-  96); 15 kt gusty crosswind on 21R 35–97 (median 85), where 51 flights log the near-stall event and 2 (seeds 42 and
-  559) bounce and are flagged as a crash about 5 s after touchdown. Seeds 1–10 give 74–94 in the gusty crosswind
-  on all four runways. Calm has no turbulence, so its scores do not depend on the seed. With the A5 horn, 95 of 100
-  gusty-crosswind autolands on 21R (seeds 7–106) hear short chirps, 69 of them above 20 ft and 39 above 50 ft, because
-  the autopilot flies Vref with no gust allowance; with seed 5 the horn starts in APP at 29–50 ft on all four runway
-  ends (round 2's `stall_warning` check counts anything above 20 ft). Open for the owner: flap α_warn 7.77° (about
-  5 kt) or a Vref gust additive.
+- Verified (`test/runways.test.mjs`, seed 5, A8 default weather): autoland on 21R, 21L, 03L, 03R in calm scores
+  100/100/100/93 and in 15 kt gusty crosswind 85/80/85/80 (88/88/90/78 in dry ISA before A8: the Dryden filter steps
+  with TAS, so a seed's gusts change). Measured baseline over the turbulence seeds the app draws (7–1006, 1,000
+  autolands each, 2026-11-23, A8): 10 kt headwind on 03L 88–100 (median 100; dry ISA 89–100); 10 kt crosswind on 03L
+  82–97 (median 96; dry ISA 81–97); 15 kt gusty crosswind on 21R 35–98 (median 85, mean 84.1; dry ISA 35–97, median
+  85, mean 83.8), where 52 flights log the near-stall event and none crashes (dry ISA: seeds 42 and 559 bounced and
+  were flagged as a crash). Seeds 1–10 give 67–96 (dry ISA before A8: 75–94) in the gusty crosswind on all four runways. Calm has
+  no turbulence, so its scores do not depend on the seed. With the A5 horn, 95 of 100 gusty-crosswind autolands on 21R
+  (seeds 7–106) hear short chirps, 71 of them above 20 ft and 36 above 50 ft, because the autopilot flies Vref with no
+  gust allowance; with seed 5 the horn first sounds in APP at 38–43 ft on all four runway ends (dry ISA 45–50 ft), APP
+  onsets span 25–43 ft (dry ISA 29–50 ft), and 21L and 03R add one and two FLARE onsets at 11–22 ft (round 2's
+  `stall_warning` check counts anything above 20 ft). Open for the owner: flap α_warn 7.77° (about 5 kt) or a Vref gust additive.
 
 ## Visibility (current)
 - The visibility choice (500 m to 40 km, default 20 km) is MOR (WMO-No. 8; research round 4 §6.8): extinction

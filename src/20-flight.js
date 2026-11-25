@@ -3,6 +3,11 @@
 // body FRD (x nose, y right wing, z down). Quaternion q = [w,x,y,z] maps body → NED.
 // RK4 at 240 Hz, the same integration scheme Orbitlab uses for its rigid-body ascent.
 
+// Ground: physics keeps flat ground at d = 0 at FIELD.elev 2.65 m (AIP AD 2.2, AIRAC 14 MAY 2026; AIRAC 29 OCT 2026
+// prints 3 m, kept). The real ground inside the aerodrome is 1.5–2.0 m above MSL (EGM2008; Copernicus DEM GLO-30,
+// airport-edited zone median 1.50 m, ARP 1.95 m). The aerodrome elevation is the highest point of the landing area,
+// not the ground at the ARP, and relief within 10 km is smaller than the DEM's accuracy (LE90 1.69–1.91 m) [I2][I12],
+// so no DEM mesh (research round 5, 05-airport-city/5c-city.md §9 "สิ่งที่ Claude Code ควรทำ" item 7).
 const FIELD = {
   name: 'ท่าอากาศยานดอนเมือง (VTBD)', lat: ARP.lat, lon: ARP.lon, tzH: 7, elev: ARP.elev,
   rwy: '21R', rwyHdg: 209, rwyLen: 3700, rwyWid: 60,
@@ -13,6 +18,16 @@ const FIELD = {
   gsDot: 0.36,       // degrees per dot: 0.12 θ for θ = 3° (ICAO Annex 10 glide-path sensitivity, 2 dots full scale)
   appr: 'ILS', ident: 'IBKK',
 };
+// Default weather of a Flight when nothing else sets it (B10 WeatherState will): VTBD METAR statistics 2016–2025 from
+// the Iowa Environmental Mesonet METAR archive (https://mesonet.agron.iastate.edu, summary numbers only, 04-weather.md
+// §2.1 and §11), in docs/research/data/vtbd-metar-climo.json (04-weather.md §13 item 15; owner's decision
+// OD-WX-DEFAULTS in the development plan). OAT 31 °C is the earlier code default (04-weather.md §5.6). ค่าประมาณ:
+// a typical day, not a measured one. QNH = annual mean of the 174,872 routine reports (monthly qnh_mean weighted by
+// n: 1009.3 hPa; monthly 1006.6–1012.4); dew point = annual mean at 11 LT (hourly.Td_mean weighted by n: 22.8 °C),
+// the hour whose annual mean temperature (31.4 °C) is nearest the default OAT 31 °C (04-weather.md §5.6) and the
+// training's "กลางวัน" time. new Flight({ qnh: 1013.25, dewC: null }) gives the old dry ISA air; qnh null
+// = 1013.25 hPa (e.g. a METAR without a Q group), dewC null = dry air; a left-out option takes WX_DEFAULT.
+const WX_DEFAULT = { oatC: 31, qnh: 1009.3, dewC: 22.8 };
 // Active landing runway frame (NED): unit vector along the landing direction, right normal, threshold.
 const RWY_U = [1, 0, 0];
 const RWY_R = [0, 1, 0];
@@ -155,6 +170,10 @@ function qToEuler(q) {
   return [Math.atan2(R[7], R[8]), -Math.asin(clamp(R[6], -1, 1)), Math.atan2(R[3], R[0])];
 }
 
+// Thrust from TAS only, so humid air and QNH (A8) reach it through V at a given IAS. No ρ term yet: shaft power is flat
+// rated to 37 °C (01-flight-physics/04-turboprop.md), and the static term (AC.T0 is the BEM value at ρ 1.160, dry 31 °C;
+// ≈ρ^(1/3) by momentum theory, steeper in the BEM of 03-propeller.md §3.2 and T-P-02: −0.5 % to −1.8 % in WX_DEFAULT)
+// waits for the propeller model (01-flight-physics.md task list), which takes its air from Aircraft.atm(h).
 function thrustAvail(V) { const Vc = AC.eta * AC.P / AC.T0; return AC.T0 * Vc / Math.sqrt(V * V + Vc * Vc); }
 function stallBlend(a, a0) { // Beard & McLain blending: 0 attached flow, 1 separated
   const M = 55, e1 = Math.exp(-M * (a - a0)), e2 = Math.exp(M * (a + a0));
@@ -170,10 +189,13 @@ class Aircraft {
     this.cmd = { de: 0, da: 0, dr: 0, flaps: 1, gear: 1, thr: 0.3, brake: 0, steer: 0 };
     this.adot = 0; this.aPrev = null; this.t = 0;
     this.wow = [false, false, false]; this.gearLoad = [0, 0, 0];
-    this.isaDev = 0; this.wind = new Wind();
+    this.isaDev = 0; this.qnh = P0_HPA; this.dewC = null; this.wind = new Wind();   // ISA, dry, until a Flight sets the weather
     this.k = [0, 1, 2, 3].map(() => new Float64Array(13)); this.tmp = new Float64Array(13);
     this.air = {};
   }
+
+  // air at height h above the field: QNH, ISA lapse + isaDev, dew point measured at the field (04-weather.md §6.1–6.2)
+  atm(h) { return atmosphere(FIELD.elev + h, this.isaDev, this.qnh, this.dewC, FIELD.elev); }
 
   // all forces / moments for state vector s; fills out with derivatives
   deriv(s, out, diag) {
@@ -184,7 +206,7 @@ class Aircraft {
     const vab = mulRT(R, [s[3] - wind[0], s[4] - wind[1], s[5] - wind[2]]);
     const V = Math.max(Math.hypot(vab[0], vab[1], vab[2]), 0.1);
     const alpha = Math.atan2(vab[2], vab[0]), beta = Math.asin(clamp(vab[1] / V, -1, 1));
-    const atm = atmosphere(FIELD.elev + h, this.isaDev);
+    const atm = this.atm(h);
     const qbar = 0.5 * atm.rho * V * V;
     const f = this.flaps;
     const hw = Math.max(0.2, h - 0.35);                       // wing height above ground
@@ -322,7 +344,7 @@ class Aircraft {
     const s = -dist, h = Math.max(30, gpHeight(s) + dh);
     const [n, e] = rwyToNED(s, dt);
     this.flaps = this.cmd.flaps = flaps; this.gearPos = gearDown ? 1 : 0; this.cmd.gear = gearDown ? 1 : 0;
-    const atm = atmosphere(FIELD.elev + h, this.isaDev);
+    const atm = this.atm(h);
     const tas = ias * KT / Math.sqrt(atm.rho / RHO0);
     const wind = this.wind.mean(h);
     const crs = FIELD.rwyHdg * DEG;
@@ -625,9 +647,9 @@ const SCENARIOS = {
 const windFrom = (sc) => (sc.fromDeg != null ? sc.fromDeg : Math.round(wrap360(FIELD.rwyHdg + sc.rel)));
 
 class Flight {
-  constructor({ wind = SCENARIOS.calm, oatC = 31, dist = 5500, pilot = 'ap', assist = true, autoThr = true, seed = 11, dh = 0, dtl = 0 } = {}) {
+  constructor({ wind = SCENARIOS.calm, oatC = WX_DEFAULT.oatC, qnh = WX_DEFAULT.qnh, dewC = WX_DEFAULT.dewC, dist = 5500, pilot = 'ap', assist = true, autoThr = true, seed = 11, dh = 0, dtl = 0 } = {}) {
     this.ac = new Aircraft();
-    this.ac.isaDev = oatC - (15 - 0.0065 * FIELD.elev);
+    qnh = qnh ?? P0_HPA; this.ac.isaDev = oatC - (15 - 0.0065 * FIELD.elev); this.ac.qnh = qnh; this.ac.dewC = dewC;
     this.ac.wind = new Wind({ fromDeg: windFrom(wind), kt: wind.kt, turb: wind.turb, seed });
     const trim = this.ac.setApproach({ dist, dh, dt: dtl });
     this.trim = trim;
@@ -637,7 +659,7 @@ class Flight {
     this.rec = new Recorder();
     this.pilot = pilot; this.opts = { assist, autoThr };
     this.input = { x: 0, y: 0, rud: 0, thr: trim.thr, brake: 0 };
-    this.acc = 0; this.dt = 1 / 240; this.finishedAt = null; this.oatC = oatC; this.windSpec = wind;
+    this.acc = 0; this.dt = 1 / 240; this.finishedAt = null; this.oatC = oatC; this.qnh = qnh; this.dewC = dewC; this.windSpec = wind;
     this.crashed = false;
     this.xPrev = new Float64Array(13); this.sPrev = new Float64Array(6); this.keepPrev();   // state before the last tick (render interpolation)
   }

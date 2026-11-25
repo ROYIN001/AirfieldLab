@@ -1,6 +1,8 @@
 // Autoland on all four runway ends (ILS on 21R, 21L, 03L; RNP with a synthetic 3° path on 03R), calm and 15 kt
-// gusty crosswind, seed 5. Floors sit just under the values measured on 2026-11-19 (calm 100/100/100/93,
-// crosswind 88/88/90/78).
+// gusty crosswind, seed 5. Floors sit just under the values measured (calm 100/100/100/93, crosswind 85/80/85/80 in
+// the A8 default weather, 2026-11-23; 88/88/90/78 in dry ISA on 2026-11-19). A8 (humid air + QNH 1009.3, research
+// round 4 §6.1): ρ −1.4 %, TAS +0.7 % at the same IAS; the Dryden filter steps with TAS, so seed 5's gust sequence
+// differs (xl touchdowns 348.6/308.7/360.9/280.0 → 305.2/298.5/310.6/286.3 m). Floors unchanged.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { M } from './harness.mjs';
