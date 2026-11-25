@@ -18,7 +18,7 @@ test('T-V-01: trim balances and the longitudinal and lateral blocks are uncouple
     assert.ok(worst < 1e-9, `${name}: max |u̇, ẇ, q̇| ${worst.toExponential(2)}`);
     assert.ok(coupling(linearise(c.ac, c.T)) < 1e-9, `${name}: coupling ${c.m.coupling.toExponential(2)}`);
   }
-  // the closed-form approach trim the app starts from
+  // the approach trim the app starts from (setApproach; Newton since plan B2, closed-form before)
   const fl = new Flight({ wind: SCENARIOS.calm, dist: 5500 }), d = new Float64Array(13);
   fl.ac.deriv(fl.ac.x, d);
   const aNED = Math.hypot(d[3], d[4], d[5]), wdot = Math.hypot(d[10], d[11], d[12]);

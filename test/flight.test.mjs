@@ -11,6 +11,8 @@ test('setApproach starts in trim (T-V-01): |a_NED| < 0.05 m/s², |ω̇| < 1e-6 r
   const d = new Float64Array(13); f.ac.deriv(f.ac.x, d);
   const a = Math.hypot(d[3], d[4], d[5]), w = Math.hypot(d[10], d[11], d[12]);
   assert.ok(a < 0.05 && w < 1e-6, `|a_NED| ${a.toFixed(4)}, |ω̇| ${w.toExponential(2)}`);
+  // B2 numerical trim: the old linear formula left 0.027 m/s² here (it left out the lift of T·sin α), Newton ~1e-10
+  assert.ok(a < 1e-8 && f.trim.ok, `B2: |a_NED| ${a.toExponential(2)}`);
   assert.ok(Math.abs(f.ac.air.ias / KT - AC.Vapp) < 0.5, `IAS ${(f.ac.air.ias / KT).toFixed(1)} kt`);
 });
 
@@ -35,8 +37,11 @@ test('parked: the gear carries the weight, no drift in 6 s', () => {
 // wind near the ground is weaker (U(10 ft)/U10 0.844 → 0.776) and stronger above 10 m (U(50 ft) 1.062 → 1.080), so the
 // last 50 ft lose more headwind and crosswind. REF (A8) head 308.4/−143.8, xr 304.9/−100.7, xl 305.2/−118.4 → head
 // 302.2/−150.4, xr 305.1/−101.8, xl 304.1/−111.5 (all inside the old band); calm has no wind and is unchanged.
+// B2 (numerical trim, 2026-11-25): the start state is an exact trim (α −0.031°, δe +0.020°, thr −0.0006 against the
+// linear formula), scores unchanged; REF calm 312.5/−133.9, head 302.2/−150.4, xr 305.1/−101.8, xl 304.1/−111.5 →
+// 312.4/−134.0, 302.3/−147.8, 305.2/−100.1, 304.9/−106.3.
 const FLOOR = { calm: 95, head: 90, xr: 90, xl: 85 };
-const REF = { calm: { s: 312.5, fpm: -133.9 }, head: { s: 302.2, fpm: -150.4 }, xr: { s: 305.1, fpm: -101.8 }, xl: { s: 304.1, fpm: -111.5 } };
+const REF = { calm: { s: 312.4, fpm: -134.0 }, head: { s: 302.3, fpm: -147.8 }, xr: { s: 305.2, fpm: -100.1 }, xl: { s: 304.9, fpm: -106.3 } };
 for (const [key, sc] of Object.entries(SCENARIOS)) {
   test(`autoland, ${key} (${sc.label}): lands, stops on the runway, score ≥ ${FLOOR[key]}`, () => {
     const f = new Flight({ wind: sc, pilot: 'ap', seed: 5 });

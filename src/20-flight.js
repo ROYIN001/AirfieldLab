@@ -196,6 +196,44 @@ function qToEuler(q) {
   const R = qToR(q, new Array(9));
   return [Math.atan2(R[7], R[8]), -Math.asin(clamp(R[6], -1, 1)), Math.atan2(R[3], R[0])];
 }
+const qMul = (a, b) => [a[0] * b[0] - a[1] * b[1] - a[2] * b[2] - a[3] * b[3], a[0] * b[1] + a[1] * b[0] + a[2] * b[3] - a[3] * b[2],
+  a[0] * b[2] - a[1] * b[3] + a[2] * b[0] + a[3] * b[1], a[0] * b[3] + a[1] * b[2] - a[2] * b[1] + a[3] * b[0]];
+
+// ── Newton–Raphson for n equations in n unknowns (plan B2; research round 1 task list item 11,
+// 01-flight-physics/12-other-sims.md §12.14 task 6 and scripts/s12/s12_solver_proto.mjs; JSBSim's FGTrim and YASim's
+// solver also drive the derivatives to zero numerically). Forward-difference Jacobian (step h·max(1, |x_j|)), Gaussian
+// elimination with partial pivoting, and the step halved (at most 7 times) while the largest residual does not drop.
+// Returns { x, r, rn: max |r_i|, it, ok: rn ≤ tol }. Aircraft.trim uses it, and so can a solver for new types (T-S-06).
+function solveLin(A, b) {
+  const n = b.length, W = A.map((row, i) => [...row, b[i]]);
+  for (let k = 0; k < n; k++) {
+    let p = k; for (let i = k + 1; i < n; i++) if (Math.abs(W[i][k]) > Math.abs(W[p][k])) p = i;
+    if (!(Math.abs(W[p][k]) > 1e-300)) return null;
+    [W[k], W[p]] = [W[p], W[k]];
+    for (let i = k + 1; i < n; i++) { const f = W[i][k] / W[k][k]; for (let j = k; j <= n; j++) W[i][j] -= f * W[k][j]; }
+  }
+  const x = new Array(n).fill(0);
+  for (let i = n - 1; i >= 0; i--) { let s = W[i][n]; for (let j = i + 1; j < n; j++) s -= W[i][j] * x[j]; x[i] = s / W[i][i]; }
+  return x;
+}
+function newtonSolve(f, x0, { tol = 1e-9, maxIt = 40, h = 1e-6 } = {}) {
+  const n = x0.length, norm = (r) => r.reduce((m, v) => Math.max(m, Math.abs(v)), 0);
+  let x = x0.slice(), r = f(x), rn = norm(r), it = 0;
+  for (; it < maxIt && rn > tol; it++) {
+    const J = Array.from({ length: n }, () => new Array(n));
+    for (let j = 0; j < n; j++) {
+      const xp = x.slice(), d = h * Math.max(1, Math.abs(x[j])); xp[j] += d;
+      const rp = f(xp); for (let i = 0; i < n; i++) J[i][j] = (rp[i] - r[i]) / d;
+    }
+    const dx = solveLin(J, r.map((v) => -v));
+    if (!dx || !dx.every(Number.isFinite)) break;
+    let lam = 1, xn = x, rnew = r, nn = Infinity;
+    for (let k = 0; k < 8; k++, lam /= 2) { xn = x.map((v, i) => v + lam * dx[i]); rnew = f(xn); nn = norm(rnew); if (nn < rn) break; }
+    if (!(nn < rn)) break;   // no descent along the Newton step: stop (ok false unless already within tol)
+    x = xn; r = rnew; rn = nn;
+  }
+  return { x, r, rn, it, ok: rn <= tol };
+}
 
 // Thrust from TAS only, so humid air and QNH (A8) reach it through V at a given IAS. No ρ term yet: shaft power is flat
 // rated to 37 °C (01-flight-physics/04-turboprop.md), and the static term (AC.T0 is the BEM value at ρ 1.160, dry 31 °C;
@@ -384,26 +422,86 @@ class Aircraft {
       vg = vh * Math.cos(psi - crs) + wAlong;
       gammaA = -Math.asin(clamp(vg * Math.tan(FIELD.gs * DEG) / tas, -0.5, 0.5));
     }
-    const qbar = 0.5 * atm.rho * tas * tas, W = AC.m * G0;
-    const CLreq = W * Math.cos(gammaA) / (qbar * AC.S);
-    const hw = Math.max(0.2, h - 0.35), ge = (16 * hw / AC.b) ** 2, phiGE = ge / (1 + ge);
-    const CLa = AC.CLa * (1 + 0.12 * (1 - phiGE)), c0 = AC.CL0 + AC.CLflap * flaps, m0 = AC.Cm0 + AC.Cmflap * flaps - 0.06 * (1 - phiGE);
-    const det = CLa * AC.Cmde - AC.CLde * AC.Cma;
-    const alpha = ((CLreq - c0) * AC.Cmde - AC.CLde * (-m0)) / det;
-    const de = (CLa * (-m0) - AC.Cma * (CLreq - c0)) / det;
-    const CD = AC.CD0 + AC.CDflap * Math.pow(flaps, 1.5) + AC.CDgear * this.gearPos + AC.K * phiGE * (CLreq - 0.15) ** 2;
-    const T = qbar * AC.S * CD + W * Math.sin(gammaA);
-    const thr = clamp(T / thrustAvail(tas), AC.idle, 1);
-    const th = alpha + gammaA;
-    const q = eulerToQ(0, th, psi);
-    const vAir = [tas * Math.cos(gammaA) * Math.cos(psi), tas * Math.cos(gammaA) * Math.sin(psi), -tas * Math.sin(gammaA)];
-    const x = this.x;
-    x.set([n, e, -h, vAir[0] + wind[0], vAir[1] + wind[1], vAir[2] + wind[2], q[0], q[1], q[2], q[3], 0, 0, 0]);
-    this.de = this.cmd.de = de; this.da = this.cmd.da = 0; this.dr = this.cmd.dr = 0;
-    this.thr = this.cmd.thr = thr; this.brake = this.cmd.brake = 0; this.steer = 0;
-    this.adot = 0; this.aPrev = null; this.t = 0;
-    this.updateAir(0); this.gen = (this.gen || 0) + 1;   // a jump: Flight.renderPose restarts its interpolation (§9.7)
-    return { alpha, de, thr, th, psi };
+    // the kinematics above (crab into the mean wind, air-path angle for a 3° path over the ground) stay analytic;
+    // the force and moment balance is the numerical trim (plan B2), which replaced the linear formula here
+    this.brake = this.cmd.brake = 0; this.steer = 0; this.t = 0;
+    return this.trim({ h, n, e, tas, gammaA, chi: psi });
+  }
+
+  // Numerical trim (plan B2; research round 1 task list item 11, 12-other-sims.md §12.14 task 6, T-S-04): Newton
+  // (newtonSolve) on the body-axis accelerations u̇, ẇ and q̇ with unknowns α, δe and throttle, at TAS `tas`, air-path
+  // angle `gammaA` and air heading `chi`, wings level with β = 0 and no rotation, so whatever deriv() holds (stall
+  // blend, ground effect, thrust along the body axis, and later tables and the propeller) is in balance, not only a
+  // linear formula (the old one in setApproach left |a| 0.027 m/s² at the default start, the lift of T·sin α). If the
+  // throttle needed is outside idle…1 it is held at that limit and γa becomes the unknown (`limited` 'idle' or 'max';
+  // the path then leaves the requested angle). If v̇, ṗ or ṙ are not zero there (asymmetric thrust: propeller torque,
+  // P-factor, slipstream, plan F3), a second Newton adds the bank about the velocity μ, aileron and rudder with β held
+  // at 0 (a design choice: no source says which of β or bank a trimmed propeller aircraft holds), and the throttle
+  // limits are checked again after it; today v̇, ṗ, ṙ are zero by symmetry and that solve is skipped, so the trim stays
+  // exactly symmetric. Trims in the mean wind (the Dryden gust state is set aside for the solve and put back). Sets the
+  // state, surfaces and throttle and bumps gen (a jump: Flight.renderPose restarts its interpolation, §9.7); flaps and
+  // gear are taken as they are. ok is false (why names the reasons) when no root is found, or the root is outside the
+  // surface limits, on the wheels or past CLmax; limited and gammaA mean something only when ok. it counts the Newton
+  // iterations of every solve.
+  trim({ h, n = this.x[0], e = this.x[1], tas, gammaA = 0, chi = 0 }) {
+    const wind = this.wind.mean(h), gSave = this.wind.g.slice(), out = new Float64Array(13), R = new Array(9);
+    const s = new Float64Array(13);
+    // x = [α, δe, thr or γa, μ, δa, δr]; with the throttle held, x[2] is γa
+    const thrFix = { v: null };
+    const setState = (x) => {
+      const al = x[0], gam = thrFix.v == null ? gammaA : x[2], mu = x[3] || 0;
+      const q = qMul(eulerToQ(mu, gam, chi), [Math.cos(al / 2), 0, Math.sin(al / 2), 0]);   // wind axes, then α up
+      const cg = Math.cos(gam);
+      s.set([n, e, -h, tas * cg * Math.cos(chi) + wind[0], tas * cg * Math.sin(chi) + wind[1], -tas * Math.sin(gam) + wind[2], q[0], q[1], q[2], q[3], 0, 0, 0]);
+      this.de = x[1]; this.thr = thrFix.v == null ? x[2] : thrFix.v; this.da = x[4] || 0; this.dr = x[5] || 0;
+      return q;
+    };
+    const resid = (x) => {
+      const q = setState(x); this.deriv(s, out); qToR(q, R);
+      const ab = mulRT(R, [out[3], out[4], out[5]]);   // body accelerations (ω = 0)
+      return [ab[0], ab[2], out[11], ab[1], out[10], out[12]];
+    };
+    // start on the attached-flow branch: linear lift and pitch balance, throttle 0.3
+    const atm = this.atm(h), qS = 0.5 * atm.rho * tas * tas * AC.S, f = this.flaps;
+    const a0 = (AC.m * G0 * Math.cos(gammaA) / qS - AC.CL0 - AC.CLflap * f) / AC.CLa;
+    const x0 = [a0, -(AC.Cm0 + AC.Cmflap * f + AC.Cma * a0) / AC.Cmde, 0.3];
+    const lon = (x) => resid(x).slice(0, 3), latOff = (r) => Math.max(Math.abs(r[3]), Math.abs(r[4]), Math.abs(r[5])) > 1e-12;
+    const outOfRange = (t) => t < AC.idle || t > 1;
+    const holdThrottle = (t) => { limited = t < AC.idle ? 'idle' : 'max'; thrFix.v = limited === 'idle' ? AC.idle : 1; };
+    let limited = null, it = 0, sol, x, r;
+    const run = (fn, start) => { sol = newtonSolve(fn, start); it += sol.it; return sol.x; };
+    this.wind.g[0] = this.wind.g[1] = this.wind.g[2] = 0; this.adot = 0; this.aPrev = null;
+    // a converged root is a trim only inside the control limits, with the wheels clear of the ground and on the
+    // attached side of the lift curve (dCL/dα > 0): below the stall Newton can otherwise land on a post-stall root
+    // or one held up by the nose wheel (review of B2). why lists what failed; [] when ok.
+    const why = [], diag = { wow: [], load: [] };
+    let q;
+    try {
+      x = run(lon, x0);
+      if (outOfRange(x[2])) { holdThrottle(x[2]); x = run(lon, [x[0], x[1], gammaA]); }
+      x = [...x, 0, 0, 0]; r = resid(x);
+      if (latOff(r)) {
+        x = run(resid, x);
+        // the lateral solve moves the throttle too (asymmetric thrust scales with it): check the limits again
+        if (thrFix.v == null && outOfRange(x[2])) { holdThrottle(x[2]); x[2] = gammaA; x = run(resid, x); }
+        r = resid(x);
+      }
+      const cl = (d) => { setState([x[0] + d, ...x.slice(1)]); this.deriv(s, out, diag); return diag.CL; };
+      const slope = cl(1e-4) - cl(-1e-4);
+      q = setState(x); this.deriv(s, out, diag);
+      if (!sol.ok) why.push('residual');
+      if (this.de < -AC.deUp || this.de > AC.deDn) why.push('elevator');
+      if (Math.abs(this.da) > AC.daMax) why.push('aileron');
+      if (Math.abs(this.dr) > AC.drMax) why.push('rudder');
+      if (diag.wow.some(Boolean)) why.push('ground');
+      if (!(slope > 0)) why.push('stalled');
+    } finally { this.wind.g[0] = gSave[0]; this.wind.g[1] = gSave[1]; this.wind.g[2] = gSave[2]; }
+    this.x.set(s);
+    this.cmd.de = this.de; this.cmd.da = this.da; this.cmd.dr = this.dr; this.cmd.thr = this.thr;
+    this.updateAir(0); this.gen = (this.gen || 0) + 1;
+    const [phi, th, psiE] = qToEuler(q), psi = chi + wrapPi(psiE - chi);   // heading on chi's branch, as before B2
+    return { alpha: x[0], de: this.de, thr: this.thr, th, psi, phi, mu: x[3], da: this.da, dr: this.dr,
+      gammaA: thrFix.v == null ? gammaA : x[2], limited, residual: Math.max(...r.map(Math.abs)), it, ok: why.length === 0, why };
   }
 
   // Parked on the ground (used for apron aircraft and resets)

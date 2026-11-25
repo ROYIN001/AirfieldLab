@@ -49,7 +49,13 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   T-W-08 (log law, the old 1/7 rule, town against field, the gust-factor table, `Wind.lowAlt` σ and L, turbulence in
   calm air with W20 15 kt and the height unit `update` passes to `lowAlt`), `z0` null = default and out of range throws,
   that a Flight flies the log law, the scenario W20 values, `W20: null` = the scenario's, the legacy `turb` rule and
-  `Wind.turb`, the card wording and the windsock wiring), `input` (shaping, key ramps, the
+  `Wind.turb`, the card wording and the windsock wiring), `trim` (plan B2: research T-S-04 at 5,500 and 9,000 m with a
+  regression band, a Flight's start in each wind scenario (heading on the runway's branch), T-S-06's round trip
+  through `newtonSolve`, trim across the envelope (flaps 0/0.5/1, 78–220 kt, γ −6°…+6°, level in ground effect; the
+  state's path angle and TAS), the throttle limits, no trim below the stall, roots that are not trims (past CLmax, on
+  the wheels with δe beyond its stop), a test-only asymmetric thrust for the lateral solve and the throttle limits
+  checked again after it, the gust state set aside, and `newtonSolve` stopping without NaN on a singular Jacobian or
+  no descent), `input` (shaping, key ramps, the
   sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
   phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
@@ -74,8 +80,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   line drawn the other way round; the stands of
   `alsStands` against the real pavements; every flash seen at 20, 30 and 60 frames a second).
   Autoland score floors sit at or just under the values measured on 2026-11-19 and re-measured for A8 on
-  2026-11-23 and for A9 on 2026-11-25 (the assist robot's floor is a loose 50); touchdown points and every mode value
-  have regression bands.
+  2026-11-23 and for A9 and B2 on 2026-11-25 (the assist robot's floor is a loose 50); touchdown points and every mode
+  value have regression bands.
   A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 25-input.js` with
@@ -84,8 +90,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   these two may use three.js and the DOM inside their functions, never at the top level. `test/lib/png.mjs` reads the
   land-use PNGs (8-bit greyscale) with `node:zlib`. `build.mjs` exports `assemble()`, `build()`, `dataFiles()`,
   `checkPr()` and `previewHtml()` for the page test. `M` from `test/harness.mjs` also includes `Evaluator`, `aWarnAt`,
-  `Recorder`, `qNlerp`, `WX_DEFAULT`, `Wind`, `logLaw`, `WIND_PROFILE`, `W20_PER_KT_LEGACY`, `windW20`, `GUST_FACTOR_3S` and the humid-air functions
-  of `10-atmo.js`.
+  `Recorder`, `qNlerp`, `WX_DEFAULT`, `Wind`, `logLaw`, `WIND_PROFILE`, `W20_PER_KT_LEGACY`, `windW20`,
+  `GUST_FACTOR_3S`, `newtonSolve`, `qMul` and the humid-air functions of `10-atmo.js`.
 - Screenshots: `node test/shots.mjs <set> [--dist <built page>] [--out <dir>] [--pin <three-pin.mjs>]` (Playwright +
   Chrome, SwiftShader; sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `vis`, `all`). It builds the
   working tree into `.cache/shots-dist` unless `--dist` is given, writes PNGs to `shots/`, and serves three.js from
@@ -136,6 +142,18 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Generic two-seat turboprop trainer (fictional): m 2250 kg, S 16.3 m², b 10.2 m, P 700 kW, static thrust 11.5 kN.
 - Linear stability derivatives in `AC`, stall by Beard–McLain blending (M = 55, α_stall 17°, −2.5° with flaps),
   ground effect, spring-damper gear with tanh tyre friction, RK4 at 240 Hz.
+- Trim (plan B2, research round 1 task list item 11, `12-other-sims.md` §12.14 task 6): `Aircraft.trim({ h, n, e, tas,
+  gammaA, chi })` runs `newtonSolve` (finite-difference Jacobian, partial pivoting, step halving; pure, also for a
+  solver that builds a type from its performance, T-S-06) on u̇, ẇ, q̇ for α, δe, throttle, wings level, β 0, so
+  everything in `deriv()` is in balance (residual ~1e-10; the old linear formula in `setApproach` left 0.027 m/s²).
+  Throttle needed outside idle…1: held at the limit, γa solved instead (`limited`). Non-zero v̇, ṗ, ṙ (asymmetric
+  thrust, plan F3) add μ (bank about the velocity), δa, δr at β 0; skipped when zero, so the symmetric trim stays
+  exact, and the throttle limits are checked again after them. Mean wind only (gust state set aside). `ok` also needs
+  the surfaces inside their limits, the wheels clear and dCL/dα > 0 (`why` names what failed): below the trimmed 1-g
+  stall (about 79.6 kt clean, 75.5 kt flaps 0.5, 71.9 kt landing flaps) there is no trim, and Newton's other roots
+  (past CLmax, or on the nose wheel in ground effect) are refused. `limited`, `gammaA` hold only when `ok`.
+  `setApproach` keeps its crab and glide-path kinematics and calls it. `test/lib/fstd.mjs` keeps its own trim for the
+  modes tests.
 - Frame loop (research round 1 §9.4 and §9.7, T-N-07…T-N-09): `Flight.advance(realDt)` is a fixed-step accumulator
   (ε 1e-9 s, at most 24 steps per frame, backlog beyond one step dropped, returns the steps). The constructor and
   `tick()` keep the previous state (`xPrev`, `sPrev`; `Aircraft.setApproach`/`setParked` bump `ac.gen`, and
@@ -192,11 +210,15 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   88–100, median 100, mean 98.6: the log law sheds more headwind in the last 50 ft, so touchdown IAS drops about 0.7 kt
   and more flights lose speed points below Vref − 8 kt, as round 1 §8.7 expects; for the flare re-tune E5); 10 kt
   crosswind on 03L 82–97 (median 96, mean 95.3; A8 82–97, 96, 95.0); 15 kt gusty crosswind on 21R 35–100 (median 86,
-  mean 84.8; A8 35–98, 85, 84.1), where 56 flights log the near-stall event (A8 52) and none crashes. Seeds 1–10 give
+  mean 84.8; A8 35–98, 85, 84.1), where 56 flights log the near-stall event (A8 52) and none crashes. B2's exact
+  trim keeps the three ranges and medians, the means within 0.03, near-stall flights 56 → 57 and the seed-5 scores
+  (touchdowns move ≤ 0.8 m). At the app's training distance (5,556 m against Flight's default 5,500 m) one of the
+  1,000 seeds (42) bounces to 17 ft after its touchdown at 274 m, in ROLLOUT, and crashes at −900 fpm (A9 before B2
+  too): the autopilot has no bounce recovery. Seeds 1–10 give
   66–96 (A8 67–96, dry ISA before A8 75–94) in the gusty crosswind on all four runways. Calm has no turbulence, so its
   scores do not depend on the seed. Headwind, seed 5 (not in `runways`): touchdowns about 6 m shorter on every end,
-  21R/21L/03L/03R 308.4/302.7/314.0/286.4 → 302.2/296.9/309.2/280.6 m; 21L falls under the 300 m window (score
-  96 → 89), 21R sits 2.2 m inside it (input for E5). Mean crosswind at a height of 50/30/10 ft: xl 16.2/14.8/11.6 kt
+  21R/21L/03L/03R 308.4/302.7/314.0/286.4 → 302.2/296.9/309.2/280.6 m (B2: 302.3/296.8/309.1/280.5); 21L falls under
+  the 300 m window (score 96 → 89), 21R sits 2.2 m (B2: 2.3 m) inside it (input for E5). Mean crosswind at a height of 50/30/10 ft: xl 16.2/14.8/11.6 kt
   (1/7 rule 15.9/14.8/12.7), xr 10.8/9.8/7.8 (10.6/9.9/8.4); at the CG when the wheels pass 50/30/10 ft (CG at
   54.6/34.5/14.7 ft, 21R autoland, seed 5): xl 16.4/15.1/12.7 (16.1/15.1/13.4), xr 11.0/10.1/8.5 (10.8/10.1/8.9). With the A5 horn, 94 of 100
   gusty-crosswind autolands on 21R (seeds 7–106) hear short chirps, 71 of them above 20 ft and 35 above 50 ft (A8:
