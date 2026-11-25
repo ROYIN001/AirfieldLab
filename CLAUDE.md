@@ -10,6 +10,12 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   aerodrome, OpenStreetMap for layout (keep the "© OpenStreetMap contributors (ODbL)" credit in the footer).
 - Military content: public sources only, generic depiction. No unit names, emblems or academy names.
 - Estimated values (building and tower heights, parked aircraft) must be labelled as estimates.
+- Licences (research round 5 §11, round 1 §12): the OSM-derived files in `data/` are ODbL and listed in
+  `data/LICENSE-DATA.md`. A new data file gets a line there, and a new JSON file in `data/` top-level `source` and
+  `license` fields; its credit joins the footer when its data arrives, not before. Never commit a source from §11
+  table 11.3 (GlobalBuildingAtlas, FABDEM, TanDEM-X, IVAO sector files, X-Plane CIFP, BMA BDCTL_POLYGON), an AIP chart
+  or PDF, or GPL/LGPL text or a JSBSim model file: `test/licenses.test.mjs` fails on them, and only the owner adds a
+  file to `gpl_guard_allowlist` in `test/fixtures/license_policy.json`.
 
 ## Commands
 - Build: `node build.mjs` → `dist/index.html`, and copies `data/*` into `dist/`.
@@ -23,8 +29,10 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `papi` (PAPI distance from MEHT, colour
   bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `aip` (`RWY_DATA`, the derived
   geometry and the AIP facts in the Thai UI text against `test/fixtures/aip_vtbd_current.json`, research round 5
-  T-A01…T-A19, T-A21, T-A22, T-A24, T-A25), `licenses` (the AIRAC cycle cited in the footer, `src/15-geo.js` and
-  this file, research round 5 §11 T-K05), `page` (parses the assembled page module and checks the element ids the
+  T-A01…T-A19, T-A21, T-A22, T-A24, T-A25), `licenses` (footer credits and links, the cited AIRAC cycle, forbidden
+  sources and file types, `source`/`license` of data files, `data/LICENSE-DATA.md` and README, and no GPL/LGPL text
+  or JSBSim model outside the owner's allowlist: research round 5 §11 T-K01…T-K05 and round 1 §12 T-S-11, policy in
+  `test/fixtures/license_policy.json`), `page` (parses the assembled page module and checks the element ids the
   scripts use). Autoland score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is a
   loose 50); touchdown points and every mode value have regression bands. A physics change that moves them updates the
   test in the same PR.
@@ -154,6 +162,10 @@ Suggested order, each with a Node test before tuning by feel in the browser:
   by the scripts in `tools/` (the source captures are not included; regenerate only if the layout must change).
 - `city.json`: base64 records, generated buildings (9 bytes each) and street lights (5 bytes each); the artifact
   host refuses `.bin`, so binary data travels inside JSON.
+- Licences: `vtbd_af.json`, `land_in.png`, `land_out.png` and `city.json` are derived from OpenStreetMap and
+  available under the ODbL 1.0 (`data/LICENSE-DATA.md`, which `node build.mjs` copies into `dist/` with them).
+  `vtbd_af.json` and `city.json` predate the `source`/`license` field rule (`legacy_data_without_fields` in the
+  policy); a regenerated file gets the fields and leaves that list. The code has no `LICENSE` yet (the owner picks).
 
 ## Working in the cloud (Claude Code on the web)
 - The owner works from the cloud so their computer can stay off. Test changes on the GitHub Pages site:
@@ -164,6 +176,7 @@ Suggested order, each with a Node test before tuning by feel in the browser:
   before merging.
 
 ## Publishing
-- Live as a claude.ai artifact (multi-file: index.html + the four data files), title "Airfield Lab ดอนเมือง VTBD",
-  slug f3207a70-5bd7-43d8-a606-a2b9b946413a, `downloads` capability declared for the PNG snapshot button.
+- Live as a claude.ai artifact (multi-file: index.html + every file in `data/`, now the four data files and
+  `LICENSE-DATA.md`), title "Airfield Lab ดอนเมือง VTBD", slug f3207a70-5bd7-43d8-a606-a2b9b946413a, `downloads`
+  capability declared for the PNG snapshot button.
 - The earlier fictional-airfield prototype is a separate artifact (827d3f8b-1c74-4a51-b9e5-6ef7ea33b59c).

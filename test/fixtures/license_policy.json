@@ -1,0 +1,28 @@
+{
+ "license_policy": {
+  "src": "docs/research/05-airport-city.md §11 (round 5, plan item A4); gpl_guard from docs/research/01-flight-physics/12-other-sims.md T-S-11 (round 1, R1-4)",
+  "conf": "กลาง",
+  "note": "test/licenses.test.mjs reads this file. The keys follow the §11 JSON block, except aip_cycle_current: T-K05 takes the cycle from test/fixtures/aip_vtbd_current.json. Changes to forbidden_sources, gpl_guard_allowlist or legacy_data_without_fields need the owner's approval in the pull request.",
+  "required_footer_terms": ["OpenStreetMap", "ODbL", "AIP Thailand"],
+  "conditional_footer_terms": {
+   "data/city_v2.json": ["Overture Maps Foundation", "Google Open Buildings"],
+   "data/landmarks.json": ["Overture Maps Foundation"],
+   "src/16-palette.js": ["Contains modified Copernicus Sentinel data"],
+   "data/vtbd_procs.json": ["AIP Thailand"],
+   "data/vtbd_stands.json": ["AIP Thailand"]
+  },
+  "forbidden_sources": ["GlobalBuildingAtlas", "FABDEM", "TanDEM-X", "ivaoth/sector-file", "X-Plane", "CIFP", "BDCTL_POLYGON"],
+  "forbidden_sources_dirs": ["data", "src", "tools"],
+  "forbidden_extensions_in_repo": [".tif", ".tiff", ".pdf", ".jp2"],
+  "odbl_derived_files": ["data/vtbd_af.json", "data/city.json", "data/land_in.png", "data/land_out.png", "data/city_v2.json", "data/vtbd_stands.json", "data/vtbd_buildings.json"],
+  "odbl_derived_files_note": "§11 lists the JSON files; data/land_in.png and data/land_out.png are added here because tools/landclass.py classifies them from OpenStreetMap renders (src/48-data.js credits them to OpenStreetMap contributors).",
+  "legacy_data_without_fields": ["data/vtbd_af.json", "data/city.json"],
+  "legacy_data_without_fields_note": "§11 item 3 asks for top-level source and license fields in every new JSON file under data/. These two predate the rule and are documented in data/LICENSE-DATA.md and README.md instead; a regenerated file gets the fields and leaves this list.",
+  "gpl_guard_allowlist": {
+   "docs/research/01-flight-physics/11-input.md": "research text: quotes the FlightGear licence names",
+   "docs/research/01-flight-physics/12-other-sims.md": "research text: defines T-S-11 and quotes its patterns",
+   "docs/research/01-flight-physics/scripts/s12/s12_oracle_jsb.py": "research prototype: writes our own JSBSim model to a temp folder, outside the repo",
+   "docs/research/03-airliners/07-flight-controls.md": "research text: quotes the licence lines of two GPL airliner add-ons"
+  }
+ }
+}

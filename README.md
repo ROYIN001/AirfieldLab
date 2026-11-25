@@ -1,1 +1,26 @@
 # AirfieldLab
+
+สนามบินดอนเมือง (VTBD) แบบสามมิติในเบราว์เซอร์ พร้อมเครื่องฝึกบินร่อนลงจอด สร้างจาก `src/` และไฟล์ใน `data/`
+ด้วย three.js รายละเอียดการ build การรันและเทสต์อยู่ใน [CLAUDE.md](CLAUDE.md)
+
+```
+node build.mjs                          # → dist/index.html และคัดลอก data/* ไปไว้ข้างกัน
+python3 -m http.server 8080 -d dist     # เปิด http://localhost:8080
+node --test "test/**/*.test.mjs"        # เทสต์ทั้งหมด (Node ≥ 22)
+```
+
+## ข้อมูลและสัญญาอนุญาต
+
+- **ไฟล์ข้อมูลภายใต้ ODbL 1.0:** `data/vtbd_af.json`, `data/land_in.png`, `data/land_out.png` และ `data/city.json`
+  สร้างจากแผนที่ OpenStreetMap จึงเป็นฐานข้อมูลอนุพันธ์ © ผู้ร่วมพัฒนา OpenStreetMap ภายใต้
+  [Open Database License 1.0](https://opendatacommons.org/licenses/odbl/1-0/) ที่มาและเงื่อนไขของแต่ละไฟล์อยู่ใน
+  [data/LICENSE-DATA.md](data/LICENSE-DATA.md) เงื่อนไข share-alike ใช้กับไฟล์ข้อมูลเหล่านี้เท่านั้น ไม่ใช้กับโค้ด
+- **AIP Thailand:** ค่าทางวิ่ง ไฟ และเครื่องช่วยเดินอากาศใน `src/15-geo.js` มาจาก AIP Thailand AD 2 VTBD ซึ่งเป็นลิขสิทธิ์ของ กพท.
+  repo ใช้เฉพาะตัวเลข พิกัด และชื่อ พร้อมอ้างรอบ AIRAC ไม่เก็บแผนภูมิหรือ PDF ของ AIP ข้อมูลในเกมใช้เพื่อการฝึกเท่านั้น
+  ไม่ใช้เพื่อการเดินอากาศจริง
+- **โค้ด:** ยังไม่ได้เลือกสัญญาอนุญาตของโค้ด จึงยังไม่มีไฟล์ `LICENSE` (เจ้าของ repo เป็นผู้เลือก) three.js (MIT) โหลดจาก jsDelivr
+  และไม่ได้เก็บไว้ใน repo
+- **กติกา:** `test/licenses.test.mjs` ตรวจตามรายงานวิจัยรอบ 5 หัวข้อ 11 และรอบ 1 หัวข้อ 12 ทุกครั้งที่ CI รัน ได้แก่ เครดิตใน footer
+  ของหน้าเว็บ, ไฟล์ JSON ใหม่ใน `data/` ต้องมีฟิลด์ `source` และ `license`, ห้ามมีแหล่งข้อมูลต้องห้าม (เช่น GlobalBuildingAtlas,
+  FABDEM) และไฟล์ภาพแรสเตอร์หรือ PDF และห้ามมีข้อความสัญญาอนุญาต GPL/LGPL หรือไฟล์แบบจำลองของ JSBSim ใน repo
+  ยกเว้นไฟล์ที่เจ้าของอนุมัติไว้ใน `test/fixtures/license_policy.json`
