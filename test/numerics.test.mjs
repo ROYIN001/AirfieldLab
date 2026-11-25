@@ -88,7 +88,9 @@ test('renderPose: ends at the previous and current state, unit quaternion on the
   for (const g of [calm(), new Flight({ wind: SCENARIOS.xl, pilot: 'man', dist: 1700, seed: 3 })]) {
     const r = g.renderPose();
     for (let i = 0; i < 3; i++) assert.equal(r.p[i], g.ac.x[i], 'new Flight: position');
-    for (let i = 0; i < 4; i++) assert.equal(r.q[i], g.ac.x[6 + i], 'new Flight: attitude');
+    // within 1e-15, not exact (A9): qNlerp normalises, and the xl start state (log-law crab) has |q| − 1 = −1.1e-16,
+    // so one component came out one ulp off (−0.1394330266010838 against −0.13943302660108378); a rounding, not physics
+    for (let i = 0; i < 4; i++) assert.ok(Math.abs(r.q[i] - g.ac.x[6 + i]) <= 1e-15, `new Flight: attitude ${r.q[i]} ${g.ac.x[6 + i]}`);
     for (const n of ['de', 'da', 'dr', 'flaps', 'gearPos', 'steer']) assert.equal(r[n], g.ac[n], `new Flight: ${n}`);
   }
   const f = calm(); f.advance(0.0125); f.advance(0.002);

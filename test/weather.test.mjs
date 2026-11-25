@@ -4,12 +4,15 @@
 // the VTBD METAR statistics 2016–2025 of the Iowa Environmental Mesonet archive (https://mesonet.agron.iastate.edu, summary
 // numbers only, 04-weather.md §2.1 and §11) in docs/research/data/vtbd-metar-climo.json (04-weather.md §13 item 15;
 // owner's decision OD-WX-DEFAULTS).
+// Then the wind (plan item A9; 04-weather.md §6.3, §6.4, §10.2 tests WND-4…WND-6 and WND-8…WND-10, §13 item 3; round 1
+// 01-flight-physics/08-wind.md §8.3, §8.7, T-W-08): log-law mean wind with z0 0.05 m and the turbulence intensity W20
+// set apart from it. WND-7 tests the 3 s gust-factor table (`GUST_FACTOR_3S`); nothing reads it before B10/B11's METAR gusts.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { M } from './harness.mjs';
 const { satVap, relHumidity, dewPoint, fieldPressure, airDensity, densityAltitudeFt, densityAltitudeDryFt, pressureAltitudeFt,
-  atmosphere, Flight, Aircraft, SCENARIOS, FIELD, FT, KT, AC, WX_DEFAULT } = M;
+  atmosphere, Flight, Aircraft, SCENARIOS, FIELD, FT, KT, AC, WX_DEFAULT, Wind, logLaw, WIND_PROFILE, W20_PER_KT_LEGACY, windW20, GUST_FACTOR_3S } = M;
 const near = (got, exp, tol, what) => assert.ok(Math.abs(got - exp) <= tol, `${what}: ${got} (expect ${exp} ± ${tol})`);
 const daAt = (qnh, elev, T, Td) => densityAltitudeFt(airDensity(fieldPressure(qnh, elev), T, Td));
 
@@ -97,4 +100,108 @@ test('src/90-app.js: the briefing uses the humid density altitude and the flight
   assert.match(app, /oatC: app\.wx\.oatC, qnh: app\.wx\.qnh, dewC: app\.wx\.dewC/);
   assert.match(app, /function newDemo\(\)[\s\S]*?new Flight\(\{[^\n]*\.\.\.app\.wx \}\)/, 'demo flights get the weather');
   assert.doesNotMatch(app, /densityAltitudeFt\(FIELD\.elev/);
+});
+
+// ── Wind (plan A9). Expected values and tolerances are the research's table (04-weather.md §10.2); WND-4 uses z0 0.03 m
+// only to test the formula (the default is round 1's 0.05 m, §9.1). ──
+test('WND-4 log law z0 0.03 m: U(h)/U10 at 2, 5, 15, 30, 100 m = 0.7229, 0.8807, 1.0698, 1.1891, 1.3964 ± 1e-4', () => {
+  const w = new Wind({ kt: 10, z0: 0.03 });
+  [[2, 0.7229], [5, 0.8807], [15, 1.0698], [30, 1.1891], [100, 1.3964]].forEach(([h, r]) => {
+    near(logLaw(h, 0.03), r, 1e-4, `logLaw ${h} m`); near(w.speedAt(h) / (10 * KT), r, 1e-4, `Wind ${h} m`);
+  });
+});
+test('WND-5 the old 1/7 rule (law power): U(h)/U10 at 2, 15, 100 m = 0.7946, 1.0596, 1.3895 ± 1e-4', () => {
+  const w = new Wind({ kt: 10, law: 'power' });
+  [[2, 0.7946], [15, 1.0596], [100, 1.3895]].forEach(([h, r]) => near(w.speedAt(h) / (10 * KT), r, 1e-4, `${h} m`));
+});
+test('WND-6 town (H 15 m: d 10.5, z0 1.5) against the field (z0 0.03), same wind at 300 m, at 30 m: 0.650 ± 0.005', () => {
+  near(logLaw(30, 1.5, 10.5, 300) / logLaw(30, 0.03, 0, 300), 0.650, 0.005, 'ratio');   // measured 0.6498
+});
+test('T-W-08 (round 1) z0 0.046 m, W10 15 kt: 18.1 kt at 100 ft, 11.7 at 10 ft ± 0.1, 15.0 at 10 m; the default: z0 0.05 m, 10 m reference, flat above 300 m, 0 at z0', () => {
+  const w = new Wind({ kt: 15, z0: 0.15 * FT });
+  near(w.speedAt(100 * FT) / KT, 18.1, 0.1, '100 ft'); near(w.speedAt(10 * FT) / KT, 11.7, 0.1, '10 ft'); near(w.speedAt(10) / KT, 15, 1e-12, '10 m');
+  assert.deepEqual([WIND_PROFILE.z0, WIND_PROFILE.zRef, WIND_PROFILE.top], [0.05, 10, 300]);
+  const d = new Wind({ kt: 10 });
+  assert.equal(d.speedAt(500), d.speedAt(300)); assert.equal(d.speedAt(0.05), 0); assert.equal(d.speedAt(-1), 0);
+  near(d.speedAt(50 * FT) / (10 * KT), 1.0795, 1e-4, '50 ft'); near(d.speedAt(10 * FT) / (10 * KT), 0.7758, 1e-4, '10 ft');
+});
+test('Wind z0: null or absent = the default 0.05 m; 0, negative, NaN or ≥ zRef 10 m throws (no NaN or negative wind)', () => {
+  const d = new Wind({ kt: 10 });
+  assert.equal(new Wind({ kt: 10, z0: null }).speedAt(30), d.speedAt(30)); assert.equal(new Wind({ kt: 10, z0: undefined }).z0, 0.05);
+  for (const z0 of [0, -0.1, NaN, 10, 12]) assert.throws(() => new Wind({ kt: 10, z0 }), RangeError, `z0 ${z0}`);
+  assert.ok(Number.isFinite(new Wind({ kt: 10, z0: 9.9 }).speedAt(30)));
+});
+// the Flight builds its Wind with the log law and z0 0.05 m (WND-4 and T-W-08 above test only a bare Wind; the A9
+// touchdown bands alone would not catch a Flight left on the 1/7 rule, whose REF values sit inside the old band)
+test('a Flight flies the log-law wind: xl mean wind at a height of 10 ft 11.636 kt (1/7 rule 12.66), at 50 ft 16.19 (15.93)', () => {
+  const f = new Flight({ wind: SCENARIOS.xl, seed: 5 }), w = f.ac.wind;
+  assert.equal(w.law, 'log'); assert.equal(w.z0, WIND_PROFILE.z0);
+  near(Math.hypot(...w.mean(10 * FT)) / KT, 11.636, 0.002, 'Flight mean wind at 10 ft');
+  near(Math.hypot(...w.mean(50 * FT)) / KT, 16.192, 0.002, 'Flight mean wind at 50 ft');
+  const p = new Wind({ kt: 15, law: 'power' });
+  near(p.speedAt(10 * FT) / KT, 12.66, 0.01, '1/7 rule at 10 ft'); near(p.speedAt(50 * FT) / KT, 15.93, 0.01, '1/7 rule at 50 ft');
+});
+test('WND-8 Dryden low altitude, h 100 ft, W20 15 kt: σw 1.5 kt, σu 2.574 kt ± 0.005, Lu 505.2 ft, Lw 100 ft ± 0.5', () => {
+  const P = Wind.lowAlt(100, 15);
+  near(P.sw / KT, 1.5, 0.005, 'σw'); near(P.su / KT, 2.574, 0.005, 'σu'); near(P.Lu / FT, 505.2, 0.5, 'Lu'); near(P.Lw / FT, 100, 0.5, 'Lw');
+  // h clipped to 10…1000 ft (08-wind.md §8.3, JSBSim's 10 ft clip): no Lw → 0 or NaN at the ground, flat above 1000 ft
+  for (const h of [-5, 0, 3]) assert.deepEqual(Wind.lowAlt(h, 15), Wind.lowAlt(10, 15), `clipped at 10 ft (h ${h})`);
+  for (const h of [2000, 3000]) assert.deepEqual(Wind.lowAlt(h, 15), Wind.lowAlt(1000, 15), `clipped at 1000 ft (h ${h})`);
+});
+test('WND-9 Dryden low altitude, h 500 ft, W20 30 kt: σw 3.0, σu 3.709 kt ± 0.005, Lu 944.7 ft ± 0.5', () => {
+  const P = Wind.lowAlt(500, 30);
+  near(P.sw / KT, 3.0, 0.005, 'σw'); near(P.su / KT, 3.709, 0.005, 'σu'); near(P.Lu / FT, 944.7, 0.5, 'Lu');
+});
+test('WND-7 gust factor: U10 10 kt in-land gives a 3 s gust of 16.6 kt ± 0.05 (table 1.66 / 1.52 / 1.38 / 1.23)', () => {
+  near(10 * GUST_FACTOR_3S.inLand, 16.6, 0.05, 'in-land 3 s gust');
+  assert.deepEqual(GUST_FACTOR_3S, { inLand: 1.66, offLand: 1.52, offSea: 1.38, atSea: 1.23 });
+});
+// hot_apr_afternoon arrives with B10's WeatherState; its W20 15 kt is §6.4's "บ่ายร้อน (thermal)" and byRegime convective
+// (ค่าประมาณ). A9 tests the mechanism: 600 s at 100 ft, 50 m/s, seed 7 gives RMS w 0.774 against σw 0.772 m/s.
+test('WND-10 calm air can be turbulent: U10 0 with W20 15 kt gives RMS w ≈ σw 0.772 m/s ± 10 % (was 0), also in a Flight', () => {
+  const w = new Wind({ kt: 0, W20: 15, seed: 7 }); let s2 = 0; const n = 240 * 600;
+  for (let i = 0; i < n; i++) { w.update(1 / 240, 100 * FT, 50, 0); const g = w.at(100 * FT); s2 += g[2] * g[2]; }
+  assert.equal(Math.hypot(...w.mean(100 * FT)), 0, 'no mean wind');
+  near(Math.sqrt(s2 / n), Wind.lowAlt(100, 15).sw, 0.1 * 0.772, 'RMS w, 600 s');
+  const f = new Flight({ wind: SCENARIOS.calm, W20: 15, seed: 5 });
+  assert.equal(f.W20, 15); for (let i = 0; i < 240; i++) f.tick(f.dt);
+  assert.ok(Math.hypot(...f.ac.wind.g) > 0, 'gusts in a calm Flight with W20');
+  // σw = 0.1·W20 does not depend on height, so RMS w would not see metres passed as feet: check the unit directly
+  const seen = [], orig = Wind.lowAlt; Wind.lowAlt = (h, W) => (seen.push([h, W]), orig(h, W));
+  try { new Wind({ kt: 0, W20: 15 }).update(1 / 240, 100 * FT, 50, 0); } finally { Wind.lowAlt = orig; }
+  near(seen[0][0], 100, 1e-9, 'update passes h in ft'); assert.equal(seen[0][1], 15, 'update passes W20 in kt');
+});
+test('W20 per scenario keeps the old turbulence (turb × 0.932·kt); calm has none; a wind with no W20 keeps the old rule', () => {
+  near(W20_PER_KT_LEGACY, 0.9318, 1e-4, '0.61^(1/7)');
+  const exp = { calm: 0, head: 5.591, xr: 7.455, xl: 22.364 };
+  for (const [k, v] of Object.entries(exp)) { near(SCENARIOS[k].W20, v, 1e-3, k); near(new Flight({ wind: SCENARIOS[k] }).W20, v, 1e-3, `Flight ${k}`); }
+  const c = new Flight({ wind: SCENARIOS.calm }); for (let i = 0; i < 240; i++) c.tick(c.dt);
+  assert.deepEqual([...c.ac.wind.g], [0, 0, 0], 'calm stays turbulence-free');
+  near(new Wind({ kt: 15, turb: 1.6 }).W20, 22.364, 1e-3, 'legacy turb (explore demo, research scripts)');
+  assert.equal(new Wind({ kt: 0, turb: 2 }).W20, 0, 'legacy coupling: no wind, no turbulence');
+  assert.equal(new Flight({ wind: SCENARIOS.xl, W20: 0 }).W20, 0, 'the Flight option overrides the scenario');
+  // null or absent W20 means "the scenario's" (as qnh: null means the default); an explicit 0 overrides a legacy turb
+  near(new Flight({ wind: SCENARIOS.xl, W20: null }).W20, 22.364, 1e-3, 'W20 null keeps the scenario');
+  assert.equal(new Wind({ kt: 15, turb: 1.6, W20: 0 }).W20, 0, 'W20 0 overrides turb');
+  assert.equal(new Flight({ wind: { fromDeg: 40, kt: 15, turb: 1.1 }, W20: 0 }).W20, 0, 'demo spec + W20 0');
+  near(new Flight({ wind: { fromDeg: 40, kt: 15, turb: 1.1 } }).W20, 15.375, 1e-3, 'demo spec, legacy turb');
+  near(windW20({ kt: 15, turb: 1.1 }), 15.375, 1e-3, 'windW20 legacy'); assert.equal(windW20(SCENARIOS.xr), SCENARIOS.xr.W20);
+  // Wind.turb: the old turb equivalent, so a script that rebuilds a Wind from w.turb (s9_turbclock.mjs) keeps W20
+  const x = new Flight({ wind: SCENARIOS.xl, seed: 5 }).ac.wind;
+  near(x.turb, 1.6, 1e-12, 'xl turb'); near(new Wind({ kt: x.kt, turb: x.turb }).W20, x.W20, 1e-12, 'rebuilt from turb');
+  assert.equal(new Wind({ kt: 0, W20: 15 }).turb, 0, 'no mean wind: turb 0');
+});
+test('src/90-app.js: the scenario card names the turbulence from W20 (light < 30 kt, moderate < 45, severe)', () => {
+  const app = fs.readFileSync(new URL('../src/90-app.js', import.meta.url), 'utf8');
+  assert.match(app, /const turbWord = \(w\) => \(w >= 45 \? 'ปั่นป่วนรุนแรง' : w >= 30 \? 'ปั่นป่วนปานกลาง' : w > 0 \? 'ปั่นป่วนเล็กน้อย' : ''\)/);
+  assert.match(app, /const tw = turbWord\(windW20\(sc\)\)/, 'the same W20 rule as the Flight');
+  assert.doesNotMatch(app, /sc\.turb/);
+});
+test('src/90-app.js: the windsocks follow the flight\'s resolved wind (a scenario has rel, not fromDeg)', () => {
+  const app = fs.readFileSync(new URL('../src/90-app.js', import.meta.url), 'utf8');
+  assert.match(app, /const sockWind = app\.mode === 'train' && app\.flight \? app\.flight\.ac\.wind : app\.wind;/);
+  assert.match(app, /yawFor\(sockWind\.fromDeg \+ 180\), ext = clamp\(sockWind\.kt \/ 15, 0, 1\)/);
+  assert.doesNotMatch(app, /windSpec/, 'Flight.windSpec is gone (the input spec may lack fromDeg)');
+  for (const k of Object.keys(SCENARIOS)) assert.ok(Number.isFinite(new Flight({ wind: SCENARIOS[k] }).ac.wind.fromDeg), `${k}: fromDeg`);
+  assert.equal(new Flight({ wind: SCENARIOS.xl }).windSpec, undefined, 'no Flight.windSpec');
 });

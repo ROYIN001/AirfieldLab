@@ -132,10 +132,11 @@ test('stall warning release: on at once, held for aWarnMinOn s and within aWarnH
 // crosswind it does not yet (the autopilot flies Vref with no gust additive), so that half is a regression guard for
 // seed 5 until the owner decides. Autoland, seed 5, all four runway ends. In calm air there is
 // none. In the 15 kt gusty crosswind the autopilot flies Vref with no gust additive, and with seed 5 the horn
-// first sounds in APP mode at about 38–43 ft on every runway end, above the flare height, and the APP onsets span
-// about 25–43 ft (dry ISA before A8: first onsets 45–50 ft, all onsets in APP at 29–50 ft; the A8 humid air changes
-// seed 5's gust sequence). 21L and 03R now reach the 3 onsets, one and two of them in FLARE (10.8–21.9 ft), so all
-// onsets lie at 11–43 ft. Round 2's `stall_warning` check
+// first sounds in APP mode at about 39–44 ft on every runway end, above the flare height, and the APP onsets span
+// about 23–44 ft (A9 log-law wind, 2026-11-25; A8 before it: first onsets 38–43 ft, APP onsets 25–43 ft, and 21L and
+// 03R added one and two FLARE onsets at 10.8–21.9 ft; dry ISA before A8: first onsets 45–50 ft, all onsets in APP at
+// 29–50 ft; each change moves seed 5's gusts or the wind they ride on). Only 03R reaches the 3 onsets, one of them in
+// FLARE (11.4 ft), so all onsets lie at 11–44 ft. Round 2's `stall_warning` check
 // (02-light-aircraft/08-handling.md, any phase above 20 ft) would flag these flights; the threshold stays at the T-A-07
 // design value until the owner chooses (flap α_warn 7.77°, about 5 kt, or a Vref gust additive). The 50 ft limit and
 // the 3 onsets are an A5 regression choice (no source) that holds for seed 5 only.

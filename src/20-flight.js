@@ -83,24 +83,51 @@ function makeRng(seed) {
 }
 function gauss(r) { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); }
 
-// ── Wind: mean wind with a 1/7-power profile (shear on final) + Dryden turbulence,
-//    MIL-F-8785C low-altitude form (σw = 0.1·W20, length scales from height). ──
+// ── Wind: mean wind with a log-law profile (shear on final) + Dryden turbulence, MIL-F-8785C low-altitude form
+//    (σw = 0.1·W20, length scales from height), its intensity W20 set apart from the mean wind. ──
+// Mean wind (plan A9; research round 4, 04-weather.md §6.3, §9.1, §13 item 3; round 1 R1-19, 01-flight-physics/08-wind.md
+// §8.7, §8.13 wind.meanProfile): neutral log law U(h) = U10·ln(h/z0)/ln(10/z0) from the reported wind at 10 m (zRef,
+// WMO-No. 8 §5.9, conf. low), clipped to z0 … 300 m (profileTop_m, ค่าประมาณ). z0 = 0.05 m (ค่าประมาณ, round 1
+// z0_default_VTBD_m; 04-weather.md §9.1 keeps it so there is one value; MIL-F-8785C Cat. C 0.046 m, WMO class 3 grass
+// 0.03 m). The old 1/7-power rule (law 'power', 1/7 ≡ log law at z0 = 10·e⁻⁷ = 0.009 m, §8.7) stays for WND-5.
+const WIND_PROFILE = { z0: 0.05, zRef: 10, top: 300 };
+function logLaw(h, z0, d = 0, zRef = WIND_PROFILE.zRef) { return Math.log((h - d) / z0) / Math.log((zRef - d) / z0); }
+// Turbulence intensity W20 (kt): the MIL-F-8785C wind at 20 ft, light 15 · moderate 30 · severe 45 kt (04-weather.md §6.4,
+// 08-wind.md §8.3), given apart from the mean wind so calm air can be turbulent (WND-10; round 1 §8.17 item 1). A wind
+// with no W20 keeps the old coupling, turb × the 1/7-law wind at 6.1 m = turb·0.932·kt (08-wind.md §8.1).
+const W20_PER_KT_LEGACY = Math.pow(0.61, 1 / 7);
+// the W20 a wind spec stands for: its own W20 (0 included; null or absent = none given), else the old coupling
+const windW20 = ({ W20 = null, turb = 0, kt = 0 } = {}) => W20 ?? (turb || 0) * (kt || 0) * W20_PER_KT_LEGACY;
+// 3 s gust over the 10 min mean at 10 m by exposure (04-weather.md §6.4 and §9 wind.gustFactor_3s_10min, Harper, Kepert &
+// Ginger AMS 2008 draft, later WMO/TD-1555; conf. medium, a draft; WND-7). Nothing reads it yet: for B10/B11's METAR gusts.
+const GUST_FACTOR_3S = { inLand: 1.66, offLand: 1.52, offSea: 1.38, atSea: 1.23 };
 class Wind {
-  constructor({ fromDeg = 0, kt = 0, turb = 0, seed = 7 } = {}) {
-    this.fromDeg = fromDeg; this.kt = kt; this.turb = turb;
+  constructor({ fromDeg = 0, kt = 0, W20 = null, turb = 0, seed = 7, z0 = null, law = 'log' } = {}) {
+    // z0 null or absent = the default (as qnh and W20); outside 0 < z0 < zRef the log law gives NaN, ∞ or a negative wind
+    this.z0 = z0 ?? WIND_PROFILE.z0;
+    if (!(this.z0 > 0 && this.z0 < WIND_PROFILE.zRef)) throw new RangeError(`Wind z0 ${z0} m outside (0, ${WIND_PROFILE.zRef})`);
+    this.fromDeg = fromDeg; this.kt = kt; this.law = law;
+    this.W20 = windW20({ W20, turb, kt });
+    // the old turb that gives this W20 (0 with no mean wind), kept only for scripts that rebuild a Wind from w.turb
+    // (01-flight-physics/scripts/s9_turbclock.mjs); nothing in src reads it
+    this.turb = kt > 0 ? this.W20 / (kt * W20_PER_KT_LEGACY) : 0;
     this.rng = makeRng(seed); this.g = [0, 0, 0];
   }
-  speedAt(h) { const W10 = this.kt * KT; return W10 * Math.pow(clamp(h, 0.3, 300) / 10, 1 / 7); }
+  speedAt(h) {
+    const W10 = this.kt * KT;
+    return this.law === 'power' ? W10 * Math.pow(clamp(h, 0.3, 300) / 10, 1 / 7) : W10 * logLaw(clamp(h, this.z0, WIND_PROFILE.top), this.z0);
+  }
   mean(h) { const w = this.speedAt(h), a = this.fromDeg * DEG; return [-w * Math.cos(a), -w * Math.sin(a), 0]; }
+  // MIL-F-8785C low altitude (08-wind.md §8.3; WND-8, WND-9): h in ft clipped to 10…1000, W20 in kt → σ m/s, L m
+  static lowAlt(hft, W20) {
+    const h = clamp(hft, 10, 1000), k = 0.177 + 0.000823 * h, sw = 0.1 * W20 * KT;
+    return { sw, su: sw / Math.pow(k, 0.4), Lw: h * FT, Lu: h / Math.pow(k, 1.2) * FT };
+  }
   update(dt, h, V, hdg) {
-    if (this.turb <= 0 || this.kt <= 0) { this.g[0] = this.g[1] = this.g[2] = 0; return; }
-    const hft = clamp(h / FT, 10, 1000);
-    const W20 = this.speedAt(6.1) / FT;
-    const sw = 0.1 * W20 * this.turb, su = sw / Math.pow(0.177 + 0.000823 * hft, 0.4);
-    const Lw = hft * FT, Lu = (hft / Math.pow(0.177 + 0.000823 * hft, 1.2)) * FT;
-    const Vt = Math.max(V, 10);
-    const step = (x, sig, L) => { const a = Math.exp(-Vt * dt / L); return x * a + sig * FT * Math.sqrt(1 - a * a) * gauss(this.rng); };
-    this.g[0] = step(this.g[0], su, Lu); this.g[1] = step(this.g[1], su, Lu); this.g[2] = step(this.g[2], sw, Lw);
+    if (!(this.W20 > 0)) { this.g[0] = this.g[1] = this.g[2] = 0; return; }
+    const P = Wind.lowAlt(h / FT, this.W20), Vt = Math.max(V, 10);
+    const step = (x, sig, L) => { const a = Math.exp(-Vt * dt / L); return x * a + sig * Math.sqrt(1 - a * a) * gauss(this.rng); };
+    this.g[0] = step(this.g[0], P.su, P.Lu); this.g[1] = step(this.g[1], P.su, P.Lu); this.g[2] = step(this.g[2], P.sw, P.Lw);
     this.hdg = hdg;
   }
   at(h) {
@@ -638,19 +665,26 @@ class Recorder {
 
 // ── A flight: aircraft + wind + autopilot / pilot laws + evaluation + recording ──
 // Winds are given relative to the landing runway (rel 0 = straight down the runway, +90 from the right).
+// W20 (kt, turbulence intensity, plan A9): the old turb 0 / 0.6 / 0.8 / 1.6 × the 1/7-law wind at 20 ft (calm 0, head
+// 5.59, xr 7.45, xl 22.36 kt: all light, under 30; round 1 §8.1 and §8.17 item 3), so the turbulence is unchanged: σ
+// matches the old ft/s path to rounding (≤ 1 ulp, the product is formed in another order), and with law 'power' the
+// seed-5 autolands match the pre-A9 code to about 1e-12 with the same scores. Kept by choice, not because the research
+// is silent: §6.4's daytime light-wind row (§9 byRegime_W20_kt_ESTIMATE.dayLightWind max(U10, 5), ค่าประมาณ) would give
+// head and xr 10 kt; they stay at 5.59 and 7.45 kt so the scores stay comparable, and per-regime W20 waits for B10's
+// weather (owner to choose). A Flight's own W20 option overrides it (null or absent = the scenario's).
 const SCENARIOS = {
-  calm: { label: 'ลมสงบ', rel: 0, kt: 0, turb: 0 },
-  head: { label: 'ลมสวน 10 kt', rel: 0, kt: 10, turb: 0.6 },
-  xr: { label: 'ลมขวาง 10 kt จากขวา', rel: 90, kt: 10, turb: 0.8 },
-  xl: { label: 'ลมขวาง 15 kt จากซ้าย + กระโชก', rel: -90, kt: 15, turb: 1.6 },
+  calm: { label: 'ลมสงบ', rel: 0, kt: 0, W20: 0 },
+  head: { label: 'ลมสวน 10 kt', rel: 0, kt: 10, W20: 0.6 * 10 * W20_PER_KT_LEGACY },
+  xr: { label: 'ลมขวาง 10 kt จากขวา', rel: 90, kt: 10, W20: 0.8 * 10 * W20_PER_KT_LEGACY },
+  xl: { label: 'ลมขวาง 15 kt จากซ้าย + กระโชก', rel: -90, kt: 15, W20: 1.6 * 15 * W20_PER_KT_LEGACY },
 };
 const windFrom = (sc) => (sc.fromDeg != null ? sc.fromDeg : Math.round(wrap360(FIELD.rwyHdg + sc.rel)));
 
 class Flight {
-  constructor({ wind = SCENARIOS.calm, oatC = WX_DEFAULT.oatC, qnh = WX_DEFAULT.qnh, dewC = WX_DEFAULT.dewC, dist = 5500, pilot = 'ap', assist = true, autoThr = true, seed = 11, dh = 0, dtl = 0 } = {}) {
+  constructor({ wind = SCENARIOS.calm, W20 = null, oatC = WX_DEFAULT.oatC, qnh = WX_DEFAULT.qnh, dewC = WX_DEFAULT.dewC, dist = 5500, pilot = 'ap', assist = true, autoThr = true, seed = 11, dh = 0, dtl = 0 } = {}) {
     this.ac = new Aircraft();
     qnh = qnh ?? P0_HPA; this.ac.isaDev = oatC - (15 - 0.0065 * FIELD.elev); this.ac.qnh = qnh; this.ac.dewC = dewC;
-    this.ac.wind = new Wind({ fromDeg: windFrom(wind), kt: wind.kt, turb: wind.turb, seed });
+    this.ac.wind = new Wind({ fromDeg: windFrom(wind), kt: wind.kt, W20: W20 ?? windW20(wind), seed }); this.W20 = this.ac.wind.W20;
     const trim = this.ac.setApproach({ dist, dh, dt: dtl });
     this.trim = trim;
     this.ap = new Autopilot(this.ac, trim);
@@ -659,7 +693,7 @@ class Flight {
     this.rec = new Recorder();
     this.pilot = pilot; this.opts = { assist, autoThr };
     this.input = { x: 0, y: 0, rud: 0, thr: trim.thr, brake: 0 };
-    this.acc = 0; this.dt = 1 / 240; this.finishedAt = null; this.oatC = oatC; this.qnh = qnh; this.dewC = dewC; this.windSpec = wind;
+    this.acc = 0; this.dt = 1 / 240; this.finishedAt = null; this.oatC = oatC; this.qnh = qnh; this.dewC = dewC;
     this.crashed = false;
     this.xPrev = new Float64Array(13); this.sPrev = new Float64Array(6); this.keepPrev();   // state before the last tick (render interpolation)
   }

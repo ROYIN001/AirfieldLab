@@ -3,6 +3,12 @@
 // the A8 default weather, 2026-11-23; 88/88/90/78 in dry ISA on 2026-11-19). A8 (humid air + QNH 1009.3, research
 // round 4 §6.1): ρ −1.4 %, TAS +0.7 % at the same IAS; the Dryden filter steps with TAS, so seed 5's gust sequence
 // differs (xl touchdowns 348.6/308.7/360.9/280.0 → 305.2/298.5/310.6/286.3 m). Floors unchanged.
+// A9 (log-law mean wind, z0 0.05 m, research round 4 §6.3 and §13 item 3, 2026-11-25): calm unchanged; crosswind
+// 85/80/85/80 → 85/78/85/80 (21L: attitude part 5.5 → 3.5, sink −138.2 → −118.9 fpm), touchdowns 304.1/298.9/305.6/
+// 284.2 m, 5.6–5.7 m right of the centre line (downwind; was 5.9–6.0) as the wind below 10 m is weaker. Floors unchanged.
+// Not tested here, for E5: the 10 kt headwind (seed 5) lands about 6 m shorter on every end, 308.4/302.7/314.0/286.4 →
+// 302.2/296.9/309.2/280.6 m; 21L drops under the 300 m edge of the perfect window (position 25 → 18, score 96 → 89),
+// 21R is now only 2.2 m inside it; 03L 96 and 03R 89 keep their scores.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { M } from './harness.mjs';

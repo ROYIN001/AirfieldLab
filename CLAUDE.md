@@ -45,7 +45,11 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   elevation 0 as the research computed it; `atmosphere()` with QNH and dew point, old 2-argument calls bit-identical;
   Flight defaults, dry-ISA option, `qnh: null` = 1013.25 hPa, dew point read at the field, Td > T capped at saturation
   in `airDensity`/`relHumidity` as in `atmosphere()`; `WX_DEFAULT` recomputed from the METAR statistics; the briefing,
-  training-flight and demo-flight wiring), `input` (shaping, key ramps, the
+  training-flight and demo-flight wiring; then the wind, plan A9: WND-4…WND-10 of 04-weather.md §10.2 and round 1
+  T-W-08 (log law, the old 1/7 rule, town against field, the gust-factor table, `Wind.lowAlt` σ and L, turbulence in
+  calm air with W20 15 kt and the height unit `update` passes to `lowAlt`), `z0` null = default and out of range throws,
+  that a Flight flies the log law, the scenario W20 values, `W20: null` = the scenario's, the legacy `turb` rule and
+  `Wind.turb`, the card wording and the windsock wiring), `input` (shaping, key ramps, the
   sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
   phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
@@ -70,7 +74,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   line drawn the other way round; the stands of
   `alsStands` against the real pavements; every flash seen at 20, 30 and 60 frames a second).
   Autoland score floors sit at or just under the values measured on 2026-11-19 and re-measured for A8 on
-  2026-11-23 (the assist robot's floor is a loose 50); touchdown points and every mode value have regression bands.
+  2026-11-23 and for A9 on 2026-11-25 (the assist robot's floor is a loose 50); touchdown points and every mode value
+  have regression bands.
   A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 25-input.js` with
@@ -79,7 +84,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   these two may use three.js and the DOM inside their functions, never at the top level. `test/lib/png.mjs` reads the
   land-use PNGs (8-bit greyscale) with `node:zlib`. `build.mjs` exports `assemble()`, `build()`, `dataFiles()`,
   `checkPr()` and `previewHtml()` for the page test. `M` from `test/harness.mjs` also includes `Evaluator`, `aWarnAt`,
-  `Recorder`, `qNlerp`, `WX_DEFAULT` and the humid-air functions of `10-atmo.js`.
+  `Recorder`, `qNlerp`, `WX_DEFAULT`, `Wind`, `logLaw`, `WIND_PROFILE`, `W20_PER_KT_LEGACY`, `windW20`, `GUST_FACTOR_3S` and the humid-air functions
+  of `10-atmo.js`.
 - Screenshots: `node test/shots.mjs <set> [--dist <built page>] [--out <dir>] [--pin <three-pin.mjs>]` (Playwright +
   Chrome, SwiftShader; sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `vis`, `all`). It builds the
   working tree into `.cache/shots-dist` unless `--dist` is given, writes PNGs to `shots/`, and serves three.js from
@@ -158,24 +164,46 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   11 LT, the hour nearest 31 °C): ρ 1.1437 kg/m³ (−1.4 % against dry ISA), RH 62 %, DA 2,300 ft in the briefing.
   `new Flight({ qnh: 1013.25, dewC: null })` and a bare `new Aircraft()` keep the old dry ISA air bit for bit.
   `app.wx` in 90-app.js feeds the briefing and the flights (B10 WeatherState will set it).
-- Wind: 1/7-power shear + MIL-F-8785C Dryden turbulence (first-order).
+- Wind (plan A9, research round 4 §6.3–6.4 and §13 item 3, round 1 `08-wind.md` §8.7): mean wind by the neutral log
+  law U(h) = U10·ln(h/z0)/ln(10/z0) from the 10 m wind, h = CG height clipped to z0…300 m (0 below z0, constant above
+  300 m), z0 0.05 m (round 1 default, ค่าประมาณ; `WIND_PROFILE`; `z0: null` = default, outside 0…10 m throws a RangeError);
+  `law: 'power'` keeps the old 1/7 rule for tests. `GUST_FACTOR_3S` (3 s / 10 min, §6.4, WND-7) is unused until B10/B11.
+  Against 1/7 it is weaker below 10 m (0.776 against 0.844 × U10 at 10 ft) and stronger above (1.080 against 1.062 at
+  50 ft). Turbulence: MIL-F-8785C Dryden, first-order (exact form is plan F1), intensity `W20` (kt) set apart from the
+  mean wind (`Wind.lowAlt(hft, W20)`, h clipped to 10…1000 ft, σw = 0.1·W20), so calm air can be turbulent:
+  `Flight({ W20 })` overrides the scenario's `W20` (null or absent = the scenario's, 0 = none); `windW20(spec)` (used
+  by Flight, Wind and the scenario card) gives a spec with no W20 but a `turb` (the explore demo, research scripts)
+  the old turb·0.932·kt. `Wind.turb` is the equivalent old turb (0 with no mean wind), kept only for research scripts
+  that rebuild a Wind from it (`s9_turbclock.mjs`). SCENARIOS keep their turbulence (σ equal to rounding, ≤ 1 ulp;
+  with `law: 'power'` the seed-5 autolands match the pre-A9 code to about 1e-12 and score the same): calm 0 (no
+  turbulence), head 5.59, xr 7.45, xl 22.36 kt (all light; the cards now say ปั่นป่วนเล็กน้อย for xl too). Kept by
+  choice: §6.4's daytime light-wind estimate max(U10, 5) would give head and xr 10 kt; per-regime W20 is B10's (owner
+  to choose). `flightOpts()` in 90-app.js does not forward a W20 from `app.wx` (demo flights spread all of `app.wx`):
+  B10 must add it if weather turbulence should reach training flights. The HUD wind (`mean(max(h, 1))`) reads 0.62 × U10 when parked.
 - Autopilot: LOC/GS tracking, flare, decrab, rollout, braking. `PilotLaws`: ASSIST (attitude command, auto-rudder,
   auto-throttle) and DIRECT (surface deflections + auto-trim).
 - Evaluator: stabilised gates at 500 and 200 ft, callouts, touchdown score (sink 40, position 25, centre line 15,
   speed 10, attitude 10). Touchdown window 300–600 m is "perfect". The debrief `'stall'` event (near stall:
   stall blend σ (`air.stall`) > 0.25 or α > α_stall(flaps) − 4°) is separate from the warning and not scored.
-- Verified (`test/runways.test.mjs`, seed 5, A8 default weather): autoland on 21R, 21L, 03L, 03R in calm scores
-  100/100/100/93 and in 15 kt gusty crosswind 85/80/85/80 (88/88/90/78 in dry ISA before A8: the Dryden filter steps
-  with TAS, so a seed's gusts change). Measured baseline over the turbulence seeds the app draws (7–1006, 1,000
-  autolands each, 2026-11-23, A8): 10 kt headwind on 03L 88–100 (median 100; dry ISA 89–100); 10 kt crosswind on 03L
-  82–97 (median 96; dry ISA 81–97); 15 kt gusty crosswind on 21R 35–98 (median 85, mean 84.1; dry ISA 35–97, median
-  85, mean 83.8), where 52 flights log the near-stall event and none crashes (dry ISA: seeds 42 and 559 bounced and
-  were flagged as a crash). Seeds 1–10 give 67–96 (dry ISA before A8: 75–94) in the gusty crosswind on all four runways. Calm has
-  no turbulence, so its scores do not depend on the seed. With the A5 horn, 95 of 100 gusty-crosswind autolands on 21R
-  (seeds 7–106) hear short chirps, 71 of them above 20 ft and 36 above 50 ft, because the autopilot flies Vref with no
-  gust allowance; with seed 5 the horn first sounds in APP at 38–43 ft on all four runway ends (dry ISA 45–50 ft), APP
-  onsets span 25–43 ft (dry ISA 29–50 ft), and 21L and 03R add one and two FLARE onsets at 11–22 ft (round 2's
-  `stall_warning` check counts anything above 20 ft). Open for the owner: flap α_warn 7.77° (about 5 kt) or a Vref gust additive.
+- Verified (`test/runways.test.mjs`, seed 5, A8 default weather, A9 log-law wind): autoland on 21R, 21L, 03L, 03R in
+  calm scores 100/100/100/93 and in 15 kt gusty crosswind 85/78/85/80 (A8 before A9: 85/80/85/80; dry ISA before A8:
+  88/88/90/78; the Dryden filter steps with TAS, so a seed's gusts change). Measured baseline over the turbulence seeds
+  the app draws (7–1006, 1,000 autolands each, 2026-11-25, A9): 10 kt headwind on 03L 87–100 (median 96, mean 97.4; A8
+  88–100, median 100, mean 98.6: the log law sheds more headwind in the last 50 ft, so touchdown IAS drops about 0.7 kt
+  and more flights lose speed points below Vref − 8 kt, as round 1 §8.7 expects; for the flare re-tune E5); 10 kt
+  crosswind on 03L 82–97 (median 96, mean 95.3; A8 82–97, 96, 95.0); 15 kt gusty crosswind on 21R 35–100 (median 86,
+  mean 84.8; A8 35–98, 85, 84.1), where 56 flights log the near-stall event (A8 52) and none crashes. Seeds 1–10 give
+  66–96 (A8 67–96, dry ISA before A8 75–94) in the gusty crosswind on all four runways. Calm has no turbulence, so its
+  scores do not depend on the seed. Headwind, seed 5 (not in `runways`): touchdowns about 6 m shorter on every end,
+  21R/21L/03L/03R 308.4/302.7/314.0/286.4 → 302.2/296.9/309.2/280.6 m; 21L falls under the 300 m window (score
+  96 → 89), 21R sits 2.2 m inside it (input for E5). Mean crosswind at a height of 50/30/10 ft: xl 16.2/14.8/11.6 kt
+  (1/7 rule 15.9/14.8/12.7), xr 10.8/9.8/7.8 (10.6/9.9/8.4); at the CG when the wheels pass 50/30/10 ft (CG at
+  54.6/34.5/14.7 ft, 21R autoland, seed 5): xl 16.4/15.1/12.7 (16.1/15.1/13.4), xr 11.0/10.1/8.5 (10.8/10.1/8.9). With the A5 horn, 94 of 100
+  gusty-crosswind autolands on 21R (seeds 7–106) hear short chirps, 71 of them above 20 ft and 35 above 50 ft (A8:
+  95/71/36), because the autopilot flies Vref with no gust allowance; with seed 5 the horn first sounds in APP at
+  39–44 ft on all four runway ends (A8 38–43 ft, dry ISA 45–50 ft), APP onsets span 23–44 ft (A8 25–43 ft), and only
+  03R adds a FLARE onset, at 11 ft (round 2's `stall_warning` check counts anything above 20 ft). Open for the owner:
+  flap α_warn 7.77° (about 5 kt) or a Vref gust additive.
 
 ## Visibility (current)
 - The visibility choice (500 m to 40 km, default 20 km) is MOR (WMO-No. 8; research round 4 §6.8): extinction

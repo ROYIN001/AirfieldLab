@@ -239,12 +239,16 @@ async function main() {
     $('#rwyList').appendChild(b);
   }
   const scnKeys = Object.keys(SCENARIOS);
+  // turbulence word from W20 against MIL-F-8785C light 15 / moderate 30 / severe 45 kt (01-flight-physics/08-wind.md §8.1,
+  // §8.17 item 3): xl's 22 kt is light, not moderate
+  const turbWord = (w) => (w >= 45 ? 'ปั่นป่วนรุนแรง' : w >= 30 ? 'ปั่นป่วนปานกลาง' : w > 0 ? 'ปั่นป่วนเล็กน้อย' : '');
   function buildScnCards() {
     $('#scnList').innerHTML = '';
     for (const k of scnKeys) {
       const sc = SCENARIOS[k], from = windFrom(sc); const b = document.createElement('button'); b.type = 'button'; b.dataset.k = k;
       const xw = sc.kt * Math.sin((from - FIELD.rwyHdg) * DEG), hw = sc.kt * Math.cos((from - FIELD.rwyHdg) * DEG);
-      b.innerHTML = `<b>${sc.label}</b><em>${sc.kt ? `${String(from).padStart(3, '0')}°/${sc.kt} kt` : 'สงบ'}</em><span>${sc.kt ? `ลมปะทะหน้า ${Math.round(hw)} kt · ลมขวาง ${Math.abs(Math.round(xw))} kt${sc.turb > 1 ? ' · ปั่นป่วนปานกลาง' : sc.turb > 0 ? ' · ปั่นป่วนเล็กน้อย' : ''}` : 'ไม่มีลม ไม่มีความปั่นป่วน'}</span>`;
+      const tw = turbWord(windW20(sc));
+      b.innerHTML = `<b>${sc.label}</b><em>${sc.kt ? `${String(from).padStart(3, '0')}°/${sc.kt} kt` : 'สงบ'}</em><span>${sc.kt ? `ลมปะทะหน้า ${Math.round(hw)} kt · ลมขวาง ${Math.abs(Math.round(xw))} kt${tw ? ' · ' + tw : ''}` : tw ? `ไม่มีลม · ${tw}` : 'ไม่มีลม ไม่มีความปั่นป่วน'}</span>`;
       b.onclick = () => { app.train.scn = k; refreshSetup(); previewFlight(); };
       $('#scnList').appendChild(b);
     }
@@ -752,8 +756,9 @@ async function main() {
     for (const L of floods) L.intensity = 1100 * night;
     nightAmb.intensity = 0.11 * night;
     // windsocks and radar
-    const wsSpec = app.mode === 'train' && app.flight ? app.flight.windSpec : app.wind;
-    const yaw = yawFor(wsSpec.fromDeg + 180), ext = clamp(wsSpec.kt / 15, 0, 1);
+    // the flight's resolved wind: a training scenario spec has rel, not fromDeg (reading the spec gave a NaN yaw)
+    const sockWind = app.mode === 'train' && app.flight ? app.flight.ac.wind : app.wind;
+    const yaw = yawFor(sockWind.fromDeg + 180), ext = clamp(sockWind.kt / 15, 0, 1);
     for (const s of field.dyn.socks) { s.grp.rotation.y = yaw + Math.sin(T * 1.3 + s.grp.position.x) * 0.06 * ext; s.pivot.rotation.z = -(1 - ext) * 72 * DEG + Math.sin(T * 7.0 + s.grp.position.z) * 0.035 * ext; }
     // pins
     if (app.mode === 'explore') {
