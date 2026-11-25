@@ -11,11 +11,15 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Military content: public sources only, generic depiction. No unit names, emblems or academy names.
 - Estimated values (building and tower heights, parked aircraft) must be labelled as estimates.
 - Licences (research round 5 §11, round 1 §12): the OSM-derived files in `data/` are ODbL and listed in
-  `data/LICENSE-DATA.md`. A new data file gets a line there, and a new JSON file in `data/` top-level `source` and
-  `license` fields; its credit joins the footer when its data arrives, not before. Never commit a source from §11
-  table 11.3 (GlobalBuildingAtlas, FABDEM, TanDEM-X, IVAO sector files, X-Plane CIFP, BMA BDCTL_POLYGON), an AIP chart
-  or PDF, or GPL/LGPL text or a JSBSim model file: `test/licenses.test.mjs` fails on them, and only the owner adds a
-  file to `gpl_guard_allowlist` in `test/fixtures/license_policy.json`.
+  `data/LICENSE-DATA.md`. A new data file gets a row there, and a new JSON file in `data/` `source` and `license`
+  fields (top level, or `_meta` for a parameter card); its credit joins the footer of both panes when its data
+  arrives, not before. Never commit a source from §11 table 11.3 (GlobalBuildingAtlas, FABDEM, TanDEM-X, IVAO sector
+  files, X-Plane CIFP, BMA BDCTL_POLYGON), an AIP chart or PDF, or GPL/LGPL text or a JSBSim file.
+  `test/licenses.test.mjs` fails on the names in `forbidden_sources` (any case, in `data/`, `src/`, `tools/`, `test/`),
+  on .tif/.tiff/.jp2/.pdf files and on GPL/LGPL or JSBSim text. Review keeps out the rest: an AIP chart in another
+  format, and the two table 11.3 rows that are not on the list (3D-GloBFP, licence not checked; MERIT DEM, only
+  under its ODbL option). Only the owner adds a file or pattern to `gpl_guard_allowlist` in
+  `test/fixtures/license_policy.json`.
 
 ## Commands
 - Build: `node build.mjs` → `dist/index.html`, and copies `data/*` into `dist/`.

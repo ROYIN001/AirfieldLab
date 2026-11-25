@@ -2,6 +2,8 @@
 
 These scripts produced the files in `data/`. They need the original screen captures (AIP charts and
 OpenStreetMap renders at zoom 15–17), which are not included; `shots_meta.json` records the capture centres.
+They run on Python 3 with numpy, opencv-python, scikit-image and networkx, which you install yourself (BSD and Apache
+licences; not kept in the repository). Some steps are not kept: see the "made by" column of `data/LICENSE-DATA.md`.
 
 1. `mosaic.py` – georeference captures (Web Mercator) into local ENU mosaics around the ARP (`geo.py`).
 2. `landclass.py` – classify OSM-Carto colours into land-use ids → `land_in.png` (2.5 m) and `land_out.png` (8 m).
