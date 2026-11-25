@@ -19,7 +19,7 @@ export async function fit({ mode = 'static', T0 = null } = {}) {
   if (card.propulsion) delete card.propulsion.legacy;
   if (card.aero) delete card.aero.legacy;
   const t0 = T0 ?? compute().prop.static.T0_N;
-  const f = legacyFit(card, { mode, T0: mode === 'static' ? t0 : null });
+  const f = legacyFit(card, { mode, T0: t0 });
   // D2 (19 Nov 2026): buildAC (inside legacyFit) now takes the card's TCDS travel itself, so no travel patch is applied;
   // the stall blend centres are still re-solved so the trimmed CLmax equals the POH-derived targets
   const RAD = 180 / Math.PI, plog = [`deUp ${(f.ac.deUp * RAD).toFixed(1)}`, `deDn ${(f.ac.deDn * RAD).toFixed(1)}`, `daMax ${(f.ac.daMax * RAD).toFixed(1)}`, `drMax ${(f.ac.drMax * RAD).toFixed(1)}`];

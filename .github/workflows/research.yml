@@ -1,0 +1,52 @@
+name: Research checks
+
+# Round 2 research tools (docs/research/02-light-aircraft/scripts) on every change to docs/research/**
+# (research item R2-02, plan PR B5). The checks that fly cards run against the simulator commit pinned in
+# scripts/sim-snapshot.json, not against this branch's src/, so a physics pull request cannot turn this check red
+# (it does not even trigger it). The second step runs the same checks against this branch's src/ for information.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/research/**'
+      - '.github/workflows/research.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/research/**'
+      - '.github/workflows/research.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  round2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Round 2 checks on the pinned simulator
+        # lm_merge --strict (0 warnings, 0 missing round-1 paths), params-light.json up to date, lm_selftest, ls_tests,
+        # lh_tests, lo_tests; fails if a step fails or the run
+        # changes a file in the repo. The pinned commit is fetched by its SHA when the shallow clone lacks it.
+        run: node docs/research/02-light-aircraft/scripts/lm_ci.mjs --out "$RUNNER_TEMP/research-out"
+      - name: Same checks on this branch's src/ (information only)
+        # never fails the job: a failure here means the pinned commit and src/ have drifted apart, which is expected
+        # after a physics change until the research expectations are moved and sim-snapshot.json is re-pinned
+        if: always()
+        run: node docs/research/02-light-aircraft/scripts/lm_ci.mjs --root . --report-only --out "$RUNNER_TEMP/research-out-head"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: research-results
+          path: ${{ runner.temp }}/research-out*
+          if-no-files-found: ignore
+          retention-days: 14

@@ -18,7 +18,7 @@ export async function fit({ mode = 'static', T0 = null } = {}) {
   if (card.propulsion) delete card.propulsion.legacy;
   if (card.aero) delete card.aero.legacy;
   const t0 = T0 ?? compute().prop.static.T0_N;
-  const f = legacyFit(card, { mode, T0: mode === 'static' ? t0 : null });
+  const f = legacyFit(card, { mode, T0: t0 });
   const { M } = await import(path.join(ROOT, 'test', 'harness.mjs'));
   const chk = await checkFit(M, card, f);
   // excess T/W at approach, flaps full, full throttle (sim force model, MTOW, 66 KCAS ≈ 65 KIAS)

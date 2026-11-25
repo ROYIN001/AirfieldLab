@@ -17,6 +17,7 @@
 //    The merged params-light.json does not copy them; _meta.bases says where they come from.
 //  - `_na` with v ["*"] marks every remaining round-1 per-type path as deliberately absent (coverage missing 0).
 //  - coverage is also given for inheriting ids, on the resolved card.
+//  - with {strict:true} the leaf-format warnings also become errors (B5, 22 Nov 2026).
 //  - validate(): WARN-level checks (errors with {strict:true}): scope by category (D4), est flag vs note,
 //    training_mass shape (D3), VAPP >= VREF on every resolved id (D1), 08 ops.attitude_power.final.ias_kt and
 //    09 procedures.stabilised.Vapp = the card's speeds.VAPP_kt (D1), flap detent names in 08/09 (D6).
@@ -26,6 +27,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const HERE = path.dirname(fileURLToPath(import.meta.url));
+// Where the test scripts write their result files: $LM_OUT_DIR when set (lm_ci.mjs points it at a temp folder so a
+// CI run never changes the repo), otherwise scripts/out as before. Inputs that live in scripts/out (fixtures, cached
+// network results such as lo_aip_check.json) are still read from HERE/out.
+export const OUT_DIR = process.env.LM_OUT_DIR ? path.resolve(process.env.LM_OUT_DIR) : path.join(HERE, 'out');
+export function outFile(name) { fs.mkdirSync(OUT_DIR, { recursive: true }); return path.join(OUT_DIR, name); }
 export const SCOPES = new Set(['aircraft', 'engine', 'propeller', 'gear', 'environment', 'sim']);
 export const CONFS = new Set(['สูง', 'กลาง', 'ต่ำ']);
 export const ID_RE = /^[a-z][a-z0-9_]*$/;
@@ -161,8 +167,14 @@ export function mergeDir(dir, opts = {}) {
     if (via) { coverage[id].resolved = true; coverage[id].via = via; coverage[id].base = via.filter(x => bases[x] && !full[x]).map(x => baseInfo[x]?.from || x); }
   }
   const res = { merged, origin, errors, warnings, conflicts, coverage, stats, files, nBlocks, nExamples, nBad, bases: baseInfo };
-  res.checks = opts.checks === false ? [] : validate(res, { r1, pool, bases, strict: !!opts.strict, only: ONLY });
+  res.openSrc = openModelSources(dir, files);
+  res.checks = opts.checks === false ? [] : validate(res, { r1, pool, bases, strict: !!opts.strict, only: ONLY, refs: opts.refs === false ? null : loadRefIndex(dir, { r1Dir: opts.r1Dir }) });
   if (opts.strict) for (const c of res.checks) if (c.level === 'warn') errors.push(`[strict] ${c.id} ${c.check}: ${c.msg}`);
+  // leaf-format warnings (extra fields, est without a note, empty src, v null, _inherits not found) count too, so
+  // "--strict exits 0" means "0 warnings", the rule CLAUDE.md gives for every JSON edit (plan PR B5)
+  if (opts.strict) for (const w of warnings) errors.push(`[strict] ${w}`);
+  // and every card covers the round-1 per-type paths (filled or in _na), the "missing 0" the README promises (review of B5)
+  if (opts.strict) for (const [id, c] of Object.entries(coverage)) if (c.missing?.length) errors.push(`[strict] coverage ${id}: ${c.missing.length} round-1 per-type path(s) neither filled nor in _na (first ${c.missing[0]})`);
   return res;
 }
 
@@ -383,7 +395,105 @@ export const CHECK_NAMES = {
   scope: 'scope ตามหมวด (D4)', est: 'est กับคำว่า "ค่าประมาณ" ใน note', est_conf: 'est:true แต่ conf สูง',
   training_mass: 'รูปแบบ training_mass (D3)', speeds: 'มี speeds.VREF_kt / VAPP_kt (D1)', vapp_vref: 'VAPP ≥ VREF (D1)',
   xfile_vapp: 'Vapp ของ 08/09 = speeds.VAPP_kt ของบัตร ±0.5 kt (D1)', detent: 'ชื่อ detent ใน 08/09 = ชื่อในบัตร (D6)',
+  src_ref: 'รหัสใน src มีบรรทัดในแหล่งอ้างอิงของไฟล์เจ้าของ หรือเป็น R1: ที่มีจริง (T-LM-23)',
+  open_model: 'speeds/performance ไม่คัดจาก validation.openModels (03 §03.5.2)',
 };
+
+// ───────────── open models are for comparison only (03-open-models.md §03.5.2, §03.6; T-LB-17, T-LB-18; R2-05) ─────────────
+/** A reference entry of a topic file (table row `| LB2 | …` / `| [LB2] | …`, list `- [LP25] …` or `8. [LM8] …`) whose
+ *  description or type names an open model, its software or a simulator; a type that says "ปฐมภูมิ" (a primary document
+ *  that merely sits on such a site, e.g. LM26 NASA CR-96008 on the JSBSim site) does not count unless it says "โมเดลเปิด". */
+export const OPEN_MODEL_RE = /JSBSim|FlightGear|FGMEMBERS|FGDATA|YASim|Aeromatic|X-Plane|MSFS|GeoFS|โมเดลเปิด/i;
+/** Map code → "file:line" of every open-model source in the reference lists of the topic files. */
+export function openModelSources(dir, files = null) {
+  const out = new Map();
+  for (const f of files ?? fs.readdirSync(dir).filter(x => x.endsWith('.md'))) {
+    fs.readFileSync(path.join(dir, f), 'utf8').split('\n').forEach((l, i) => {
+      const m = /^(?:\|\s*|-\s+|\d+\.\s+)\[?(L[A-Z]\d+)\]?[\s|]+(.*)$/.exec(l);
+      if (!m) return;
+      const [desc, type = ''] = m[2].split(/ — | \| /);
+      if (OPEN_MODEL_RE.test(desc + ' ' + type) && !(/ปฐมภูมิ/.test(type) && !/โมเดลเปิด|ซอฟต์แวร์/.test(type))) out.set(m[1], `${f}:${i + 1}`);
+    });
+  }
+  return out;
+}
+/** measured open-model quantity [leaf, sub-key or min/max of the flap keys] → card leaf [path, key inside v], unit factor */
+export const OPEN_MODEL_MAP = [
+  ['stall_vs', 'min', 'speeds.VS1_kt', null, 1], ['stall_vs', 'max', 'speeds.VS0_kt', null, 1],
+  ['vy', null, 'speeds.VY_kt', null, 1], ['roc_max', null, 'performance.ROC_SL_fpm', null, 60 / 0.3048],
+  ['glide_best_speed', null, 'performance.glide', 'speed_kt', 1], ['glide_ld_max', null, 'performance.glide', 'ratio', 1],
+  ['takeoff', 'ground_roll_m', 'performance.takeoff', 'ground_roll_m', 1], ['takeoff', 'over50ft_m', 'performance.takeoff', 'over50ft_m', 1],
+];
+
+
+// ───────────── src codes → reference sections (R2-03, T-LM-23 extended) ─────────────
+/** Owner topic file of each round-2 source-code prefix (schema-ext.md §4 table). */
+export const SRC_OWNER = {
+  LM: '01-methods.md', LS: '02-thai-schools.md', LB: '03-open-models.md', LC: '04-c172s.md', LD: '05-da40.md',
+  LT: '06-da42.md', LP: '07-turboprop-trainers.md', LH: '08-handling.md', LO: '09-procedures.md', LE: '10-c172r.md',
+  LF: '11-c152.md', LG: '12-p2006t.md', LN: '13-other-trainers.md',
+};
+/** Round-1 prefix letter → topic file in docs/research/01-flight-physics/ (schema-ext.md §4, last paragraph). */
+export const R1_OWNER = {
+  A: '01-aero.md', U: '02-interference.md', P: '03-propeller.md', E: '04-turboprop.md', F: '05-turbofan.md', C: '06-controls.md',
+  G: '07-gear.md', W: '08-wind.md', N: '09-numerics.md', V: '10-validation.md', I: '11-input.md', S: '12-other-sims.md',
+};
+/** 07-turboprop-trainers.md:393: a class value copied from round-1 params-trainer.json at the same path (or at #<path>). */
+export const R1_PARAMS_TOKEN = 'R1:params-trainer.json';
+const REF_HEAD = /^(#{2,3})\s+[\d.]+\s+แหล่งอ้างอิง\s*$/;            // "## 04.13 แหล่งอ้างอิง", "## 1.11 แหล่งอ้างอิง"
+const REF_DEF = [
+  /^\|\s*\[?((?:R1:)?[A-Z]{1,2}\d+)\]?\s*\|/,                         // table row, one code in the first cell: "| LC1 |", "| [LB1] |"
+  /^\s*(?:\d+\.|[-*])\s+\[((?:R1:)?[A-Z]{1,2}\d+)\]/,                  // list item: "1. [LM1] …", "- [LP1] …", "- [R1:V19] …"
+];
+/** The reference section(s) of one topic text: {head: first heading line | null, ids: Map code → line}. A row whose first
+ *  cell lists several codes ("| LM0, LM1 |") or a prose line ("อ้างข้ามหัวข้อ: [LC1] …") is a cross-reference, not a definition. */
+export function refSection(text) {
+  const lines = text.split('\n'), ids = new Map(); let head = null;
+  for (let i = 0; i < lines.length; i++) {
+    const m = REF_HEAD.exec(lines[i]); if (!m) continue;
+    head ??= i + 1;
+    for (let j = i + 1; j < lines.length; j++) {
+      const h = /^(#+)\s/.exec(lines[j]); if (h && h[1].length <= m[1].length) break;
+      for (const re of REF_DEF) { const d = re.exec(lines[j]); if (d) { if (!ids.has(d[1])) ids.set(d[1], j + 1); break; } }
+    }
+  }
+  return { head, ids };
+}
+const _refCache = new Map();
+/** Reference index: round-2 owner files (dir first, then this script's folder), round-1 topic files, round-1 params. */
+export function loadRefIndex(dir, { r1Dir = null } = {}) {
+  const key = `${dir}|${r1Dir || ''}`;
+  if (_refCache.has(key)) return _refCache.get(key);
+  const find = (ds, f) => ds.map(d => path.join(d, f)).find(p => fs.existsSync(p));
+  const r2 = {};
+  for (const f of new Set(Object.values(SRC_OWNER))) { const p = find([dir, path.join(HERE, '..')], f); r2[f] = p ? { file: p, ...refSection(fs.readFileSync(p, 'utf8')) } : null; }
+  const r1d = [r1Dir, path.join(dir, '..', '01-flight-physics'), path.join(HERE, '..', '..', '01-flight-physics'), process.env.AIRFIELDLAB_R1_DIR]
+    .filter(Boolean).find(d => fs.existsSync(path.join(d, R1_OWNER.V)));
+  const r1 = {};
+  if (r1d) for (const f of Object.values(R1_OWNER)) { const p = path.join(r1d, f); r1[f] = fs.existsSync(p) ? { file: p, ...refSection(fs.readFileSync(p, 'utf8')) } : null; }
+  const pf = (r1d ? [path.join(r1d, 'params-trainer.json')] : []).concat(r1ParamsCandidates()).find(f => fs.existsSync(f));
+  const out = { r2, r1, r1Dir: r1d || null, r1Params: pf ? JSON.parse(fs.readFileSync(pf, 'utf8')) : null };
+  _refCache.set(key, out);
+  return out;
+}
+/** null when code s (in the src of the leaf at per-type path ps) resolves, else a Thai message. */
+export function srcProblem(s, ps, idx) {
+  let m;
+  const inSec = (f, code, r, label) => !r ? `${s}: ไม่พบไฟล์เจ้าของ ${label}${f}` : !r.head ? `${s}: ${label}${f} ไม่มีหัวข้อ "แหล่งอ้างอิง"`
+    : r.ids.has(code) ? null : `${s}: ไม่มีบรรทัดในส่วนแหล่งอ้างอิงของ ${label}${f} (หัวข้อที่บรรทัด ${r.head})`;
+  if ((m = /^(L[A-Z])\d+$/.exec(s))) return SRC_OWNER[m[1]] ? inSec(SRC_OWNER[m[1]], s, idx.r2[SRC_OWNER[m[1]]], '') : `${s}: คำนำหน้า ${m[1]} ไม่มีไฟล์เจ้าของ (schema-ext.md §4)`;
+  if ((m = /^R1:([A-Z])\d+$/.exec(s))) {
+    if (!R1_OWNER[m[1]]) return `${s}: ตัวอักษร ${m[1]} ไม่ใช่คำนำหน้าของรอบที่ 1`;
+    if (!idx.r1Dir) return null;   // round-1 folder absent: cannot check (mergeDir adds one info row)
+    return inSec(R1_OWNER[m[1]], s.slice(3), idx.r1[R1_OWNER[m[1]]], '01-flight-physics/');
+  }
+  if (s === R1_PARAMS_TOKEN || s.startsWith(R1_PARAMS_TOKEN + '#')) {
+    if (!idx.r1Params) return null;
+    const p = s.includes('#') ? s.slice(s.indexOf('#') + 1) : ps;
+    return leaf(idx.r1Params, p) ? null : `${s}: params-trainer.json ของรอบที่ 1 ไม่มี leaf ${p} (ใช้ ${R1_PARAMS_TOKEN}#<path ของรอบที่ 1> หรือรหัส R1:<X>)`;
+  }
+  return `${JSON.stringify(s)}: ไม่ใช่รูปแบบรหัส (L?n ของรอบที่ 2, R1:?n ของรอบที่ 1 หรือ ${R1_PARAMS_TOKEN})`;
+}
 
 /**
  * Checks on a mergeDir result. Returns [{level: 'warn'|'info', id, check, msg, where}]. 'warn' becomes an ERROR with
@@ -391,16 +501,29 @@ export const CHECK_NAMES = {
  * (training_mass, speeds, vapp_vref, xfile_vapp, detent) look at the resolved card of every id (variants included),
  * so a value inherited from the parent is checked against the variant's own speeds.
  */
-export function validate(res, { r1 = null, pool = null, bases = {}, only = null } = {}) {
+export function validate(res, { r1 = null, pool = null, bases = {}, only = null, refs = null } = {}) {
   const out = [];
   const add = (level, id, check, msg, where = '') => out.push({ level, id, check, msg, where });
   const merged = res.merged, origin = res.origin || {};
   pool = pool ?? merged;
+  if (refs && !refs.r1Dir) add('info', 'common_light', 'src_ref', 'ไม่พบโฟลเดอร์ 01-flight-physics: ไม่ได้ตรวจรหัส R1:');
   // leaf checks
   for (const id of Object.keys(merged)) {
     (function rec(o, p) {
       if (isLeaf(o)) {
         const ps = p.join('.'), where = origin[`${id}.${ps}`] || '';
+        // T-LM-23 (R2-03): every src code has a line in its owner file's reference section, or is an existing R1: code
+        if (refs) {
+          if (Array.isArray(o.src)) for (const s of o.src) { const pr = srcProblem(s, ps, refs); if (pr) add('warn', id, 'src_ref', `${ps}: ${pr}`, where); }
+          // src lists inside v (e.g. common_light.evaluator.rules.<rule>.src of 08) follow the same rule
+          (function nested(x, q) {
+            if (Array.isArray(x)) x.forEach((y, k) => nested(y, `${q}[${k}]`));
+            else if (isObj(x)) for (const [k, y] of Object.entries(x)) {
+              if (k === 'src' && Array.isArray(y) && y.every(z => typeof z === 'string')) for (const s of y) { const pr = srcProblem(s, ps, refs); if (pr) add('warn', id, 'src_ref', `${q}.src: ${pr}`, where); }
+              else nested(y, `${q}.${k}`);
+            }
+          })(o.v, `${ps}.v`);
+        }
         if (ps.startsWith('_')) return;
         if (id === 'common_light') { if (!['environment', 'sim'].includes(o.scope)) add('warn', id, 'scope', `${ps}: scope "${o.scope}" → common_light ใช้ "environment" หรือ "sim"`, where); }
         else { const exp = expectedScope(ps, r1); if (exp && o.scope !== exp) add('warn', id, 'scope', `${ps}: scope "${o.scope}" → "${exp}"`, where); }
@@ -481,6 +604,30 @@ export function validate(res, { r1 = null, pool = null, bases = {}, only = null 
       const pa = pv('pattern'); if (pa && isObj(pa.flapsAt)) for (const [k, x] of Object.entries(pa.flapsAt)) chk(`procedures.pattern.v.flapsAt.${k}`, x);
       for (const n of ['short_field', 'soft_field']) { const s = pv(n); if (s) for (const ph of ['takeoff', 'landing']) if (isObj(s[ph])) chk(`procedures.${n}.v.${ph}.flaps`, s[ph].flaps); }
       const ga = pv('go_around'); if (ga && Array.isArray(ga.flapsSeq)) ga.flapsSeq.forEach(x => chk('procedures.go_around.v.flapsSeq', x));
+    }
+    // open models are for comparison only (03 §03.5.2, R2-05): (a) a speeds.* / performance.* leaf written in this id's
+    // block may not rest on open-model sources alone (warn; mixed with other sources = info); (b) a card value may not
+    // equal a measured validation.openModels value with decimals digit for digit (warn); a whole-number match (sweep
+    // grid) or a match after rounding to the card's decimals = info, because POH numbers coincide (c172r glide 65 KIAS)
+    const openSrc = res.openSrc;
+    if (openSrc?.size && merged[id]) for (const ps of leafPaths(merged[id]).filter(p => /^(speeds|performance)\./.test(p))) {
+      const l = leaf(merged[id], ps), src = (Array.isArray(l.src) ? l.src : []).map(s => String(s).replace(/^\[|\]$/g, ''));
+      const om = src.filter(s => openSrc.has(s)), w = origin[`${id}.${ps}`] || '';
+      if (src.length && om.length === src.length) add('warn', id, 'open_model', `${ps}: src ${src.join(', ')} เป็นแหล่งโมเดลเปิดทั้งหมด (ค่าใน validation.openModels ใช้เทียบเท่านั้น เป้าต้องมาจาก POH/AFM/TCDS)`, w);
+      else if (om.length) add('info', id, 'open_model', `${ps}: src มีแหล่งโมเดลเปิด ${om.join(', ')} ปนกับแหล่งอื่น`, w);
+    }
+    const oms = isObj(card.validation?.openModels) ? card.validation.openModels : {};
+    for (const [m, o] of Object.entries(oms)) for (const [q, sub, ps, key, k] of OPEN_MODEL_MAP) {
+      const ol = isObj(o) ? o[q] : null; if (!isLeaf(ol)) continue;
+      let x = ol.v;
+      if (q === 'stall_vs' && isObj(x)) { const ks = Object.keys(x).filter(j => typeof x[j] === 'number').sort((a, b) => +a - +b); if (!ks.length) continue; x = x[sub === 'min' ? ks[0] : ks[ks.length - 1]]; }
+      else if (sub && isObj(x)) x = x[sub];
+      const cl = leaf(card, ps), y = cl ? (key ? (isObj(cl.v) ? cl.v[key] : undefined) : cl.v) : undefined;
+      if (typeof x !== 'number' || typeof y !== 'number') continue;
+      const w = whereOf(id, ps); if (/รับจาก/.test(w)) continue;   // inherited leaf: reported under the parent id
+      const xs = x * k, dec = (String(y).split('.')[1] || '').length, name = `${ps}${key ? '.' + key : ''}`, from = `validation.openModels.${m}.${q}${sub ? '.' + sub : ''}`;
+      if (Math.abs(xs - y) < 1e-9 && !Number.isInteger(xs)) add('warn', id, 'open_model', `${name} = ${y} เท่ากับผลวัด ${from} ทุกหลัก (ห้ามคัดค่าโมเดลเปิดไปเป็นเป้า)`, w);
+      else if (+xs.toFixed(dec) === y) add('info', id, 'open_model', `${name} = ${y} เท่ากับ ${from} = ${+xs.toFixed(3)}${Number.isInteger(xs) ? '' : ` เมื่อปัดเป็น ${dec} ตำแหน่ง`} (ตรวจว่า src เป็น POH/AFM/TCDS)`, w);
     }
   }
   return out;

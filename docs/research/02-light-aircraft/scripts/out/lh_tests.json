@@ -174,7 +174,7 @@
    "exp": "high_on_path ; not low_on_path",
    "tol": "เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว)",
    "pass": true,
-   "src": "R1 gate 1 dot",
+   "src": "R1:V19 gate 1 dot",
    "today": "คะแนน touchdown 92; เห็น: gate gs dots",
    "score": {
     "total": 40,
@@ -199,7 +199,7 @@
    "exp": "low_on_path ; not high_on_path",
    "tol": "เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว)",
    "pass": true,
-   "src": "R1",
+   "src": "R1:V19",
    "today": "คะแนน touchdown 92; เห็น: gate gs dots",
    "score": {
     "total": 40,
@@ -424,7 +424,7 @@
    "exp": "nose_first ; not porpoise",
    "tol": "เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว)",
    "pass": true,
-   "src": "LH1, R1",
+   "src": "LH1, R1:V19",
    "today": "คะแนน touchdown 87; เห็น: คะแนน att −5",
    "score": {
     "total": 95,
@@ -449,7 +449,7 @@
    "exp": "hard_landing ; not very_hard_landing,late_flare,high_flare ; score 83",
    "tol": "เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1",
    "pass": true,
-   "src": "LH1 p.9-35 (6 in ≈ 340 fpm), R1",
+   "src": "LH1 p.9-35 (6 in ≈ 340 fpm), R1:V19",
    "today": "คะแนน touchdown 75; เห็น: คะแนน sink",
    "score": {
     "total": 83,
@@ -474,7 +474,7 @@
    "exp": "very_hard_landing ; score 35",
    "tol": "เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1",
    "pass": true,
-   "src": "R1 cap 35",
+   "src": "R1:V19 cap 35",
    "today": "คะแนน touchdown 35; เห็น: คะแนน sink (cap 35)",
    "score": {
     "total": 35,
@@ -574,7 +574,7 @@
    "exp": "off_centre ; score 91",
    "tol": "เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1",
    "pass": true,
-   "src": "R1 cl 6/15",
+   "src": "R1:V19 cl 6/15",
    "today": "คะแนน touchdown 83; เห็น: คะแนน cl",
    "score": {
     "total": 91,
@@ -599,7 +599,7 @@
    "exp": "short_landing ; score 20",
    "tol": "เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1",
    "pass": true,
-   "src": "R1 cap 20",
+   "src": "R1:V19 cap 20",
    "today": "คะแนน touchdown 20; เห็น: คะแนน pos (cap 20)",
    "score": {
     "total": 20,

@@ -545,7 +545,7 @@
      "u": "m2, -",
      "scope": "aircraft",
      "src": [
-      "R1:params-trainer.json",
+      "R1:params-trainer.json#controls.pitch.S_e",
       "LP27"
      ],
      "conf": "ต่ำ",
@@ -564,7 +564,7 @@
      "u": "m2, -",
      "scope": "aircraft",
      "src": [
-      "R1:params-trainer.json",
+      "R1:params-trainer.json#controls.roll.S_a_each",
       "LP27"
      ],
      "conf": "ต่ำ",
@@ -580,7 +580,7 @@
      "u": "m2, -",
      "scope": "aircraft",
      "src": [
-      "R1:params-trainer.json",
+      "R1:params-trainer.json#controls.yaw.S_r",
       "LP27"
      ],
      "conf": "ต่ำ",
@@ -4390,14 +4390,15 @@
      },
      {
       "case": "T-LP-03",
-      "conditions": "เหมือนบน แฟลป UP",
-      "quantity": "Vmin/V_SR ของการทดสอบ 1 kt/s (สมมติฐาน POH → 1 g: √0.95 = 0.975)",
-      "expected": 0.975,
-      "tolerance": 0.01,
-      "unit": "-",
-      "src": "[LM1]",
-      "current": 0.938,
-      "pass": false
+      "conditions": "เหมือนบน แฟลป UP ล้อขึ้น เริ่มลดความเร็วที่ 1.20 / 1.35 / 1.50 Vs (95 / 107 / 119 kt)",
+      "quantity": "ช่วงของ V_SR 1 g (สูงสุด − ต่ำสุด) ตามนิยามการเทียบ stall ของโครงการ (เทียบ V_SR กับ VS/√0.95 ไม่เทียบ Vmin)",
+      "expected": 0,
+      "tolerance": 0.3,
+      "unit": "kt",
+      "src": "[LM1][LM2]; common_light.methods.stall_nz_at_vmin",
+      "current": 0.0112,
+      "pass": true,
+      "note": "ข้อมูลเท่านั้น: Vmin 78.13 / 74.1 / 78.02 kt (ช่วง 4.03 kt), nz ที่ Vmin 0.54 / 0.31 / 0.24, nz ที่ CLmax 0.995 / 0.926 / 1.02"
      },
      {
       "case": "T-LP-04",
@@ -7136,7 +7137,7 @@
      "u": "m2, -",
      "scope": "aircraft",
      "src": [
-      "R1:params-trainer.json",
+      "R1:params-trainer.json#controls.pitch.S_e",
       "LP27"
      ],
      "conf": "ต่ำ",
@@ -7155,7 +7156,7 @@
      "u": "m2, -",
      "scope": "aircraft",
      "src": [
-      "R1:params-trainer.json",
+      "R1:params-trainer.json#controls.roll.S_a_each",
       "LP27"
      ],
      "conf": "ต่ำ",
@@ -7171,7 +7172,7 @@
      "u": "m2, -",
      "scope": "aircraft",
      "src": [
-      "R1:params-trainer.json",
+      "R1:params-trainer.json#controls.yaw.S_r",
       "LP27"
      ],
      "conf": "ต่ำ",

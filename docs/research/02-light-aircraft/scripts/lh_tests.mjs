@@ -6,31 +6,18 @@
 // result ("today"): the sim of today (src/20-flight.js through lm_card.loadSim) with the card loaded by
 // lm_card.buildAC/applyAC where the quantity exists there, today's Evaluator.score() for touchdowns, otherwise
 // "ไม่รองรับในซิมวันนี้".
-//   node lh_tests.mjs        → prints a table, writes out/lh_tests.json, exit code 1 on any failure
+//   node lh_tests.mjs        → prints a table, writes out/lh_tests.json ($LM_OUT_DIR/lh_tests.json when set), exit code 1 on any failure
 //   node lh_tests.mjs --md   → also prints the 08.9 markdown table
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { TYPES, CARD_IDS, attitude, iasToCas, fpmPerDeg, vsOnPath, balloon, run as runAttitude } from './lh_attitude.mjs';
-import { PROFILES, PROFILE_CARD, detect, score, synth, synthTakeoff, firstTouchdown } from './lh_eval.mjs';
+import { PROFILES, PROFILE_CARD, detect, score, synth, synthTakeoff, firstTouchdown, scoreToday } from './lh_eval.mjs';
+export { scoreToday };   // moved to lh_eval.mjs (22 Nov 2026) so lm_selftest T-LM-32 can import it without running these tests
 import { compute as computeStick, CFR23_143 } from './lh_stick.mjs';
-import { loadType, mergeDir, val, isObj, trainingMassKg } from './lm_lib.mjs';
+import { loadType, mergeDir, val, isObj, trainingMassKg, outFile } from './lm_lib.mjs';
 import { loadSim, buildAC, applyAC, trim, detents, flapMap, simCLtrim } from './lm_card.mjs';
 
-/** today's Evaluator.score() of src/20-flight.js (lines ~517-542) applied to the same touchdown, Vref = profile Vref */
-export function scoreToday(S, P) {
-  const i = firstTouchdown(S); if (i < 0) return null;
-  const td = S[i], sink = -td.vs, lerp = (a, b, f) => a + (b - a) * f;
-  const pSink = sink <= 180 ? 40 : sink <= 360 ? lerp(40, 30, (sink - 180) / 180) : sink <= 600 ? lerp(30, 10, (sink - 360) / 240) : 0;
-  const d = td.s, pPos = d < 0 || d > 900 ? 0 : (d >= 300 && d <= 600) ? 25 : (d >= 220 && d <= 750) ? 18 : 10;
-  const cl = Math.abs(td.y), pCl = cl <= 2 ? 15 : cl <= 5 ? 12 : cl <= 10 ? 6 : 0;
-  const dv = td.ias - P.Vref, pSpd = dv >= -8 && dv <= 5 ? 10 : dv >= -12 && dv <= 12 ? 6 : 2;
-  const noseFirst = td.wow[0] && !(td.wow[1] || td.wow[2]);
-  const att = (Math.abs(td.phi) <= 3 ? 4 : Math.abs(td.phi) <= 6 ? 2 : 0) + (Math.abs(td.crab) <= 3 ? 3 : Math.abs(td.crab) <= 6 ? 1.5 : 0) + (Math.abs(td.latV) <= 0.8 ? 3 : Math.abs(td.latV) <= 1.6 ? 1.5 : 0) - (noseFirst ? 5 : 0);
-  let total = pSink + pPos + pCl + pSpd + Math.max(0, att);
-  if (d < 0) total = Math.min(total, 20); if (sink > 600) total = Math.min(total, 35);
-  return Math.round(total);
-}
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEG = Math.PI / 180, RAD = 180 / Math.PI, KT = 0.514444, LBF = 4.44822;
@@ -99,8 +86,8 @@ num('T-LH-08', 'crab C172S 15 kt / 65 kt', 'crab (deg)', Math.asin(15 / 65) / DE
 evc('T-LH-09', 'C172S nominal: 65 KIAS, 3°, flare 15 ft, TD −120 fpm ที่ aim+66 m', C, synth(C), [], ['unstable_500', 'hard_landing', 'bounce'], { score: 100 }, 'ACS PA.IV.B');
 evc('T-LH-10', 'เร็วเกิน +15 kt จาก 600 ถึง 20 ft', C, synth(C, { spdBias: [15, 600, 20] }), ['fast', 'unstable_500', 'unstable_300', 'continued_unstable'], [], {}, 'LH2 +10/−5');
 evc('T-LH-11', 'ช้า −8 kt จาก 400 ถึง 100 ft', C, synth(C, { spdBias: [-8, 400, 100] }), ['slow', 'unstable_300'], [], {}, 'LH2');
-evc('T-LH-12', 'สูงกว่า path +60 ft จาก 900 ถึง 300 ft', C, synth(C, { pathOffFt: [60, 900, 300] }), ['high_on_path'], ['low_on_path'], {}, 'R1 gate 1 dot');
-evc('T-LH-13', 'ต่ำกว่า path −40 ft จาก 800 ถึง 200 ft', C, synth(C, { pathOffFt: [-40, 800, 200] }), ['low_on_path'], ['high_on_path'], {}, 'R1');
+evc('T-LH-12', 'สูงกว่า path +60 ft จาก 900 ถึง 300 ft', C, synth(C, { pathOffFt: [60, 900, 300] }), ['high_on_path'], ['low_on_path'], {}, 'R1:V19 gate 1 dot');
+evc('T-LH-13', 'ต่ำกว่า path −40 ft จาก 800 ถึง 200 ft', C, synth(C, { pathOffFt: [-40, 800, 200] }), ['low_on_path'], ['high_on_path'], {}, 'R1:V19');
 evc('T-LH-14', 'จม 1,200 fpm จาก 600 ถึง 450 ft', C, synth(C, { sinkExtra: [1200, 600, 450] }), ['sink_high', 'unstable_500'], [], {}, 'LH1 p.9-6');
 evc('T-LH-15', 'flare สูง: ค้างที่ 12 ft 3 s แล้วตก 500 fpm', C, synth(C, { levelOffFt: 12, levelHold: 3, dropVs: -500 }), ['high_flare', 'hard_landing'], [], {}, 'LH1 p.9-31, LH5');
 evc('T-LH-16', 'ไม่ flare: เริ่มที่ 2 ft แตะ −330 fpm', C, synth(C, { flareFt: 2, vsTD: -330 }), ['late_flare'], ['high_flare'], {}, 'LH1 p.9-32, LH5');
@@ -109,14 +96,14 @@ evc('T-LH-18', 'float: ลอยที่ 1–2 ft นาน 8 s', C, synth(C, {
 evc('T-LH-19', 'เด้ง 3 ft หนึ่งครั้ง', C, synth(C, { bounceFt: 3 }), ['bounce'], ['bounce_big', 'porpoise'], {}, 'LH1 p.9-33');
 evc('T-LH-20', 'เด้ง 7 ft', C, synth(C, { bounceFt: 7 }), ['bounce', 'bounce_big'], [], {}, 'LH1 p.9-34');
 evc('T-LH-21', 'ล้อหน้าแตะก่อนแล้วเด้งสองครั้ง', C, synth(C, { noseFirst: true, bounceFt: 2, bounces: 2 }), ['porpoise'], ['nose_first'], {}, 'LH1 p.9-34');
-evc('T-LH-22', 'ล้อหน้าแตะก่อน ไม่เด้ง', C, synth(C, { noseFirst: true }), ['nose_first'], ['porpoise'], {}, 'LH1, R1');
-evc('T-LH-23', 'flare ค้างที่ 4 ft 1 s แล้วตก −450 fpm', C, synth(C, { levelOffFt: 4, levelHold: 1, dropVs: -450 }), ['hard_landing'], ['very_hard_landing', 'late_flare', 'high_flare'], { score: 83, tol: 1 }, 'LH1 p.9-35 (6 in ≈ 340 fpm), R1');
-evc('T-LH-24', 'แตะ −700 fpm', C, synth(C, { vsTD: -700, flareTau: 0.3 }), ['very_hard_landing'], [], { score: 35, tol: 1 }, 'R1 cap 35');
+evc('T-LH-22', 'ล้อหน้าแตะก่อน ไม่เด้ง', C, synth(C, { noseFirst: true }), ['nose_first'], ['porpoise'], {}, 'LH1, R1:V19');
+evc('T-LH-23', 'flare ค้างที่ 4 ft 1 s แล้วตก −450 fpm', C, synth(C, { levelOffFt: 4, levelHold: 1, dropVs: -450 }), ['hard_landing'], ['very_hard_landing', 'late_flare', 'high_flare'], { score: 83, tol: 1 }, 'LH1 p.9-35 (6 in ≈ 340 fpm), R1:V19');
+evc('T-LH-24', 'แตะ −700 fpm', C, synth(C, { vsTD: -700, flareTau: 0.3 }), ['very_hard_landing'], [], { score: 35, tol: 1 }, 'R1:V19 cap 35');
 evc('T-LH-25', 'ลมขวาง 12 kt ไม่ decrab', C, synth(C, { xw: 12, decrab: false }), ['side_load'], [], {}, 'LH1 p.9-35, LH2');
 evc('T-LH-26', 'drift 2 m/s ตอนแตะ', C, synth(C, { driftTD: 2 }), ['side_load'], [], {}, 'LH2 no side drift');
 evc('T-LH-27', 'หันออก 15° ขณะวิ่ง > 15 kt', C, synth(C, { rolloutYaw: 15 }), ['dir_control'], [], {}, 'LH5 (ครึ่งหนึ่งของอุบัติเหตุลงจอด)');
-evc('T-LH-28', 'แตะห่างเส้นกลาง 8 m', C, synth(C, { yTD: 8 }), ['off_centre'], [], { score: 91, tol: 1 }, 'R1 cl 6/15');
-evc('T-LH-29', 'แตะก่อน threshold (GP origin −100 m)', C, synth({ ...C, aim: -100 }), ['short_landing'], [], { score: 20, tol: 1 }, 'R1 cap 20');
+evc('T-LH-28', 'แตะห่างเส้นกลาง 8 m', C, synth(C, { yTD: 8 }), ['off_centre'], [], { score: 91, tol: 1 }, 'R1:V19 cl 6/15');
+evc('T-LH-29', 'แตะก่อน threshold (GP origin −100 m)', C, synth({ ...C, aim: -100 }), ['short_landing'], [], { score: 20, tol: 1 }, 'R1:V19 cap 20');
 evc('T-LH-30', 'แตะเลยจุด (GP origin 600 m)', C, synth({ ...C, aim: 600 }), ['long_landing'], [], {}, 'LH2 400 ft');
 evc('T-LH-31', 'C152 ลดกำลังไม่ดึง carb heat', PROFILES.c152, synth(PROFILES.c152, { carbHeat: false }), ['carb_heat'], [], {}, 'LH13 p.4-9');
 evc('T-LH-32', 'C172R mixture 0.7 ระหว่าง approach', PROFILES.c172r, synth(PROFILES.c172r, { mixture: 0.7 }), ['mixture'], [], {}, 'LH13');
@@ -208,6 +195,5 @@ if (process.argv.includes('--md')) {
   console.log('\n| id | เงื่อนไข | ปริมาณ | คาด | ส่วนเผื่อ | ที่มา | ผล (สคริปต์) | ผลโมเดลปัจจุบัน (ซิมวันนี้) |\n|---|---|---|---|---|---|---|---|');
   for (const r of results) console.log(`| ${r.id} | ${esc(r.cond)} | ${esc(r.qty)} | ${esc(r.exp)} | ${esc(r.tol)} | ${esc(r.src)} | ${esc(r.got)} ${r.pass ? '✓' : '✗'} | ${esc(r.today)} |`);
 }
-fs.mkdirSync(path.join(HERE, 'out'), { recursive: true });
-fs.writeFileSync(path.join(HERE, 'out', 'lh_tests.json'), JSON.stringify({ generated: 'lh_tests.mjs (19 Nov 2026)', pass: nPass, total: results.length, results }, null, 1) + '\n');
+fs.writeFileSync(outFile('lh_tests.json'), JSON.stringify({ generated: 'lh_tests.mjs (19 Nov 2026)', pass: nPass, total: results.length, results }, null, 1) + '\n');
 process.exitCode = nPass === results.length ? 0 : 1;

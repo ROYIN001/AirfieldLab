@@ -72,8 +72,8 @@ export const RULES = {
   unstable_500: { phase: 'final', sev: 'major', pts: 10, src: ['LH1', 'LH2'], th: 'ยังไม่ stabilised ที่ 500 ft: ตรวจความเร็ว อัตราร่อน แนว glide path และแฟลปให้ครบก่อนถึงจุดนี้' },
   unstable_300: { phase: 'final', sev: 'major', pts: 10, src: ['LH1'], th: 'ต่ำกว่า 300 ft แล้วยังไม่ stabilised ควร go-around ทันที' },
   continued_unstable: { phase: 'landing', sev: 'critical', pts: 30, src: ['LH1'], th: 'ลงจอดต่อทั้งที่ approach ไม่ stabilised ต่ำกว่า 300 ft ครั้งหน้าให้ go-around' },
-  high_on_path: { phase: 'final', sev: 'minor', pts: 3, src: ['R1', 'LH1'], th: 'สูงกว่า glide path เกิน 1 dot ลดกำลังเล็กน้อยแล้วรักษาความเร็ว อย่าดันหัวลงแรง' },
-  low_on_path: { phase: 'final', sev: 'major', pts: 6, src: ['R1', 'LH1'], th: 'ต่ำกว่า glide path เกิน 1 dot เพิ่มกำลังพร้อมยกหัวเล็กน้อย อย่าเก็บแฟลป' },
+  high_on_path: { phase: 'final', sev: 'minor', pts: 3, src: ['R1:V19', 'LH1'], th: 'สูงกว่า glide path เกิน 1 dot ลดกำลังเล็กน้อยแล้วรักษาความเร็ว อย่าดันหัวลงแรง' },
+  low_on_path: { phase: 'final', sev: 'major', pts: 6, src: ['R1:V19', 'LH1'], th: 'ต่ำกว่า glide path เกิน 1 dot เพิ่มกำลังพร้อมยกหัวเล็กน้อย อย่าเก็บแฟลป' },
   fast: { phase: 'final', sev: 'minor', pts: 3, src: ['LH2', 'LH3'], th: 'ความเร็ว approach สูงเกินเกณฑ์ ระวังลอยเลยจุดแตะ' },
   slow: { phase: 'final', sev: 'major', pts: 8, src: ['LH2', 'LH1'], th: 'ความเร็ว approach ต่ำกว่าเกณฑ์ เพิ่มกำลังทันที' },
   near_stall: { phase: 'any', sev: 'critical', pts: 30, src: ['LM3', 'LH4'], th: 'ใกล้ stall ที่ความสูงต่ำ ลดมุมปะทะ เพิ่มกำลังเต็ม แล้วไต่' },
@@ -88,15 +88,15 @@ export const RULES = {
   bounce: { phase: 'landing', sev: 'major', pts: 8, src: ['LH1'], th: 'เครื่องเด้งหลังแตะพื้น ถ้าเด้งสูงให้ go-around กำลังเต็ม' },
   bounce_big: { phase: 'landing', sev: 'critical', pts: 20, src: ['LH1'], th: 'เด้งสูงเกิน 5 ft ต้อง go-around ไม่ใช่พยายามลงต่อ' },
   porpoise: { phase: 'landing', sev: 'critical', pts: 20, src: ['LH1'], th: 'porpoising: ล้อหน้าแตะก่อนแล้วเด้งซ้ำ ตั้ง attitude ลงจอดหรือ go-around' },
-  nose_first: { phase: 'landing', sev: 'major', pts: 5, src: ['LH1', 'R1'], th: 'ล้อหน้าแตะก่อนล้อหลัก ยกหัวให้ถึง attitude ลงจอด' },
-  hard_landing: { phase: 'landing', sev: 'major', pts: 0, src: ['LH1', 'R1'], th: 'แตะพื้นแรง (อัตราจมเกิน 360 fpm) flare ให้ต่อเนื่องจนล้อแตะ' },
-  very_hard_landing: { phase: 'landing', sev: 'critical', pts: 0, src: ['R1'], th: 'แตะพื้นแรงมาก (เกิน 600 fpm) ต้องตรวจโครงสร้างเครื่อง' },
+  nose_first: { phase: 'landing', sev: 'major', pts: 5, src: ['LH1', 'R1:V19'], th: 'ล้อหน้าแตะก่อนล้อหลัก ยกหัวให้ถึง attitude ลงจอด' },
+  hard_landing: { phase: 'landing', sev: 'major', pts: 0, src: ['LH1', 'R1:V19'], th: 'แตะพื้นแรง (อัตราจมเกิน 360 fpm) flare ให้ต่อเนื่องจนล้อแตะ' },
+  very_hard_landing: { phase: 'landing', sev: 'critical', pts: 0, src: ['R1:V19'], th: 'แตะพื้นแรงมาก (เกิน 600 fpm) ต้องตรวจโครงสร้างเครื่อง' },
   side_load: { phase: 'landing', sev: 'major', pts: 5, src: ['LH1', 'LH2'], th: 'แตะพื้นขณะยังมี crab หรือ drift ใช้ wing-low ให้หัวตรงกับรันเวย์' },
-  off_centre: { phase: 'landing', sev: 'minor', pts: 0, src: ['R1'], th: 'แตะพื้นห่างเส้นกลางรันเวย์' },
-  short_landing: { phase: 'landing', sev: 'critical', pts: 0, src: ['LH5', 'R1'], th: 'แตะพื้นก่อน threshold' },
+  off_centre: { phase: 'landing', sev: 'minor', pts: 0, src: ['R1:V19'], th: 'แตะพื้นห่างเส้นกลางรันเวย์' },
+  short_landing: { phase: 'landing', sev: 'critical', pts: 0, src: ['LH5', 'R1:V19'], th: 'แตะพื้นก่อน threshold' },
   long_landing: { phase: 'landing', sev: 'major', pts: 0, src: ['LH2', 'LH3'], th: 'แตะพื้นเลยจุดเป้าเกินเกณฑ์สอบ ถ้าลอยนานควร go-around' },
   dir_control: { phase: 'rollout', sev: 'major', pts: 10, src: ['LH5', 'LH1'], th: 'เสียการควบคุมทิศทางขณะวิ่ง ใช้ rudder ให้ทันและมองไปปลายรันเวย์' },
-  excursion: { phase: 'rollout', sev: 'critical', pts: 0, src: ['R1'], th: 'ออกนอกรันเวย์' },
+  excursion: { phase: 'rollout', sev: 'critical', pts: 0, src: ['R1:V19'], th: 'ออกนอกรันเวย์' },
   aileron_rollout: { phase: 'rollout', sev: 'minor', pts: 2, src: ['LH1', 'LH15'], th: 'ขณะวิ่งในลมขวาง ให้หมุนพวงมาลัย/คันไปทางลม' },
   brake_fast: { phase: 'rollout', sev: 'minor', pts: 2, src: ['LH15', 'LH1'], th: 'เบรกแรงขณะยังเร็ว ให้ล้อรับน้ำหนักก่อน' },
   carb_heat: { phase: 'downwind', sev: 'minor', pts: 3, src: ['LH13', 'LH1'], th: 'ลดกำลังโดยไม่ดึง carb heat' },
@@ -119,6 +119,23 @@ export function firstTouchdown(S) {
   const iAir = S.findIndex(x => !on(x)); if (iAir < 0) return -1;
   for (let i = iAir; i < S.length; i++) if (on(S[i])) return i;
   return -1;
+}
+
+/** today's Evaluator.score() of src/20-flight.js (lines ~520-545) applied to the same touchdown, Vref = profile Vref.
+ *  A copy of the sim's code: lm_selftest T-LM-32 checks it against Evaluator.score of the pinned simulator
+ *  (scripts/sim-snapshot.json). Off-runway is reduced to s < 0 and events (excursion, wingtip) are not modelled. */
+export function scoreToday(S, P) {
+  const i = firstTouchdown(S); if (i < 0) return null;
+  const td = S[i], sink = -td.vs, lerp = (a, b, f) => a + (b - a) * f;
+  const pSink = sink <= 180 ? 40 : sink <= 360 ? lerp(40, 30, (sink - 180) / 180) : sink <= 600 ? lerp(30, 10, (sink - 360) / 240) : 0;
+  const d = td.s, pPos = d < 0 || d > 900 ? 0 : (d >= 300 && d <= 600) ? 25 : (d >= 220 && d <= 750) ? 18 : 10;
+  const cl = Math.abs(td.y), pCl = cl <= 2 ? 15 : cl <= 5 ? 12 : cl <= 10 ? 6 : 0;
+  const dv = td.ias - P.Vref, pSpd = dv >= -8 && dv <= 5 ? 10 : dv >= -12 && dv <= 12 ? 6 : 2;
+  const noseFirst = td.wow[0] && !(td.wow[1] || td.wow[2]);
+  const att = (Math.abs(td.phi) <= 3 ? 4 : Math.abs(td.phi) <= 6 ? 2 : 0) + (Math.abs(td.crab) <= 3 ? 3 : Math.abs(td.crab) <= 6 ? 1.5 : 0) + (Math.abs(td.latV) <= 0.8 ? 3 : Math.abs(td.latV) <= 1.6 ? 1.5 : 0) - (noseFirst ? 5 : 0);
+  let total = pSink + pPos + pCl + pSpd + Math.max(0, att);
+  if (d < 0) total = Math.min(total, 20); if (sink > 600) total = Math.min(total, 35);
+  return Math.round(total);
 }
 
 /** run all detectors over a sampled series. opts.level 'ppl' | 'cpl' */
