@@ -408,7 +408,7 @@ async function main() {
   // Not the viewport's shape: a tablet whose natural orientation is landscape reports 0 when held in landscape.
   function screenNow() {
     const so = screen.orientation, wo = window.orientation;
-    return { angle: Number.isFinite(wo) ? wo : so && Number.isFinite(so.angle) ? so.angle : 0 };
+    return Number.isFinite(wo) ? { angle: wo, sure: true } : { angle: so && Number.isFinite(so.angle) ? so.angle : 0, sure: false };
   }
   // how to bank in the grip picked at the last centring (TiltStick.grip)
   const TILT_BANK = { wheel: 'หมุนโทรศัพท์แบบหมุนพวงมาลัยเพื่อเอียงเครื่อง', tray: 'กดขอบซ้ายหรือขวาลงเพื่อเอียงเครื่อง', under: 'กดขอบซ้ายหรือขวาลงเพื่อเอียงเครื่อง' };

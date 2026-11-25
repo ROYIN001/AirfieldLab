@@ -387,8 +387,18 @@ test('tilt: the screen angle is checked against gravity', () => {
   assert.equal(I.pickScreenAngle(I.tiltUp(...pose(45, 0, 90)), 90), 90, 'split-screen window');
   // centred while banked: the browser's axis still wins
   assert.equal(I.pickScreenAngle(I.tiltUp(...pose(40, 50, 90)), 90), 90, 'wheel turned 50° at centring');
-  // clearly upright across the browser's axis: the other quarter turn (iPad screen.orientation counted from landscape)
+  // held up like a wheel across the browser's axis: the other quarter turn (iPad screen.orientation counted from
+  // landscape), but never against window.orientation (sure)
   assert.equal(I.pickScreenAngle(I.tiltUp(...pose(45, 0, 90)), 0), 90); assert.equal(I.pickScreenAngle(I.tiltUp(...pose(45, 0, 270)), 180), 270);
+  assert.equal(I.pickScreenAngle(I.tiltUp(...pose(45, 0, 90)), 0, true), 0, 'window.orientation is not overruled');
+  // overhead (screen down) or near flat and banked at centring look like a raised phone across the axis: no swap
+  for (const sure of [false, true]) {
+    for (const bank of [30, 35, 45]) {
+      assert.equal(I.pickScreenAngle(I.tiltUp(...poseTray(170, bank, 90)), 90, sure), 90, `overhead, banked ${bank}°`);
+      assert.equal(I.pickScreenAngle(I.tiltUp(...poseTray(165, -bank, 0)), 0, sure), 0, `overhead, banked ${-bank}°, portrait`);
+    }
+  }
+  for (const bank of [30, 35, 45]) assert.equal(I.pickScreenAngle(I.tiltUp(...poseTray(10, bank, 0)), 0, true), 0, `near flat, banked ${bank}°`);
   // flat on a table gravity cannot tell: the browser's angle stands
   assert.equal(I.pickScreenAngle(I.tiltUp(...pose(5, 0, 90)), 270), 270); assert.equal(I.pickScreenAngle([0, 0, 1], -90), 270);
 });
@@ -421,6 +431,21 @@ test('TiltStick: centre, direction, dead zone, full travel, smoothing and lost r
     v = settle(ov, ...poseTray(172, 5, angle), v, 120); near(ov.x, 0.07537, 1e-5, `under: right edge down 5° = roll right at ${angle}°`);
     v = settle(ov, ...poseTray(184, 0, angle), v, 120); near(ov.y, 0.44033, 1e-5, 'under: 12° toward the player through face-down = pull'); assert.equal(ov.x, 0);
   }
+  // centred in the wheel grip and then pushed to flat or pulled to face-down: pitch is at full travel, and small
+  // wobbles must not give big bank (the wheel's roll divides by the vanishing screen-up component of gravity)
+  for (const [c0, poses] of [[45, [[1, 0.5], [1, -0.5], [0, 0.3], [-2, 0.3], [-2, -0.3], [5, 2]]], [138, [[178, 0.5], [178, -0.5], [182, 0.3], [182, -0.3]]]]) {
+    const wf = new I.TiltStick(); let w = 0;
+    wf.centre({ angle: 90 }); w = settle(wf, ...poseTray(c0, 0, 90), w); assert.equal(wf.grip, 'wheel');
+    for (const [rec, side] of poses) {
+      w = settle(wf, ...poseTray(rec, side, 90), w, 120);
+      assert.ok(Math.abs(wf.x) < 0.1, `centred at ${c0}°, now ${rec}° with ${side}° to the side: x ${wf.x}`);
+      assert.equal(Math.abs(wf.y), 1, 'pitch at full travel');
+    }
+  }
+  // window.orientation (sure) is kept even where gravity alone would read the pose the other way: near flat and banked
+  // 45° at centring
+  const nf = new I.TiltStick(); let q = 0;
+  nf.centre({ angle: 0, sure: true }); q = settle(nf, ...poseTray(10, 45, 0), q); assert.deepEqual([nf.angle, nf.grip], [0, 'tray']);
   // a browser angle that disagrees with gravity: Safari 16.4 counted clockwise (270 for 90), iPad Safari 17+ counts
   // screen.orientation from landscape (0 for 90); the stick still flies the right way round
   for (const api of [270, -90, 0, 180]) {
@@ -502,9 +527,9 @@ test('the app reads the gamepad and applies PilotInput (src/90-app.js wiring)', 
   const sn = app.match(/function screenNow\(\) \{[\s\S]*?\n  \}/);
   assert.ok(sn, 'screenNow found');
   const screenNow = (win, scr) => new Function('window', 'screen', `${sn[0]}; return screenNow();`)(win, scr);
-  assert.deepEqual(screenNow({ orientation: -90 }, { orientation: { angle: 90 } }), { angle: -90 });
-  assert.deepEqual(screenNow({}, { orientation: { angle: 270 } }), { angle: 270 });
-  assert.deepEqual(screenNow({}, {}), { angle: 0 });
+  assert.deepEqual(screenNow({ orientation: -90 }, { orientation: { angle: 90 } }), { angle: -90, sure: true });
+  assert.deepEqual(screenNow({}, { orientation: { angle: 270 } }), { angle: 270, sure: false });
+  assert.deepEqual(screenNow({}, {}), { angle: 0, sure: false });
   assert.equal(I.pickScreenAngle(I.tiltUp(...pose(45, 0, 270)), screenNow({ orientation: -90 }, {}).angle), 270, 'iOS −90 reaches TiltStick as 270');
   assert.match(app, /if \(sensorsBlocked\(\)\) return tiltFail\(TILT_FRAMED\);/, 'a frame that blocks the sensors is named');
   assert.match(app, /if \(document\.hidden\) tilt\.lost\(\);/, 'hidden page: tilt to centre');

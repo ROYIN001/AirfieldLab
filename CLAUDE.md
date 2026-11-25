@@ -105,10 +105,11 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   The pose when a flight starts, when control is taken over, or when the circle (now an indicator) is held still for
   0.6 s becomes the centre, in the screen frame of that moment; a display rotation later does not change the mapping.
   Screen angle: `window.orientation` first, then `screen.orientation.angle`, never the viewport's shape (tablets can
-  be landscape-natural); gravity picks the sign, and the other quarter turn only when the phone is clearly upright
-  across the browser's axis. Grip from how far the screen is raised (`tiltGrip`, wheelFrom 40°): 40°–140° 'wheel'
-  (turn about the screen's normal is roll), near flat 'tray' (tilt about the up axis is roll), screen down overhead
-  'under' (as the tray; pitch runs on through face-down). The edge that goes down is the bank side; the top edge
+  be landscape-natural); gravity picks the sign, and the other quarter turn only for `screen.orientation` and a phone
+  held up like a wheel across the browser's axis (`window.orientation` is never overruled). Grip from how far the
+  screen is raised (`tiltGrip`, wheelFrom 40°): 40°–140° 'wheel' (turn about the screen's normal is roll; its roll is
+  floored within 20° of flat or face-down, past full pitch travel), near flat 'tray' (tilt about the up axis is roll),
+  screen down overhead 'under' (as the tray; pitch runs on through face-down). The edge that goes down is the bank side; the top edge
   toward the player is pull. Full deflection at 30° roll / 20° pitch, dead zone 2°, expo 0.3, smoothing 0.06 s.
   Chrome sends no event while the phone is still, so the last reading is kept (no stale cut-off); a hidden page drops
   the reading and keeps the centre. A screen wake lock is held while tilt flies. iOS asks permission from the tap

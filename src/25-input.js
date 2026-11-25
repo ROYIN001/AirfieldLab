@@ -196,9 +196,14 @@ function tiltRecline(u, angle) { const [, up, out] = upOnScreen(u, angle); retur
 // 'tray': pitch = elevation of the screen's up axis, roll = turn of gravity about that axis;
 // 'under': the tray with the screen facing down (phone held overhead): roll still follows the edge that goes down,
 // pitch keeps growing as the top edge comes toward the player past face-down (the tray's elevation would fold there).
+// The wheel's roll divides by `up`, which vanishes as a phone centred in the wheel grip is pushed to flat or pulled to
+// face-down; the floor WHEEL_FLOOR·|out| keeps tiny wobbles there from giving full bank. It acts only within
+// wheelFrom − pitchMax (20°) of flat or face-down, past full pitch travel from any wheel centre, so the exact formula
+// holds over the whole pitch travel.
+const WHEEL_FLOOR = Math.tan((INPUT_CFG.tilt.wheelFrom - INPUT_CFG.tilt.pitchMax) * DEG);
 function tiltAngles(u, angle, grip = 'wheel') {
   const [r, up, out] = upOnScreen(u, angle), m = Math.hypot(r, up, out) || 1;
-  if (grip === 'wheel') return { roll: Math.atan2(r, up) * RAD, pitch: Math.acos(clamp(out / m, -1, 1)) * RAD };
+  if (grip === 'wheel') return { roll: Math.atan2(r, Math.max(up, WHEEL_FLOOR * Math.abs(out))) * RAD, pitch: Math.acos(clamp(out / m, -1, 1)) * RAD };
   const s = grip === 'under' ? -1 : 1;
   return { roll: Math.atan2(r, s * out) * RAD, pitch: Math.atan2(up, s * Math.hypot(r, out)) * RAD };
 }
@@ -212,18 +217,22 @@ function tiltGrip(u, angle, from) {
 // Which way the screen is turned, from the browser's angle and gravity. The browser's angle and the DeviceOrientation
 // frame both count from the device's natural orientation (portrait on phones, landscape on many tablets), so its
 // quarter turn is trusted, and gravity only picks between it and the opposite angle: people hold a phone with the top
-// of the picture higher than the bottom. That covers Safari 16.4, which counted clockwise (WebKit bug 255388). Only
-// when the phone is clearly upright across the browser's axis is the other quarter turn taken (iPad Safari 17+ counts
-// screen.orientation from landscape; the spec lets private modes report only 0 or 90). Near flat, where gravity
-// cannot tell, the browser's angle stands. The viewport's shape is not used: it says nothing about the natural
-// orientation, and a split-screen window can be taller than wide on a landscape screen.
-function pickScreenAngle(u, apiAngle) {
+// of the picture higher than the bottom. That covers Safari 16.4, which counted clockwise (WebKit bug 255388). When
+// the angle is not `sure` (it came from screen.orientation, not window.orientation) and the phone is held up like a
+// wheel across the browser's axis (raised `from`° to 100° in that frame), the other quarter turn is taken: iPad Safari
+// 17+ counts screen.orientation from landscape, and the spec lets private modes report only 0 or 90. A phone near flat
+// or overhead and banked at centring can look the same to gravity, so window.orientation, which counts from the
+// natural orientation on iOS and Android alike, is never overruled. Near flat the browser's angle stands. The
+// viewport's shape is not used: it says nothing about the natural orientation, and a split-screen window can be
+// taller than wide on a landscape screen.
+function pickScreenAngle(u, apiAngle, sure = false, from = INPUT_CFG.tilt.wheelFrom) {
   const api = wrap360(Math.round((Number(apiAngle) || 0) / 90) * 90);
   const lift = (a) => upOnScreen(u, a)[1];
   const best = (a) => wrap360(lift(a) >= lift(a + 180) ? a : a + 180);
   const same = best(api), across = best(api + 90);
   if (lift(same) >= 0.25) return same;       // raised ~15° or more along the browser's axis
-  if (lift(across) >= 0.5) return across;    // raised 30° or more across it, and under ~15° along it
+  const rec = Math.atan2(lift(across), u[2]) * RAD;
+  if (!sure && rec >= from && rec <= 100) return across;
   return api;
 }
 // One tilt-to-stick channel: degrees from the centred pose → −1…1 through a dead zone and an expo curve.
@@ -244,12 +253,12 @@ class TiltStick {
     this.raw = tiltUp(beta, gamma); this.t = t; this.n++;
     return true;
   }
-  // screen: { angle } now (the browser's screen angle); the centre is taken from the latest reading at once, or from
-  // the next one if there is none yet
+  // screen: { angle, sure } now (the browser's screen angle; sure when it came from window.orientation); the centre is
+  // taken from the latest reading at once, or from the next one if there is none yet
   centre(screen) { this.want = screen; this.zero = null; this.f = null; this.setCentre(); }
   setCentre() {
     if (!this.want || !this.raw) return;
-    this.angle = pickScreenAngle(this.raw, this.want.angle);
+    this.angle = pickScreenAngle(this.raw, this.want.angle, !!this.want.sure, this.c.wheelFrom);
     this.grip = tiltGrip(this.raw, this.angle, this.c.wheelFrom);
     this.zero = tiltAngles(this.raw, this.angle, this.grip); this.f = this.raw.slice(); this.want = null;
   }
