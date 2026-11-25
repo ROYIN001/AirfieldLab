@@ -185,40 +185,53 @@ function upOnScreen(u, angle) {
   const a = angle * DEG, c = Math.cos(a), s = Math.sin(a);
   return [u[0] * c - u[1] * s, u[0] * s + u[1] * c, u[2]];
 }
-// How far the screen is raised from lying flat, in degrees: 0 flat with the screen up, 90 upright facing the player.
+// How far the screen is raised from lying flat, in degrees: 0 flat with the screen up, 90 upright facing the player,
+// 180 flat with the screen down (held overhead).
 function tiltRecline(u, angle) { const [, up, out] = upOnScreen(u, angle); return Math.atan2(up, out) * RAD; }
 // The pose of the phone as a yoke, in degrees: roll + = right edge raised (a turn to the left), pitch + = top edge
 // toward the player. Gravity cannot tell a turn about the screen's normal from one about its up axis, and people use
 // the first with the phone held up (like a steering wheel) and the second with it held near flat (like a tray), so
 // each grip gets the angles that are exact for its own motion:
 // 'wheel': pitch = angle of the screen's normal from the vertical, roll = turn of gravity about the normal;
-// 'tray': pitch = elevation of the screen's up axis, roll = turn of gravity about that axis.
+// 'tray': pitch = elevation of the screen's up axis, roll = turn of gravity about that axis;
+// 'under': the tray with the screen facing down (phone held overhead): roll still follows the edge that goes down,
+// pitch keeps growing as the top edge comes toward the player past face-down (the tray's elevation would fold there).
 function tiltAngles(u, angle, grip = 'wheel') {
   const [r, up, out] = upOnScreen(u, angle), m = Math.hypot(r, up, out) || 1;
-  return grip === 'tray'
-    ? { roll: Math.atan2(r, out) * RAD, pitch: Math.asin(clamp(up / m, -1, 1)) * RAD }
-    : { roll: Math.atan2(r, up) * RAD, pitch: Math.acos(clamp(out / m, -1, 1)) * RAD };
+  if (grip === 'wheel') return { roll: Math.atan2(r, up) * RAD, pitch: Math.acos(clamp(out / m, -1, 1)) * RAD };
+  const s = grip === 'under' ? -1 : 1;
+  return { roll: Math.atan2(r, s * out) * RAD, pitch: Math.atan2(up, s * Math.hypot(r, out)) * RAD };
 }
-// Which way the screen is turned, from the viewport (landscape or not) and gravity: people hold a phone with the top of
-// the picture higher than the bottom, so among the two angles that fit the viewport, take the one whose screen-up axis
-// points up. When the phone lies almost flat gravity cannot tell, so the browser's angle is kept. This guards against
-// browsers whose angle does not match the device frame: Safari 16.4 counted clockwise (WebKit bug 255388), iPad Safari
-// 17+ counts from landscape, and the spec lets private modes report only 0 or 90.
-function pickScreenAngle(u, apiAngle, landscape) {
+// The grip for a pose: 'wheel' while the screen's normal is at least `from` degrees away from the vertical (the turn
+// about the normal is then what gravity sees best), 'tray' near flat with the screen up, 'under' near flat with it down.
+// Near either flat pose the wheel's roll, atan2(r, up), divides by a vanishing up and would swing from small wobbles.
+function tiltGrip(u, angle, from) {
+  const rec = tiltRecline(u, angle);
+  return rec >= from && rec <= 180 - from ? 'wheel' : Math.abs(rec) > 90 ? 'under' : 'tray';
+}
+// Which way the screen is turned, from the browser's angle and gravity. The browser's angle and the DeviceOrientation
+// frame both count from the device's natural orientation (portrait on phones, landscape on many tablets), so its
+// quarter turn is trusted, and gravity only picks between it and the opposite angle: people hold a phone with the top
+// of the picture higher than the bottom. That covers Safari 16.4, which counted clockwise (WebKit bug 255388). Only
+// when the phone is clearly upright across the browser's axis is the other quarter turn taken (iPad Safari 17+ counts
+// screen.orientation from landscape; the spec lets private modes report only 0 or 90). Near flat, where gravity
+// cannot tell, the browser's angle stands. The viewport's shape is not used: it says nothing about the natural
+// orientation, and a split-screen window can be taller than wide on a landscape screen.
+function pickScreenAngle(u, apiAngle) {
   const api = wrap360(Math.round((Number(apiAngle) || 0) / 90) * 90);
-  const cand = landscape ? [90, 270] : [0, 180];
   const lift = (a) => upOnScreen(u, a)[1];
-  const best = lift(cand[0]) >= lift(cand[1]) ? cand[0] : cand[1];
-  if (Math.abs(lift(best)) < 0.25) return cand.includes(api) ? api : best;   // under ~15° of tilt: keep the browser's
-  return best;
+  const best = (a) => wrap360(lift(a) >= lift(a + 180) ? a : a + 180);
+  const same = best(api), across = best(api + 90);
+  if (lift(same) >= 0.25) return same;       // raised ~15° or more along the browser's axis
+  if (lift(across) >= 0.5) return across;    // raised 30° or more across it, and under ~15° along it
+  return api;
 }
 // One tilt-to-stick channel: degrees from the centred pose → −1…1 through a dead zone and an expo curve.
 const tiltAxis = (deg, max, dz, expo) => clamp(expoCurve(dzAxial(clamp(deg / max, -1, 1), dz / max), expo), -1, 1);
-// The phone as a stick. sample() takes each deviceorientation reading; centre() makes the pose of the next reading
-// (or the current one) the centre, in the screen frame of that moment, so the screen turning during a flight does not
-// swap roll and pitch, and picks the grip: 'wheel' when the screen is raised wheelFrom degrees or more from flat, else
-// 'tray'; read() gives the command once a frame: x roll (+ right), y pitch (+ pull, top edge toward the player), 0
-// until a centre is set and after lost(). A gap between readings is not a loss: browsers send a reading only when an
+// The phone as a stick. sample() takes each deviceorientation reading; centre() makes the pose of the latest reading
+// (or of the next one, if there is none) the centre, in the screen frame of that moment, so the screen turning during
+// a flight does not swap roll and pitch, and picks the grip (tiltGrip); read() gives the command once a frame: x roll
+// (+ right), y pitch (+ pull, top edge toward the player), 0 until a centre is set and after lost(). A gap between readings is not a loss: browsers send a reading only when an
 // angle changes by 0.1° or more, so a phone resting still sends none, and its last pose stands. lost() is for the page
 // being hidden, when the readings stop.
 class TiltStick {
@@ -231,16 +244,19 @@ class TiltStick {
     this.raw = tiltUp(beta, gamma); this.t = t; this.n++;
     return true;
   }
-  // screen: { angle, landscape } now; the centre is taken from the latest reading, or from the next one if none yet
-  centre(screen) { this.want = screen; this.zero = null; this.f = null; }
+  // screen: { angle } now (the browser's screen angle); the centre is taken from the latest reading at once, or from
+  // the next one if there is none yet
+  centre(screen) { this.want = screen; this.zero = null; this.f = null; this.setCentre(); }
+  setCentre() {
+    if (!this.want || !this.raw) return;
+    this.angle = pickScreenAngle(this.raw, this.want.angle);
+    this.grip = tiltGrip(this.raw, this.angle, this.c.wheelFrom);
+    this.zero = tiltAngles(this.raw, this.angle, this.grip); this.f = this.raw.slice(); this.want = null;
+  }
   get centred() { return !!this.zero; }
   read(dt) {
     if (!this.raw) { this.x = this.y = 0; return this; }
-    if (this.want) {
-      this.angle = pickScreenAngle(this.raw, this.want.angle, this.want.landscape);
-      this.grip = tiltRecline(this.raw, this.angle) >= this.c.wheelFrom ? 'wheel' : 'tray';
-      this.zero = tiltAngles(this.raw, this.angle, this.grip); this.f = this.raw.slice(); this.want = null;
-    }
+    this.setCentre();
     if (!this.zero) { this.x = this.y = 0; return this; }
     if (!this.f) this.f = this.raw.slice();
     const k = 1 - Math.exp(-Math.max(0, dt) / this.c.tau), f = this.f;

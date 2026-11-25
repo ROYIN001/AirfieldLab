@@ -381,11 +381,14 @@ async function main() {
   refreshPadTxt();
   const stick = $('#stick'), knob = $('#stickKnob'); const touchStick = { on: false, x: 0, y: 0 };
   const stickMove = (e) => { const r = stick.getBoundingClientRect(); const R = r.width / 2 - 20; let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2); const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } touchStick.x = dx / R; touchStick.y = dy / R; knob.style.transform = `translate(${dx}px, ${dy}px)`; };
-  let holdT = 0;   // tilt mode: holding the circle 0.6 s re-centres (a quick touch could do it by accident mid-bank)
-  stick.addEventListener('pointerdown', (e) => { if (app.tilt.on) { clearTimeout(holdT); holdT = setTimeout(() => centreTilt(true), 600); return; } touchStick.on = true; stick.setPointerCapture(e.pointerId); stickMove(e); });
-  stick.addEventListener('pointermove', (e) => { if (touchStick.on) stickMove(e); });
-  const stickUp = () => { clearTimeout(holdT); touchStick.on = false; touchStick.x = touchStick.y = 0; knob.style.transform = ''; };
-  stick.addEventListener('pointerup', stickUp); stick.addEventListener('pointercancel', stickUp); stick.addEventListener('pointerleave', () => clearTimeout(holdT));
+  // tilt mode: holding the circle still for 0.6 s re-centres (a quick touch, or a finger dragging it as if it were the
+  // touch stick, could otherwise do it by accident mid-bank)
+  let holdT = 0, holdAt = null;
+  const holdEnd = () => { clearTimeout(holdT); holdAt = null; };
+  stick.addEventListener('pointerdown', (e) => { if (app.tilt.on) { holdEnd(); holdAt = [e.clientX, e.clientY]; holdT = setTimeout(() => { holdAt = null; centreTilt(true); }, 600); return; } touchStick.on = true; stick.setPointerCapture(e.pointerId); stickMove(e); });
+  stick.addEventListener('pointermove', (e) => { if (holdAt && Math.hypot(e.clientX - holdAt[0], e.clientY - holdAt[1]) > 12) holdEnd(); if (touchStick.on) stickMove(e); });
+  const stickUp = () => { holdEnd(); touchStick.on = false; touchStick.x = touchStick.y = 0; knob.style.transform = ''; };
+  stick.addEventListener('pointerup', stickUp); stick.addEventListener('pointercancel', stickUp); stick.addEventListener('pointerleave', holdEnd);
   // Phone tilt (W3C DeviceOrientation Event), an option in place of the touch stick: readings go to TiltStick
   // (25-input.js), and the pose when a flight starts, when control is taken over or when the circle is held becomes the
   // centre. The interface exists only in a secure context (https). requestPermission() must come from a tap: iOS 13+
@@ -394,18 +397,21 @@ async function main() {
   // waits 2 s for a reading before giving up.
   const tilt = new TiltStick(), TILT_HELP = $('#tiltTxt').textContent;
   app.tilt = { on: false, want: store.get('afl-tilt', '0') === '1', stick: tilt, watch: 0 };
-  const tiltCapable = typeof DeviceOrientationEvent !== 'undefined' && (navigator.maxTouchPoints > 0 || matchMedia('(pointer: coarse)').matches);
+  // isSecureContext too: WebKit keeps the interface over http, where requestPermission() only ever answers "denied"
+  const tiltCapable = window.isSecureContext === true && typeof DeviceOrientationEvent !== 'undefined' && (navigator.maxTouchPoints > 0 || matchMedia('(pointer: coarse)').matches);
   const framed = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();
   const fpol = document.featurePolicy;   // Chromium only
   const sensorsBlocked = () => !!(fpol && fpol.allowsFeature && (!fpol.allowsFeature('accelerometer') || !fpol.allowsFeature('gyroscope')));
   const TILT_FRAMED = 'หน้านี้เปิดอยู่ในกรอบของอีกเว็บหนึ่งที่ไม่อนุญาตให้อ่านการเอียงโทรศัพท์ ลองเปิดหน้านี้โดยตรงในเบราว์เซอร์';
   // window.orientation first: on iOS it counts from portrait on iPad too, like the DeviceOrientation frame (WebKit
-  // makes the iPad's screen.orientation count from landscape); TiltStick checks the angle against gravity anyway
+  // makes the iPad's screen.orientation count from landscape); TiltStick checks the angle against gravity anyway.
+  // Not the viewport's shape: a tablet whose natural orientation is landscape reports 0 when held in landscape.
   function screenNow() {
     const so = screen.orientation, wo = window.orientation;
-    const a = Number.isFinite(wo) ? wo : so && Number.isFinite(so.angle) ? so.angle : 0;
-    return { angle: a, landscape: innerWidth > innerHeight };
+    return { angle: Number.isFinite(wo) ? wo : so && Number.isFinite(so.angle) ? so.angle : 0 };
   }
+  // how to bank in the grip picked at the last centring (TiltStick.grip)
+  const TILT_BANK = { wheel: 'หมุนโทรศัพท์แบบหมุนพวงมาลัยเพื่อเอียงเครื่อง', tray: 'กดขอบซ้ายหรือขวาลงเพื่อเอียงเครื่อง', under: 'กดขอบซ้ายหรือขวาลงเพื่อเอียงเครื่อง' };
   const onOrient = (e) => { tilt.sample(e.beta, e.gamma, performance.now() / 1000); };
   document.addEventListener('visibilitychange', () => { if (document.hidden) tilt.lost(); });   // readings stop while hidden
   // Screen Wake Lock: flying by tilt needs few touches, so keep the screen from dimming while a tilt flight runs
@@ -436,7 +442,7 @@ async function main() {
     const D = window.DeviceOrientationEvent;
     if (sensorsBlocked()) return tiltFail(TILT_FRAMED);
     try {
-      if (D && typeof D.requestPermission === 'function' && (await D.requestPermission()) !== 'granted') return tiltFail(framed ? TILT_FRAMED : 'ไม่ได้รับอนุญาตให้อ่านการเอียง โหลดหน้านี้ใหม่ แล้วแตะตัวเลือกนี้อีกครั้งและกดอนุญาต');
+      if (D && typeof D.requestPermission === 'function' && (await D.requestPermission()) !== 'granted') return tiltFail(framed ? TILT_FRAMED : 'ไม่ได้รับอนุญาตให้อ่านการเอียง ถ้ากดไม่อนุญาตไปแล้ว เบราว์เซอร์จะจำไว้ ให้ปิดเบราว์เซอร์ให้สนิท (ปัดทิ้งในหน้าสลับแอป) แล้วเปิดหน้านี้ใหม่ แตะตัวเลือกนี้อีกครั้งและกดอนุญาต');
     } catch (e) { return tiltFail('ขออนุญาตอ่านการเอียงไม่สำเร็จ แตะตัวเลือกนี้อีกครั้ง'); }
     tilt.reset(); tilt.centre(screenNow());
     window.addEventListener('deviceorientation', onOrient);
@@ -446,7 +452,7 @@ async function main() {
     return true;
   }
   function disableTilt() { window.removeEventListener('deviceorientation', onOrient); clearTimeout(app.tilt.watch); app.tilt.on = false; tilt.reset(); refreshTilt(); keepAwake(false); }
-  function centreTilt(byTap) { if (!app.tilt.on) return; tilt.centre(screenNow()); if (byTap) toast('ตั้งศูนย์การเอียงแล้ว ท่าที่ถืออยู่ตอนนี้คือคันอยู่กลาง', 1800); }
+  function centreTilt(byTap) { if (!app.tilt.on) return; tilt.centre(screenNow()); if (byTap) toast('ตั้งศูนย์การเอียงแล้ว ท่าที่ถืออยู่ตอนนี้คือคันอยู่กลาง' + (tilt.centred ? ' ' + TILT_BANK[tilt.grip] : ''), 3000); }
   $('#chkTilt').addEventListener('click', (e) => {
     app.tilt.want = e.target.checked; store.set('afl-tilt', app.tilt.want ? '1' : '0');
     if (app.tilt.want) enableTilt(); else disableTilt();
@@ -702,7 +708,7 @@ async function main() {
         const nW = pw.filter((v) => v > 0.5).length;
         $('#papiTxt').textContent = pw[0] < 0 ? 'ผ่านตำแหน่ง PAPI แล้ว' : `ขาว ${nW} แดง ${4 - nW} · ${['ต่ำมาก', 'ต่ำเล็กน้อย', 'อยู่บนแนวร่อน', 'สูงเล็กน้อย', 'สูงมาก'][nW]}`;
         $('#liveTitle').textContent = { APP: `ร่อนเข้าหาทางวิ่ง ${FIELD.rwy}`, FLARE: 'ถอนคันบังคับก่อนแตะพื้น', ROLLOUT: 'วิ่งบนทางวิ่งและเบรก', DONE: 'หยุดเรียบร้อย', STOP: 'หยุดเรียบร้อย', CRASH: 'เครื่องบินกระแทกพื้น' }[ph] || 'กำลังบิน';
-        $('#liveLede').textContent = fl.pilot === 'ap' ? 'ออโต้ไพลอตบินตามสัญญาณ ILS ถอนคันบังคับที่ราว 20 ฟุต จัดหัวให้ตรงทางวิ่งก่อนแตะพื้น แล้วเบรกจนหยุด' : (isTouch ? 'ลากคันบังคับซ้ายล่าง: ซ้าย/ขวาเพื่อเอียง ลงเพื่อเงยหัว ขึ้นเพื่อกดหัว' : 'ใช้ลูกศรบังคับ ↑ กดหัว ↓ เงยหัว ←/→ เอียง') + ' · พาวงกลมเส้นทางบินไปทับวงกลมสีชมพูในมุมห้องนักบิน';
+        $('#liveLede').textContent = fl.pilot === 'ap' ? 'ออโต้ไพลอตบินตามสัญญาณ ILS ถอนคันบังคับที่ราว 20 ฟุต จัดหัวให้ตรงทางวิ่งก่อนแตะพื้น แล้วเบรกจนหยุด' : (app.tilt.on ? `บังคับด้วยการเอียงโทรศัพท์: ${TILT_BANK[app.tilt.stick.grip]} เอียงขอบบนเข้าหาตัวเพื่อเงยหัว ออกจากตัวเพื่อกดหัว กดค้างที่วงกลมเพื่อตั้งศูนย์ใหม่` : isTouch ? 'ลากคันบังคับซ้ายล่าง: ซ้าย/ขวาเพื่อเอียง ลงเพื่อเงยหัว ขึ้นเพื่อกดหัว' : 'ใช้ลูกศรบังคับ ↑ กดหัว ↓ เงยหัว ←/→ เอียง') + ' · พาวงกลมเส้นทางบินไปทับวงกลมสีชมพูในมุมห้องนักบิน';
       }
     }
     if (firstFrame) { firstFrame = false; $('#loading').classList.add('done'); }

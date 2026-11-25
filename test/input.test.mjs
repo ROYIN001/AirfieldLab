@@ -347,48 +347,97 @@ test('tilt: yoke angles for both grips in every screen orientation, and which wa
   // past upright the wheel pitch keeps growing (no fold-over at 90°)
   near(I.tiltAngles(I.tiltUp(...pose(100, 0, 90)), 90, 'wheel').pitch, 100, 1e-9, 'top edge 10° past upright');
   near(I.tiltAngles([Math.sin(12 * D2R), 0, Math.cos(12 * D2R)], 0, 'tray').roll, 12, 1e-9, 'flat, right edge raised 12°');
+  // held overhead with the screen down ('under'): the edge that goes down still banks that way, and pitch grows on
+  // through face-down
+  for (const angle of [0, 90, 180, 270]) {
+    const u = (b) => I.tiltUp(...b);
+    const a0 = I.tiltAngles(u(poseTray(170, 0, angle)), angle, 'under'), a1 = I.tiltAngles(u(poseTray(170, 8, angle)), angle, 'under');
+    near(a1.roll - a0.roll, -8, 1e-9, `under: right edge down 8° at ${angle}°`); near(a1.pitch, a0.pitch, 1e-9, 'no pitch from it');
+    const d = (v) => ((v + 540) % 360) - 180;
+    near(d(I.tiltAngles(u(poseTray(185, 0, angle)), angle, 'under').pitch - a0.pitch), 15, 1e-9, `under: top edge toward the player through face-down at ${angle}°`);
+  }
+});
+
+test('tilt: the grip follows how far the screen is raised', () => {
+  for (const angle of [0, 90, 180, 270]) {
+    const g = (rec) => I.tiltGrip(I.tiltUp(...poseTray(rec, 0, angle)), angle, 40);
+    assert.deepEqual([g(0), g(20), g(39), g(41), g(90), g(120), g(139), g(141), g(165), g(180), g(-10)],
+      ['tray', 'tray', 'tray', 'wheel', 'wheel', 'wheel', 'wheel', 'under', 'under', 'under', 'tray'], `at ${angle}°`);
+  }
+});
+
+test('tilt: stick shaping (pinned: 30° roll / 20° pitch full travel, dead zone 2°, expo 0.3)', () => {
+  const c = I.INPUT_CFG.tilt;
+  assert.deepEqual([c.rollMax, c.pitchMax, c.dz, c.expo], [30, 20, 2, 0.3]);
+  near(I.tiltAxis(15, 30, 2, 0.3), 0.35502, 1e-5, 'roll 15°'); near(I.tiltAxis(-15, 30, 2, 0.3), -0.35502, 1e-5, 'roll −15°');
+  near(I.tiltAxis(12, 20, 2, 0.3), 0.44033, 1e-5, 'pitch 12°'); near(I.tiltAxis(5, 30, 2, 0.3), 0.07537, 1e-5, 'roll 5°');
+  assert.equal(I.tiltAxis(2, 30, 2, 0.3), 0, 'edge of the dead zone'); near(I.tiltAxis(2.3, 30, 2, 0.3), 0.0075, 1e-5, 'no step after it');
+  assert.equal(I.tiltAxis(30, 30, 2, 0.3), 1); assert.equal(I.tiltAxis(-45, 30, 2, 0.3), -1);
 });
 
 test('tilt: the screen angle is checked against gravity', () => {
   const u = I.tiltUp(...pose(40, 0, 90));
-  assert.equal(I.pickScreenAngle(u, 90, true), 90); assert.equal(I.pickScreenAngle(u, 270, true), 90, 'a browser reporting the other sign');
-  assert.equal(I.pickScreenAngle(u, -90, true), 90);
-  assert.equal(I.pickScreenAngle(I.tiltUp(...pose(40, 0, 270)), 90, true), 270);
-  assert.equal(I.pickScreenAngle(I.tiltUp(...pose(40, 0, 0)), 0, false), 0); assert.equal(I.pickScreenAngle(I.tiltUp(...pose(40, 0, 180)), 0, false), 180);
+  assert.equal(I.pickScreenAngle(u, 90), 90); assert.equal(I.pickScreenAngle(u, 270), 90, 'a browser reporting the other sign');
+  assert.equal(I.pickScreenAngle(u, -90), 90);
+  assert.equal(I.pickScreenAngle(I.tiltUp(...pose(40, 0, 270)), 90), 270);
+  assert.equal(I.pickScreenAngle(I.tiltUp(...pose(40, 0, 0)), 0), 0); assert.equal(I.pickScreenAngle(I.tiltUp(...pose(40, 0, 180)), 0), 180);
+  // the browser's quarter turn is trusted: angle 0 in a landscape viewport is a tablet whose natural orientation is
+  // landscape, and a phone in landscape in a window taller than wide still reports 90 (the viewport is not asked)
+  assert.equal(I.pickScreenAngle(I.tiltUp(...pose(45, 0, 0)), 0), 0, 'landscape-natural tablet held in landscape');
+  assert.equal(I.pickScreenAngle(I.tiltUp(...pose(45, 0, 90)), 90), 90, 'split-screen window');
+  // centred while banked: the browser's axis still wins
+  assert.equal(I.pickScreenAngle(I.tiltUp(...pose(40, 50, 90)), 90), 90, 'wheel turned 50° at centring');
+  // clearly upright across the browser's axis: the other quarter turn (iPad screen.orientation counted from landscape)
+  assert.equal(I.pickScreenAngle(I.tiltUp(...pose(45, 0, 90)), 0), 90); assert.equal(I.pickScreenAngle(I.tiltUp(...pose(45, 0, 270)), 180), 270);
   // flat on a table gravity cannot tell: the browser's angle stands
-  assert.equal(I.pickScreenAngle(I.tiltUp(...pose(5, 0, 90)), 270, true), 270); assert.equal(I.pickScreenAngle([0, 0, 1], -90, true), 270);
+  assert.equal(I.pickScreenAngle(I.tiltUp(...pose(5, 0, 90)), 270), 270); assert.equal(I.pickScreenAngle([0, 0, 1], -90), 270);
 });
 
 test('TiltStick: centre, direction, dead zone, full travel, smoothing and lost readings', () => {
   const c = I.INPUT_CFG.tilt;
   for (const angle of [90, 270, 0]) {
-    const ts = new I.TiltStick(), landscape = angle % 180 !== 0;
+    const ts = new I.TiltStick();
     let t = 10;
     assert.deepEqual([ts.read(DT, t).x, ts.y], [0, 0], 'nothing before a reading');
-    ts.centre({ angle, landscape }); t = settle(ts, ...pose(45, 0, angle), t);
+    ts.centre({ angle }); t = settle(ts, ...pose(45, 0, angle), t);
     assert.ok(ts.centred); assert.equal(ts.grip, 'wheel'); assert.deepEqual([ts.x, ts.y], [0, 0], `centred at ${angle}°`);
     t = settle(ts, ...pose(45, 1.5, angle), t); assert.equal(ts.x, 0, 'inside the dead zone');
     t = settle(ts, ...pose(45, 15, angle), t, 120);
-    near(ts.x, -I.tiltAxis(15, c.rollMax, c.dz, c.expo), 1e-6, `wheel 15° to the left at ${angle}° = roll left`); assert.ok(ts.x < -0.2);
+    near(ts.x, -0.35502, 1e-5, `wheel 15° to the left at ${angle}° = roll left`);
     assert.equal(ts.y, 0, 'no pitch from the wheel turn');
-    t = settle(ts, ...pose(57, 0, angle), t, 120); near(ts.y, I.tiltAxis(12, c.pitchMax, c.dz, c.expo), 1e-6, `top edge 12° toward the player = pull at ${angle}°`);
+    t = settle(ts, ...pose(57, 0, angle), t, 120); near(ts.y, 0.44033, 1e-5, `top edge 12° toward the player = pull at ${angle}°`);
     t = settle(ts, ...pose(33, 0, angle), t, 120); assert.ok(ts.y < -0.1, 'top edge away = push');
     t = settle(ts, ...pose(45, -60, angle), t, 120); assert.equal(ts.x, 1, 'beyond full travel: 1');
     // held near flat: the tray grip
     const tr = new I.TiltStick(); let u = 0;
-    tr.centre({ angle, landscape }); u = settle(tr, ...poseTray(20, 0, angle), u); assert.equal(tr.grip, 'tray');
-    u = settle(tr, ...poseTray(20, 15, angle), u, 120); near(tr.x, -I.tiltAxis(15, c.rollMax, c.dz, c.expo), 1e-6, `tray: right edge up 15° = roll left at ${angle}°`);
+    tr.centre({ angle }); u = settle(tr, ...poseTray(20, 0, angle), u); assert.equal(tr.grip, 'tray');
+    u = settle(tr, ...poseTray(20, 15, angle), u, 120); near(tr.x, -0.35502, 1e-5, `tray: right edge up 15° = roll left at ${angle}°`);
     assert.equal(tr.y, 0, 'no pitch from the tray tilt');
-    u = settle(tr, ...poseTray(32, 0, angle), u, 120); near(tr.y, I.tiltAxis(12, c.pitchMax, c.dz, c.expo), 1e-6, 'tray: top edge up 12° = pull');
+    u = settle(tr, ...poseTray(32, 0, angle), u, 120); near(tr.y, 0.44033, 1e-5, 'tray: top edge up 12° = pull');
+    // held overhead, screen down: the 'under' grip keeps the design gain and passes face-down without a jump
+    const ov = new I.TiltStick(); let v = 0;
+    ov.centre({ angle }); v = settle(ov, ...poseTray(172, 0, angle), v); assert.equal(ov.grip, 'under');
+    v = settle(ov, ...poseTray(172, 1, angle), v, 120); assert.equal(ov.x, 0, 'under: a 1° wobble stays in the dead zone');
+    v = settle(ov, ...poseTray(172, 5, angle), v, 120); near(ov.x, 0.07537, 1e-5, `under: right edge down 5° = roll right at ${angle}°`);
+    v = settle(ov, ...poseTray(184, 0, angle), v, 120); near(ov.y, 0.44033, 1e-5, 'under: 12° toward the player through face-down = pull'); assert.equal(ov.x, 0);
   }
-  // the centre is the pose of the reading in hand when read() next runs; read() never looks at the screen again, so
+  // a browser angle that disagrees with gravity: Safari 16.4 counted clockwise (270 for 90), iPad Safari 17+ counts
+  // screen.orientation from landscape (0 for 90); the stick still flies the right way round
+  for (const api of [270, -90, 0, 180]) {
+    const ts = new I.TiltStick(); let t = 0;
+    ts.centre({ angle: api }); t = settle(ts, ...pose(45, 0, 90), t);
+    assert.deepEqual([ts.angle, ts.grip], [90, 'wheel'], `browser says ${api}`);
+    t = settle(ts, ...pose(45, 15, 90), t, 120); near(ts.x, -0.35502, 1e-5, `browser says ${api}: wheel left = roll left`);
+    t = settle(ts, ...pose(57, 0, 90), t, 120); near(ts.y, 0.44033, 1e-5, `browser says ${api}: pull`);
+  }
+  // the centre is the pose of the reading in hand when centre() runs; read() never looks at the screen again, so
   // the browser turning the picture during a flight does not swap roll and pitch
   const ts = new I.TiltStick(); let t = 0;
-  ts.sample(...pose(45, 0, 90), t); ts.centre({ angle: 90, landscape: true }); ts.read(DT, t);
+  ts.sample(...pose(45, 0, 90), t); ts.centre({ angle: 90 }); assert.ok(ts.centred, 'at once'); assert.equal(ts.grip, 'wheel'); ts.read(DT, t);
   t = settle(ts, ...pose(45, 20, 90), t, 120);
   const x0 = ts.x; assert.ok(x0 < -0.2, `x0 ${x0}`); assert.equal(ts.angle, 90);
   // smoothing follows time, not frame rate: a step seen at 30 Hz and at 150 Hz gives the same value after 0.1 s
-  const at = (hz) => { const s = new I.TiltStick(); let tt = 0; s.sample(...pose(45, 0, 90), tt); s.centre({ angle: 90, landscape: true }); s.read(1 / hz, tt);
+  const at = (hz) => { const s = new I.TiltStick(); let tt = 0; s.sample(...pose(45, 0, 90), tt); s.centre({ angle: 90 }); s.read(1 / hz, tt);
     s.sample(...pose(45, 20, 90), tt); for (let i = 0; i < hz / 10; i++) { tt += 1 / hz; s.read(1 / hz, tt); } return s.x; };
   near(at(30), at(150), 1e-9, '30 Hz vs 150 Hz'); assert.ok(at(60) > x0 && at(60) < 0, 'and it lags the step a little');
   // a sensor without values (desktop Chrome sends one null reading) is ignored; a phone resting still sends no readings
@@ -399,7 +448,9 @@ test('TiltStick: centre, direction, dead zone, full travel, smoothing and lost r
   ts.lost(); assert.equal(ts.read(DT).x, 0); assert.ok(ts.centred);
   t = settle(ts, ...pose(45, 20, 90), t + 1, 120); near(ts.x, x0, 1e-9, 'readings back: same command');
   // re-centring on the current pose
-  ts.centre({ angle: 90, landscape: true }); ts.read(DT, t); assert.equal(ts.x, 0);
+  ts.centre({ angle: 90 }); ts.read(DT, t); assert.equal(ts.x, 0);
+  ts.lost(); ts.centre({ angle: 90 }); assert.equal(ts.centred, false, 'no reading in hand: the next one is the centre');
+  t = settle(ts, ...pose(45, 20, 90), t, 120); assert.ok(ts.centred); assert.equal(ts.x, 0);
   ts.reset(); assert.equal(ts.read(DT, t).x, 0); assert.equal(ts.centred, false);
 });
 
@@ -432,13 +483,29 @@ test('the app reads the gamepad and applies PilotInput (src/90-app.js wiring)', 
   assert.match(app, /const g = app\.tilt\.on \? tilt\.read\(dt\) : null;\s*const r = app\.pin\.update\([^)]*tilt: g,/, 'the tilt reaches PilotInput');
   assert.match(app, /window\.addEventListener\('deviceorientation', onOrient\)/); assert.match(app, /window\.removeEventListener\('deviceorientation', onOrient\)/);
   assert.match(app, /tilt\.sample\(e\.beta, e\.gamma, performance\.now\(\) \/ 1000\)/, 'readings on the frame clock');
-  assert.match(app, /async function enableTilt\(\) \{[^}]*?\n\s*if \(app\.tilt\.on\) return true;\s*const D = window\.DeviceOrientationEvent;\s*if \(sensorsBlocked\(\)\) return tiltFail\(TILT_FRAMED\);\s*try \{\s*if \(D && typeof D\.requestPermission === 'function' && \(await D\.requestPermission\(\)\) !== 'granted'\)/, 'iOS permission asked before any other await, from the tap');
-  assert.match(app, /\$\('#chkTilt'\)\.addEventListener\('click', [\s\S]{0,200}?enableTilt\(\)/, 'enabled from a tap on the option');
+  // iOS: requestPermission() must run inside the tap, so no await may come before it in enableTilt
+  const en = app.slice(app.indexOf('async function enableTilt() {'), app.indexOf('D.requestPermission())') + 'D.requestPermission())'.length);
+  assert.ok(en.startsWith('async function enableTilt() {') && en.includes('typeof D.requestPermission === \'function\''), 'enableTilt asks for permission');
+  assert.deepEqual(en.match(/\bawait\b/g), ['await'], 'iOS permission asked before any other await, from the tap');
+  assert.match(app, /\$\('#chkTilt'\)\.addEventListener\('click', [\s\S]{0,200}?if \(app\.tilt\.want\) enableTilt\(\); else disableTilt\(\);/, 'enabled from a tap on the option, and disabled when unticked');
+  assert.match(app, /const tiltCapable = window\.isSecureContext === true && /, 'offered only over https');
+  assert.match(app, /tilt\.reset\(\); tilt\.centre\(screenNow\(\)\);/, 'enabling sets a centre');
+  assert.match(app, /function centreTilt\(byTap\) \{ if \(!app\.tilt\.on\) return; tilt\.centre\(screenNow\(\)\);/, 'centreTilt centres');
   assert.match(app, /setTimeout\(\(\) => \{ if \(app\.tilt\.on && !tilt\.n\) tiltFail\(/, 'no reading within the wait: the option turns itself off');
   assert.match(app, /function startFlight\(\) \{\s*if \(app\.tilt\.want && !app\.tilt\.on\) enableTilt\(\);[\s\S]{0,400}?app\.pin\.reset\(\); centreTilt\(false\);/, 'a flight starts centred');
   assert.match(app, /if \(toMan\) centreTilt\(false\);/, 'taking control centres');
-  assert.match(app, /stick\.addEventListener\('pointerdown', \(e\) => \{ if \(app\.tilt\.on\) \{ clearTimeout\(holdT\); holdT = setTimeout\(\(\) => centreTilt\(true\), 600\); return; \}/, 'holding the circle centres in tilt mode');
-  assert.match(app, /const stickUp = \(\) => \{ clearTimeout\(holdT\);/, 'a short touch does not');
+  assert.match(app, /stick\.addEventListener\('pointerdown', \(e\) => \{ if \(app\.tilt\.on\) \{ holdEnd\(\); holdAt = \[e\.clientX, e\.clientY\]; holdT = setTimeout\(\(\) => \{ holdAt = null; centreTilt\(true\); \}, 600\); return; \}/, 'holding the circle centres in tilt mode');
+  assert.match(app, /const stickUp = \(\) => \{ holdEnd\(\);/, 'a short touch does not');
+  assert.match(app, /if \(holdAt && Math\.hypot\(e\.clientX - holdAt\[0\], e\.clientY - holdAt\[1\]\) > 12\) holdEnd\(\);/, 'nor a finger dragging the circle');
+  assert.match(app, /app\.tilt\.on \? `บังคับด้วยการเอียงโทรศัพท์: \$\{TILT_BANK\[app\.tilt\.stick\.grip\]\}/, 'the flight panel tells how to fly by tilt, for the grip in use');
+  // the screen angle handed to TiltStick: window.orientation first, then screen.orientation.angle, never the viewport
+  const sn = app.match(/function screenNow\(\) \{[\s\S]*?\n  \}/);
+  assert.ok(sn, 'screenNow found');
+  const screenNow = (win, scr) => new Function('window', 'screen', `${sn[0]}; return screenNow();`)(win, scr);
+  assert.deepEqual(screenNow({ orientation: -90 }, { orientation: { angle: 90 } }), { angle: -90 });
+  assert.deepEqual(screenNow({}, { orientation: { angle: 270 } }), { angle: 270 });
+  assert.deepEqual(screenNow({}, {}), { angle: 0 });
+  assert.equal(I.pickScreenAngle(I.tiltUp(...pose(45, 0, 270)), screenNow({ orientation: -90 }, {}).angle), 270, 'iOS −90 reaches TiltStick as 270');
   assert.match(app, /if \(sensorsBlocked\(\)\) return tiltFail\(TILT_FRAMED\);/, 'a frame that blocks the sensors is named');
   assert.match(app, /if \(document\.hidden\) tilt\.lost\(\);/, 'hidden page: tilt to centre');
   assert.match(app, /keepAwake\(app\.tilt\.on && app\.mode === 'train' && app\.train\.state === 'fly'\)/, 'screen kept awake in a tilt flight');

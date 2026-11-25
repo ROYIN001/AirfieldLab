@@ -102,16 +102,19 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Phone tilt (option "บังคับด้วยการเอียงโทรศัพท์" in the training setup, shown on touch devices in a secure context;
   `TiltStick` in `src/25-input.js`; not in the research report: geometry from the W3C DeviceOrientation Event spec,
   numbers are estimates sourced in the file): replaces the touch stick for roll and pitch, as source 3 of `InputAxis`.
-  The pose when a flight starts, when control is taken over, or when the circle (now an indicator) is held 0.6 s
-  becomes the centre, in the screen frame of that moment (`window.orientation` first, then
-  `screen.orientation.angle`, checked against gravity). Held up (screen raised 40° or more from flat) the phone is a
-  wheel: turning it about the screen's normal is roll; held near flat it is a tray: tilting about its up axis is
-  roll; the top edge toward the player is pull. Full deflection at 30° roll / 20° pitch, dead zone 2°, expo 0.3,
-  smoothing 0.06 s. Chrome sends no event while the phone is still, so the last reading is kept (no stale cut-off);
-  a hidden page drops the reading and keeps the centre. A screen wake lock is held while tilt flies. iOS asks
-  permission from the tap; a frame whose Permissions Policy blocks the sensors, or no reading within 2 s, turns the
-  option off with a Thai message. Whether the claude.ai artifact viewer allows the sensors has not been checked on a
-  phone (it is a cross-origin frame and offers no device-motion capability, so probably not).
+  The pose when a flight starts, when control is taken over, or when the circle (now an indicator) is held still for
+  0.6 s becomes the centre, in the screen frame of that moment; a display rotation later does not change the mapping.
+  Screen angle: `window.orientation` first, then `screen.orientation.angle`, never the viewport's shape (tablets can
+  be landscape-natural); gravity picks the sign, and the other quarter turn only when the phone is clearly upright
+  across the browser's axis. Grip from how far the screen is raised (`tiltGrip`, wheelFrom 40°): 40°–140° 'wheel'
+  (turn about the screen's normal is roll), near flat 'tray' (tilt about the up axis is roll), screen down overhead
+  'under' (as the tray; pitch runs on through face-down). The edge that goes down is the bank side; the top edge
+  toward the player is pull. Full deflection at 30° roll / 20° pitch, dead zone 2°, expo 0.3, smoothing 0.06 s.
+  Chrome sends no event while the phone is still, so the last reading is kept (no stale cut-off); a hidden page drops
+  the reading and keeps the centre. A screen wake lock is held while tilt flies. iOS asks permission from the tap
+  (Safari remembers a refusal until it is closed); a frame whose Permissions Policy blocks the sensors, or no reading
+  within 2 s, turns the option off with a Thai message. Whether the claude.ai artifact viewer allows the sensors has
+  not been checked on a phone (it is a cross-origin frame and offers no device-motion capability, so probably not).
 
 ## Research reports (docs/research/)
 - The owner's 5-round research program lives in `docs/research/`: `01-flight-physics.md`, `02-light-aircraft.md`,
