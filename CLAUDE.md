@@ -22,7 +22,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `keys` (keyboard map and key handling,
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `input` (shaping, key ramps, the
   sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
-  and that `src/90-app.js` reads the gamepad through it), `page` (parses the assembled page
+  phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `page` (parses the assembled page
   module and checks the element ids the scripts use). Autoland score floors sit just under the values measured on
   2026-11-19 (the assist robot's floor is a loose 50); touchdown points and every mode value have regression bands.
   A physics change that moves them updates the test in the same PR.
@@ -41,7 +41,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions + `frame()` with sub-frame taps; `app.keys`) |
 | 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
-| 25-input.js | pure: `INPUT_CFG` (estimates from research §11), calibration and dead-zone helpers, `shapeAxis` / `shapeLever`, `keyRamp` + `KeyAxis`, `readPad` (W3C standard gamepad), `Arbiter` (last-moved source wins) + `InputAxis` (no jump on a switch), `PilotInput` (one frame from keys, pad and touch; `app.pin`) |
+| 25-input.js | pure: `INPUT_CFG` (estimates from research §11), calibration and dead-zone helpers, `shapeAxis` / `shapeLever`, `keyRamp` + `KeyAxis`, `readPad` (W3C standard gamepad), `Arbiter` (last-moved source wins) + `InputAxis` (no jump on a switch), `TiltStick` (phone tilt), `PilotInput` (one frame from keys, pad, touch and tilt; `app.pin`) |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()`, `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
 | 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` |
@@ -99,6 +99,19 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   makes the value jump: keys continue from the current value, and the output runs to a stick's value at the axis's
   return rate (pitch 2.5/s, roll 3/s, rudder 2/s) before following it.
 - Touch: virtual stick, throttle rail, brake button.
+- Phone tilt (option "บังคับด้วยการเอียงโทรศัพท์" in the training setup, shown on touch devices in a secure context;
+  `TiltStick` in `src/25-input.js`; not in the research report: geometry from the W3C DeviceOrientation Event spec,
+  numbers are estimates sourced in the file): replaces the touch stick for roll and pitch, as source 3 of `InputAxis`.
+  The pose when a flight starts, when control is taken over, or when the circle (now an indicator) is held 0.6 s
+  becomes the centre, in the screen frame of that moment (`window.orientation` first, then
+  `screen.orientation.angle`, checked against gravity). Held up (screen raised 40° or more from flat) the phone is a
+  wheel: turning it about the screen's normal is roll; held near flat it is a tray: tilting about its up axis is
+  roll; the top edge toward the player is pull. Full deflection at 30° roll / 20° pitch, dead zone 2°, expo 0.3,
+  smoothing 0.06 s. Chrome sends no event while the phone is still, so the last reading is kept (no stale cut-off);
+  a hidden page drops the reading and keeps the centre. A screen wake lock is held while tilt flies. iOS asks
+  permission from the tap; a frame whose Permissions Policy blocks the sensors, or no reading within 2 s, turns the
+  option off with a Thai message. Whether the claude.ai artifact viewer allows the sensors has not been checked on a
+  phone (it is a cross-origin frame and offers no device-motion capability, so probably not).
 
 ## Research reports (docs/research/)
 - The owner's 5-round research program lives in `docs/research/`: `01-flight-physics.md`, `02-light-aircraft.md`,

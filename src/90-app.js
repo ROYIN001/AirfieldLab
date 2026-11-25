@@ -287,9 +287,10 @@ async function main() {
   function flightOpts() { const sc = SCENARIOS[app.train.scn]; return { wind: sc, dist: app.train.dist, pilot: app.train.pilot, assist: app.train.assist, autoThr: app.train.autoThr, seed: 7 + Math.floor(Math.random() * 1000), oatC: 31, dh: app.train.pilot === 'man' ? 12 : 0, dtl: app.train.pilot === 'man' ? 40 : 0 }; }
   function previewFlight() { setActiveRunway(app.train.rwy); app.flight = new Flight(flightOpts()); app.train.state = 'setup'; chase.init = false; }
   function startFlight() {
+    if (app.tilt.want && !app.tilt.on) enableTilt();   // the option was kept from an earlier visit; this is a tap
     setActiveRunway(app.train.rwy);
     app.flight = new Flight(flightOpts());
-    Object.assign(app.input, { x: 0, y: 0, rud: 0, thr: app.flight.ac.thr, brake: 0 }); app.pin.reset();
+    Object.assign(app.input, { x: 0, y: 0, rud: 0, thr: app.flight.ac.thr, brake: 0 }); app.pin.reset(); centreTilt(false);
     app.train.state = 'fly'; app.train.warp = 1; app.resultShown = false;
     showTrainPane('fly'); refreshLive(); chase.init = false;
     $('#liveEyebrow').textContent = app.flight.pilot === 'ap' ? 'ออโต้ไพลอตกำลังบิน' : (app.flight.opts.assist ? 'บินเอง · มีระบบช่วย' : 'บินเอง · ควบคุมตรง');
@@ -306,7 +307,7 @@ async function main() {
   $('#btnAgain').onclick = startFlight;
   $('#btnRestart').onclick = startFlight;
   $('#btnSetup').onclick = () => { showTrainPane('setup'); previewFlight(); updateCtlVisibility(); };
-  $('#btnTake').onclick = () => { if (!app.flight) return; const toMan = app.flight.pilot === 'ap'; if (toMan) { app.flight.opts.assist = app.train.assist; app.flight.opts.autoThr = app.train.assist && app.train.autoThr; } app.flight.setPilot(toMan ? 'man' : 'ap'); app.input.thr = app.flight.ac.thr; refreshLive(); updateCtlVisibility(); toast(toMan ? 'คุณบังคับเองแล้ว ตามวงกลมสีชมพูบน HUD เพื่อบินตามแนวร่อน' : 'ออโต้ไพลอตรับช่วงต่อ'); };
+  $('#btnTake').onclick = () => { if (!app.flight) return; const toMan = app.flight.pilot === 'ap'; if (toMan) { app.flight.opts.assist = app.train.assist; app.flight.opts.autoThr = app.train.assist && app.train.autoThr; } app.flight.setPilot(toMan ? 'man' : 'ap'); app.input.thr = app.flight.ac.thr; if (toMan) centreTilt(false); refreshLive(); updateCtlVisibility(); toast(toMan ? 'คุณบังคับเองแล้ว ตามวงกลมสีชมพูบน HUD เพื่อบินตามแนวร่อน' : 'ออโต้ไพลอตรับช่วงต่อ'); };
   $('#btnReplay').onclick = () => {
     const f = app.flight; if (!f || !f.rec.f.length) return;
     app.train.state = 'replay'; app.replayT = Math.max(0, (f.ev.td ? f.ev.td.t : f.ac.t) - 28); app.replayEnd = f.rec.f[f.rec.f.length - 1].t;
@@ -380,10 +381,78 @@ async function main() {
   refreshPadTxt();
   const stick = $('#stick'), knob = $('#stickKnob'); const touchStick = { on: false, x: 0, y: 0 };
   const stickMove = (e) => { const r = stick.getBoundingClientRect(); const R = r.width / 2 - 20; let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2); const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } touchStick.x = dx / R; touchStick.y = dy / R; knob.style.transform = `translate(${dx}px, ${dy}px)`; };
-  stick.addEventListener('pointerdown', (e) => { touchStick.on = true; stick.setPointerCapture(e.pointerId); stickMove(e); });
+  let holdT = 0;   // tilt mode: holding the circle 0.6 s re-centres (a quick touch could do it by accident mid-bank)
+  stick.addEventListener('pointerdown', (e) => { if (app.tilt.on) { clearTimeout(holdT); holdT = setTimeout(() => centreTilt(true), 600); return; } touchStick.on = true; stick.setPointerCapture(e.pointerId); stickMove(e); });
   stick.addEventListener('pointermove', (e) => { if (touchStick.on) stickMove(e); });
-  const stickUp = () => { touchStick.on = false; touchStick.x = touchStick.y = 0; knob.style.transform = ''; };
-  stick.addEventListener('pointerup', stickUp); stick.addEventListener('pointercancel', stickUp);
+  const stickUp = () => { clearTimeout(holdT); touchStick.on = false; touchStick.x = touchStick.y = 0; knob.style.transform = ''; };
+  stick.addEventListener('pointerup', stickUp); stick.addEventListener('pointercancel', stickUp); stick.addEventListener('pointerleave', () => clearTimeout(holdT));
+  // Phone tilt (W3C DeviceOrientation Event), an option in place of the touch stick: readings go to TiltStick
+  // (25-input.js), and the pose when a flight starts, when control is taken over or when the circle is held becomes the
+  // centre. The interface exists only in a secure context (https). requestPermission() must come from a tap: iOS 13+
+  // asks there, Chrome 151+ answers at once while its default stays "allow". A cross-origin frame gets readings only
+  // when its host delegates the sensors (allow="accelerometer; gyroscope; magnetometer"; Firefox never), so enabling
+  // waits 2 s for a reading before giving up.
+  const tilt = new TiltStick(), TILT_HELP = $('#tiltTxt').textContent;
+  app.tilt = { on: false, want: store.get('afl-tilt', '0') === '1', stick: tilt, watch: 0 };
+  const tiltCapable = typeof DeviceOrientationEvent !== 'undefined' && (navigator.maxTouchPoints > 0 || matchMedia('(pointer: coarse)').matches);
+  const framed = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();
+  const fpol = document.featurePolicy;   // Chromium only
+  const sensorsBlocked = () => !!(fpol && fpol.allowsFeature && (!fpol.allowsFeature('accelerometer') || !fpol.allowsFeature('gyroscope')));
+  const TILT_FRAMED = 'หน้านี้เปิดอยู่ในกรอบของอีกเว็บหนึ่งที่ไม่อนุญาตให้อ่านการเอียงโทรศัพท์ ลองเปิดหน้านี้โดยตรงในเบราว์เซอร์';
+  // window.orientation first: on iOS it counts from portrait on iPad too, like the DeviceOrientation frame (WebKit
+  // makes the iPad's screen.orientation count from landscape); TiltStick checks the angle against gravity anyway
+  function screenNow() {
+    const so = screen.orientation, wo = window.orientation;
+    const a = Number.isFinite(wo) ? wo : so && Number.isFinite(so.angle) ? so.angle : 0;
+    return { angle: a, landscape: innerWidth > innerHeight };
+  }
+  const onOrient = (e) => { tilt.sample(e.beta, e.gamma, performance.now() / 1000); };
+  document.addEventListener('visibilitychange', () => { if (document.hidden) tilt.lost(); });   // readings stop while hidden
+  // Screen Wake Lock: flying by tilt needs few touches, so keep the screen from dimming while a tilt flight runs
+  let wakeLock = null, wakeBusy = false;
+  async function keepAwake(want) {
+    if (wakeBusy || !navigator.wakeLock || want === !!wakeLock) return;
+    wakeBusy = true;
+    try {
+      if (want && document.visibilityState === 'visible') { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); }
+      else if (!want) { const w = wakeLock; wakeLock = null; await w.release(); }
+    } catch (e) { wakeLock = null; }
+    wakeBusy = false;
+  }
+  setInterval(() => keepAwake(app.tilt.on && app.mode === 'train' && app.train.state === 'fly'), 1000);
+  function refreshTilt() {
+    $('#tiltRow').hidden = !tiltCapable; $('#chkTilt').checked = app.tilt.want;
+    if (app.tilt.want) { $('#tiltTxt').textContent = TILT_HELP; $('#tiltTxt').hidden = false; } else if ($('#tiltTxt').textContent === TILT_HELP) $('#tiltTxt').hidden = true;
+    stick.classList.toggle('tilt', app.tilt.on); stick.setAttribute('aria-label', app.tilt.on ? 'การเอียงโทรศัพท์ กดค้างเพื่อตั้งศูนย์' : 'คันบังคับ');
+    if (!app.tilt.on) knob.style.transform = '';
+  }
+  function tiltFail(msg) {
+    disableTilt(); app.tilt.want = false; store.set('afl-tilt', '0'); refreshTilt();
+    $('#tiltTxt').textContent = msg; $('#tiltTxt').hidden = false; toast(msg, 6000);
+    return false;
+  }
+  async function enableTilt() {   // call from a tap
+    if (app.tilt.on) return true;
+    const D = window.DeviceOrientationEvent;
+    if (sensorsBlocked()) return tiltFail(TILT_FRAMED);
+    try {
+      if (D && typeof D.requestPermission === 'function' && (await D.requestPermission()) !== 'granted') return tiltFail(framed ? TILT_FRAMED : 'ไม่ได้รับอนุญาตให้อ่านการเอียง โหลดหน้านี้ใหม่ แล้วแตะตัวเลือกนี้อีกครั้งและกดอนุญาต');
+    } catch (e) { return tiltFail('ขออนุญาตอ่านการเอียงไม่สำเร็จ แตะตัวเลือกนี้อีกครั้ง'); }
+    tilt.reset(); tilt.centre(screenNow());
+    window.addEventListener('deviceorientation', onOrient);
+    app.tilt.on = true; refreshTilt();
+    clearTimeout(app.tilt.watch);
+    app.tilt.watch = setTimeout(() => { if (app.tilt.on && !tilt.n) tiltFail(framed ? TILT_FRAMED : 'ไม่ได้รับค่าการเอียงจากเครื่อง เครื่องนี้อาจไม่มีเซนเซอร์ หรือปิดการเข้าถึงเซนเซอร์ไว้ในการตั้งค่าเว็บไซต์ของเบราว์เซอร์'); }, 2000);
+    return true;
+  }
+  function disableTilt() { window.removeEventListener('deviceorientation', onOrient); clearTimeout(app.tilt.watch); app.tilt.on = false; tilt.reset(); refreshTilt(); keepAwake(false); }
+  function centreTilt(byTap) { if (!app.tilt.on) return; tilt.centre(screenNow()); if (byTap) toast('ตั้งศูนย์การเอียงแล้ว ท่าที่ถืออยู่ตอนนี้คือคันอยู่กลาง', 1800); }
+  $('#chkTilt').addEventListener('click', (e) => {
+    app.tilt.want = e.target.checked; store.set('afl-tilt', app.tilt.want ? '1' : '0');
+    if (app.tilt.want) enableTilt(); else disableTilt();
+    refreshTilt();
+  });
+  refreshTilt();
   const rail = $('#thrRail'), tknob = $('#thrKnob'); let thrDrag = false;
   const thrSet = (e) => { const r = rail.getBoundingClientRect(); app.input.thr = clamp(1 - (e.clientY - r.top - 13) / (r.height - 26), 0, 1); };
   rail.addEventListener('pointerdown', (e) => { thrDrag = true; rail.setPointerCapture(e.pointerId); thrSet(e); });
@@ -401,7 +470,9 @@ async function main() {
   function readInputs(dt, now, keys) {
     const I = app.input, gp = firstPad();
     app.padIndex = gp ? gp.index : null;
-    const r = app.pin.update(dt, now / 1000, { keys, pad: gp, touch: touchStick.on ? touchStick : null, thr: I.thr, brake: brakeHeld });
+    const g = app.tilt.on ? tilt.read(dt) : null;
+    const r = app.pin.update(dt, now / 1000, { keys, pad: gp, touch: touchStick.on ? touchStick : null, tilt: g, thr: I.thr, brake: brakeHeld });
+    if (g) { const R = stick.clientWidth / 2 - 20; knob.style.transform = `translate(${g.x * R}px, ${g.y * R}px)`; }   // the circle shows the tilt
     I.x = r.x; I.y = r.y; I.rud = r.rud; I.thr = r.thr; I.brake = r.brake;
     for (const ev of r.events) doAction(ev);   // gamepad buttons: take control, camera, pause (gear and flaps wait for the model)
     tknob.style.top = `${(1 - I.thr) * (rail.clientHeight - 26)}px`; $('#thrTxt').textContent = `THR ${Math.round(I.thr * 100)}%`;

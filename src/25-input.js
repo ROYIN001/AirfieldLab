@@ -4,7 +4,8 @@
 // response curve → gain (§11.3). Keys ramp with frame time, never with the operating system's key repeat, and
 // self-centre when released; Shift held is the fine mode (§11.4.2). A gamepad with the W3C "standard" mapping is read
 // once per frame (§11.2.1). When the keyboard, a gamepad and the touch stick feed one axis, the source that moved last
-// controls it (§11.5.4). 90-app.js only reads navigator.getGamepads(), key and pointer events and passes the values here.
+// controls it (§11.5.4). The phone's tilt can stand in for the touch stick (TiltStick, not in the report). 90-app.js
+// only reads navigator.getGamepads(), key, pointer and deviceorientation events and passes the values here.
 // Source: owner's research round 1, docs/research/01-flight-physics/11-input.md (tests T-I-01…T-I-06, T-I-09…T-I-12)
 // and 06-controls.md §6.7.2 (T-C-14). Written from the report's equations; no code taken from FlightGear (GPL).
 // Every number in INPUT_CFG is an estimate (ค่าประมาณ) from the report, to be tuned by flying.
@@ -22,6 +23,10 @@ const INPUT_CFG = {
   // trigger (axial dead zone + expo); right stick up/down = throttle rate (dead zone thrDz, full rate thrRate per second)
   pad: { dz: 0.08, outer: 0, expo: 0.5, rudDz: 0.05, rudExpo: 0.3, thrDz: 0.15, thrRate: 0.5 },
   moveEps: 0.02,   // arbitration: a source has moved when its value changes by more than this (not in the report)
+  // phone tilt (not in the research report; every value an estimate from the sources in the tilt section below):
+  // full deflection at rollMax / pitchMax degrees from the centred pose, dead zone dz degrees, expo, smoothing time
+  // constant tau seconds, and the recline from flat (degrees) from which the phone is read as a wheel, below it a tray
+  tilt: { rollMax: 30, pitchMax: 20, dz: 2, expo: 0.3, tau: 0.06, wheelFrom: 40 },
 };
 
 // ── calibration (§11.3.1), for the device-binding wizard ──
@@ -155,6 +160,98 @@ function readPad(gp, prev = null, c = INPUT_CFG.pad) {
   return out;
 }
 
+// ── phone tilt (DeviceOrientation), not covered by the research report ──
+// Sources (opened 2026-11-25): W3C Device Orientation and Motion, CRD 18 Nov 2026, Appendix A rotation matrix
+// (https://www.w3.org/TR/orientation-event/); W3C Screen Orientation (https://www.w3.org/TR/screen-orientation/,
+// angle = counter-clockwise turn of the screen, since spec PR #248); X-Plane Mobile manual (calibrate on the pose held,
+// top edge away = nose down; https://x-plane.com/manuals/mobile/); Rahman et al., CHI 2009, "Tilt techniques" (wrist
+// ranges, about 5° per controllable level, a quadratic mapping beats a linear one); Ryu et al. 1991 and Morrey et al.
+// 1981 (functional wrist ranges ±40° flexion/extension, ±50° forearm rotation). The numbers in INPUT_CFG.tilt are
+// estimates chosen inside those ranges, to be tuned on a phone.
+// W3C DeviceOrientation Event: beta and gamma, in degrees, rotate the
+// device frame (x right, y up the screen, z out of the screen, in the device's natural orientation) by Z-X'-Y''
+// intrinsic rotations (alpha, beta, gamma). The "up" direction (against gravity) in device coordinates is then
+// (−sin γ cos β, sin β, cos γ cos β): flat on a table, screen up = (0, 0, 1); upright in portrait = (0, 1, 0).
+// Working on this vector rather than on beta and gamma avoids their jumps near beta = ±90°. alpha (compass heading,
+// drifts) is not used.
+function tiltUp(beta, gamma) {
+  const b = beta * DEG, g = gamma * DEG, cb = Math.cos(b);
+  return [-Math.sin(g) * cb, Math.sin(b), Math.cos(g) * cb];
+}
+// The screen's right and up axes in device coordinates when the content is rotated by `angle` degrees (Screen
+// Orientation API angle: the device turned counter-clockwise by angle): right = (cos a, −sin a), up = (sin a, cos a).
+// Returns the up vector in screen coordinates [right, up, out of the screen].
+function upOnScreen(u, angle) {
+  const a = angle * DEG, c = Math.cos(a), s = Math.sin(a);
+  return [u[0] * c - u[1] * s, u[0] * s + u[1] * c, u[2]];
+}
+// How far the screen is raised from lying flat, in degrees: 0 flat with the screen up, 90 upright facing the player.
+function tiltRecline(u, angle) { const [, up, out] = upOnScreen(u, angle); return Math.atan2(up, out) * RAD; }
+// The pose of the phone as a yoke, in degrees: roll + = right edge raised (a turn to the left), pitch + = top edge
+// toward the player. Gravity cannot tell a turn about the screen's normal from one about its up axis, and people use
+// the first with the phone held up (like a steering wheel) and the second with it held near flat (like a tray), so
+// each grip gets the angles that are exact for its own motion:
+// 'wheel': pitch = angle of the screen's normal from the vertical, roll = turn of gravity about the normal;
+// 'tray': pitch = elevation of the screen's up axis, roll = turn of gravity about that axis.
+function tiltAngles(u, angle, grip = 'wheel') {
+  const [r, up, out] = upOnScreen(u, angle), m = Math.hypot(r, up, out) || 1;
+  return grip === 'tray'
+    ? { roll: Math.atan2(r, out) * RAD, pitch: Math.asin(clamp(up / m, -1, 1)) * RAD }
+    : { roll: Math.atan2(r, up) * RAD, pitch: Math.acos(clamp(out / m, -1, 1)) * RAD };
+}
+// Which way the screen is turned, from the viewport (landscape or not) and gravity: people hold a phone with the top of
+// the picture higher than the bottom, so among the two angles that fit the viewport, take the one whose screen-up axis
+// points up. When the phone lies almost flat gravity cannot tell, so the browser's angle is kept. This guards against
+// browsers whose angle does not match the device frame: Safari 16.4 counted clockwise (WebKit bug 255388), iPad Safari
+// 17+ counts from landscape, and the spec lets private modes report only 0 or 90.
+function pickScreenAngle(u, apiAngle, landscape) {
+  const api = wrap360(Math.round((Number(apiAngle) || 0) / 90) * 90);
+  const cand = landscape ? [90, 270] : [0, 180];
+  const lift = (a) => upOnScreen(u, a)[1];
+  const best = lift(cand[0]) >= lift(cand[1]) ? cand[0] : cand[1];
+  if (Math.abs(lift(best)) < 0.25) return cand.includes(api) ? api : best;   // under ~15° of tilt: keep the browser's
+  return best;
+}
+// One tilt-to-stick channel: degrees from the centred pose → −1…1 through a dead zone and an expo curve.
+const tiltAxis = (deg, max, dz, expo) => clamp(expoCurve(dzAxial(clamp(deg / max, -1, 1), dz / max), expo), -1, 1);
+// The phone as a stick. sample() takes each deviceorientation reading; centre() makes the pose of the next reading
+// (or the current one) the centre, in the screen frame of that moment, so the screen turning during a flight does not
+// swap roll and pitch, and picks the grip: 'wheel' when the screen is raised wheelFrom degrees or more from flat, else
+// 'tray'; read() gives the command once a frame: x roll (+ right), y pitch (+ pull, top edge toward the player), 0
+// until a centre is set and after lost(). A gap between readings is not a loss: browsers send a reading only when an
+// angle changes by 0.1° or more, so a phone resting still sends none, and its last pose stands. lost() is for the page
+// being hidden, when the readings stop.
+class TiltStick {
+  constructor(c = INPUT_CFG.tilt) { this.c = c; this.reset(); }
+  reset() { this.raw = null; this.f = null; this.t = -Infinity; this.n = 0; this.zero = null; this.angle = 0; this.grip = 'wheel'; this.want = null; this.x = 0; this.y = 0; }
+  lost() { this.raw = null; this.f = null; this.x = this.y = 0; }   // keeps the centre; the next reading restarts
+  // beta, gamma in degrees (null on a device without the sensor); t in seconds. True when the reading was usable.
+  sample(beta, gamma, t) {
+    if (!Number.isFinite(beta) || !Number.isFinite(gamma)) return false;
+    this.raw = tiltUp(beta, gamma); this.t = t; this.n++;
+    return true;
+  }
+  // screen: { angle, landscape } now; the centre is taken from the latest reading, or from the next one if none yet
+  centre(screen) { this.want = screen; this.zero = null; this.f = null; }
+  get centred() { return !!this.zero; }
+  read(dt) {
+    if (!this.raw) { this.x = this.y = 0; return this; }
+    if (this.want) {
+      this.angle = pickScreenAngle(this.raw, this.want.angle, this.want.landscape);
+      this.grip = tiltRecline(this.raw, this.angle) >= this.c.wheelFrom ? 'wheel' : 'tray';
+      this.zero = tiltAngles(this.raw, this.angle, this.grip); this.f = this.raw.slice(); this.want = null;
+    }
+    if (!this.zero) { this.x = this.y = 0; return this; }
+    if (!this.f) this.f = this.raw.slice();
+    const k = 1 - Math.exp(-Math.max(0, dt) / this.c.tau), f = this.f;
+    for (let i = 0; i < 3; i++) f[i] += (this.raw[i] - f[i]) * k;
+    const a = tiltAngles(f, this.angle, this.grip), c = this.c, d = (v) => ((v + 540) % 360) - 180;
+    this.x = tiltAxis(-d(a.roll - this.zero.roll), c.rollMax, c.dz, c.expo);
+    this.y = tiltAxis(d(a.pitch - this.zero.pitch), c.pitchMax, c.dz, c.expo);
+    return this;
+  }
+}
+
 // ── several sources on one axis (§11.5.4) ──
 // The source that moved last controls the axis, so a gamepad resting at the centre does not cancel the keyboard and
 // the keyboard can take over from a deflected stick. A source moves when `edge` says it was just taken in hand (a key
@@ -211,7 +308,7 @@ class PilotInput {
   constructor(cfg = INPUT_CFG) { this.cfg = cfg; this.reset(); }
   reset() {
     const k = this.cfg.keys;
-    this.ax = new InputAxis(k.roll, 3); this.ay = new InputAxis(k.pitch, 3); this.ar = new InputAxis(k.rud, 2);
+    this.ax = new InputAxis(k.roll, 4); this.ay = new InputAxis(k.pitch, 4); this.ar = new InputAxis(k.rud, 2);
     this.padPrev = null; this.padKey = null; this.padUsed = false; this.touchPrev = false;
   }
   // the gamepad's buttons and channels, with button edges against the previous poll of the same pad (a different pad,
@@ -227,20 +324,21 @@ class PilotInput {
   // between flights (setup, replay, result): only the gamepad's buttons, so B/○ switches the camera as C does
   buttons(gp) { const p = this.readPad(gp); return p ? p.events : []; }
   // now in seconds. s.keys: held key actions this frame (KeyState.frame(), taps shorter than a frame included);
-  // s.pad: a gamepad or null; s.touch: { x, y } while a finger is on the touch stick, else null; s.thr: throttle now
-  // (the touch rail and the autothrottle set it too); s.brake: the touch brake button is held.
+  // s.pad: a gamepad or null; s.touch: { x, y } while a finger is on the touch stick, else null; s.tilt: { x, y } from
+  // TiltStick while the phone-tilt mode is on, else null; s.thr: throttle now (the touch rail and the autothrottle set it
+  // too); s.brake: the touch brake button is held.
   // Returns { x, y, rud, thr, brake, brakeL, brakeR, trim, events, src }: Flight.input takes the first five;
   // brakeL/brakeR, trim and the gear and flap events wait for the model (one brake, auto-trim and fixed flaps and gear
-  // for now); src names the source in control of each stick axis (0 keys, 1 gamepad, 2 touch, −1 none yet).
+  // for now); src names the source in control of each stick axis (0 keys, 1 gamepad, 2 touch, 3 tilt, −1 none yet).
   update(dt, now, s) {
     const c = this.cfg, K = s.keys || NO_KEYS, fine = K.has('fine') ? c.keys.fine : 1;
     const p = this.readPad(s.pad), t = s.touch || null, grab = !!t && !this.touchPrev;   // finger just went down
     this.touchPrev = !!t;
-    const px = p ? p.x : 0, py = p ? p.y : 0, tx = t ? t.x : 0, ty = t ? t.y : 0;
+    const px = p ? p.x : 0, py = p ? p.y : 0, tx = t ? t.x : 0, ty = t ? t.y : 0, g = s.tilt || null, gx = g ? g.x : 0, gy = g ? g.y : 0;
     const [brakeL, brakeR] = brakePair(p ? p.brakeL : 0, p ? p.brakeR : 0, K.has('br') || s.brake ? 1 : 0);
     return {
-      x: this.ax.update(now, dt, keyDir(K, 'lt', 'rt'), fine, [px, tx], [false, grab]),
-      y: this.ay.update(now, dt, keyDir(K, 'up', 'dn'), fine, [py, ty], [false, grab]),
+      x: this.ax.update(now, dt, keyDir(K, 'lt', 'rt'), fine, [px, tx, gx], [false, grab, false]),
+      y: this.ay.update(now, dt, keyDir(K, 'up', 'dn'), fine, [py, ty, gy], [false, grab, false]),
       rud: this.ar.update(now, dt, keyDir(K, 'rl', 'rr'), fine, [p ? p.rud : 0], [false]),
       thr: clamp(s.thr + (keyDir(K, 'td', 'tu') * c.keys.thrRate + (p ? p.thrRate : 0)) * dt, 0, 1),   // Shift: no change
       brake: Math.max(brakeL, brakeR), brakeL, brakeR,
