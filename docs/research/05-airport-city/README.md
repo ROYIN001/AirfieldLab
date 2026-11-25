@@ -1,7 +1,7 @@
 # ไฟล์ประกอบรายงานรอบที่ 5 (สนามบินดอนเมืองและเมืองโดยรอบ)
 
 รายงานฉบับหลักอยู่ที่ [`../05-airport-city.md`](../05-airport-city.md) โฟลเดอร์นี้เก็บเนื้อหาเต็มของหัวข้อ 1–10 และข้อมูลอนุพันธ์ขนาดเล็กที่รายงานอ้างถึง
-ยังไม่มีไฟล์ใดในโฟลเดอร์นี้ถูกโหลดโดยแอป การนำเข้า `data/`, `src/` หรือ `test/` จะทำหลังเจ้าของอนุมัติแผนพัฒนา (หัวข้อ 12 ของฉบับหลัก)
+ยังไม่มีไฟล์ใดในโฟลเดอร์นี้ถูกโหลดโดยแอป การนำเข้า `data/`, `src/` หรือ `test/` ทำตามแผนพัฒนาที่เจ้าของอนุมัติแล้ว (หัวข้อ 12 ของฉบับหลัก) ไฟล์ที่ย้ายออกไปแล้วมีขีดฆ่าในตาราง
 
 | ไฟล์ | เนื้อหา | สัญญาอนุญาตของข้อมูล / เครดิต |
 |---|---|---|
@@ -11,8 +11,8 @@
 | `5d-aip-update.md` | อัปเดต 18 พ.ย. 2026: AD 2.19–2.25, OCA/H ทุกแผ่น, ตรวจ AIRAC 26 NOV และ 24 DEC 2026 | ข้อเท็จจริงจาก AIP Thailand (© CAAT) |
 | `aip_vtbd_iap_minima.json` | OCA/H, FAF และ missed approach ของ 13 แผ่น และข้อเท็จจริง AD 2.20 | ข้อเท็จจริงจาก AIP Thailand (© CAAT) |
 | `iap_minima.test.mjs` | ต้นแบบเทสต์ T-U01–T-U08: `node docs/research/05-airport-city/iap_minima.test.mjs` | โค้ดของโครงการ |
-| `aip_vtbd_current.json` | ค่าทางวิ่ง เครื่องช่วยเดินอากาศ และระยะประกาศของ AIRAC ปัจจุบัน | ข้อเท็จจริงจาก AIP Thailand AD 2 VTBD (© CAAT) |
-| `aip.test.mjs` | ต้นแบบเทสต์ T-A: `node docs/research/05-airport-city/aip.test.mjs` | โค้ดของโครงการ |
+| ~~`aip_vtbd_current.json`~~ | ย้ายไปเป็น `test/fixtures/aip_vtbd_current.json` แล้ว (แผนข้อ A3, 25 พ.ย. 2026): ค่าทางวิ่ง เครื่องช่วยเดินอากาศ และระยะประกาศของ AIRAC ปัจจุบัน | ข้อเท็จจริงจาก AIP Thailand AD 2 VTBD (© CAAT) |
+| ~~`aip.test.mjs`~~ | ต้นแบบเทสต์ T-A กลายเป็น `test/aip.test.mjs` แล้ว (แผนข้อ A3) รันด้วย `node --test test/aip.test.mjs` | โค้ดของโครงการ |
 | `derived_points.json` | ตำแหน่ง stop bar และ hot spot จากเส้น OSM ตัดกับระยะใน AIP | ODbL 1.0, © OpenStreetMap contributors |
 | `tw_names.json` | ชื่อทางขับของเส้น `tw` 137 เส้นตามลำดับใน `data/vtbd_af.json` | ODbL 1.0, © OpenStreetMap contributors, Overture Maps Foundation |
 | `vtbd_ops.json` | พารามิเตอร์จราจร (ค่าประมาณระบุด้วย `est`) | สถิติ ทอท. (ข้อเท็จจริง) และค่าประมาณของโครงการ |

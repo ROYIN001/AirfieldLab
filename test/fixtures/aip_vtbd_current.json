@@ -9,17 +9,19 @@
     {
      "effective": "2026-11-26",
      "amdt": "12/26",
-     "vtbd_changes": "none",
-     "src": "A7"
+     "vtbd_changes": "none (AD 2 VTBD text identical to 29 OCT 2026 without the amendment marks)",
+     "src": "A7, 5D U2"
     },
     {
      "effective": "2026-12-24",
-     "amdt": "13/26 (inferred), published 2026-11-12",
-     "vtbd_changes": "not verified",
-     "src": "A1"
+     "amdt": "13/26, published 2026-11-12",
+     "vtbd_changes": "none (AD 2 VTBD text identical to 26 NOV 2026)",
+     "src": "A1, 5D U3"
     }
    ],
-   "frame": "local [e, n] metres from ARP 13 54 51.74N 100 36 20.49E (AIRAC 14 MAY 2026 precise value), repo projection src/15-geo.js"
+   "frame": "local [e, n] metres from ARP 13 54 51.74N 100 36 20.49E (AIRAC 14 MAY 2026 precise value), repo projection src/15-geo.js",
+   "recheck_before": "2027-01-21",
+   "sources": "source codes A1-A24 are listed in docs/research/05-airport-city/5a-aip.md section 1, U1-U3 in 5d-aip-update.md; facts from AIP Thailand AD 2 VTBD © CAAT, numbers only"
   },
   "arp": {
    "published_current": {

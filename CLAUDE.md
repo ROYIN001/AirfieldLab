@@ -21,10 +21,12 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01), `modes` (trim, linearise and
   MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `keys` (keyboard map and key handling,
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `papi` (PAPI distance from MEHT, colour
-  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `page` (parses the assembled page
-  module and checks the element ids the scripts use). Autoland score floors sit just under the values measured on
-  2026-11-19 (the assist robot's floor is a loose 50); touchdown points and every mode value have regression bands.
-  A physics change that moves them updates the test in the same PR.
+  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `aip` (`RWY_DATA`, the derived
+  geometry and the AIP facts in the Thai UI text against `test/fixtures/aip_vtbd_current.json`, research round 5
+  T-A01…T-A25), `licenses` (credits and the cited AIRAC cycle, research round 5 §11 T-K05), `page` (parses the
+  assembled page module and checks the element ids the scripts use). Autoland score floors sit just under the values
+  measured on 2026-11-19 (the assist robot's floor is a loose 50); touchdown points and every mode value have
+  regression bands. A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, and
   `test/keys.test.mjs` evaluates `18-keys.js` the same way, so those four files must stay DOM-free. `build.mjs`
@@ -142,7 +144,11 @@ Suggested order, each with a Node test before tuning by feel in the browser:
    landing distances, and linearised modes (short period, phugoid, Dutch roll, spiral) frequency and damping.
 
 ## Data provenance (data/)
-- Runways, lights, navaids: AIP Thailand AD 2 VTBD, AIRAC 14 MAY 2026 (https://aip.caat.or.th).
+- Runways, lights, navaids: AIP Thailand AD 2 VTBD, AIRAC 29 OCT 2026 (AMDT 11/26, https://aip.caat.or.th). The values
+  are unchanged since AIRAC 14 MAY 2026 and in the 26 NOV and 24 DEC 2026 cycles (research round 5 §1 and 5D); check
+  again before AIRAC 21 JAN 2027. `test/fixtures/aip_vtbd_current.json` holds the published values (numbers only,
+  © CAAT): `test/aip.test.mjs` checks `RWY_DATA` against it, and `test/licenses.test.mjs` (T-K05) checks that the
+  footer, the source comment of `src/15-geo.js` and this line cite its cycle. For a new cycle, update the fixture first.
 - Taxiways, aprons, buildings, water, golf course, land use: OpenStreetMap map renders captured and vectorised
   by the scripts in `tools/` (the source captures are not included; regenerate only if the layout must change).
 - `city.json`: base64 records, generated buildings (9 bytes each) and street lights (5 bytes each); the artifact

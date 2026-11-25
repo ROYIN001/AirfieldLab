@@ -1,6 +1,9 @@
 // ───────────────────────── Don Mueang (VTBD): geodesy and AIP runway data (pure) ─────────────────────────
 // Local frame: origin at the aerodrome reference point (ARP), n north / e east in metres, ground at d = 0.
-// Source: AIP Thailand AD 2 VTBD (CAAT, AIRAC 14 MAY 2026) — AD 2.2, 2.12–2.15, 2.19.
+// Source: AIP Thailand AD 2 VTBD (CAAT, AIRAC 29 OCT 2026, AMDT 11/26) — AD 2.2, 2.12–2.15, 2.19. Runway, lighting and
+// ILS values are unchanged since AIRAC 14 MAY 2026, and AIRAC 26 NOV and 24 DEC 2026 change nothing for VTBD (research
+// round 5 §1 and 5D). The ARP keeps the 14 MAY 2026 value 135451.74N 1003620.49E (elevation 2.65 m) because AMDT 11/26
+// rounds it to 135452N 1003620E (3 m). test/aip.test.mjs checks RWY_DATA against test/fixtures/aip_vtbd_current.json.
 
 const dms = (d, m, s) => d + m / 60 + s / 3600;
 const ARP = { lat: dms(13, 54, 51.74), lon: dms(100, 36, 20.49), elev: 2.65 };
