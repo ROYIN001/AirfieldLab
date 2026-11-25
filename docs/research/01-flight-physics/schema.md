@@ -36,6 +36,8 @@
 
 ค่าในคอลัมน์ "ค่าเครื่องฝึก" เป็นค่าของเครื่องฝึกเทอร์โบพร็อปสมมติของ AirfieldLab (หรือค่าตัวอย่างของแบบอ้างอิง เช่น CFM56 ในหมวด turbofan) ไม่ใช่ข้อมูลของเครื่องบินแบบใดแบบหนึ่ง
 
+**ส่วนขยายของรอบที่ 2** (เครื่องบินเล็กและเครื่องฝึก) อยู่ใน [`../02-light-aircraft/schema-ext.md`](../02-light-aircraft/schema-ext.md) ข้อ 5: หมวดใหม่ `piston.*` (เช่น `piston.altitude.model` = `gagg_ferrar` | `ind_friction` (ฟิลด์ `f`) | `turbo_flat` | `table`), `speeds`, `performance`, `ops`, `procedures` และคำอธิบาย 14 leaf ของ `common_light.methods` ตารางด้านล่างมีเฉพาะ path ของรอบที่ 1
+
 ## `aero` — [หัวข้อ 1. อากาศพลศาสตร์ stall และ spin](01-aero.md)
 
 ### ต้องเติมรายแบบเครื่องบิน (41)

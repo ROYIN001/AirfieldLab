@@ -5,7 +5,11 @@
 // and T-LM-24 (CLI robustness of lm_derivs / lm_polar); T-LM-25…30 (19 Nov 2026): control travel from the leaf
 // controls.surfaces.<s> (D2), training_mass object (D3), _na ["*"] (D5), trainer_r2 resolution against the trainer_r1 base,
 // lm_lib.validate() checks (D1, D3, D4, D6, est/note) and lm_merge --strict; T-LM-31 tolerance guidance of lm_tolerance
-// (lateral-directional modes, gap 17). Exit code 1 on any failure.
+// (lateral-directional modes, gap 17); T-LM-32 (22 Nov 2026) the copies of simulator code (simCLtrim, scoreToday) equal
+// the simulator they run on; T-LM-33 (R2-04) the stall comparison (V_SR, nz at Vmin); T-LM-34 (R2-06, in lm_legacy_fit.tests)
+// legacy fit without speeds.VY_kt, --T0 and the vy-mode bounds; T-LM-23 extended (R2-03) src codes resolve to a reference
+// line (src_ref); T-LM-35 (R2-05) the open_model check; T-LM-36 (R2-01) schema-ext.md documents the methods leaves and the
+// piston.altitude.model values. Exit code 1 on any failure.
 // node scripts/lm_selftest.mjs [--json]
 import fs from 'node:fs';
 import path from 'node:path';
@@ -48,7 +52,7 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
   const m = res.merged?.common_light?.methods;
   if (m) {
     const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-    const [ine, der, crd, eng] = await Promise.all(['lm_inertia.mjs', 'lm_derivs.mjs', 'lm_card.mjs', 'lm_engine.mjs'].map(f => import('./' + f)));
+    const [ine, der, crd, eng, pol, lfit] = await Promise.all(['lm_inertia.mjs', 'lm_derivs.mjs', 'lm_card.mjs', 'lm_engine.mjs', 'lm_polar.mjs', 'lm_legacy_fit.mjs'].map(f => import('./' + f)));
     const r3 = x => Math.round(x * 1000) / 1000;
     let n = 0;
     n += !same(m.radii?.v, ine.RADII);
@@ -56,9 +60,41 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
     n += !same(m.lm_card_defaults?.v, crd.DEFAULTS);
     n += !same(m.fuel_density?.v, eng.FUEL_DENSITY);
     n += m.engine_lapse?.v?.ind_friction?.f !== 0.10 || m.engine_lapse?.v?.gagg_ferrar?.k !== 7.55;
+    n += m.stall_nz_at_vmin?.v?.nominal !== pol.NZ_AT_VMIN || m.stall_nz_at_vmin?.v?.compare !== 'V_SR';   // R2-04
+    n += !same(m.legacy_fit?.v?.vy_bounds, lfit.FIT_BOUNDS);                                                  // R2-06
     check('T-LM-22', 'methods JSON vs script constants (mismatches)', n, 0, 0);
   }
   check('T-LM-23', 'lm_merge common_light ERRORS + CONFLICTS', res.errors.length + res.conflicts.length, 0, 0);
+}
+// T-LM-23 extended (R2-03): every src code has a line in the reference section of its owner file (prefix → file,
+// schema-ext.md §4) or is an existing round-1 code R1:<X>n / R1:params-trainer.json[#path]; lm_merge --strict makes it an error
+{
+  const L = await import('./lm_lib.mjs');
+  const { spawnSync } = await import('node:child_process');
+  const os = await import('node:os');
+  const full = L.mergeDir(path.join(HERE, '..'), {});
+  check('T-LM-23', 'src codes without a reference line, whole folder (src_ref WARN)', full.checks.filter(c => c.check === 'src_ref' && c.level === 'warn').length, 0, 0);
+  const sec = L.refSection('# t\n## 99.1 อื่น\n| LC5 | x |\n## 99.2 แหล่งอ้างอิง\n| รหัส | ชื่อ |\n|---|---|\n| LC1 | a |\n| [LB2] | b |\n'
+    + '1. [LM3] c\n- [R1:V19] d\n| LC7, LC8 | ข้ามหัวข้อ |\nอ้างข้ามหัวข้อ: [LC9]\n### 99.2.1 ย่อย\n- [LP4] e\n## 99.3 ถัดไป\n| LC6 | f |\n');
+  check('T-LM-23', 'refSection: defined = LC1 LB2 LM3 R1:V19 LP4 (not LC5/LC6 outside, not LC7/8/9 cross-refs)', [...sec.ids.keys()].join(' ') === 'LC1 LB2 LM3 R1:V19 LP4' ? 1 : 0, 1, 0);
+  const idx = L.loadRefIndex(path.join(HERE, '..'));
+  const cases = [['LC1', 0], ['LM29', 0], ['R1:V19', 0], ['R1:params-trainer.json', 0], ['R1:params-trainer.json#controls.yaw.S_r', 0],
+    ['LC999', 1], ['LZ1', 1], ['R1:V99', 1], ['R1:Q1', 1], ['R1', 1], ['LC1 p5-12', 1], ['R1:params-trainer.json#controls.pitch.nope', 1]];
+  check('T-LM-23', 'srcProblem on 12 codes (7 bad) classified right', cases.filter(([s, bad]) => !!L.srcProblem(s, 'interference.downwash.eps0', idx) === !!bad).length, cases.length, 0);
+  const nest = { common_light: { evaluator: { rules: { v: { a: { src: ['R1', 'LH1'] }, b: { src: ['R1:V19'] }, c: [{ src: ['LH999'] }] }, u: '-', scope: 'sim', src: ['LH0'], conf: 'กลาง', est: false, note: '' } } } };
+  check('T-LM-23', 'src lists inside v checked too (bare R1, LH999 → 2 src_ref WARN)', L.validate({ merged: nest, origin: {} }, { refs: idx }).filter(c => c.check === 'src_ref' && c.level === 'warn').length, 2, 0);
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lm-selftest-src-'));
+  const block = src => '# t\n\n```json\n' + JSON.stringify({ common_light: { methods: { zz: { v: 1, u: '-', scope: 'sim', src, conf: 'กลาง', est: false, note: '' } } } }) + '\n```\n';
+  const run = a => spawnSync(process.execPath, [path.join(HERE, 'lm_merge.mjs'), '--dir', dir, '--dry', '--quiet', ...a], { encoding: 'utf8', timeout: 20000 }).status;
+  fs.writeFileSync(path.join(dir, '99-test.md'), block(['LC999']));
+  const bad = run([]) * 10 + run(['--strict']);
+  fs.writeFileSync(path.join(dir, '99-test.md'), block(['LC1', 'R1:V19']));
+  check('T-LM-23', 'lm_merge exit: LC999 default/--strict, LC1+R1:V19 --strict (100·a + 10·b + c)', bad * 10 + run(['--strict']), 10, 0);
+  // --strict also fails a card with round-1 per-type paths neither filled nor in _na (coverage missing > 0)
+  fs.writeFileSync(path.join(dir, '99-test.md'), '# t\n\n```json\n' + JSON.stringify({ xz: { airframe: { identity: { v: 'x', u: '-', scope: 'aircraft', src: ['LC1'], conf: 'กลาง', est: false, note: '' } } } }) + '\n```\n');
+  const cov = r => r.errors.filter(e => e.startsWith('[strict] coverage ')).length;
+  check('T-LM-23', 'mergeDir --strict coverage errors: card with missing round-1 paths + whole folder (10·a + b)', cov(L.mergeDir(dir, { strict: true })) * 10 + cov(L.mergeDir(path.join(HERE, '..'), { strict: true })), 10, 0);
+  fs.rmSync(dir, { recursive: true, force: true });
 }
 // T-LM-24 (review 2026-11-18): CLI robustness of the shared tools other topics call.
 //   (a) lm_derivs on a card without tail geometry must stop with exit 1 and name the missing paths (it used to print NaN silently)
@@ -171,6 +207,87 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
       for (const c of T.cards) { const r = c.range[cls][q]; if (r[0] < leafT[key][q][0] - 1e-9 || r[1] > leafT[key][q][1] + 1e-9) bad++; }
     check('T-LM-31', 'methods.lateral_mode_tolerance envelopes lm_tolerance (cards outside)', bad, 0, 0);
   }
+}
+// T-LM-32 (plan PR B5, 22 Nov 2026): the copies of simulator code in the scripts still equal the simulator they run on
+// (the commit pinned in scripts/sim-snapshot.json under lm_ci.mjs). (a) lm_card.simCLtrim (stallBlend + the CL line) against
+// Aircraft.deriv's CL at the same α and trim elevator, out of ground effect; (a2) the Cm line copied in lm_card.simTrimDe:
+// at its elevator (when not on a stop) the sim's pitch acceleration q̇ must be zero, so a change of the sim's Cm line fails
+// here (review of PR B5); (b) lh_eval.scoreToday against Evaluator.score
+// on a grid of touchdowns. A failure after re-pinning means a copy must be updated together with the expected values.
+{
+  const { simCLtrim, simTrimDe, simStallBlend } = await import('./lm_card.mjs');
+  const { scoreToday } = await import('./lh_eval.mjs');
+  applyAC(M, buildAC(loadType('trainer_r1'), {}));
+  const AC = M.AC, DEG = Math.PI / 180, V = 50;
+  let dCL = 0, dSig = 0, dQ = 0, n = 0, nFree = 0;
+  for (const f of [0, 0.5, 1]) for (let aDeg = -4; aDeg <= 26; aDeg += 1) {
+    const a = aDeg * DEG, ac = new M.Aircraft();
+    ac.flaps = f; ac.gearPos = 1; ac.de = simTrimDe(AC, f, a); ac.adot = 0;
+    const s = new Float64Array(13); s[2] = -1500; s[3] = V * Math.cos(a); s[5] = V * Math.sin(a); s[6] = 1;
+    const diag = { wow: [], load: [] }, out = new Float64Array(13); ac.deriv(s, out, diag);
+    dCL = Math.max(dCL, Math.abs(diag.CL - simCLtrim(AC, f, a)));
+    if (ac.de > -AC.deUp + 1e-9 && ac.de < AC.deDn - 1e-9) { dQ = Math.max(dQ, Math.abs(out[11])); nFree++; }
+    dSig = Math.max(dSig, Math.abs(diag.sig - simStallBlend(a, (AC.aStall + AC.aStallFlap * f) * DEG)));
+    n++;
+  }
+  check('T-LM-32', `simCLtrim = sim CL (max |ΔCL|, ${n} pts α −4…26°, f 0/0.5/1)`, dCL, 0, 1e-6);
+  check('T-LM-32', 'simStallBlend = sim stallBlend (max |Δσ|)', dSig, 0, 1e-9);
+  check('T-LM-32', `simTrimDe = sim Cm trim: max |q̇| rad/s² (${nFree} pts off the stops)`, nFree ? dQ : NaN, 0, 1e-6);
+  const ev = new M.Flight().ev, P = { Vref: AC.Vref };
+  let bad = 0, m = 0;
+  // one value inside every band of every part (sink 180/360/600 fpm, position 0/220/300/600/750/900 m, centre line 2/5/10 m, …)
+  for (const sink of [100, 190, 250, 400, 500, 700]) for (const s of [-10, 210, 250, 450, 650, 800, 950]) for (const y of [1, 3, 7, 12]) for (const dv of [-14, -10, -3, 8, 15])
+    for (const phi of [2, 5, 8]) for (const crab of [-2, 5, -8]) for (const latV of [0.5, 1.2, 2]) for (const nose of [false, true]) {
+      const td = { vs: -sink, s, y, ias: AC.Vref + dv, phi, crab, latV, wow: nose ? [true, false, false] : [false, true, true] };
+      ev.td = { vsFpm: td.vs, s, tl: y, ias: td.ias, bank: phi, crab, drift: latV, noseFirst: nose, onRunway: s >= 0 && s <= M.FIELD.rwyLen && Math.abs(y) <= M.FIELD.rwyWid / 2 };
+      ev.events = [];
+      bad += ev.score().total !== scoreToday([{ wow: [false, false, false] }, td], P); m++;
+    }
+  check('T-LM-32', `lh_eval.scoreToday = Evaluator.score (mismatches of ${m} touchdowns)`, bad, 0, 0);
+}
+// T-LM-33 (R2-04, plan PR B5): the project's stall comparison. stallTest reports nz at Vmin, and V_SR (the number compared
+// with VS_POH/√0.95) does not depend on the start speed of the 1 kt/s entry while Vmin does. trainer_r1, both detents.
+{
+  const { stallTest, simCLmax } = await import('./lm_card.mjs');
+  applyAC(M, buildAC(loadType('trainer_r1'), {}));
+  for (const [nm, f, g] of [['UP', 0, 0], ['LDG', 1, 1]]) {
+    const vs = Math.sqrt(2 * M.AC.m * 9.80665 / (1.225 * M.AC.S * simCLmax(M.AC, f).CL)) / 0.514444;
+    const s = [1.2, 1.35, 1.5].map(k => stallTest(M, { ias0: Math.round(k * vs), flaps: f, gear: g }));
+    const spread = a => Math.max(...a) - Math.min(...a);
+    check('T-LM-33', `${nm}: V_SR spread over start 1.20/1.35/1.50 Vs (kt)`, spread(s.map(x => x.VSR_eas)), 0, 0.3);
+    check('T-LM-33', `${nm}: nz_Vmin reported, below nz at CLmax (count)`, s.filter(x => Number.isFinite(x.nz_Vmin) && x.nz_Vmin < x.nz).length, 3, 0);
+  }
+}
+// T-LM-35 (R2-05, 03-open-models §03.5.2, T-LB-17/18): validate() check open_model on a synthetic card, and 0 WARN on the folder
+{
+  const L = await import('./lm_lib.mjs');
+  const lf = (v, u = '-', o = {}) => ({ v, u, scope: 'aircraft', src: ['LC1'], conf: 'กลาง', est: false, note: '', ...o });
+  const merged = { xo: {
+    speeds: { VS1_kt: lf(54.49, 'kt CAS'), VS0_kt: lf(48, 'kt CAS'), VY_kt: lf(95.6, 'kt CAS', { src: ['LB2'] }), VX_kt: lf(60, 'kt IAS', { src: ['LB2', 'LC1'] }) },
+    performance: { glide: lf({ speed_kt: 85, ratio: 10.5 }, 'kt IAS, -') },
+    validation: { openModels: { jsbsim_x: {
+      stall_vs: lf({ 0: 54.49, 30: 48.77 }, 'kt CAS', { src: ['LB1', 'LB2'] }), vy: lf(95.6, 'kt CAS', { src: ['LB1', 'LB2'] }),
+      glide_best_speed: lf(85, 'kt CAS', { src: ['LB1'] }), glide_ld_max: lf(10.46, '-', { src: ['LB1'] }) } } } } };
+  const C = L.validate({ merged, origin: {}, openSrc: new Map([['LB1', 'x'], ['LB2', 'x']]) }).filter(c => c.check === 'open_model');
+  const n = lvl => C.filter(c => c.level === lvl).length;
+  // WARN: VY src only LB2; VS1 54.49 and VY 95.6 digit for digit. info: VX mixed src; glide 85 (whole number); L/D 10.46 → 10.5
+  check('T-LM-35', 'open_model synthetic: 10·WARN + info (VY src LB2, VS1 54.49, VY 95.6 | VX mixed, glide 85, L/D 10.5)', n('warn') * 10 + n('info'), 33, 0);
+  const real = L.mergeDir(path.join(HERE, '..')).checks.filter(c => c.check === 'open_model');
+  check('T-LM-35', 'open_model on the folder: WARN (info rows are for review)', real.filter(c => c.level === 'warn').length, 0, 0);
+}
+// T-LM-36 (R2-01): schema-ext.md documents every common_light.methods leaf (a row "| `methods.<key>` |") and no key that
+// is gone, and lists the four piston.altitude.model values; the cards use only those four
+{
+  const L = await import('./lm_lib.mjs');
+  const doc = fs.readFileSync(path.join(HERE, '..', 'schema-ext.md'), 'utf8');
+  const res = L.mergeDir(path.join(HERE, '..'), { checks: false });
+  const keys = Object.keys(res.merged.common_light?.methods || {});
+  const rowsDoc = [...doc.matchAll(/^\| `methods\.([a-z_0-9]+)` \|/gm)].map(m => m[1]);
+  check('T-LM-36', `methods leaves without a schema-ext row + rows without a leaf (${keys.length} leaves)`, keys.filter(k => !rowsDoc.includes(k)).length + rowsDoc.filter(k => !keys.includes(k)).length, 0, 0);
+  const ENUM = ['gagg_ferrar', 'ind_friction', 'turbo_flat', 'table'];
+  check('T-LM-36', 'schema-ext lists piston.altitude.model = the 4 values', doc.includes(ENUM.map(x => '`"' + x + '"`').join(' | ')) ? 1 : 0, 1, 0);
+  const used = Object.keys(res.merged).map(id => L.leaf(res.merged[id], 'piston.altitude')?.v?.model).filter(Boolean);
+  check('T-LM-36', `cards with piston.altitude.model outside the 4 values (of ${used.length})`, used.filter(m => !ENUM.includes(m)).length, 0, 0);
 }
 if (process.argv.includes('--json')) console.log(JSON.stringify(rows, null, 1));
 else for (const x of rows) console.log(`${x.ok ? 'PASS' : 'FAIL'} ${x.id.padEnd(8)} ${x.what.padEnd(48)} got ${String(x.got).padEnd(9)} exp ${x.exp} ± ${x.tol}`);

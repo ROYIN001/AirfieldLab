@@ -19,6 +19,14 @@ export const CL_SIM_OFFSET = 0.15;   // src/20-flight.js:185  K·(CL − 0.15)²
 // ISA troposphere density (kg/m3) at geopotential height h (m), ISA deviation dT (K) at constant pressure
 export function rhoISA(h = 0, dT = 0) { const T0 = 288.15 - 0.0065 * h; const p = 101325 * Math.pow(T0 / 288.15, 5.25588); return p / (287.05287 * (T0 + dT)); }
 
+/** nz at the minimum speed of a POH 1 kt/s stall entry (common_light.methods.stall_nz_at_vmin.v.nominal; lm_selftest T-LM-33). */
+export const NZ_AT_VMIN = 0.95;
+/**
+ * The project's stall comparison (R2-04): a published minimum-speed stall speed VS (KCAS) is compared as the 1-g speed
+ * VS/√NZ_AT_VMIN against the sim's V_SR from lm_card.stallTest (VSR_cas / VSR_eas), never against the sim's Vmin.
+ */
+export function vsrTarget(vs_kcas, nz = NZ_AT_VMIN) { return vs_kcas / Math.sqrt(nz); }
+
 /**
  * 1-g CLmax from a published stall speed.
  * vs_kcas: calibrated airspeed (convert KIAS with the POH airspeed-calibration table first). Below ~10,000 ft and
@@ -28,7 +36,7 @@ export function rhoISA(h = 0, dT = 0) { const T0 = 288.15 - 0.0065 * h; const p 
  *              the load factor is below 1, so CLmax_1g = 2 m g nz / (ρ0 S Vmin²); nzAtVmin default 0.95, range 0.90–1.00.
  * cg: optional {x_from, x_to, lt} (m, x positive aft) to move the result from the POH (forward) CG to another CG.
  */
-export function clmaxFromStall({ mass, S, vs_kcas, kind = '1g', nzAtVmin = 0.95, cg = null }) {
+export function clmaxFromStall({ mass, S, vs_kcas, kind = '1g', nzAtVmin = NZ_AT_VMIN, cg = null }) {
   const V = vs_kcas * KT, W = mass * G0, q = 0.5 * RHO0 * V * V;
   const CLapp = W / (q * S);                       // apparent CL assuming nz = 1 at that speed
   const nz = kind === 'min' ? nzAtVmin : 1;

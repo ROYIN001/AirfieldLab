@@ -1,0 +1,6 @@
+{
+ "commit": "bc1dd69eaab66322811d5e726853f701bd3ffa18",
+ "paths": ["src", "test/harness.mjs"],
+ "checked": "2026-11-22",
+ "note": "ซิมที่ตรึงไว้ให้สคริปต์ของรอบ 2 (lm_ci.mjs ดึง src/ และ test/harness.mjs ของ commit นี้ลงโฟลเดอร์ชั่วคราวแล้วตั้ง AIRFIELDLAB_ROOT) commit นี้คือ main หลัง merge PR #7 และ #8 ซึ่ง src/10-atmo.js, 15-geo.js และ 20-flight.js ยังเหมือนตอน merge รอบ 2 (054dabc) และผ่านทุกขั้นของ lm_ci.mjs (ตอนตรึง lm_selftest 78/78 ส่วนหลังงาน B5 22 พ.ย. 2026 ได้ 101/101) PR ฟิสิกส์จึงไม่ทำให้ CI ของงานวิจัยแดง เปลี่ยน commit นี้เมื่อจะยกค่าคาดหวังของรอบ 2 ไปใช้ฟิสิกส์ใหม่ โดยรัน lm_ci.mjs --root . ก่อนเพื่อดูว่าค่าใดขยับ แล้วแก้ค่าคาดหวังกับ commit นี้ใน PR เดียวกัน"
+}

@@ -26,7 +26,7 @@ $$C_{L,req}=\frac{n\,m\,g\cos\gamma}{\tfrac12\rho V^2 S},\qquad \alpha_b=\frac{C
 
 ช่วงบินในอากาศไม่รวม ground effect, แรงยกจากแนวแรงขับ, แรงยก/กดของ elevator ที่ trim และ downwash lag ผลจึงคลาดได้ราว ±2° และขึ้นกับมวล: ตาราง trim ของบัตร 04 (ซิมเต็ม MTOW 1,157 kg) ให้ approach θ +2.0° ส่วนตารางนี้ที่มวลฝึก 1,010 kg ให้ −0.2° ผลต่างมาจากมวล (+1.5°) และ elevator ที่ trim δe −8.8° (CLδe 0.42 ต่อ rad, +0.7°) เมื่อใส่สองอย่างนี้สูตรเดียวกันได้ +2.1° (T-LH-51) ตัวตรวจคือ T-6A ที่คู่มือฝึก T-6 ของรัฐบาลสหรัฐฯ ให้ pitch เป็นองศา [LH14 Table 2.1]: ที่ 150 KIAS บินระดับ คู่มือ 2° nose-high สคริปต์ได้ 2.0°, ที่ 200 KIAS (102.9 m/s) คู่มือ 0° สคริปต์ −0.1°, ไต่ 140 KIAS (72.0 m/s) คู่มือ 15° สคริปต์ 14.8° (สมมติ ROC 3,000 fpm (15.24 m/s) ซึ่งเป็นค่าประมาณ ผลไว ≈ 2° ต่อ 500 fpm), ที่ 250 KIAS (128.6 m/s) คู่มือ 2° nose-low สคริปต์ −1.1° (T-LH-01…03, 52) ซิมวันนี้ที่ใส่บัตร t6a ให้ 1.9°, 14.7° และ −1.3° ตามลำดับ กฎหัวแม่มือที่ SOP ใช้ "1° ของ pitch ≈ 2 × KIAS fpm" [LH10 p.4–5] ตรงกับฟิสิกส์ $\Delta\dot h = V\sin 1° = 1.77\,V_{kt}$ fpm ภายใน 13 % (กฎ SOP สูงกว่า 13 %) (T-LH-04) และอัตราร่อนบน glide path 3° คือ $\dot h = 5.31\,GS_{kt}$ fpm (65 kt → 345 fpm หรือ 1.75 m/s, T-LH-05)
 
-**แตะพื้นและ flare (ค่าประมาณ)** ความเร็วแตะ = 1.05 VS0 ของมวลฝึก (VS0 จาก $C_{L,max}$ แฟลปลงจอดของบัตร) อัตราจม 120 fpm (0.61 m/s) และลด $C_{L\alpha}$ ของปีกด้วย ground effect ตามรอบที่ 1 §2.4 [R1]
+**แตะพื้นและ flare (ค่าประมาณ)** ความเร็วแตะ = 1.05 VS0 ของมวลฝึก (VS0 จาก $C_{L,max}$ แฟลปลงจอดของบัตร) อัตราจม 120 fpm (0.61 m/s) และลด $C_{L\alpha}$ ของปีกด้วย ground effect ตามรอบที่ 1 §2.4 [R1:U7]
 
 $$\sigma=\exp\!\big[-2.48\,(2h/b)^{0.768}\big],\qquad k_{GE}=1-\sigma\,\frac{C_{L\alpha,w}}{\pi A},\qquad \alpha_b=\frac{k_{GE}\,C_{L,req}-C_{L0}(\delta_f)}{C_{L\alpha}}$$
 
@@ -281,11 +281,11 @@ $$\psi_{crab}=\arcsin\frac{V_{xw}}{V},\qquad \beta_{wing\text{-}low}=\psi_{crab}
 
 **สิ่งที่เปลี่ยนตามความเร็วและ CG (หลักฟิสิกส์ ใช้ในซิม)** แรงที่คันต่อ g ($F/n$) แปรตาม static margin: CG ถอยหลังทำให้แรงต่อ g ลดลง (คันเบา ไวขึ้น) CG หน้าทำให้หนัก และต้องดึงมากตอน flare แรงต่อการเปลี่ยนความเร็วหลัง trim (speed stability) ต้องเป็นบวก คือเร็วขึ้นต้องดันคันไว้ ตามหลักเสถียรภาพสถิตตามยาวของ 14 CFR 23.173(a) (ช้ากว่าความเร็ว trim ต้องดึง เร็วกว่าต้องดัน) [LM3] ความไวของ aileron และ rudder ลดลงตาม $\bar q$ ตอน approach ช้า จึงต้องใช้ระยะคันมากขึ้น (ตรงกับ AFH เรื่อง crosswind roundout [LH1 p.9-17])
 
-**ค่าเป้าแรงที่คันต่อแบบ (ค่าประมาณ, ความเชื่อมั่นต่ำ; `ops.stick_force`, `scripts/lh_stick.mjs` [LH0])** ซิมวันนี้ไม่มีโมเดลแรงที่คัน เป้าจึงคำนวณจากแบบจำลอง elevator reversible ของรอบที่ 1 §6 [R1] กับค่า `controls.pitch.*` ของบัตรแต่ละแบบ (gearing $G$, $S_e$, $\bar c_e$, $C_{h\alpha}$, $C_{h\delta}$, $C_{h,tab}$; C152 ขาด gearing และ $C_h$ จึงใช้ของ C172S)
+**ค่าเป้าแรงที่คันต่อแบบ (ค่าประมาณ, ความเชื่อมั่นต่ำ; `ops.stick_force`, `scripts/lh_stick.mjs` [LH0])** ซิมวันนี้ไม่มีโมเดลแรงที่คัน เป้าจึงคำนวณจากแบบจำลอง elevator reversible ของรอบที่ 1 §6 (สมการแรงที่คัน [R1:C20], ค่า hinge moment [R1:C16]) กับค่า `controls.pitch.*` ของบัตรแต่ละแบบ (gearing $G$, $S_e$, $\bar c_e$, $C_{h\alpha}$, $C_{h\delta}$, $C_{h,tab}$; C152 ขาด gearing และ $C_h$ จึงใช้ของ C172S)
 
 $$F_s=G\,\eta_t\,\bar q\,S_e\,\bar c_e\,\big(C_{h0}+C_{h\alpha}\alpha_t+C_{h\delta}\delta_e+C_{h,tab}\delta_t\big)$$
 
-tab ตั้งให้แรงเป็นศูนย์ที่ความเร็ว trim, $F_s/g$ มาจากส่วนเพิ่มของ pull-up แบบ quasi-steady และความชันต่อความเร็วคือ $[F(V-1)-F(V+1)]/2$ ที่ tab คงเดิม จุดคำนวณคือมวลฝึกที่ approach (VAPP แฟลปลงจอด 300 m) และ cruise (`validation.trim_targets.cruise` ของบัตร) แถบที่ยอมรับมีสามชั้น: (1) MIL-F-8785C Level 1 [R1]: wheel สูงสุด max(min(500/nα, 120), 120/(nL − 1)) ต่ำสุด max(35/(nL − 1), 6) lbf/g; stick สูงสุด max(min(240/nα, 28), 56/(nL − 1)) ต่ำสุด max(21/(nL − 1), 3) lbf/g (2) แรงดึงถึง nL ตาม 14 CFR 23.155: wheel max(W/100, 20) ไม่เกิน 50 lbf (222 N), stick max(W/140, 15) ไม่เกิน 35 lbf (156 N) [LM3] (3) เพดานจาก 23.143: เป้า × (nL − 1) ≤ แรงชั่วคราว stick 60 lbf (267 N) หรือ wheel 75 lbf (334 N) และแรงดึงตอน flare ≤ มือเดียว 50 lbf (222 N) [LH30] ถ้าผลของโมเดลอยู่นอกแถบ เป้าเท่ากับขอบที่ใกล้ที่สุด และความชันกับแรงดึงตอน flare สเกลด้วยอัตราส่วนเดียวกัน (ทุกพจน์แปรตาม $G\eta_t S_e \bar c_e C_h$)
+tab ตั้งให้แรงเป็นศูนย์ที่ความเร็ว trim, $F_s/g$ มาจากส่วนเพิ่มของ pull-up แบบ quasi-steady และความชันต่อความเร็วคือ $[F(V-1)-F(V+1)]/2$ ที่ tab คงเดิม จุดคำนวณคือมวลฝึกที่ approach (VAPP แฟลปลงจอด 300 m) และ cruise (`validation.trim_targets.cruise` ของบัตร) แถบที่ยอมรับมีสามชั้น: (1) MIL-F-8785C Level 1 [R1:C12]: wheel สูงสุด max(min(500/nα, 120), 120/(nL − 1)) ต่ำสุด max(35/(nL − 1), 6) lbf/g; stick สูงสุด max(min(240/nα, 28), 56/(nL − 1)) ต่ำสุด max(21/(nL − 1), 3) lbf/g (2) แรงดึงถึง nL ตาม 14 CFR 23.155: wheel max(W/100, 20) ไม่เกิน 50 lbf (222 N), stick max(W/140, 15) ไม่เกิน 35 lbf (156 N) [LM3] (3) เพดานจาก 23.143: เป้า × (nL − 1) ≤ แรงชั่วคราว stick 60 lbf (267 N) หรือ wheel 75 lbf (334 N) และแรงดึงตอน flare ≤ มือเดียว 50 lbf (222 N) [LH30] ถ้าผลของโมเดลอยู่นอกแถบ เป้าเท่ากับขอบที่ใกล้ที่สุด และความชันกับแรงดึงตอน flare สเกลด้วยอัตราส่วนเดียวกัน (ทุกพจน์แปรตาม $G\eta_t S_e \bar c_e C_h$)
 
 | แบบ | คัน | โมเดล Fs/g approach (N/g) | เป้า Fs/g approach / cruise N/g (lbf/g) | แถบ N/g | ความชัน N/kt approach / cruise | แรงดึง flare N (VAPP → 1.05 VS0) | ที่มาของเป้า |
 |---|---|---|---|---|---|---|---|
@@ -377,7 +377,7 @@ tab ตั้งให้แรงเป็นศูนย์ที่ควา�
 ## 08.7 ระบบประเมินผลที่เสนอ
 ### 08.7.1 Evaluator วันนี้กับปัญหาเมื่อใช้กับเครื่องเล็ก
 
-Evaluator ใน `src/20-flight.js` [R1] มี (1) gate ที่ 500 และ 200 ft ตรวจ loc/gs ≤ 1 dot, ความเร็ว Vref −5…+20, อัตราร่อน ≥ −1,000 fpm, ล้อและแฟลปเต็ม (2) คะแนนตอนแตะ 100 คะแนน: sink 40 (≤ 180 fpm เต็ม, 360 → 30, 600 → 10), ตำแหน่ง 25 (300–600 m เต็ม), เส้นกลาง 15, ความเร็ว 10 (Vref −8…+5), attitude 10 (bank, crab, drift, ล้อหน้าก่อน −5) และเพดานคะแนนเมื่อแตะนอกรันเวย์ (20) ออกนอกรันเวย์ระหว่างวิ่ง (15) ปลายปีกแตะพื้น (30) หรือ sink > 600 fpm (35) ผลของ gate ไม่หักคะแนน และไม่มีการตรวจ flare, เด้ง, go-around หรือการวิ่ง
+Evaluator ใน `src/20-flight.js` [R1:V19] มี (1) gate ที่ 500 และ 200 ft ตรวจ loc/gs ≤ 1 dot, ความเร็ว Vref −5…+20, อัตราร่อน ≥ −1,000 fpm, ล้อและแฟลปเต็ม (2) คะแนนตอนแตะ 100 คะแนน: sink 40 (≤ 180 fpm เต็ม, 360 → 30, 600 → 10), ตำแหน่ง 25 (300–600 m เต็ม), เส้นกลาง 15, ความเร็ว 10 (Vref −8…+5), attitude 10 (bank, crab, drift, ล้อหน้าก่อน −5) และเพดานคะแนนเมื่อแตะนอกรันเวย์ (20) ออกนอกรันเวย์ระหว่างวิ่ง (15) ปลายปีกแตะพื้น (30) หรือ sink > 600 fpm (35) ผลของ gate ไม่หักคะแนน และไม่มีการตรวจ flare, เด้ง, go-around หรือการวิ่ง
 
 เมื่อนำสูตรวันนี้ไปใช้กับชุดเวลาสังเคราะห์ของ C172S (`lh_tests.mjs` คอลัมน์ "โมเดลปัจจุบัน" ใน 08.9) พบว่า
 1. การลงจอดที่ถูกต้องได้ 92 ไม่ใช่ 100 เพราะเครื่องเล็กแตะพื้นใกล้ stall (C172S 1.05 VS0 = 48 KCAS หรือ 24.8 m/s ที่มวลฝึก) ต่ำกว่า Vref −8 จึงได้คะแนนความเร็ว 2/10 (T-LH-09)
@@ -399,11 +399,11 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
 
 | id | ช่วงบิน | ตรวจจากสัญญาณ | เกณฑ์ | ระดับ / หัก | แหล่งเกณฑ์ | ข้อความภาษาไทย (สรุป) |
 |---|---|---|---|---|---|---|
-| `unstable_500` | final | ias, vs, phi, flap, gear, gsd, locd ตอนผ่าน 500 ft | Vapp −5/+10 (CPL ±5), vs ≥ −1,000, bank ≤ 15°, config ลงจอด, ≤ 1 dot | major / 10 | [LH1 p.9-6 (+10/−5 KIAS, bank 15°, 500–1,000 fpm)][LH2][R1] | ยังไม่ stabilised ที่ 500 ft |
+| `unstable_500` | final | ias, vs, phi, flap, gear, gsd, locd ตอนผ่าน 500 ft | Vapp −5/+10 (CPL ±5), vs ≥ −1,000, bank ≤ 15°, config ลงจอด, ≤ 1 dot | major / 10 | [LH1 p.9-6 (+10/−5 KIAS, bank 15°, 500–1,000 fpm)][LH2][R1:V19] | ยังไม่ stabilised ที่ 500 ft |
 | `unstable_300` | final | เหมือนกัน ที่ 300 ft | เหมือนกัน | major / 10 | [LH1] | ต่ำกว่า 300 ft ยังไม่ stable ให้ go-around |
 | `continued_unstable` | landing | unstable_300 แล้วลงจอดโดยไม่ go-around | – | critical / 30 | [LH1] | ลงต่อทั้งที่ไม่ stable |
-| `high_on_path` | final 1,000–100 ft | gsd | > +1 dot นาน 5 s | minor / 3 | [R1][LH1] | สูงกว่า path |
-| `low_on_path` | final | gsd | < −1 dot นาน 3 s | major / 6 | [R1][LH1 p.9-30] | ต่ำกว่า path เพิ่มกำลัง |
+| `high_on_path` | final 1,000–100 ft | gsd | > +1 dot นาน 5 s | minor / 3 | [R1:V19][LH1] | สูงกว่า path |
+| `low_on_path` | final | gsd | < −1 dot นาน 3 s | major / 6 | [R1:V19][LH1 p.9-30] | ต่ำกว่า path เพิ่มกำลัง |
 | `fast` / `slow` | final < 500 ft | ias | > Vapp +10 (CPL +5) นาน 5 s / < Vapp −5 นาน 3 s | minor 3 / major 8 | [LH2][LH3] | ความเร็วหลุดเกณฑ์ |
 | `near_stall` | ทุกช่วง > 10 ft | ias | < VS0 + 5 kt | critical / 30 | [LM3][LH4] | ใกล้ stall ที่ต่ำ |
 | `stall_warning` | ทุกช่วง > 20 ft (ไม่ใช้ในบทเรียนฝึก stall) | stallWarn | เตือนดัง (แตรใน flare ไม่นับ) | major / 10 | [LH4 R3][LH2] | ลดมุมปะทะทันที |
@@ -416,13 +416,13 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
 | `float` | flare | h | ต่ำกว่า 3 ft นานเกิน 6 s | minor / 3 | [LH1 p.9-32] (ค่าประมาณ) | ลอยนาน |
 | `bounce` / `bounce_big` | landing | wow, h | ลอยกลับ ≥ 1 ft ≥ 0.3 s / ≥ 5 ft | major 8 / critical 20 | [LH1 p.9-33] (ค่าประมาณ) | เด้ง / เด้งสูงต้อง go-around |
 | `porpoise` | landing | wow | ล้อหน้าแตะก่อน + เด้ง ≥ 2 ครั้ง | critical / 20 | [LH1 p.9-34] | porpoising |
-| `nose_first` | landing | wow ตอนแตะ | ล้อหน้าแตะก่อน | major / (−5 ใน S_att เดิม) | [LH1][R1] | ล้อหน้าแตะก่อน |
-| `hard_landing` / `very_hard_landing` | landing | vs ตอนแตะ | > 360 / > 600 fpm | major / critical (คิดใน S_sink และเพดาน 35) | [LH1 p.9-35][R1] | แตะแรง |
+| `nose_first` | landing | wow ตอนแตะ | ล้อหน้าแตะก่อน | major / (−5 ใน S_att เดิม) | [LH1][R1:V19] | ล้อหน้าแตะก่อน |
+| `hard_landing` / `very_hard_landing` | landing | vs ตอนแตะ | > 360 / > 600 fpm | major / critical (คิดใน S_sink และเพดาน 35) | [LH1 p.9-35][R1:V19] | แตะแรง |
 | `side_load` | landing | crab, latV ตอนแตะ | \|crab\| > 5° หรือ \|drift\| > 1.6 m/s | major / (ใน S_att) | [LH1 p.9-35][LH2] | แตะขณะ crab/drift |
-| `off_centre` | landing | y | > 5 m | minor / (ใน S_cl) | [R1] | ห่างเส้นกลาง |
-| `short_landing` / `long_landing` | landing | s ตอนแตะ | < 0 / > aim + 400 ft (CPL 200 ft) | critical (เพดาน 20) / major (ใน S_pos) | [LH2][LH3][R1] | ก่อน threshold / เลยจุด |
+| `off_centre` | landing | y | > 5 m | minor / (ใน S_cl) | [R1:V19] | ห่างเส้นกลาง |
+| `short_landing` / `long_landing` | landing | s ตอนแตะ | < 0 / > aim + 400 ft (CPL 200 ft) | critical (เพดาน 20) / major (ใน S_pos) | [LH2][LH3][R1:V19] | ก่อน threshold / เลยจุด |
 | `dir_control` | rollout | crab, latV เมื่อ gs > 10 kt | \|ψ − ψrwy\| > 10° หรือ \|latV\| > 2 m/s | major / 10 | [LH5][LH1] (ค่าประมาณ) | เสียทิศทาง |
-| `excursion` | rollout | y | เกินครึ่งความกว้างรันเวย์ | critical (เพดาน 15) | [R1] | ออกนอกรันเวย์ |
+| `excursion` | rollout | y | เกินครึ่งความกว้างรันเวย์ | critical (เพดาน 15) | [R1:V19] | ออกนอกรันเวย์ |
 | `aileron_rollout` | rollout | da, ลมขวาง | ลมขวาง > 5 kt, gs > 20 kt, aileron ไม่เข้าลมนาน 2 s | minor / 2 | [LH1 p.9-36][LH15] | หมุนคันเข้าลม |
 | `brake_fast` | rollout | brake, ias, wow[0] | เบรก > 50 % ก่อนล้อหน้าลง หรือเร็วเกิน 0.8 Vapp | minor / 2 | [LH15][LH1] | เบรกเร็วเกินไป |
 | `carb_heat` / `carb_heat_ga` | downwind / go-around | **ใหม่** carbHeat, thr | เครื่องคาร์บู: กำลัง < 35 % นาน 10 s โดยไม่เปิด / ยังเปิด 5 s หลัง go-around | minor / 3 | [LH13 p.4-9][LH1 p.9-11] | carb heat |
@@ -796,7 +796,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "src": [
      "LH1",
      "LH2",
-     "R1"
+     "R1:V19"
     ],
     "conf": "กลาง",
     "est": false,
@@ -877,7 +877,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH13",
      "LH15",
      "LH30",
-     "R1"
+     "R1:V19"
     ],
     "conf": "ต่ำ",
     "est": true,
@@ -918,7 +918,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
       "sev": "minor",
       "pts": 3,
       "src": [
-       "R1",
+       "R1:V19",
        "LH1"
       ],
       "th": "สูงกว่า glide path เกิน 1 dot ลดกำลังเล็กน้อยแล้วรักษาความเร็ว อย่าดันหัวลงแรง"
@@ -928,7 +928,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
       "sev": "major",
       "pts": 6,
       "src": [
-       "R1",
+       "R1:V19",
        "LH1"
       ],
       "th": "ต่ำกว่า glide path เกิน 1 dot เพิ่มกำลังพร้อมยกหัวเล็กน้อย อย่าเก็บแฟลป"
@@ -1071,7 +1071,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
       "pts": 5,
       "src": [
        "LH1",
-       "R1"
+       "R1:V19"
       ],
       "th": "ล้อหน้าแตะก่อนล้อหลัก ยกหัวให้ถึง attitude ลงจอด"
      },
@@ -1081,7 +1081,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
       "pts": 0,
       "src": [
        "LH1",
-       "R1"
+       "R1:V19"
       ],
       "th": "แตะพื้นแรง (อัตราจมเกิน 360 fpm) flare ให้ต่อเนื่องจนล้อแตะ"
      },
@@ -1090,7 +1090,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
       "sev": "critical",
       "pts": 0,
       "src": [
-       "R1"
+       "R1:V19"
       ],
       "th": "แตะพื้นแรงมาก (เกิน 600 fpm) ต้องตรวจโครงสร้างเครื่อง"
      },
@@ -1109,7 +1109,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
       "sev": "minor",
       "pts": 0,
       "src": [
-       "R1"
+       "R1:V19"
       ],
       "th": "แตะพื้นห่างเส้นกลางรันเวย์"
      },
@@ -1119,7 +1119,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
       "pts": 0,
       "src": [
        "LH5",
-       "R1"
+       "R1:V19"
       ],
       "th": "แตะพื้นก่อน threshold"
      },
@@ -1148,7 +1148,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
       "sev": "critical",
       "pts": 0,
       "src": [
-       "R1"
+       "R1:V19"
       ],
       "th": "ออกนอกรันเวย์"
      },
@@ -1339,7 +1339,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      "LH0",
      "LH2",
      "LH3",
-     "R1"
+     "R1:V19"
     ],
     "conf": "กลาง",
     "est": true,
@@ -1361,7 +1361,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "sim",
     "src": [
      "LH0",
-     "R1"
+     "R1:V19"
     ],
     "conf": "กลาง",
     "est": false,
@@ -1789,7 +1789,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -2224,7 +2226,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -2677,7 +2681,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -3131,7 +3137,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -3587,7 +3595,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -4043,7 +4053,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -4492,7 +4504,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -4924,7 +4938,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -5404,7 +5420,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -5852,7 +5870,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -6335,7 +6355,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -6818,7 +6840,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -7266,7 +7290,9 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
     "scope": "aircraft",
     "src": [
      "LH0",
-     "R1",
+     "R1:C12",
+     "R1:C16",
+     "R1:C20",
      "LH30",
      "LM3"
     ],
@@ -8261,8 +8287,8 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
 | T-LH-09 | C172S nominal: 65 KIAS, 3°, flare 15 ft, TD −120 fpm ที่ aim+66 m | events / score | none ; not unstable_500,hard_landing,bounce ; score 100 | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1 | ACS PA.IV.B | – / 100 ✓ | คะแนน touchdown 92 |
 | T-LH-10 | เร็วเกิน +15 kt จาก 600 ถึง 20 ft | events / score | fast,unstable_500,unstable_300,continued_unstable | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH2 +10/−5 | continued_unstable,unstable_500,unstable_300,fast / 40 ✓ | คะแนน touchdown 92; เห็น: gate ias (500/200 ft), gate g500; ไม่รองรับในซิมวันนี้: unstable_300, continued_unstable |
 | T-LH-11 | ช้า −8 kt จาก 400 ถึง 100 ft | events / score | slow,unstable_300 | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH2 | continued_unstable,slow,unstable_300 / 40 ✓ | คะแนน touchdown 92; เห็น: gate ias (500/200 ft); ไม่รองรับในซิมวันนี้: unstable_300 |
-| T-LH-12 | สูงกว่า path +60 ft จาก 900 ถึง 300 ft | events / score | high_on_path ; not low_on_path | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | R1 gate 1 dot | continued_unstable,unstable_500,unstable_300,high_on_path / 40 ✓ | คะแนน touchdown 92; เห็น: gate gs dots |
-| T-LH-13 | ต่ำกว่า path −40 ft จาก 800 ถึง 200 ft | events / score | low_on_path ; not high_on_path | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | R1 | continued_unstable,unstable_300,low_on_path / 40 ✓ | คะแนน touchdown 92; เห็น: gate gs dots |
+| T-LH-12 | สูงกว่า path +60 ft จาก 900 ถึง 300 ft | events / score | high_on_path ; not low_on_path | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | R1:V19 gate 1 dot | continued_unstable,unstable_500,unstable_300,high_on_path / 40 ✓ | คะแนน touchdown 92; เห็น: gate gs dots |
+| T-LH-13 | ต่ำกว่า path −40 ft จาก 800 ถึง 200 ft | events / score | low_on_path ; not high_on_path | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | R1:V19 | continued_unstable,unstable_300,low_on_path / 40 ✓ | คะแนน touchdown 92; เห็น: gate gs dots |
 | T-LH-14 | จม 1,200 fpm จาก 600 ถึง 450 ft | events / score | sink_high,unstable_500 | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH1 p.9-6 | sink_high,unstable_500,low_on_path / 76 ✓ | คะแนน touchdown 92; เห็น: gate vs, gate g500 |
 | T-LH-15 | flare สูง: ค้างที่ 12 ft 3 s แล้วตก 500 fpm | events / score | high_flare,hard_landing | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH1 p.9-31, LH5 | high_flare,hard_landing / 72 ✓ | คะแนน touchdown 70; เห็น: คะแนน sink; ไม่รองรับในซิมวันนี้: high_flare |
 | T-LH-16 | ไม่ flare: เริ่มที่ 2 ft แตะ −330 fpm | events / score | late_flare ; not high_flare | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH1 p.9-32, LH5 | late_flare / 80 ✓ | คะแนน touchdown 92; ไม่รองรับในซิมวันนี้: late_flare |
@@ -8271,14 +8297,14 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
 | T-LH-19 | เด้ง 3 ft หนึ่งครั้ง | events / score | bounce ; not bounce_big,porpoise | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH1 p.9-33 | bounce / 92 ✓ | คะแนน touchdown 92; ไม่รองรับในซิมวันนี้: bounce |
 | T-LH-20 | เด้ง 7 ft | events / score | bounce,bounce_big | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH1 p.9-34 | bounce_big,bounce / 40 ✓ | คะแนน touchdown 92; ไม่รองรับในซิมวันนี้: bounce, bounce_big |
 | T-LH-21 | ล้อหน้าแตะก่อนแล้วเด้งสองครั้ง | events / score | porpoise ; not nose_first | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH1 p.9-34 | porpoise,bounce / 40 ✓ | คะแนน touchdown 87; ไม่รองรับในซิมวันนี้: porpoise |
-| T-LH-22 | ล้อหน้าแตะก่อน ไม่เด้ง | events / score | nose_first ; not porpoise | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH1, R1 | nose_first / 95 ✓ | คะแนน touchdown 87; เห็น: คะแนน att −5 |
-| T-LH-23 | flare ค้างที่ 4 ft 1 s แล้วตก −450 fpm | events / score | hard_landing ; not very_hard_landing,late_flare,high_flare ; score 83 | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1 | LH1 p.9-35 (6 in ≈ 340 fpm), R1 | hard_landing / 83 ✓ | คะแนน touchdown 75; เห็น: คะแนน sink |
-| T-LH-24 | แตะ −700 fpm | events / score | very_hard_landing ; score 35 | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1 | R1 cap 35 | very_hard_landing,late_flare / 35 ✓ | คะแนน touchdown 35; เห็น: คะแนน sink (cap 35) |
+| T-LH-22 | ล้อหน้าแตะก่อน ไม่เด้ง | events / score | nose_first ; not porpoise | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH1, R1:V19 | nose_first / 95 ✓ | คะแนน touchdown 87; เห็น: คะแนน att −5 |
+| T-LH-23 | flare ค้างที่ 4 ft 1 s แล้วตก −450 fpm | events / score | hard_landing ; not very_hard_landing,late_flare,high_flare ; score 83 | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1 | LH1 p.9-35 (6 in ≈ 340 fpm), R1:V19 | hard_landing / 83 ✓ | คะแนน touchdown 75; เห็น: คะแนน sink |
+| T-LH-24 | แตะ −700 fpm | events / score | very_hard_landing ; score 35 | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1 | R1:V19 cap 35 | very_hard_landing,late_flare / 35 ✓ | คะแนน touchdown 35; เห็น: คะแนน sink (cap 35) |
 | T-LH-25 | ลมขวาง 12 kt ไม่ decrab | events / score | side_load | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH1 p.9-35, LH2 | side_load / 97 ✓ | คะแนน touchdown 89; เห็น: คะแนน att (crab/latV) |
 | T-LH-26 | drift 2 m/s ตอนแตะ | events / score | side_load | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH2 no side drift | side_load,off_centre / 82 ✓ | คะแนน touchdown 74; เห็น: คะแนน att (crab/latV) |
 | T-LH-27 | หันออก 15° ขณะวิ่ง > 15 kt | events / score | dir_control | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH5 (ครึ่งหนึ่งของอุบัติเหตุลงจอด) | excursion,dir_control / 15 ✓ | คะแนน touchdown 92; เห็น: event excursion (เฉพาะออกนอกทางวิ่ง) |
-| T-LH-28 | แตะห่างเส้นกลาง 8 m | events / score | off_centre ; score 91 | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1 | R1 cl 6/15 | off_centre / 91 ✓ | คะแนน touchdown 83; เห็น: คะแนน cl |
-| T-LH-29 | แตะก่อน threshold (GP origin −100 m) | events / score | short_landing ; score 20 | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1 | R1 cap 20 | short_landing / 20 ✓ | คะแนน touchdown 20; เห็น: คะแนน pos (cap 20) |
+| T-LH-28 | แตะห่างเส้นกลาง 8 m | events / score | off_centre ; score 91 | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1 | R1:V19 cl 6/15 | off_centre / 91 ✓ | คะแนน touchdown 83; เห็น: คะแนน cl |
+| T-LH-29 | แตะก่อน threshold (GP origin −100 m) | events / score | short_landing ; score 20 | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว); คะแนน ± 1 | R1:V19 cap 20 | short_landing / 20 ✓ | คะแนน touchdown 20; เห็น: คะแนน pos (cap 20) |
 | T-LH-30 | แตะเลยจุด (GP origin 600 m) | events / score | long_landing | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH2 400 ft | long_landing / 85 ✓ | คะแนน touchdown 85; เห็น: คะแนน pos |
 | T-LH-31 | C152 ลดกำลังไม่ดึง carb heat | events / score | carb_heat | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH13 p.4-9 | carb_heat / 97 ✓ | คะแนน touchdown 92; ไม่รองรับในซิมวันนี้: carb_heat |
 | T-LH-32 | C172R mixture 0.7 ระหว่าง approach | events / score | mixture | เหตุการณ์: ต้องมีครบ/ต้องไม่มี (ตรงตัว) | LH13 | mixture / 97 ✓ | คะแนน touchdown 92; ไม่รองรับในซิมวันนี้: mixture |
@@ -8329,17 +8355,17 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
 | 4 | ลมขวาง C172S | POH/IM 15 kt สาธิต [LH12] | SOP ของโรงเรียนแยก 20 kt แฟลป 0–10 / 15 kt แฟลป 20–30 [LH11] | ใช้ 15 kt ของผู้ผลิต |
 | 5 | balked landing C172 | C172R IM 55 KIAS แฟลป 20 [LH12] | SOP C172S 60 KIAS (บัตร 04 ใช้ 60 ตาม IM ของ 172S) [LH11] | แยกตามรุ่น (`c172r` 55, `c172s` 60) |
 | 6 | Vy ของ DA40 NG | checklist ของ Diamond: Vy 72 แฟลป T/O, cruise climb 88 [LH17] | หน้า SOP ของชุมชนซิมเรียก 88 ว่า Vy | ใช้ Diamond |
-| 7 | gate stabilised | AFH 500 ft VMC / 1,000 ft IMC, go-around ทันทีถ้าไม่ stable ต่ำกว่า 300 ft [LH1] | ซิมวันนี้ 500/200 ft [R1]; flashcard DA42 ใช้ 200 ft VMC [LH29]; FOM ของชุมชนซิม DA40 ใช้ 200 ft circuit / 1,000 ft IFR [LH18 p.5]; EKU และ OU ใช้ 300 ft [LH9][LH19 p.43] | เสนอ 500/300 ตาม AFH และ 1,000 ft เป็นตัวเลือก IMC |
+| 7 | gate stabilised | AFH 500 ft VMC / 1,000 ft IMC, go-around ทันทีถ้าไม่ stable ต่ำกว่า 300 ft [LH1] | ซิมวันนี้ 500/200 ft [R1:V19]; flashcard DA42 ใช้ 200 ft VMC [LH29]; FOM ของชุมชนซิม DA40 ใช้ 200 ft circuit / 1,000 ft IFR [LH18 p.5]; EKU และ OU ใช้ 300 ft [LH9][LH19 p.43] | เสนอ 500/300 ตาม AFH และ 1,000 ft เป็นตัวเลือก IMC |
 | 8 | เกณฑ์ความเร็ว approach | FAA Private +10/−5 [LH2] | กพท. LAPL และ EASA PPL +15/−5 [LH33][LH31]; CPL ทุกแหล่ง ±5 | ระดับ `ppl` ใช้ +10/−5 (เข้มกว่า) และให้เลือก `cpl` |
 | 9 | จุดแตะพื้น | ACS 400/200/100 ft หลังจุด [LH2][LH3] | กพท. ให้เพียง "ภายใน TDZ" ไม่มีตัวเลข [LH32] | ใช้ตัวเลข ACS |
 | 10 | stall warning margin | C152 IM ≈ 10 kt [LH13] | C172R IM 5–10 kt [LH12]; เกณฑ์ 23.207 ≥ 5 kt | ใช้ VS0 + 5 kt เป็นเกณฑ์ near-stall ของทุกแบบ |
-| 11 | ความเร็วแตะพื้นในคะแนน | ซิมวันนี้ให้คะแนนเต็มเมื่อแตะที่ Vref −8…+5 [R1] | AFH: เครื่องเล็กแตะใกล้ power-off stall attitude ความเร็วต่ำกว่า Vref มาก [LH1 p.9-9] | เปลี่ยนเป็นวัดที่ 50 ft (T-LH-09: วันนี้ได้ 92 ทั้งที่ถูกต้อง) |
+| 11 | ความเร็วแตะพื้นในคะแนน | ซิมวันนี้ให้คะแนนเต็มเมื่อแตะที่ Vref −8…+5 [R1:V19] | AFH: เครื่องเล็กแตะใกล้ power-off stall attitude ความเร็วต่ำกว่า Vref มาก [LH1 p.9-9] | เปลี่ยนเป็นวัดที่ 50 ft (T-LH-09: วันนี้ได้ 92 ทั้งที่ถูกต้อง) |
 | 12 | pitch ตอน approach ของ C172S | ตาราง 08.1 −0.2° (มวลฝึก 1,010 kg ไม่รวม elevator) | ตาราง trim ของบัตร 04 +2.0° (ซิมเต็ม MTOW, δe −8.8°) | ไม่ขัดกันจริง: ใส่มวลและแรงยกของ elevator แล้วสูตรได้ +2.1° (T-LH-51) ระบุมวลทุกครั้งที่ใช้ `approach_pitch_deg` เป็นเป้าทดสอบ |
 | 13 | ความเร็วไต่ปกติของ C172 | C172S IM: enroute climb 75–85 KIAS ที่ SL [LC1 p.4-5] | SOP 70–85 [LH11]; C172R IM: normal climb out 70–80 และ enroute 75–85 [LH12 p.4-5] (ฉบับแรกของหัวข้อนี้เขียนสลับกัน) | ใช้ค่าของผู้ผลิตแยกรุ่น |
 | 14 | ที่มาของเกณฑ์สอบ กพท. | ฉบับแรก: ทั้ง LAPL และ CPL ยกจาก Appendix 4 | เอกสาร: LAPL ยก AMC1 FCL.125 (p.6-1), CPL ยก Appendix 4 (p.6-1…6-2) [LH33][LH32] | แก้ตามเอกสาร ตัวเลขไม่เปลี่ยน |
 | 15 | pitch ตอนแตะของ DA40 (และ P2006T แฟลป T/O) (**ใหม่ 19 พ.ย.**) | สูตร 08.1 กับบัตร 05: CL0 แฟลป LDG 1.09 กับ CLmax LDG 1.64–1.69 ทำให้ α ที่ CLmax แบบเส้นตรงเหลือ 5.8–6.3° (C172S 13.5°, DA42 9.5°) pitch ตอนแตะจึงเหลือ 1.5–1.9° และ final −3.3…−4.1°; P2006T บัตร 12 CL0 T/O 0.733 ให้ downwind 90 KIAS −1.9° | ไม่มีแหล่งที่ให้องศาตอนแตะของ DA40/P2006T; ล้อหลักยังแตะก่อน (ส่วนต่าง 2.5–2.9°, T-LH-59) | คงค่าของสูตร (conf ต่ำ) และส่งให้บัตร 05/12 ตรวจ ΔCLmax ของแฟลป หรือใช้ lift curve ไม่เชิงเส้นใกล้ stall |
 | 16 | ซิมวันนี้ที่ใส่บัตรตอนแตะพื้น (**ใหม่**) | สูตร 08.1: ล้อหลักแตะก่อนทุกบัตร ส่วนต่าง ≥ 2.5° | `lm_card.trim` ที่ 1.05 VS0 −120 fpm ใน ground effect ของซิม: DA42 NG/VI −0.6°, P2006T −0.4° (ล้อหน้าแตะก่อน) และ trim ไม่ลงตัวสำหรับ DA42 TAE 125, T-6A, T-6C, PC-9 M, PC-7 MkII; C172/C152/DA40 ได้ 4.2–6.8° | ใช้ค่าของสูตรเป็นเป้า และส่งต่อให้ตรวจ ground effect/trim ของซิมกับบัตรเหล่านี้ (08.12) |
-| 17 | แรงที่คันของ hinge model ค่าคลาส (**ใหม่**) | โมเดลรอบที่ 1 กับ Ch ของบัตร: DA40 3.9–4.3 lbf/g, DA42 1.5–1.6 lbf/g (ต่ำกว่าพื้น 23.155 และ MIL L1) และ T-6A/C 11.1/11.8 lbf/g (ดึง 7 g ได้ 75/79 lbf เกิน 60 lbf ของ 23.143) | แถบ 08.5 [R1][LM3][LH30] | เป้า = ขอบแถบที่ใกล้ที่สุด (ค่าประมาณ) และส่งให้บัตร 05/06/07 ตรวจ Ch และ gearing |
+| 17 | แรงที่คันของ hinge model ค่าคลาส (**ใหม่**) | โมเดลรอบที่ 1 กับ Ch ของบัตร: DA40 3.9–4.3 lbf/g, DA42 1.5–1.6 lbf/g (ต่ำกว่าพื้น 23.155 และ MIL L1) และ T-6A/C 11.1/11.8 lbf/g (ดึง 7 g ได้ 75/79 lbf เกิน 60 lbf ของ 23.143) | แถบ 08.5 [R1:C12][LM3][LH30] | เป้า = ขอบแถบที่ใกล้ที่สุด (ค่าประมาณ) และส่งให้บัตร 05/06/07 ตรวจ Ch และ gearing |
 | 18 | ความเร็วแตะของ P2006T (**ใหม่**) | AFM: touchdown 65 KIAS [LG3 S4-27] | สคริปต์: 1.05 VS0 ของมวลฝึก = 56 KIAS (57 KCAS) | 65 ของ AFM ใช้เป็นความเร็วเริ่ม flare ในซิม ส่วน 56 เป็นปลาย flare (ค่าประมาณ) |
 | 19 | final ของ T-6C (**ใหม่**) | บัตร 07: VAPP 104 KIAS (สเกล 100 ของ T-6A ด้วย √มวล, ค่าประมาณ) | รายงานบิน T-6C: short final 110 แตะ 100 KIAS [LP31] | ใช้ VAPP ของบัตร (D1) |
 | 20 | IAS ตอนแตะของ Cessna (**ใหม่**) | ตาราง IAS–CAS ของบัตร: C172S 48 KCAS → 38 KIAS, C152 45 KCAS → 43 KIAS | ตาราง stall ของ IM: C152 VS0 31–35 KIAS (41–43 KCAS) [LH13 p.5-10] ตาราง IAS–CAS ของบัตร 04 ไม่มีแถวแฟลป 20 | ใช้ CAS เป็นค่าหลักของ touchdown และระบุ IAS เป็นค่าประมาณ |
@@ -8401,7 +8427,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
 | LH37 | Aviation Safety Network, wikibase 184789: DA40 D ลงนอกสนามระหว่าง approach ฝึก 24 Feb 2016 (รายงาน 06/2016) | https://aviation-safety.net/wikibase/184789 | ฐานข้อมูลอุบัติเหตุ (ทุติยภูมิ) | © Flight Safety Foundation อ้างข้อเท็จจริงได้ ไม่ระบุชื่อผู้ดำเนินการ |
 | LH38 | Wikipedia, "Aircraft Accident Investigation Committee" (คณะกรรมการสอบสวนอุบัติเหตุอากาศยานของไทย, เปิดอ่าน 19 Nov 2026) | https://en.wikipedia.org/wiki/Aircraft_Accident_Investigation_Committee | สารานุกรม (ทุติยภูมิ) | CC BY-SA 4.0 ใช้เฉพาะข้อเท็จจริง (คำสั่งตั้งคณะกรรมการ; ไม่มีคลังรายงานออนไลน์ที่ระบุ) |
 | LC1, LC2, LC3, LC6 (บัตร 04 C172S); LE3 (บัตร 10 C172R); LF1 (บัตร 11 C152); LD1, LD2, LD3, LD4, LD6, LD7, LD8, LD13, LD14 (บัตร 05 DA40); LT1, LT2, LT3, LT4, LT5, LT6, LT9, LT10, LT16 (บัตร 06 DA42); LP2, LP5, LP9, LP15, LP18, LP19, LP20, LP21, LP27, LP29, LP31 (บัตร 07 เทอร์โบพร็อป); LG1, LG2, LG3, LG4, LG5, LG9 (= LH22), LG10 (บัตร 12 P2006T); LN3, LN5, LN11, LN14, LN18, LN22 (หัวข้อ 13 แบบอื่น); LM0, LM3 (หัวข้อ 01) | แหล่งที่อ้างข้ามหัวข้อ (LP19/LP21 เป็น flashcard ผู้ใช้ ความเชื่อมั่นต่ำ; LD13, LD14 เป็นกระทู้ผู้ใช้) | ดูรายการในไฟล์นั้น | | ตามที่ไฟล์ต้นทางระบุ |
-| R1 | AirfieldLab research รอบที่ 1 (`docs/research/01-flight-physics/` ของ repo: §2.4 ground effect ใน `02-interference.md`, §6 hinge model และแรงที่คันใน `06-controls.md`) โค้ดซิม `src/20-flight.js` (Evaluator, Recorder) | repo | งานของโครงการ | – |
+| R1:V19, R1:C12, R1:C16, R1:C20 | รอบที่ 1 (`docs/research/01-flight-physics/`): [V19] โค้ดซิม `src/20-flight.js` (Evaluator, Recorder) ใน `10-validation.md`; [C12] MIL-F-8785C (แถบ Level 1 ของแรงต่อ g), [C16] NACA Report 721 (ข้อมูล hinge moment ของแบบจำลอง elevator §6.2) และ [C20] Bromfield & Gratton (สมการแรงที่คัน Eq. 1 ของแบบจำลองเดียวกัน) ใน `06-controls.md`; §2.4 ground effect ใน `02-interference.md` [U7] | `docs/research/01-flight-physics/` | งานของโครงการ / ตามไฟล์รอบที่ 1 | – |
 
 ## 08.12 งานที่แนะนำสำหรับ Claude Code
 | ลำดับ | งาน | ขนาด | ทดสอบ |

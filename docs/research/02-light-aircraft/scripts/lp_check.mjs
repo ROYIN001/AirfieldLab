@@ -10,7 +10,7 @@ import { buildAll, naLeaf, blocksMd } from './lp_build.mjs';
 import { L, setp, r1leaf, KT, FT, G0, LB } from './lp_cards.mjs';
 import { resolveType, loadType, val, isObj, isLeaf, expectedScope, speedAs, landingDetent } from './lm_lib.mjs';
 import { legacyFit } from './lm_legacy_fit.mjs';
-import { loadSim, applyAC, buildAC, cardInfo, runCard, simCLmax, trim, trimThr, modes } from './lm_card.mjs';
+import { loadSim, applyAC, buildAC, cardInfo, runCard, simCLmax, trim, trimThr, modes, stallTest } from './lm_card.mjs';
 import { polarFromGlide, toSimPolar, rhoISA } from './lm_polar.mjs';
 
 const DEG = Math.PI / 180, RHO0 = 1.225;
@@ -332,7 +332,18 @@ const kias = x => r(x, 4);
 // PC-9 M
 add('pc9m', 'MTOW 2,350 kg, 3,000 ft ISA, idle, แฟลป UP ล้อขึ้น, ลดความเร็ว 1 kt/s, ปีกระดับ', 'V_SR 1 g (KEAS ≈ KCAS) = VS ของ TCDS/√0.95', r(77 / Math.sqrt(0.95), 4), 1.5, '[LP2] TCDS F 56-32 77 KCAS; [LM1] nz 0.95', kias(st(R9, 'clean').VSR_eas), 'kt');
 add('pc9m', 'เหมือนบน แฟลป LDG 50° ล้อลง', 'V_SR 1 g', r(69 / Math.sqrt(0.95), 4), 1.5, '[LP2] 69 KCAS', kias(st(R9, 'full').VSR_eas), 'kt');
-add('pc9m', 'เหมือนบน แฟลป UP', 'Vmin/V_SR ของการทดสอบ 1 kt/s (สมมติฐาน POH → 1 g: √0.95 = 0.975)', 0.975, 0.01, '[LM1]', r(st(R9, 'clean').Vmin_eas / st(R9, 'clean').VSR_eas, 4));
+// T-LP-03 (R2-04): the agreed comparison is V_SR 1 g against VS/√0.95 (T-LP-01/02); this case checks that V_SR does not
+// depend on where the 1 kt/s entry starts, while Vmin and nz at Vmin (reported, not judged) do.
+{
+  const card = resolved('pc9m'), ac = buildAC(card, { mass: MTOW.pc9m }), rs = applyAC(M, ac);
+  try {
+    const vs = Math.sqrt(2 * ac.m * G0 / (RHO0 * ac.S * simCLmax(ac, 0).CL)) / KT;
+    const sw = [1.2, 1.35, 1.5].map(k => stallTest(M, { ias0: Math.round(k * vs), flaps: 0, gear: 0 }));
+    const spread = a => Math.max(...a) - Math.min(...a), vsr = sw.map(x => x.VSR_eas), vmin = sw.map(x => x.Vmin_eas);
+    add('pc9m', `เหมือนบน แฟลป UP ล้อขึ้น เริ่มลดความเร็วที่ 1.20 / 1.35 / 1.50 Vs (${sw.map(x => x.ias0).join(' / ')} kt)`, 'ช่วงของ V_SR 1 g (สูงสุด − ต่ำสุด) ตามนิยามการเทียบ stall ของโครงการ (เทียบ V_SR กับ VS/√0.95 ไม่เทียบ Vmin)', 0, 0.3, '[LM1][LM2]; common_light.methods.stall_nz_at_vmin', r(spread(vsr), 3), 'kt');
+    T.at(-1).note = `ข้อมูลเท่านั้น: Vmin ${vmin.map(v => r(v, 4)).join(' / ')} kt (ช่วง ${r(spread(vmin), 3)} kt), nz ที่ Vmin ${sw.map(x => r(x.nz_Vmin, 2)).join(' / ')}, nz ที่ CLmax ${sw.map(x => r(x.nz, 3)).join(' / ')}`;
+  } finally { rs(); }
+}
 add('pc9m', 'MTOW, SL ISA, กำลังเต็ม 708 kW, clean ล้อขึ้น', 'ROC สูงสุด', 4090, 410, '[LP12][LP13] (น้ำหนักไม่ระบุ; conf ต่ำ)', Math.round(R9.res.climb.ROCmax_fpm), 'fpm');
 add('pc9m', 'MTOW, 3,000 ft, แรงขับศูนย์, clean', 'L/D ร่อนสูงสุด', LDclass, 1.0, '[LP16][LP19] polar คลาส T-6 (ค่าประมาณ)', r(R9.res.glide.zeroThrust.LD, 4));
 add('pc9m', 'MTOW, approach 95 kt แฟลป LDG ล้อลง γ −3° 300 m', 'short-period ζ (MIL-F-8785C Class I Cat C Level 1: 0.35–1.30)', 0.825, 0.475, '[R1:C12]', r(R9.res.modes.approach.sp?.zeta, 4));
@@ -420,7 +431,7 @@ for (const id of ['pc9m', 'pc7mk2', 't6a', 't6c']) {   // gap 18: stick-force ta
 
 // ── 6c. performance.tests leaf per card (gap 16): the same rows as the markdown table §07.12 ──
 for (const id of ['pc9m', 'pc7mk2', 't6a', 't6c', 'trainer_r2']) {
-  const rows = T.filter(t => t.type === id).map(t => ({ case: t.id, conditions: t.cond, quantity: t.qty, expected: t.expected, tolerance: t.lo != null ? `ช่วง ${t.expected}` : t.tol, unit: t.unit || '-', src: t.src, current: t.current, pass: t.pass }));
+  const rows = T.filter(t => t.type === id).map(t => ({ case: t.id, conditions: t.cond, quantity: t.qty, expected: t.expected, tolerance: t.lo != null ? `ช่วง ${t.expected}` : t.tol, unit: t.unit || '-', src: t.src, current: t.current, pass: t.pass, ...(t.note ? { note: t.note } : {}) }));
   setp(cards[id], 'performance.tests', L(rows, 'ตามแถว', [C], { conf: 'กลาง', est: false, note: `แถวเดียวกับตาราง §07.12 (สร้างโดย lp_check.mjs); expected มาจากแหล่งใน src ของแต่ละแถว แถวที่ src เป็น LP27 คือเป้าที่หัวข้อนี้คำนวณเอง (est ของ leaf ต้นทางบอกไว้); current = ผลโมเดลวันนี้กับบัตรนี้ (lm_card) ณ วันที่รัน` }));
 }
 
@@ -443,7 +454,7 @@ fs.writeFileSync(out('lp_check.json'), JSON.stringify(report, (k, v) => (typeof 
 fs.writeFileSync(out('lp_tests.json'), JSON.stringify(T, null, 1));
 const fmtv = v => (typeof v === 'number' ? (Math.abs(v) >= 100 ? Math.round(v).toLocaleString('en-US') : String(+v.toFixed(3))) : String(v));
 const md = ['| รหัส | เงื่อนไข | ปริมาณที่วัด | ผลคาดหวัง ± tolerance | ที่มา | โมเดลปัจจุบัน |', '|---|---|---|---|---|---|',
-  ...T.map(t => `| ${t.id} | \`${t.type}\` ${t.cond} | ${t.qty} | ${typeof t.expected === 'number' ? `${fmtv(t.expected)} ± ${fmtv(t.tol)}` : t.expected} ${t.unit} | ${t.src} | ${fmtv(t.current)} ${t.unit} (${t.pass === true ? 'ผ่าน' : t.pass === false ? 'ไม่ผ่าน' : '–'}) |`)];
+  ...T.map(t => `| ${t.id} | \`${t.type}\` ${t.cond} | ${t.qty} | ${typeof t.expected === 'number' ? `${fmtv(t.expected)} ± ${fmtv(t.tol)}` : t.expected} ${t.unit} | ${t.src} | ${fmtv(t.current)} ${t.unit} (${t.pass === true ? 'ผ่าน' : t.pass === false ? 'ไม่ผ่าน' : '–'})${t.note ? '; ' + t.note : ''} |`)];
 fs.writeFileSync(out('lp_tests.md'), md.join('\n') + '\n');
 fs.writeFileSync(out('lp_cards.json'), JSON.stringify(cards, null, 1));
 fs.writeFileSync(out('lp_json_blocks.md'), blocksMd(cards));

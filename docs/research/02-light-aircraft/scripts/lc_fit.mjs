@@ -17,7 +17,7 @@ export async function fit({ mode = 'static', T0 = null } = {}) {
   if (card.propulsion) delete card.propulsion.legacy;
   if (card.aero) delete card.aero.legacy;
   const t0 = T0 ?? compute().prop.static.T0_N;
-  const f = legacyFit(card, { mode, T0: mode === 'static' ? t0 : null });
+  const f = legacyFit(card, { mode, T0: t0 });
   const { M } = await import(path.join(ROOT, 'test', 'harness.mjs'));
   const chk = await checkFit(M, card, f);
   return { type: 'c172s', mode, T0_input: t0, legacy: f.legacy, notes: f.notes, targets: f.targets, check: chk };

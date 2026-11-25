@@ -96,9 +96,9 @@ export function buildMain(id, d) {
   s('airframe.tail.airfoil_h', E('ไม่ทราบ (สมมาตร)', '-', [C], 'ไม่มีแหล่งสาธารณะ'));
   s('airframe.tail.airfoil_v', E('ไม่ทราบ (สมมาตร)', '-', [C], 'ไม่มีแหล่งสาธารณะ'));
   s('airframe.tail.incidence_h_deg', E(0, 'deg', [C], 'ไม่มีข้อมูล'));
-  s('airframe.surfaces.elevator', E({ area_m2: 1.1, chord_ratio: 0.40, span_fraction: 1 }, 'm2, -', ['R1:params-trainer.json', C], 'เท่ารอบที่ 1'));
-  s('airframe.surfaces.aileron', E({ area_m2: 0.65, chord_ratio: 0.25, span_fraction: [0.55, 0.97] }, 'm2, -', ['R1:params-trainer.json', C], 'ต่อข้าง; span_fraction เป็นสัดส่วนครึ่งช่วงปีก'));
-  s('airframe.surfaces.rudder', E({ area_m2: 0.85, chord_ratio: 0.40, span_fraction: 1 }, 'm2, -', ['R1:params-trainer.json', C], 'เท่ารอบที่ 1'));
+  s('airframe.surfaces.elevator', E({ area_m2: 1.1, chord_ratio: 0.40, span_fraction: 1 }, 'm2, -', ['R1:params-trainer.json#controls.pitch.S_e', C], 'เท่ารอบที่ 1'));
+  s('airframe.surfaces.aileron', E({ area_m2: 0.65, chord_ratio: 0.25, span_fraction: [0.55, 0.97] }, 'm2, -', ['R1:params-trainer.json#controls.roll.S_a_each', C], 'ต่อข้าง; span_fraction เป็นสัดส่วนครึ่งช่วงปีก'));
+  s('airframe.surfaces.rudder', E({ area_m2: 0.85, chord_ratio: 0.40, span_fraction: 1 }, 'm2, -', ['R1:params-trainer.json#controls.yaw.S_r', C], 'เท่ารอบที่ 1'));
   s('airframe.surfaces.flap', E({ kind: T6 ? 'single-slotted? (ไม่ยืนยัน)' : 'split (ไม่ยืนยัน)', chord_ratio: 0.25, span_fraction: [0.12, 0.55] }, '-', [C], 'ไม่มีแบบสาธารณะ'));
   s('airframe.surfaces.trim_tab', T6 ? H({ elevator_tab: true, rudder_tab: true, aileron: 'biased centering spring (ไม่มี tab)' }, '-', ['LP5']) : H({ elevator_tab: true, rudder_trim_tab: true, rudder_anti_flettner: true, aileron_fixed_tab: true }, '-', ['LP2']));
   s('airframe.geometry.length', T6 ? H(P.L, 'm', ['LP5'], '33 ft 4 in') : M(P9.L, 'm', ['LP13'], '33 ft 3 in'));

@@ -81,6 +81,8 @@ for (const [file, key, no, th] of SEC) {
 }
 md += `| **รวม** | | ${tot.aircraft} | ${tot.engine} | ${tot.propeller} | ${tot.gear} | ${tot.environment} | ${tot.sim} | ${tot.total} | ${tot.est} |\n\n`;
 md += `ค่าในคอลัมน์ "ค่าเครื่องฝึก" เป็นค่าของเครื่องฝึกเทอร์โบพร็อปสมมติของ AirfieldLab (หรือค่าตัวอย่างของแบบอ้างอิง เช่น CFM56 ในหมวด turbofan) ไม่ใช่ข้อมูลของเครื่องบินแบบใดแบบหนึ่ง\n\n`;
+// round-2 extension: pointer only, so this file stays generated from the round-1 topics (research item R2-01)
+md += `**ส่วนขยายของรอบที่ 2** (เครื่องบินเล็กและเครื่องฝึก) อยู่ใน [\`../02-light-aircraft/schema-ext.md\`](../02-light-aircraft/schema-ext.md) ข้อ 5: หมวดใหม่ \`piston.*\` (เช่น \`piston.altitude.model\` = \`gagg_ferrar\` | \`ind_friction\` (ฟิลด์ \`f\`) | \`turbo_flat\` | \`table\`), \`speeds\`, \`performance\`, \`ops\`, \`procedures\` และคำอธิบาย 14 leaf ของ \`common_light.methods\` ตารางด้านล่างมีเฉพาะ path ของรอบที่ 1\n\n`;
 for (const [file, key, no, th] of SEC) {
   const r = rows[key]; if (!r) continue;
   md += `## \`${key}\` — [หัวข้อ ${no}. ${th}](${file})\n\n`;

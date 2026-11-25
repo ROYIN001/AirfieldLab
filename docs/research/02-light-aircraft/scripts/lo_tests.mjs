@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Topic 09 (LO) test cases T-LO-01..: expected values computed here from first principles, compared with
 // lo_lib.mjs, and (where the current sim can measure it) with AirfieldLab's Evaluator and an autoland run.
-// Run from the repo root. Writes scripts/out/lo_tests.json and lo_tests.md.
+// Run from the repo root. Writes scripts/out/lo_tests.json and lo_tests.md ($LM_OUT_DIR when set).
 // Completeness fix 19 Nov 2026 (gap 25, D1, D6, gap 4):
 //   - every row has an explicit tolerance: a number (|got - exp| <= tol), a per-element list, 'le' (got <= exp, an upper
 //     bound) or 'exact' (logic, text and lists must match exactly);
@@ -13,13 +13,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { makeCircuit, toNE, turnRadius, defaultOffset, sinkForPath, windLeg, gateCheck, gateFor, checklistFor, checklistAudit, phaseOf, TYPES, KT, FT, NM, SM, G0, DEG } from './lo_lib.mjs';
-import { mergeDir, loadType, leaf as cardLeaf, val, MASS_CORRECTED } from './lm_lib.mjs';
+import { mergeDir, loadType, leaf as cardLeaf, val, MASS_CORRECTED, outFile } from './lm_lib.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-// Repo root: relative to this folder first (docs/research/02-light-aircraft/scripts -> four levels up), then
-// $AIRFIELDLAB_ROOT, then the default of lm_card.mjs (same convention as the shared tools).
+// Repo root: $AIRFIELDLAB_ROOT first (lm_ci.mjs points it at the pinned sim snapshot), then the repo this folder sits
+// in (docs/research/02-light-aircraft/scripts -> four levels up), the same order as lm_card.mjs.
 const IN_REPO = path.resolve(HERE, '..', '..', '..', '..');
-const ROOT = fs.existsSync(path.join(IN_REPO, 'test', 'harness.mjs')) ? IN_REPO : (process.env.AIRFIELDLAB_ROOT || decodeURIComponent(new URL('../../../../', import.meta.url).pathname).replace(/\/$/, ''));
+const ROOT = process.env.AIRFIELDLAB_ROOT || IN_REPO;
 const { M } = await import(pathToFileURL(path.join(ROOT, 'test', 'harness.mjs')).href);
 const OUT = new URL('./out/', import.meta.url);
 const NS = 'ไม่รองรับในซิมวันนี้';
@@ -198,13 +198,12 @@ const IDS = [...Object.keys(TYPES), 'da42_vi'];
   const row34 = eds.map((d) => f(d) ? `${f(d).ad222_items.trainingArea} ${f(d).ad222_items.reportingPoints} ${f(d).ad222_items.trainOut && f(d).ad222_items.trainBack}` : 'missing');
   add('T-LO-34', 'AIP AD 2.22 same editions: training-area designator in 9.2, reporting points in the 8.5.2 table, training route out/back at 1,000 ft', 'designator, count, route found', ['D72 26 true', 'D72 26 true', 'D6A,D6B 26 true'], 'exact', row34, `LO39, LS20, LS37; lo_aip_check.mjs run ${A?.run ?? '–'}`, `${NS} (ไม่มีเส้นทาง VFR)`); }
 
-fs.mkdirSync(OUT, { recursive: true });
-fs.writeFileSync(new URL('lo_tests.json', OUT), JSON.stringify({ run: new Date().toISOString().slice(0, 10), sim: sim.at500 && { at500: sim.at500, gates: sim.gates }, tests: T }, null, 1));
+fs.writeFileSync(outFile('lo_tests.json'), JSON.stringify({ run: new Date().toISOString().slice(0, 10), sim: sim.at500 && { at500: sim.at500, gates: sim.gates }, tests: T }, null, 1));
 const fmtV = (v) => (Array.isArray(v) ? v.join(' / ') : typeof v === 'object' ? JSON.stringify(v) : String(v));
 const fmtExp = (t) => t.tol === 'exact' ? `${fmtV(t.exp)} (ตรงทุกตัว)` : t.tol === 'le' ? `≤ ${t.exp} (ขอบบน ไม่มีส่วนเผื่อ)` : Array.isArray(t.tol) ? `${fmtV(t.exp)} ± ${t.tol.join(' / ')}` : `${t.exp} ± ${t.tol}`;
 const md = ['| รหัส | เงื่อนไข | ปริมาณที่วัด | ผลคาดหวัง ± tolerance | ที่มา | โมเดลปัจจุบัน | lo_lib |', '|---|---|---|---|---|---|---|'];
 for (const t of T) md.push(`| ${t.id} | ${t.cond} | ${t.qty} | ${fmtExp(t)} | ${t.src} | ${t.cur} | ${fmtV(t.got)} ${t.pass ? '✓' : '✗'} |`);
-fs.writeFileSync(new URL('lo_tests.md', OUT), md.join('\n') + '\n');
+fs.writeFileSync(outFile('lo_tests.md'), md.join('\n') + '\n');
 console.log(md.join('\n'));
 console.log(`\n${T.filter((t) => t.pass).length}/${T.length} pass`);
 process.exitCode = T.every((t) => t.pass) ? 0 : 1;
