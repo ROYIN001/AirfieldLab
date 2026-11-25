@@ -7,11 +7,11 @@
 | T-LP-05 | `pc9m` MTOW, 3,000 ft, แรงขับศูนย์, clean | L/D ร่อนสูงสุด | 11.3 ± 1  | [LP16][LP19] polar คลาส T-6 (ค่าประมาณ) | 11.3  (ผ่าน) |
 | T-LP-06 | `pc9m` MTOW, approach 95 kt แฟลป LDG ล้อลง γ −3° 300 m | short-period ζ (MIL-F-8785C Class I Cat C Level 1: 0.35–1.30) | 0.825 ± 0.475  | [R1:C12] | 0.579  (ผ่าน) |
 | T-LP-07 | `pc9m` เหมือนบน | CAP (Cat C Level 1: 0.16–3.6) | 1.88 ± 1.72 1/(g s²) | [R1:C12] | 1.063 1/(g s²) (ผ่าน) |
-| T-LP-08 | `pc9m` cruise 200 kt 3,000 ft clean | Dutch roll ζ (Class I Cat A Level 1 ≥ 0.19; Cat B/C ≥ 0.08) | ≥ 0.08 (Cat A: ≥ 0.19)  | [R1:C12] (ผ่านเมื่อ ≥ 0.08) | 0.164  (ผ่าน) |
+| T-LP-08 | `pc9m` cruise 200 kt 3,000 ft clean | Dutch roll ζ (Class I Cat A Level 1 ≥ 0.19; Cat B/C ≥ 0.08) | ≥ 0.08 (Cat A: ≥ 0.19)  | [R1:C12] (ผ่านเมื่อ ≥ 0.08) | 0.158  (ผ่าน) |
 | T-LP-09 | `pc9m` approach 95 kt แฟลป LDG | roll mode τR (Level 1 ≤ 1.0 s) | 0.05–1 s | [R1:C12] | 0.339 s (ผ่าน) |
 | T-LP-10 | `pc9m` approach 95 kt แฟลป LDG | spiral: เวลาเพิ่มสองเท่าถ้าลู่ออก (Cat C Level 1 ≥ 12 s; ลู่เข้า = ผ่าน) | ≥ 12 s | [R1:C12] | 25.74 s (ผ่าน) |
 | T-LP-11 | `pc9m` approach 95 kt แฟลป LDG | phugoid ζ (Level 1 ≥ 0.04) | ≥ 0.04  | [R1:C12] | 0.136  (ผ่าน) |
-| T-LP-12 | `pc9m` cruise 200 kt, aileron เต็ม (เฉลี่ย 15.5°) ม้วนจาก 0° | เวลาถึงมุมเอียง 60° (Class I Cat A Level 1 ≤ 1.3 s) | 0–1.3 s | [R1:C12][LP2] | 0.566 s (ผ่าน) |
+| T-LP-12 | `pc9m` cruise 200 kt, aileron เต็ม (เฉลี่ย 15.5°) ม้วนจาก 0° | เวลาถึงมุมเอียง 60° (Class I Cat A Level 1 ≤ 1.3 s) | 0–1.3 s | [R1:C12][LP2] | 0.568 s (ผ่าน) |
 | T-LP-13 | `pc7mk2` MTOW 2,250 kg, 3,000 ft ISA, idle, แฟลป UP ล้อขึ้น, 1 kt/s | V_SR 1 g = VS/√0.95 | 76.95 ± 1.5 kt | [LP9] fact sheet 75 KCAS (น้ำหนักสมมติ) | 76.94 kt (ผ่าน) |
 | T-LP-14 | `pc7mk2` เหมือนบน แฟลป LDG ล้อลง | V_SR 1 g | 68.74 ± 1.5 kt | [LP9] 67 KCAS | 68.72 kt (ผ่าน) |
 | T-LP-15 | `pc7mk2` MTOW, SL ISA, 522 kW, clean | ROC สูงสุด | 2,840 ± 284 fpm | [LP9] | 2,869 fpm (ผ่าน) |

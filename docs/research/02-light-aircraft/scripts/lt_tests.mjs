@@ -6,7 +6,7 @@
 //   (T-LT-29 needs scripts/out/lt_review.json from lt_review.mjs, added by the reviewer)
 import fs from 'node:fs';
 import { loadType } from './lm_lib.mjs';
-import { loadSim, buildAC, applyAC, trim, iasCas } from './lm_card.mjs';
+import { loadSim, buildAC, applyAC, trim, iasCas, takeoffTest } from './lm_card.mjs';
 const D2R = Math.PI / 180, KT = 0.514444, FT = 0.3048, G0 = 9.80665;
 const rd = f => JSON.parse(fs.readFileSync(new URL('./out/' + f, import.meta.url), 'utf8'));
 const r = (x, n = 4) => (x == null || !isFinite(x) ? null : +(+x).toPrecision(n));
@@ -17,21 +17,8 @@ const M = await loadSim();
 const ngCard = structuredClone(loadType('da42ng'));
 
 // extra sim runs: hot-day take-off (ISA+20 = 35 °C at VTBD, elevation 9 ft ≈ SL) and cruise speed at 92 % power
-function takeoffISA(isaDev, { f = 0, VR = 76, theta = 9 } = {}) {   // same procedure as lm_card.takeoffTest, plus isaDev
-  const { AC } = M, dt = 1 / 240, clamp = (x, a, b) => Math.max(a, Math.min(b, x));
-  const ac = new M.Aircraft(); ac.isaDev = isaDev; ac.setParked(0, 0, 0); for (let i = 0; i < 240 * 5; i++) ac.step(dt);
-  ac.cmd.flaps = ac.flaps = f; ac.cmd.thr = 1; for (let i = 0; i < 240 * 3; i++) ac.step(dt);
-  ac.cmd.brake = 0; const a = ac.air, n0 = ac.x[0], t0 = ac.t; let thC = null, deI = 0, lo = null, d50 = null;
-  while (ac.t - t0 < 120 && d50 == null) {
-    if (a.ias / KT >= VR) { if (thC == null) thC = a.theta; thC = Math.min(theta * D2R, thC + 3 * D2R * dt); const e = thC - a.theta; deI = clamp(deI - 0.6 * e * dt, -AC.deUp, AC.deDn); ac.cmd.de = clamp(deI - 2.5 * e + 0.85 * a.q, -AC.deUp, AC.deDn); }
-    else ac.cmd.de = 0;
-    ac.cmd.dr = clamp(1.4 * a.psi + 0.6 * a.r, -AC.drMax, AC.drMax); ac.cmd.steer = a.wow[0] ? clamp(-ac.cmd.dr / AC.drMax, -1, 1) * 10 * D2R : 0;
-    ac.cmd.da = clamp(-1.25 * a.phi - 0.28 * a.p, -AC.daMax, AC.daMax);
-    ac.step(dt);
-    if (!lo && !a.onGround && a.ias / KT > 0.5 * VR) lo = ac.x[0] - n0;
-    if (lo && a.hWheel >= 50 * FT) d50 = ac.x[0] - n0;
-  }
-  return { roll: lo, d50 };
+function takeoffISA(isaDev, { f = 0, VR = 76, theta = 9 } = {}) {   // lm_card.takeoffTest (mode r1) with isaDev
+  const t = takeoffTest(M, { f, VR, theta, isaDev }); return { roll: t.groundRoll_m, d50: t.dist50ft_m };
 }
 let restore = applyAC(M, buildAC(ngCard, { mass: 1900 }));
 const toISA = takeoffISA(0), toHot = takeoffISA(20);

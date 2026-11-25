@@ -814,7 +814,7 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "best rate ถึงความสูงปลอดภัย แฟลป T/O [LD3]; ไต่แบบ cruise climb แฟลป UP 88 KIAS"
+    "note": "best rate ถึงความสูงปลอดภัย แฟลป T/O ทุกมวล [LD3]; ไต่แบบ cruise climb แฟลป UP 88 KIAS"
    },
    "VR_kt": {
     "v": 67,
@@ -913,6 +913,27 @@
     "conf": "ต่ำ",
     "est": true,
     "note": "ค่าประมาณ (scripts/ld_vx.mjs, gap 7): แฟลป UP ที่ MTOM 1310 kg = k·VS1 ใน CAS = 1.19 × 64.6 = 76.9 KCAS (39.6 m/s); ที่ training_mass 1150 kg = 73 KIAS (72 KCAS); k = ค่าเฉลี่ย Vx/VS1 (CAS) ของ POH c172s 1.200, c172r 1.192, c152 1.177 (บัตร 04/10/11); AFM ไม่ให้ Vx (14 CFR 23.1585/23.1587 ไม่บังคับ [LD17]) ส่วนความเร็วไต่หลังวิ่งขึ้นแฟลป T/O ของ AFM 72 KIAS = 71.1 KCAS ตรงกับ k·VS(T/O) = 72.2 KCAS จึงทำหน้าที่ Vx ของโครงแบบวิ่งขึ้น; polar ของบัตร + ตาราง CT/CP ให้มุมไต่สูงสุดที่ 58.1 KCAS ซึ่งต่ำกว่า 1.1 VS1 (มุมไต่ยังเพิ่มจนใกล้ stall) จึงใช้ตัดสิน Vx เองไม่ได้; ซิมวันนี้ได้ 69.5 KCAS (T-LD-38…40)"
+   },
+   "climb_basis": {
+    "v": {
+     "VX": {
+      "flap": "UP",
+      "mass_kg": 1310
+     },
+     "VY": {
+      "flap": "T/O",
+      "mass_kg": null
+     }
+    },
+    "u": "-, kg",
+    "scope": "aircraft",
+    "src": [
+     "LD3",
+     "LD17"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "โครงแบบและมวลของ speeds.VX_kt และ VY_kt (R2-08): VX คำนวณที่แฟลป UP และ MTOM 1,310 kg (scripts/ld_vx.mjs); VY 72 KIAS คือความเร็วไต่แฟลป T/O ของ AFM ใช้ทุกมวล (mass_kg null); คนละแฟลปจึงไม่เทียบ VX ≤ VY (lm_merge vx_vy รายงาน info); Vy แฟลป UP ของ NG ยังไม่พบในแหล่งสาธารณะ"
    },
    "stall_altitude_loss_ft": {
     "v": 240,
@@ -1436,7 +1457,7 @@
       "tolerance": "ขอบ Level 1",
       "unit": "",
       "origin": "MIL-F-8785C Class I [R1:V7, R1:V10]",
-      "current_model": "0.572 / 0.555",
+      "current_model": "0.572 / 0.556",
       "pass": true
      },
      {
@@ -1480,7 +1501,7 @@
       "tolerance": "-",
       "unit": "s",
       "origin": "MIL-F-8785C Table 5 [R1:V10]",
-      "current_model": "0.252 / 0.181",
+      "current_model": "0.252 / 0.178",
       "pass": true
      },
      {
@@ -1491,7 +1512,7 @@
       "tolerance": "-",
       "unit": "s",
       "origin": "MIL-F-8785C Table 6 [R1:V10]",
-      "current_model": "61.1 / 32",
+      "current_model": "61.1 / 78.6",
       "pass": true
      },
      {
@@ -1652,7 +1673,7 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "แถวเดียวกับตาราง T-LD ใน §05.11 ที่ตรวจ da40ng (scripts/ld_tests.mjs 2026-11-19 → out/ld_tests.json → ld_json.mjs); expected มาจากแหล่งในช่อง origin (แถวที่ผู้เขียนประมาณเองระบุวิธีไว้ในช่องนั้น); current_model = บัตรนี้ในฟิสิกส์ของซิม commit cabf0f0; pass null = ไม่รองรับในซิมวันนี้; ผ่าน 27 ไม่ผ่าน 4 n.a. 3 จาก 34 แถว"
+    "note": "แถวเดียวกับตาราง T-LD ใน §05.11 ที่ตรวจ da40ng (scripts/ld_tests.mjs 2026-11-25 → out/ld_tests.json → ld_json.mjs); expected มาจากแหล่งในช่อง origin (แถวที่ผู้เขียนประมาณเองระบุวิธีไว้ในช่องนั้น); current_model = บัตรนี้ในฟิสิกส์ของซิม commit cabf0f0; pass null = ไม่รองรับในซิมวันนี้; ผ่าน 27 ไม่ผ่าน 4 n.a. 3 จาก 34 แถว"
    }
   }
  }
@@ -3838,42 +3859,6 @@
      "conf": "ต่ำ",
      "est": true,
      "note": "ค่าประมาณ: รอบที่ 1"
-    },
-    "derived_check": {
-     "v": {
-      "mass_kg": 1150,
-      "Fs_per_g_N": {
-       "approach": 19.4,
-       "cruise": 19.1
-      },
-      "grad_N_per_kt": {
-       "approach": 0.401,
-       "cruise": 0.266
-      },
-      "at_kcas": {
-       "approach": 73,
-       "cruise": 110
-      },
-      "SM_fixed": 0.294,
-      "SM_free": 0.227,
-      "free_elevator_factor": 0.82,
-      "mtom": {
-       "mass_kg": 1310,
-       "Fs_per_g_N": 21.1,
-       "pull_to_nL_lbf": 13.3,
-       "cfr23_155_min_lbf": 20.6
-      }
-     },
-     "u": "N/g, N/kt, MAC",
-     "scope": "aircraft",
-     "src": [
-      "LD12",
-      "LD15",
-      "LM0"
-     ],
-     "conf": "ต่ำ",
-     "est": true,
-     "note": "ค่าประมาณ (scripts/ld_stickforce.mjs, gap 18): สมการ elevator แบบ reversible ของรอบที่ 1 §6 (trim เชิงเส้น + Ch = Ch0 + Chα·αt + Chδ·δe + Chtab·δtab, F = G·ηt·q·Se·ce·Ch) กับ controls.pitch.* ของบัตรนี้ ที่ training_mass 1150 kg; ที่ MTOM 1310 kg แรงดึงถึง 3.8 g = 13.3 lbf (59.2 N) ต่ำกว่าขั้นต่ำ 14 CFR 23.155(a)(2) 20.6 lbf [LD12] แสดงว่า Chδ และ gearing ที่ยกมาจากรอบที่ 1 ต่ำไปสำหรับ DA40 (เครื่องจริงผ่านการรับรอง) เป้าของโมเดลแรงที่คันในอนาคตคือ Fs/g ≥ 32.8 N/g ที่ MTOM (T-LD-43) และความชันต่อความเร็วเป็นบวก (T-LD-44); ซิมวันนี้ไม่มีโมเดลแรงที่คัน"
     }
    },
    "roll": {
@@ -5316,6 +5301,64 @@
     "est": true,
     "note": "VR 68 KIAS ที่ 1,310 kg (สเกลจาก 67 KIAS ที่ 1,280 kg [LD3]) → 66.9 KCAS ด้วยตาราง T/O; มุมเงย 8° ค่าประมาณ"
    },
+   "stick_force_targets": {
+    "v": {
+     "band": {
+      "controller": "centre_stick",
+      "nL": 3.8,
+      "W_lb": 2888,
+      "nAlpha_cruise_g_per_rad": 11.02,
+      "mil_L1_centre_stick_lbf_per_g": {
+       "min": 7.5,
+       "max": 21.78
+      },
+      "part23_155_force_lbf": 20.6,
+      "part23_155_min_lbf_per_g": 7.37,
+      "fs_per_g_lbf": {
+       "min": 7.5,
+       "max": 21.78
+      },
+      "fs_per_g_N": {
+       "min": 33.4,
+       "max": 96.9
+      }
+     },
+     "hinge_model": {
+      "mass_kg": 1150,
+      "at_kt": {
+       "approach": 73,
+       "cruise": 110
+      },
+      "Fs_per_g_N": {
+       "approach": 19.4,
+       "cruise": 19.1
+      },
+      "grad_N_per_kt": {
+       "approach": 0.401,
+       "cruise": 0.266
+      },
+      "SM_fixed": 0.294,
+      "SM_free": 0.227,
+      "free_elevator_factor": 0.82,
+      "mtow": {
+       "mass_kg": 1310,
+       "Fs_per_g_N_cruise": 21.1,
+       "Fs_per_g_lbf_cruise": 4.75,
+       "pull_to_nL_lbf": 13.3
+      }
+     }
+    },
+    "u": "lbf/g, N/g, N/kt, g/rad, lbf, MAC",
+    "scope": "aircraft",
+    "src": [
+     "LD12",
+     "LD15",
+     "LM0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ (scripts/ld_stickforce.mjs, gap 18; ย้ายจาก controls.pitch.derived_check ตาม R2-08): band = ช่องแรงต่อ g ของคันแบบ centre stick ตาม MIL-F-8785C Level 1 (7.5–21.78 lbf/g ที่ n/α 11.02 g/rad, nL 3.8) รวมขั้นต่ำ 14 CFR 23.155(a)(2) ก่อน Amdt 64 [LD12] 20.6 lbf (91.6 N) ÷ (nL − 1) = 7.37 lbf/g ที่ MTOM 1310 kg (W 2888 lb) ได้ 7.5–21.78 lbf/g (33.4–96.9 N/g), สูตรเดียวกับ lh_stick.band; hinge_model = สมการ elevator แบบ reversible ของรอบที่ 1 §6 (F = G·ηt·q·Se·ce·Ch) กับ controls.pitch.* ของบัตรนี้ ที่ training_mass 1150 kg; ที่ MTOM แรงดึงถึง 3.8 g = 13.3 lbf (59.2 N) ต่ำกว่าขั้นต่ำ 23.155 แสดงว่า Chδ/gearing ของรอบที่ 1 ต่ำไปสำหรับ DA40 (T-LD-43); ใช้เป็นเป้าของซิมเท่านั้น ไม่ใช่ค่าการรับรอง"
+   },
    "trim_targets": {
     "cruise": {
      "v": {
@@ -5421,7 +5464,8 @@
        "grows": true
       },
       "nAlpha": 5.261,
-      "CAP": 2.057
+      "CAP": 2.057,
+      "derivSet": "approach"
      },
      "u": "rad/s, -, s",
      "scope": "aircraft",
@@ -5435,28 +5479,29 @@
     "cruise": {
      "v": {
       "sp": {
-       "wn": 4.729,
-       "zeta": 0.555,
-       "T": 1.597
+       "wn": 4.731,
+       "zeta": 0.556,
+       "T": 1.598
       },
       "ph": {
        "wn": 0.209,
        "zeta": 0.116,
-       "T": 30.268
+       "T": 30.281
       },
       "dr": {
-       "wn": 2.128,
-       "zeta": 0.211,
-       "T": 3.021
+       "wn": 2.018,
+       "zeta": 0.181,
+       "T": 3.166
       },
-      "roll_tau": 0.181,
+      "roll_tau": 0.178,
       "spiral": {
-       "lam": 0.022,
-       "t2": 32.032,
+       "lam": 0.009,
+       "t2": 78.609,
        "grows": true
       },
       "nAlpha": 11.02,
-      "CAP": 2.029
+      "CAP": 2.031,
+      "derivSet": "cruise"
      },
      "u": "rad/s, -, s",
      "scope": "aircraft",
@@ -5520,6 +5565,7 @@
     "validation.currentModel.approach95",
     "validation.currentModel.cruise155",
     "otherSims.*",
+    "controls.pitch.derived_check",
     "performance.ROC_table",
     "performance.takeoff_table",
     "performance.landing_table"
@@ -5531,7 +5577,7 @@
    ],
    "conf": "สูง",
    "est": false,
-   "note": "turbofan.*: เครื่องลูกสูบดีเซล · turboprop.*: ไม่ใช่เทอร์โบพร็อป · aero.static_long.table_clean: ตารางตัวอย่างรูปแบบ คำนวณได้จากพารามิเตอร์ข้างบนด้วยสคริปต์รอบที่ 1 · interference.groundEffect.tablesCheck: แถวตรวจของรอบที่ 1 คำนวณจาก rEps ได้ ไม่ขึ้นกับแบบ · propeller.tables.CNmu: ยังไม่ได้คำนวณ BEM แยกมุมแอสไซเมทรี (P-factor) ของใบพัดนี้ งาน P2 · propeller.tables.CMmu: เหมือน CNmu · propeller.governor.betaFeather: MTV-6-R/190-69 ไม่มี feather · propeller.governor.featherRate: ไม่มี feather · propeller.betaReverse.*: ไม่มี reverse · propeller.feathered.*: ไม่มี feather (เครื่องยนต์เดียว) · propeller.engineInterface.flightIdleShaftPower: นิยามของเทอร์โบพร็อป; ลูกสูบ/ดีเซลใช้ piston.* · controls.reference_types.*: ค่าอ้างอิงของเครื่องโดยสาร (737, ATR) ไม่ใช่ของ DA40 · gear.strut_main.p_static: ขาสปริงเหล็ก ไม่ใช่ oleo · gear.strut_main.piston_area: ไม่ใช่ oleo · gear.strut_main.ratio_static_to_extended: ไม่ใช่ oleo · gear.strut_main.ratio_compressed_to_extended: ไม่ใช่ oleo · gear.strut_main.polytropic_n_dynamic: ไม่ใช่ oleo · gear.strut_main.polytropic_n_static: ไม่ใช่ oleo · gear.strut_main.Kh_compression: ไม่ใช่ oleo · gear.strut_main.Kr_rebound: ไม่ใช่ oleo · gear.strut_main.c_linear: ใช้ spring.damping_ratio แทน · gear.strut_main.seal_friction_ratio: ไม่ใช่ oleo · gear.strut_nose.p_static: ล้อหน้า elastomer · gear.strut_nose.piston_area: elastomer · gear.strut_nose.ratio_static_to_extended: elastomer · gear.strut_nose.ratio_compressed_to_extended: elastomer · gear.strut_nose.Kh_compression: elastomer · gear.strut_nose.Kr_rebound: elastomer · gear.strut_nose.c_linear: ใช้ spring.damping_ratio แทน · gear.brakes.antiskid_efficiency: ไม่มี antiskid · gear.brakes.antiskid_efficiency_measured: ไม่มี antiskid · gear.brakes.antiskid_slip_setpoint: ไม่มี antiskid · gear.steering.steer_rate: ล้อหน้า castering ไม่มีตัวขับเลี้ยว · gear.certification.part25_limit_descent: CS/Part 23 ไม่ใช่ Part 25 · gear.certification.part25_friction_cap: Part 25 · wind.discreteGust.cfr25_341_Fg: สูตร gust ของ Part 25 · wind.wake.leaders: รายการเครื่องนำ (A320, 737 …) ใช้ร่วมจากรอบที่ 1 ไม่ใช่ค่าของ DA40 · numerics.contact.*: ค่าตัวเลขของโมเดลสัมผัสพื้นในซิม ไม่ขึ้นกับแบบ ใช้ค่ารอบที่ 1 · validation.typicalModes.*: โหมดอ้างอิงของแบบอื่น (c172x, 737, 747, GA ทั่วไป) ไม่ใช่ของ DA40 · validation.currentModel.approach95: ชื่อผูกกับสภาพของเครื่องฝึกรอบที่ 1; ผลของ DA40 อยู่ที่ validation.currentModel.approach · validation.currentModel.cruise155: เหมือนกัน; ดู validation.currentModel.cruise · otherSims.*: หัวข้อ 03 (LB) เป็นเจ้าของ path otherSims · performance.ROC_table: AFM บท 5 ให้อัตราไต่ตามความสูง/อุณหภูมิเป็นแผนภูมิ (nomogram) ซึ่งเป็นภาพในฉบับ IO-360 ที่เปิดอ่านได้ [LD6 viewer 180–191] และสำเนา AFM NG [LD2] มีเฉพาะบท 1–3; จุด SL 30–35 °C จึงไม่มีจากเอกสาร (วันร้อนเป็นค่าประมาณใน T-LD-15/T-LD-33) · performance.takeoff_table: เหตุผลเดียวกับ performance.ROC_table: แผนภูมิระยะวิ่งขึ้นของ AFM บท 5 อ่านค่าไม่ได้; ใช้ performance.takeoff ที่ SL ISA และสเกล σ สำหรับ 35 °C (T-LD-15, T-LD-33 ค่าประมาณ) · performance.landing_table: เหตุผลเดียวกับ performance.ROC_table: แผนภูมิระยะลงจอดของ AFM บท 5 อ่านค่าไม่ได้; ใช้ performance.landing ที่ SL ISA"
+   "note": "turbofan.*: เครื่องลูกสูบดีเซล · turboprop.*: ไม่ใช่เทอร์โบพร็อป · aero.static_long.table_clean: ตารางตัวอย่างรูปแบบ คำนวณได้จากพารามิเตอร์ข้างบนด้วยสคริปต์รอบที่ 1 · interference.groundEffect.tablesCheck: แถวตรวจของรอบที่ 1 คำนวณจาก rEps ได้ ไม่ขึ้นกับแบบ · propeller.tables.CNmu: ยังไม่ได้คำนวณ BEM แยกมุมแอสไซเมทรี (P-factor) ของใบพัดนี้ งาน P2 · propeller.tables.CMmu: เหมือน CNmu · propeller.governor.betaFeather: MTV-6-R/190-69 ไม่มี feather · propeller.governor.featherRate: ไม่มี feather · propeller.betaReverse.*: ไม่มี reverse · propeller.feathered.*: ไม่มี feather (เครื่องยนต์เดียว) · propeller.engineInterface.flightIdleShaftPower: นิยามของเทอร์โบพร็อป; ลูกสูบ/ดีเซลใช้ piston.* · controls.reference_types.*: ค่าอ้างอิงของเครื่องโดยสาร (737, ATR) ไม่ใช่ของ DA40 · gear.strut_main.p_static: ขาสปริงเหล็ก ไม่ใช่ oleo · gear.strut_main.piston_area: ไม่ใช่ oleo · gear.strut_main.ratio_static_to_extended: ไม่ใช่ oleo · gear.strut_main.ratio_compressed_to_extended: ไม่ใช่ oleo · gear.strut_main.polytropic_n_dynamic: ไม่ใช่ oleo · gear.strut_main.polytropic_n_static: ไม่ใช่ oleo · gear.strut_main.Kh_compression: ไม่ใช่ oleo · gear.strut_main.Kr_rebound: ไม่ใช่ oleo · gear.strut_main.c_linear: ใช้ spring.damping_ratio แทน · gear.strut_main.seal_friction_ratio: ไม่ใช่ oleo · gear.strut_nose.p_static: ล้อหน้า elastomer · gear.strut_nose.piston_area: elastomer · gear.strut_nose.ratio_static_to_extended: elastomer · gear.strut_nose.ratio_compressed_to_extended: elastomer · gear.strut_nose.Kh_compression: elastomer · gear.strut_nose.Kr_rebound: elastomer · gear.strut_nose.c_linear: ใช้ spring.damping_ratio แทน · gear.brakes.antiskid_efficiency: ไม่มี antiskid · gear.brakes.antiskid_efficiency_measured: ไม่มี antiskid · gear.brakes.antiskid_slip_setpoint: ไม่มี antiskid · gear.steering.steer_rate: ล้อหน้า castering ไม่มีตัวขับเลี้ยว · gear.certification.part25_limit_descent: CS/Part 23 ไม่ใช่ Part 25 · gear.certification.part25_friction_cap: Part 25 · wind.discreteGust.cfr25_341_Fg: สูตร gust ของ Part 25 · wind.wake.leaders: รายการเครื่องนำ (A320, 737 …) ใช้ร่วมจากรอบที่ 1 ไม่ใช่ค่าของ DA40 · numerics.contact.*: ค่าตัวเลขของโมเดลสัมผัสพื้นในซิม ไม่ขึ้นกับแบบ ใช้ค่ารอบที่ 1 · validation.typicalModes.*: โหมดอ้างอิงของแบบอื่น (c172x, 737, 747, GA ทั่วไป) ไม่ใช่ของ DA40 · validation.currentModel.approach95: ชื่อผูกกับสภาพของเครื่องฝึกรอบที่ 1; ผลของ DA40 อยู่ที่ validation.currentModel.approach · validation.currentModel.cruise155: เหมือนกัน; ดู validation.currentModel.cruise · otherSims.*: หัวข้อ 03 (LB) เป็นเจ้าของ path otherSims · controls.pitch.derived_check: ย้ายไป validation.stick_force_targets (band + hinge_model) ตาม R2-08 ให้ path เดียวกับบัตรอื่น · performance.ROC_table: AFM บท 5 ให้อัตราไต่ตามความสูง/อุณหภูมิเป็นแผนภูมิ (nomogram) ซึ่งเป็นภาพในฉบับ IO-360 ที่เปิดอ่านได้ [LD6 viewer 180–191] และสำเนา AFM NG [LD2] มีเฉพาะบท 1–3; จุด SL 30–35 °C จึงไม่มีจากเอกสาร (วันร้อนเป็นค่าประมาณใน T-LD-15/T-LD-33) · performance.takeoff_table: เหตุผลเดียวกับ performance.ROC_table: แผนภูมิระยะวิ่งขึ้นของ AFM บท 5 อ่านค่าไม่ได้; ใช้ performance.takeoff ที่ SL ISA และสเกล σ สำหรับ 35 °C (T-LD-15, T-LD-33 ค่าประมาณ) · performance.landing_table: เหตุผลเดียวกับ performance.ROC_table: แผนภูมิระยะลงจอดของ AFM บท 5 อ่านค่าไม่ได้; ใช้ performance.landing ที่ SL ISA"
   }
  }
 }
@@ -5983,6 +6029,27 @@
     "est": true,
     "note": "ค่าประมาณ (scripts/ld_vx.mjs, gap 7): แฟลป UP ที่ MTOM 1200 kg = k·VS1 ใน CAS = 1.19 × 56.7 = 67.5 KCAS (34.7 m/s); ที่ training_mass 1050 kg = 61 KIAS (63.1 KCAS); k = ค่าเฉลี่ย Vx/VS1 (CAS) ของ POH c172s 1.200, c172r 1.192, c152 1.177 (บัตร 04/10/11); AFM ไม่ให้ Vx (14 CFR 23.1585/23.1587 ไม่บังคับ [LD17]) ส่วนความเร็วไต่หลังวิ่งขึ้นแฟลป T/O ของ AFM 67 KIAS = 68.3 KCAS ตรงกับ k·VS(T/O) = 66.9 KCAS จึงทำหน้าที่ Vx ของโครงแบบวิ่งขึ้น; polar ของบัตร + ตาราง CT/CP ให้มุมไต่สูงสุดที่ 52.2 KCAS ซึ่งต่ำกว่า 1.1 VS1 (มุมไต่ยังเพิ่มจนใกล้ stall) จึงใช้ตัดสิน Vx เองไม่ได้; ซิมวันนี้ได้ 60 KCAS (T-LD-38…40)"
    },
+   "climb_basis": {
+    "v": {
+     "VX": {
+      "flap": "UP",
+      "mass_kg": 1200
+     },
+     "VY": {
+      "flap": "T/O",
+      "mass_kg": 1200
+     }
+    },
+    "u": "-, kg",
+    "scope": "aircraft",
+    "src": [
+     "LD6",
+     "LD17"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "โครงแบบและมวลของ speeds.VX_kt และ VY_kt (R2-08): VX คำนวณที่แฟลป UP และ MTOM 1,200 kg (scripts/ld_vx.mjs); VY 67 KIAS คือความเร็วไต่แฟลป T/O ที่ 1,200 kg [LD6 p.5-13]; ที่มวลฝึก 1,050 kg หัวข้อ 08 และ 09 ใช้ 62 KIAS (แก้มวล)"
+   },
    "stall_altitude_loss_ft": {
     "v": 180,
     "u": "ft",
@@ -6424,7 +6491,7 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "แถวเดียวกับตาราง T-LD ใน §05.11 ที่ตรวจ da40_180 (scripts/ld_tests.mjs 2026-11-19 → out/ld_tests.json → ld_json.mjs); expected มาจากแหล่งในช่อง origin (แถวที่ผู้เขียนประมาณเองระบุวิธีไว้ในช่องนั้น); current_model = บัตรนี้ในฟิสิกส์ของซิม commit cabf0f0; pass null = ไม่รองรับในซิมวันนี้; ผ่าน 4 ไม่ผ่าน 3 n.a. 3 จาก 10 แถว"
+    "note": "แถวเดียวกับตาราง T-LD ใน §05.11 ที่ตรวจ da40_180 (scripts/ld_tests.mjs 2026-11-25 → out/ld_tests.json → ld_json.mjs); expected มาจากแหล่งในช่อง origin (แถวที่ผู้เขียนประมาณเองระบุวิธีไว้ในช่องนั้น); current_model = บัตรนี้ในฟิสิกส์ของซิม commit cabf0f0; pass null = ไม่รองรับในซิมวันนี้; ผ่าน 4 ไม่ผ่าน 3 n.a. 3 จาก 10 แถว"
    }
   }
  }
@@ -6984,42 +7051,6 @@
      "conf": "สูง",
      "est": false,
      "note": "MÄM 40-227 (MTOM 1,200 kg) 18/16° [LD1 p.7]"
-    },
-    "derived_check": {
-     "v": {
-      "mass_kg": 1050,
-      "Fs_per_g_N": {
-       "approach": 17.6,
-       "cruise": 17.3
-      },
-      "grad_N_per_kt": {
-       "approach": 0.396,
-       "cruise": 0.262
-      },
-      "at_kcas": {
-       "approach": 66,
-       "cruise": 100
-      },
-      "SM_fixed": 0.294,
-      "SM_free": 0.226,
-      "free_elevator_factor": 0.82,
-      "mtom": {
-       "mass_kg": 1200,
-       "Fs_per_g_N": 19.2,
-       "pull_to_nL_lbf": 12.1,
-       "cfr23_155_min_lbf": 18.9
-      }
-     },
-     "u": "N/g, N/kt, MAC",
-     "scope": "aircraft",
-     "src": [
-      "LD12",
-      "LD15",
-      "LM0"
-     ],
-     "conf": "ต่ำ",
-     "est": true,
-     "note": "ค่าประมาณ (scripts/ld_stickforce.mjs, gap 18): สมการ elevator แบบ reversible ของรอบที่ 1 §6 (trim เชิงเส้น + Ch = Ch0 + Chα·αt + Chδ·δe + Chtab·δtab, F = G·ηt·q·Se·ce·Ch) กับ controls.pitch.* ของบัตรนี้ ที่ training_mass 1050 kg; ที่ MTOM 1200 kg แรงดึงถึง 3.8 g = 12.1 lbf (53.8 N) ต่ำกว่าขั้นต่ำ 14 CFR 23.155(a)(2) 18.9 lbf [LD12] แสดงว่า Chδ และ gearing ที่ยกมาจากรอบที่ 1 ต่ำไปสำหรับ DA40 (เครื่องจริงผ่านการรับรอง) เป้าของโมเดลแรงที่คันในอนาคตคือ Fs/g ≥ 30 N/g ที่ MTOM (T-LD-43) และความชันต่อความเร็วเป็นบวก (T-LD-44); ซิมวันนี้ไม่มีโมเดลแรงที่คัน"
     }
    },
    "yaw": {
@@ -7083,6 +7114,64 @@
 {
  "da40_180": {
   "validation": {
+   "stick_force_targets": {
+    "v": {
+     "band": {
+      "controller": "centre_stick",
+      "nL": 3.8,
+      "W_lb": 2646,
+      "nAlpha_cruise_g_per_rad": 10.16,
+      "mil_L1_centre_stick_lbf_per_g": {
+       "min": 7.5,
+       "max": 23.61
+      },
+      "part23_155_force_lbf": 18.9,
+      "part23_155_min_lbf_per_g": 6.75,
+      "fs_per_g_lbf": {
+       "min": 7.5,
+       "max": 23.61
+      },
+      "fs_per_g_N": {
+       "min": 33.4,
+       "max": 105
+      }
+     },
+     "hinge_model": {
+      "mass_kg": 1050,
+      "at_kt": {
+       "approach": 66,
+       "cruise": 100
+      },
+      "Fs_per_g_N": {
+       "approach": 17.6,
+       "cruise": 17.3
+      },
+      "grad_N_per_kt": {
+       "approach": 0.396,
+       "cruise": 0.262
+      },
+      "SM_fixed": 0.294,
+      "SM_free": 0.226,
+      "free_elevator_factor": 0.82,
+      "mtow": {
+       "mass_kg": 1200,
+       "Fs_per_g_N_cruise": 19.2,
+       "Fs_per_g_lbf_cruise": 4.31,
+       "pull_to_nL_lbf": 12.1
+      }
+     }
+    },
+    "u": "lbf/g, N/g, N/kt, g/rad, lbf, MAC",
+    "scope": "aircraft",
+    "src": [
+     "LD12",
+     "LD15",
+     "LM0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ (scripts/ld_stickforce.mjs, gap 18; ย้ายจาก controls.pitch.derived_check ตาม R2-08): band = ช่องแรงต่อ g ของคันแบบ centre stick ตาม MIL-F-8785C Level 1 (7.5–23.61 lbf/g ที่ n/α 10.16 g/rad, nL 3.8) รวมขั้นต่ำ 14 CFR 23.155(a)(2) ก่อน Amdt 64 [LD12] 18.9 lbf (84.1 N) ÷ (nL − 1) = 6.75 lbf/g ที่ MTOM 1200 kg (W 2646 lb) ได้ 7.5–23.61 lbf/g (33.4–105 N/g), สูตรเดียวกับ lh_stick.band; hinge_model = สมการ elevator แบบ reversible ของรอบที่ 1 §6 (F = G·ηt·q·Se·ce·Ch) กับ controls.pitch.* ของบัตรนี้ ที่ training_mass 1050 kg; ที่ MTOM แรงดึงถึง 3.8 g = 12.1 lbf (53.8 N) ต่ำกว่าขั้นต่ำ 23.155 แสดงว่า Chδ/gearing ของรอบที่ 1 ต่ำไปสำหรับ DA40 (T-LD-43); ใช้เป็นเป้าของซิมเท่านั้น ไม่ใช่ค่าการรับรอง"
+   },
    "takeoff_test": {
     "v": {
      "flap": "T/O",
@@ -7192,7 +7281,8 @@
        "grows": true
       },
       "nAlpha": 5.42,
-      "CAP": 2.023
+      "CAP": 2.023,
+      "derivSet": "approach"
      },
      "u": "rad/s, -, s",
      "scope": "aircraft",
@@ -7206,28 +7296,29 @@
     "cruise": {
      "v": {
       "sp": {
-       "wn": 4.503,
-       "zeta": 0.564,
-       "T": 1.689
+       "wn": 4.505,
+       "zeta": 0.565,
+       "T": 1.691
       },
       "ph": {
        "wn": 0.228,
        "zeta": 0.133,
-       "T": 27.807
+       "T": 27.82
       },
       "dr": {
-       "wn": 2.059,
-       "zeta": 0.235,
-       "T": 3.14
+       "wn": 1.947,
+       "zeta": 0.2,
+       "T": 3.293
       },
-      "roll_tau": 0.18,
+      "roll_tau": 0.176,
       "spiral": {
-       "lam": 0.025,
-       "t2": 27.788,
+       "lam": 0.011,
+       "t2": 63.072,
        "grows": true
       },
       "nAlpha": 10.165,
-      "CAP": 1.995
+      "CAP": 1.997,
+      "derivSet": "cruise"
      },
      "u": "rad/s, -, s",
      "scope": "aircraft",
@@ -7625,7 +7716,7 @@
     ],
     "conf": "ต่ำ",
     "est": false,
-    "note": "ความเร็วไต่หลังวิ่งขึ้น แฟลป T/O [LD8]; cruise climb แฟลป UP 73 KIAS"
+    "note": "ความเร็วไต่หลังวิ่งขึ้น แฟลป T/O ที่ 1,150 kg [LD8]; cruise climb แฟลป UP 73 KIAS"
    },
    "VR_kt": {
     "v": 59,
@@ -7710,6 +7801,27 @@
     "conf": "ต่ำ",
     "est": true,
     "note": "ค่าประมาณ (scripts/ld_vx.mjs, gap 7): แฟลป UP ที่ MTOM 1150 kg = k·VS1 ใน CAS = 1.19 × 55.9 = 66.5 KCAS (34.2 m/s); ที่ training_mass 1060 kg = 62 KIAS (63.8 KCAS); k = ค่าเฉลี่ย Vx/VS1 (CAS) ของ POH c172s 1.200, c172r 1.192, c152 1.177 (บัตร 04/10/11); AFM ไม่ให้ Vx (14 CFR 23.1585/23.1587 ไม่บังคับ [LD17]) ส่วนความเร็วไต่หลังวิ่งขึ้นแฟลป T/O ของ AFM 66 KIAS = 67.4 KCAS ตรงกับ k·VS(T/O) = 65.7 KCAS จึงทำหน้าที่ Vx ของโครงแบบวิ่งขึ้น; polar ของบัตร + ตาราง CT/CP ให้มุมไต่สูงสุดที่ 52 KCAS ซึ่งต่ำกว่า 1.1 VS1 (มุมไต่ยังเพิ่มจนใกล้ stall) จึงใช้ตัดสิน Vx เองไม่ได้; ซิมวันนี้ได้ 59.5 KCAS (T-LD-38…40)"
+   },
+   "climb_basis": {
+    "v": {
+     "VX": {
+      "flap": "UP",
+      "mass_kg": 1150
+     },
+     "VY": {
+      "flap": "T/O",
+      "mass_kg": 1150
+     }
+    },
+    "u": "-, kg",
+    "scope": "aircraft",
+    "src": [
+     "LD8",
+     "LD17"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "โครงแบบและมวลของ speeds.VX_kt และ VY_kt (R2-08): VX คำนวณที่แฟลป UP และ MTOM 1,150 kg (scripts/ld_vx.mjs); VY 66 KIAS คือ takeoff climb แฟลป T/O ที่ 1,150 kg [LD8 p.5]; ที่มวลฝึก 1,060 kg หัวข้อ 08 และ 09 ใช้ 62 KIAS (แก้มวล)"
    },
    "stall_altitude_loss_ft": {
     "v": 190,
@@ -8155,7 +8267,7 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": "แถวเดียวกับตาราง T-LD ใน §05.11 ที่ตรวจ da40d (scripts/ld_tests.mjs 2026-11-19 → out/ld_tests.json → ld_json.mjs); expected มาจากแหล่งในช่อง origin (แถวที่ผู้เขียนประมาณเองระบุวิธีไว้ในช่องนั้น); current_model = บัตรนี้ในฟิสิกส์ของซิม commit cabf0f0; pass null = ไม่รองรับในซิมวันนี้; ผ่าน 4 ไม่ผ่าน 3 n.a. 3 จาก 10 แถว"
+    "note": "แถวเดียวกับตาราง T-LD ใน §05.11 ที่ตรวจ da40d (scripts/ld_tests.mjs 2026-11-25 → out/ld_tests.json → ld_json.mjs); expected มาจากแหล่งในช่อง origin (แถวที่ผู้เขียนประมาณเองระบุวิธีไว้ในช่องนั้น); current_model = บัตรนี้ในฟิสิกส์ของซิม commit cabf0f0; pass null = ไม่รองรับในซิมวันนี้; ผ่าน 4 ไม่ผ่าน 3 n.a. 3 จาก 10 แถว"
    }
   }
  }
@@ -8712,42 +8824,6 @@
      "conf": "สูง",
      "est": false,
      "note": "มาตรฐาน 23/15° (ถังพิสัยไกล 23/16°) [LD1 p.14]"
-    },
-    "derived_check": {
-     "v": {
-      "mass_kg": 1060,
-      "Fs_per_g_N": {
-       "approach": 17.7,
-       "cruise": 17.4
-      },
-      "grad_N_per_kt": {
-       "approach": 0.394,
-       "cruise": 0.264
-      },
-      "at_kcas": {
-       "approach": 67,
-       "cruise": 100
-      },
-      "SM_fixed": 0.294,
-      "SM_free": 0.226,
-      "free_elevator_factor": 0.82,
-      "mtom": {
-       "mass_kg": 1150,
-       "Fs_per_g_N": 18.6,
-       "pull_to_nL_lbf": 11.7,
-       "cfr23_155_min_lbf": 18.1
-      }
-     },
-     "u": "N/g, N/kt, MAC",
-     "scope": "aircraft",
-     "src": [
-      "LD12",
-      "LD15",
-      "LM0"
-     ],
-     "conf": "ต่ำ",
-     "est": true,
-     "note": "ค่าประมาณ (scripts/ld_stickforce.mjs, gap 18): สมการ elevator แบบ reversible ของรอบที่ 1 §6 (trim เชิงเส้น + Ch = Ch0 + Chα·αt + Chδ·δe + Chtab·δtab, F = G·ηt·q·Se·ce·Ch) กับ controls.pitch.* ของบัตรนี้ ที่ training_mass 1060 kg; ที่ MTOM 1150 kg แรงดึงถึง 3.8 g = 11.7 lbf (52 N) ต่ำกว่าขั้นต่ำ 14 CFR 23.155(a)(2) 18.1 lbf [LD12] แสดงว่า Chδ และ gearing ที่ยกมาจากรอบที่ 1 ต่ำไปสำหรับ DA40 (เครื่องจริงผ่านการรับรอง) เป้าของโมเดลแรงที่คันในอนาคตคือ Fs/g ≥ 28.8 N/g ที่ MTOM (T-LD-43) และความชันต่อความเร็วเป็นบวก (T-LD-44); ซิมวันนี้ไม่มีโมเดลแรงที่คัน"
     }
    },
    "yaw": {
@@ -8811,6 +8887,64 @@
 {
  "da40d": {
   "validation": {
+   "stick_force_targets": {
+    "v": {
+     "band": {
+      "controller": "centre_stick",
+      "nL": 3.8,
+      "W_lb": 2535,
+      "nAlpha_cruise_g_per_rad": 10.61,
+      "mil_L1_centre_stick_lbf_per_g": {
+       "min": 7.5,
+       "max": 22.63
+      },
+      "part23_155_force_lbf": 18.1,
+      "part23_155_min_lbf_per_g": 6.47,
+      "fs_per_g_lbf": {
+       "min": 7.5,
+       "max": 22.63
+      },
+      "fs_per_g_N": {
+       "min": 33.4,
+       "max": 100.7
+      }
+     },
+     "hinge_model": {
+      "mass_kg": 1060,
+      "at_kt": {
+       "approach": 67,
+       "cruise": 100
+      },
+      "Fs_per_g_N": {
+       "approach": 17.7,
+       "cruise": 17.4
+      },
+      "grad_N_per_kt": {
+       "approach": 0.394,
+       "cruise": 0.264
+      },
+      "SM_fixed": 0.294,
+      "SM_free": 0.226,
+      "free_elevator_factor": 0.82,
+      "mtow": {
+       "mass_kg": 1150,
+       "Fs_per_g_N_cruise": 18.6,
+       "Fs_per_g_lbf_cruise": 4.17,
+       "pull_to_nL_lbf": 11.7
+      }
+     }
+    },
+    "u": "lbf/g, N/g, N/kt, g/rad, lbf, MAC",
+    "scope": "aircraft",
+    "src": [
+     "LD12",
+     "LD15",
+     "LM0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ (scripts/ld_stickforce.mjs, gap 18; ย้ายจาก controls.pitch.derived_check ตาม R2-08): band = ช่องแรงต่อ g ของคันแบบ centre stick ตาม MIL-F-8785C Level 1 (7.5–22.63 lbf/g ที่ n/α 10.61 g/rad, nL 3.8) รวมขั้นต่ำ 14 CFR 23.155(a)(2) ก่อน Amdt 64 [LD12] 18.1 lbf (80.5 N) ÷ (nL − 1) = 6.47 lbf/g ที่ MTOM 1150 kg (W 2535 lb) ได้ 7.5–22.63 lbf/g (33.4–100.7 N/g), สูตรเดียวกับ lh_stick.band; hinge_model = สมการ elevator แบบ reversible ของรอบที่ 1 §6 (F = G·ηt·q·Se·ce·Ch) กับ controls.pitch.* ของบัตรนี้ ที่ training_mass 1060 kg; ที่ MTOM แรงดึงถึง 3.8 g = 11.7 lbf (52 N) ต่ำกว่าขั้นต่ำ 23.155 แสดงว่า Chδ/gearing ของรอบที่ 1 ต่ำไปสำหรับ DA40 (T-LD-43); ใช้เป็นเป้าของซิมเท่านั้น ไม่ใช่ค่าการรับรอง"
+   },
    "takeoff_test": {
     "v": {
      "flap": "T/O",
@@ -8920,7 +9054,8 @@
        "grows": true
       },
       "nAlpha": 5.501,
-      "CAP": 2.043
+      "CAP": 2.043,
+      "derivSet": "approach"
      },
      "u": "rad/s, -, s",
      "scope": "aircraft",
@@ -8934,28 +9069,29 @@
     "cruise": {
      "v": {
       "sp": {
-       "wn": 4.621,
-       "zeta": 0.573,
-       "T": 1.659
+       "wn": 4.623,
+       "zeta": 0.575,
+       "T": 1.661
       },
       "ph": {
        "wn": 0.227,
-       "zeta": 0.142,
-       "T": 27.967
+       "zeta": 0.143,
+       "T": 27.981
       },
       "dr": {
-       "wn": 2.104,
-       "zeta": 0.24,
-       "T": 3.076
+       "wn": 1.989,
+       "zeta": 0.204,
+       "T": 3.227
       },
-      "roll_tau": 0.173,
+      "roll_tau": 0.169,
       "spiral": {
-       "lam": 0.024,
-       "t2": 28.638,
+       "lam": 0.01,
+       "t2": 67.566,
        "grows": true
       },
       "nAlpha": 10.607,
-      "CAP": 2.013
+      "CAP": 2.015,
+      "derivSet": "cruise"
      },
      "u": "rad/s, -, s",
      "scope": "aircraft",

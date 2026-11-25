@@ -102,6 +102,7 @@
 ### `speeds` (บัตรรายแบบ; `u` = `kt IAS` หรือ `kt CAS`)
 - `speeds.{VS0_kt, VS1_kt, VX_kt, VY_kt, VR_kt, VAPP_kt, VAPP_short_kt, VREF_kt, VG_kt, VA_kt, VNO_kt, VNE_kt, VLE_kt, VLO_kt}` (ใส่เท่าที่แบบนั้นมี; VA และ VG ที่ขึ้นกับมวลใช้ตาราง)
   - **อัปเดต 22 พ.ย. 2026 (R2-04)** `VS0_kt`/`VS1_kt` เป็นความเร็วต่ำสุดตาม POH/AFM การทดสอบเทียบ VS (KCAS)/√0.95 กับ V_SR 1 g ของซิม (V/√nz ที่ CLmax, `lm_card.stallTest`) ตาม `common_light.methods.stall_nz_at_vmin` ไม่เทียบกับ Vmin ของซิม (Vmin และ nz ที่ Vmin เป็นข้อมูลเท่านั้น)
+- **อัปเดต 25 พ.ย. 2026 (R2-08)** `speeds.climb_basis` — `{VX: {flap, mass_kg}, VY: {flap, mass_kg}}` (`u` = `-, kg`) โครงแบบและมวลที่ `VX_kt` และ `VY_kt` ของบัตรใช้ (`mass_kg: null` = ค่าเดียวทุกมวล) ใส่เมื่อสองค่าไม่ใช่แฟลปเดียวกันหรือมวลเดียวกัน (DA40 สามบัตร, `da42_tae125`) ตัวตรวจ `vx_vy` ใช้ป้ายนี้ ค่าในหัวข้อ 08 (`ops.attitude_power.initial_climb`) และ 09 (`procedures.pattern.climb`) เป็นความเร็วไต่ที่ `training_mass` ถ้าต่างจาก `VY_kt` ของบัตรเพราะมวล ให้เขียน "แก้มวล" ใน `note`
 - `speeds.VFE` — `{"<detent>": kt}`
 - เครื่องสองเครื่องยนต์: `speeds.{VMCA_kt, VYSE_kt, VXSE_kt, VSSE_kt}`
 - `speeds.ias_cas` — ตาราง KIAS → KCAS ตามแฟลปจาก POH/AFM (ซิมต้องใช้ CAS ในฟิสิกส์ IAS ใช้แสดงผลและเทียบเกณฑ์)
@@ -161,6 +162,7 @@
 
 ### `validation`
 - `validation.trim_targets.<condition>` — α, θ, กำลัง, elevator ที่สภาพอ้างอิง (บัตรรายแบบ)
+- `validation.stick_force_targets` — เป้าแรงที่คันของซิม (ค่าประมาณ) `{band, hinge_model}` แบบบัตร 07: `band` = ช่องแรงต่อ g ตาม MIL-F-8785C Level 1 กับขั้นต่ำ 14 CFR 23.155 (`fs_per_g_lbf`/`fs_per_g_N` `{min, max}`, `nAlpha_cruise_g_per_rad`, `nL`, `part23_155_*`), `hinge_model` = ผลของแบบจำลอง hinge ของรอบที่ 1 กับบัตร บัตร C172 ใช้รูปแบบแบน (`fs_per_g_lbf` ที่ระดับบน) **อัปเดต 25 พ.ย. 2026 (R2-08)** DA40 ย้ายจาก `controls.pitch.derived_check` มาที่นี่ (path นั้นอยู่ใน `_na` ของ `da40ng`)
 - `validation.reference_modes.<condition>` — โหมดพลวัตของแบบจริงหรือจากงานวิชาการ (บัตรรายแบบ; ระบุแหล่ง)
 - `validation.openModels.<model>` — ผลวัดจากการรันโมเดลเปิด (หัวข้อ 03 เจ้าของ) **อัปเดต 22 พ.ย. 2026 (R2-05)** ใช้เทียบเท่านั้น ห้ามคัดไปเป็นค่าใน `speeds.*` หรือ `performance.*` (รวม `performance.tests[].expected`) และห้ามใช้เป็นค่าคาดหวังของเทสต์ เป้าของบัตรมาจาก POH/AFM/TCDS ตามลำดับชั้นใน 03 §03.5.2 กติกาเต็มอยู่ใน [`scripts/README.md`](scripts/README.md)
 - path ของรอบที่ 1 `validation.*` ที่เป็น per-type (เช่น `hqClassCategory`) — บัตรรายแบบ
@@ -193,7 +195,7 @@
 
 ## 6. การตรวจความสอดคล้องของ `lm_merge` (เพิ่ม 19 พ.ย. 2026)
 
-`lm_merge.mjs` (ผ่าน `lm_lib.validate()`) ตรวจ 10 ข้อหลังรวมบล็อก (ข้อ `src_ref` และ `open_model` เพิ่ม 22 พ.ย. 2026, R2-03 และ R2-05) รายงานเป็น WARN ค่าเริ่มต้น พร้อมตารางสรุปต่อ id และไฟล์:บรรทัดที่ต้องแก้; `--strict` นับ WARN, คำเตือนรูปแบบ leaf (ฟิลด์เกิน, est ไม่มี note, src ว่าง, v null, `_inherits` ไม่พบ) และ path ต่อแบบของรอบที่ 1 ที่บัตรใดไม่ได้กรอกและไม่อยู่ใน `_na` (coverage missing > 0) เป็น ERROR (exit 1; CI ของงานวิจัยใช้โหมดนี้); `--checks` พิมพ์ทุกข้อ; `--json-checks <file>` เขียนผลเป็น JSON รายละเอียดและผลรันล่าสุดอยู่ใน 01-methods §01.2.4
+`lm_merge.mjs` (ผ่าน `lm_lib.validate()`) ตรวจ 12 ข้อหลังรวมบล็อก (ข้อ `src_ref` และ `open_model` เพิ่ม 22 พ.ย. 2026, R2-03 และ R2-05; `vx_vy` และ `xfile_vy` เพิ่ม 25 พ.ย. 2026, R2-08) รายงานเป็น WARN ค่าเริ่มต้น พร้อมตารางสรุปต่อ id และไฟล์:บรรทัดที่ต้องแก้; `--strict` นับ WARN, คำเตือนรูปแบบ leaf (ฟิลด์เกิน, est ไม่มี note, src ว่าง, v null, `_inherits` ไม่พบ) และ path ต่อแบบของรอบที่ 1 ที่บัตรใดไม่ได้กรอกและไม่อยู่ใน `_na` (coverage missing > 0) เป็น ERROR (exit 1; CI ของงานวิจัยใช้โหมดนี้); `--checks` พิมพ์ทุกข้อ; `--json-checks <file>` เขียนผลเป็น JSON รายละเอียดและผลรันล่าสุดอยู่ใน 01-methods §01.2.4
 
 | ชื่อ | กฎ | ข้อตัดสิน |
 |---|---|---|
@@ -205,5 +207,7 @@
 | `vapp_vref` | VAPP ≥ VREF ใน KCAS | D1 |
 | `xfile_vapp` | 08 `ops.attitude_power.final.v.ias_kt` และ 09 `procedures.stabilised.v.Vapp` = `speeds.VAPP_kt` ±0.5 kt เว้นแต่ note บอก "แก้มวล"/"mass-corrected" (ลดเป็น info) | D1 |
 | `detent` | ชื่อแฟลปใน 08/09 อยู่ใน `aero.flaps.detents[].name` | D6 |
+| `vx_vy` | `VX_kt` ≤ `VY_kt` ใน KCAS เมื่อ `speeds.climb_basis` บอกแฟลปเดียวกัน (สเกล VX ด้วย $V \propto \sqrt{m}$ ไปที่มวลของ VY เมื่อมีทั้งสองมวล); คนละแฟลป → info; VX > VY → WARN | R2-08 |
+| `xfile_vy` | 08 `ops.attitude_power.initial_climb.v.ias_kt` และ 09 `procedures.pattern.v.climb` = `speeds.VY_kt` ±0.5 kt เว้นแต่ note บอก "แก้มวล"/"mass-corrected" (ลดเป็น info) | R2-08 |
 | `src_ref` | ทุกรหัสใน `src` ของ leaf และในรายการ `src` ที่ซ้อนอยู่ใน `v` (เช่น `common_light.evaluator.rules`) มีบรรทัดในส่วนแหล่งอ้างอิงของไฟล์เจ้าของ หรือเป็นรหัสรอบที่ 1 ที่มีจริง (`R1:<X>n`, `R1:params-trainer.json[#path]`) ตามข้อ 1 | T-LM-23, R2-03 |
 | `open_model` | leaf `speeds.*`/`performance.*` ที่ `src` เป็นแหล่งโมเดลเปิดทั้งหมด (รายการในส่วนแหล่งอ้างอิงของไฟล์หัวข้อที่ชื่อหรือประเภทระบุ JSBSim, FlightGear, YASim, Aeromatic, MSFS หรือ "โมเดลเปิด") = WARN, ปนกับแหล่งอื่น = info; VS1/VS0/VY/ROC/ร่อน/ระยะวิ่งขึ้นของบัตรเท่ากับผลวัดทศนิยมใน `validation.openModels` ทุกหลัก = WARN, เท่ากันเมื่อปัดหรือเป็นจำนวนเต็ม = info | 03 §03.5.2, R2-05 |

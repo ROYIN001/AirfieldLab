@@ -617,7 +617,8 @@
      "grows": false
     },
     "nAlpha": 13.8093,
-    "CAP": 0.934798
+    "CAP": 0.934798,
+    "derivSet": null
    },
    "approach": {
     "sp": {
@@ -642,7 +643,8 @@
      "grows": false
     },
     "nAlpha": 5.18719,
-    "CAP": 0.950749
+    "CAP": 0.950749,
+    "derivSet": null
    }
   },
   "takeoff": {
@@ -652,7 +654,17 @@
    "tLiftoff_s": 12.6875,
    "V_LOF_kt": 99.1528,
    "dist50ft_m": 589.986,
-   "V50_kt": 113.826
+   "V50_kt": 113.826,
+   "mode": "r1",
+   "tVRtoNose_s": 1.35,
+   "V_nose_kt": 90.4737,
+   "tVRtoLOF_s": 2.8625,
+   "theta_LOF_deg": 7.18643,
+   "alpha_LOF_deg": 7.08348,
+   "q_LOF_dps": 4.408,
+   "de_LOF_deg": -3.4973,
+   "CL_LOF": 0.852109,
+   "phiGE_LOF": 0.735546
   },
   "landing": {
    "asIs": {

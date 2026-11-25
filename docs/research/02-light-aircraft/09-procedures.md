@@ -70,9 +70,9 @@ $$S_1 = (F + R_f) + D + R_f - \left(2-\tfrac{\pi}{2}\right)(R_b+R_f),\qquad \tan
 | pa28_161 | 79 (Vy) | 90 | 80 (10°) | 75 (25°) | 70 (40°) = 36.0 m/s ที่ 930 kg; short/soft 65 (checklist โรงเรียน); POH 63 | – | [LO21 4.3: Vy 79, Vx 63, final แฟลป 40° 63][LO22][LN4]; final = VAPP บัตร 13; downwind/base ค่าประมาณ | กลาง |
 | da40ng | 72 (Vy แฟลป T/O) | 95 | 78 (T/O) | 78 (T/O) | 74 (LDG) = 38.1 m/s ที่ 1,150 kg (76 ที่ 1,200 kg, 77 ที่ 1,280 kg) | – | [LD3]; final = VAPP บัตร 05 (ก่อนแก้ใช้ 76 ที่ 1,200 kg); downwind ค่าประมาณ | กลาง |
 | da42ng | 90 (Vy) | 110 | 100 (APP, ล้อลง) | 95 (APP) | 84 (LDG) = 43.2 m/s ที่ 1,752 kg | – | [LT2][LT9]; final = VAPP บัตร 06; downwind/abeam/base ค่าประมาณ | ต่ำ–กลาง |
-| da40_180 (DA40 IO-360) | 67 (ไต่แฟลป T/O) | 95 | 80 (T/O) | 75 (T/O) | 65 (LDG) = 33.4 m/s ที่ 1,050 kg (73 ที่ 1,200 kg) | – | บัตร 05 [LD6 p.3-4, 4A-34, 5-13][LD8]; ก่อนแก้ใช้ final 73 และ base 78; downwind/abeam/base ค่าประมาณ | กลาง |
-| da40d (DA40 D) | 66 (ไต่แฟลป T/O) | 90 | 78 (T/O) | 76 (T/O) | 66 (LDG) = 34.0 m/s ที่ 1,060 kg (71 ที่ 1,150 kg) | – | บัตร 05 [LD6 p.4A-34][LD8]; ก่อนแก้ใช้ 71; downwind/abeam/base ค่าประมาณ | กลาง |
-| da42_tae125 (DA42 TDI) | 79 (Vy) | 105 | 95 (APP, ล้อลง) | 90 (APP) | 82 (LDG) = 42.2 m/s ที่ 1,600 kg | – | บัตร 06 [LT3][LT5]; downwind/abeam/base ค่าประมาณ | ต่ำ |
+| da40_180 (DA40 IO-360) | 62 (ไต่แฟลป T/O แก้มวลที่ 1,050 kg; VY บัตร 67 ที่ 1,200 kg) | 95 | 80 (T/O) | 75 (T/O) | 65 (LDG) = 33.4 m/s ที่ 1,050 kg (73 ที่ 1,200 kg) | – | บัตร 05 [LD6 p.3-4, 4A-34, 5-13][LD8]; ก่อนแก้ใช้ final 73 และ base 78; downwind/abeam/base ค่าประมาณ | กลาง |
+| da40d (DA40 D) | 62 (ไต่แฟลป T/O แก้มวลที่ 1,060 kg; VY บัตร 66 ที่ 1,150 kg) | 90 | 78 (T/O) | 76 (T/O) | 66 (LDG) = 34.0 m/s ที่ 1,060 kg (71 ที่ 1,150 kg) | – | บัตร 05 [LD6 p.4A-34][LD8]; ก่อนแก้ใช้ 71; downwind/abeam/base ค่าประมาณ | กลาง |
+| da42_tae125 (DA42 TDI) | 77 (Vy ≤ 1,700 kg แก้มวลที่ 1,600 kg; VY บัตร 79 ที่ > 1,700 kg) | 105 | 95 (APP, ล้อลง) | 90 (APP) | 82 (LDG) = 42.2 m/s ที่ 1,600 kg | – | บัตร 06 [LT3][LT5]; downwind/abeam/base ค่าประมาณ | ต่ำ |
 | be76 | 85 (Vy) | 105 (18 inHg / 2,300 rpm, แฟลป 10) | 90 (15 inHg) | 85 (20) | 80 (35) = 41.2 m/s ที่ 1,420 kg, short final 76 | ตามช่องซ้าย | [LO24][LN5] (flashcard ของโรงเรียน); final = VAPP บัตร 13 | ต่ำ |
 | p2006t | 80 (VY แฟลป UP ตาม AFM S4-7 [LG3]; ก่อนแก้ใช้ 83 ซึ่งเป็น best glide, §09.9 ข้อ 13) | 100 | 90 (T/O) | 80 (T/O) | 70 (FULL) = 36.0 m/s ที่ 1,128 kg (คอลัมน์ 1,180 kg), แตะพื้น 65 | ใบพัด 2,250 rpm ช่วงลด | [LO27 SSMP4-27][LO26 p3-46][LG3 S4-7]; final = VAPP บัตร 12; downwind/base ค่าประมาณ | กลาง |
 | p2002jf | 68 (Vy รุ่นใกล้เคียง) | 75 | 65 (TO) | 60 (TO) | 52 (LDG) = 26.8 m/s ที่ 573 kg (ค่าประมาณของบัตร: VREF 47 + 5; ก่อนแก้ใช้ 50 = 1.3 × 38) | – | [LO28][LO29][LO30][LN0]; ค่าประมาณทั้งหมดยกเว้น VFE | ต่ำ |
@@ -262,8 +262,8 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
 | pa28_161 | แฟลป 25°, ยกล้อ 52, 63 ข้ามสิ่งกีดขวาง, แล้ว 79 (checklist โรงเรียน [LO22]) | แฟลป 25°, เร่งใน ground effect | final 65 (โรงเรียน); POH แฟลป 40° 63 [LO21 4.3] | mixture rich, กำลังเต็ม, แฟลป 25°, 63, พ้นสิ่งกีดขวาง 79, เก็บแฟลปช้า ๆ (checklist โรงเรียน [LO22]; บท 4.23–4.31 ของ POH ในสำเนาที่เปิดได้ขาด) | 73 (ร่อน); สนามแน่นอนแล้วลด 63 [LO21 3.13] | [LO21 3.13, 4.3][LO22] | กลาง (โรงเรียน) |
 | da40ng | แฟลป T/O, VR 56–67 และ 62–72 ที่ 50 ft ตามมวล 940–1,280 kg | – | approach แฟลป LDG 66–77 ตามมวล 940–1,280 kg; ที่มวลฝึก 1,150 kg 74 (= VAPP บัตร 05) | ความเร็วต่ำสุด go-around แฟลป T/O 72 | 88 (แฟลปขึ้น) ทั้งร่อนและ approach ไม่มีกำลัง | [LD3][LO35] | กลาง |
 | da42ng | VR 76, Vx 77, Vy 90 (ค่า AFM) | – | VAPP 84 | ค่าประมาณตาม AFH: กำลังเต็มทั้งสอง, แฟลป APP, Vy, ล้อขึ้นหลังไต่ได้ | สองเครื่อง: VYSE 85, VMCA 76 | [LT2 p2-4, 3-5][LT9][LO4][LO7] | กลาง (ขั้นตอน GA ต่ำ) |
-| da40_180 / da40d | – | – | approach แฟลป LDG 65 ที่มวลฝึก 1,050 kg (73 ที่ 1,200 kg) / 66 ที่ 1,060 kg (71 ที่ 1,150 kg) = VAPP บัตร 05 | ค่าประมาณตาม AFH: กำลังเต็ม, แฟลป T/O, ไต่ 67 / 66 แล้วแฟลป UP | ร่อน 76/73/68/60 ที่ 1,200/1,150/1,000/850 kg / 73 | [LD6 p.3-4, 3-28, 4A-34, 5-13][LD8] | กลาง |
-| da42_tae125 | VR 72, Vy 79 | – | VAPP 82 | ค่าประมาณตาม AFH | VYSE 82, VMCA 68 | [LT3][LT5] | ต่ำ–กลาง |
+| da40_180 / da40d | – | – | approach แฟลป LDG 65 ที่มวลฝึก 1,050 kg (73 ที่ 1,200 kg) / 66 ที่ 1,060 kg (71 ที่ 1,150 kg) = VAPP บัตร 05 | ค่าประมาณตาม AFH: กำลังเต็ม, แฟลป T/O, ไต่ 62 / 62 (แก้มวลที่มวลฝึก เท่าหัวข้อ 08; AFM 67 / 66 ที่ 1,200 / 1,150 kg) แล้วแฟลป UP | ร่อน 76/73/68/60 ที่ 1,200/1,150/1,000/850 kg / 73 | [LD6 p.3-4, 3-28, 4A-34, 5-13][LD8] | กลาง |
+| da42_tae125 | VR 72, Vy 77 (≤ 1,700 kg แก้มวล; 79 ที่ > 1,700 kg) | – | VAPP 82 | ค่าประมาณตาม AFH | VYSE 82, VMCA 68 | [LT3][LT5] | ต่ำ–กลาง |
 | be76 | VR 71, Vx 71 | – | short final 76 (= VREF บัตร 13) | กำลังเต็ม, ท่า Vy 85, แฟลป 0 | VYSE 85, VMC 65, VSSE 71 | [LO23][LO24][LN5] (flashcard) | ต่ำ |
 | p2006t | – | – | VAPP 70 (1,180 kg; ใช้ที่มวลฝึก 1,128 kg) / 71 (1,230 kg), แตะ 65 | ค่าประมาณตาม AFH: กำลังเต็ม, แฟลป T/O, Vy 80 [LG3 S4-7], ล้อขึ้น, แฟลป UP | วิ่งอยู่: ยกเลิกก่อนยกล้อ; ลอยแล้ว: เร่งถึง VYSE 80 ก่อนเก็บล้อ, ไม่ต่ำกว่า 62 (VMC) | [LO26 p3-25 ถึง 3-30][LO27][LG3] | กลาง |
 | p2002jf | ไม่มีตัวเลขของ JF; รุ่น Sierra: VR 43, Vx 55–60, Vy 68 | – | 52 แฟลป LDG (VAPP ค่าประมาณของบัตร 13: VREF 47 = 1.3 VS0 แก้มวล, + 5) | ค่าประมาณตาม AFH: กำลังเต็ม, แฟลป TO | Sierra: 60 แฟลป 15°, ร่อน 68 | [LO28][LO29][LO30][LN0] | ต่ำ |
@@ -1471,7 +1471,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final); climb 90 KIAS = speeds.VY_kt ของบัตร (≤1,900 kg); da42_vi รับค่านี้ที่มวลฝึก 1,752 kg: แก้มวล จาก VY 92 KIAS แถว >1,900 kg ของบัตร da42_vi [LT9]"
    },
    "stabilised": {
     "v": {
@@ -1670,7 +1670,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
   "procedures": {
    "pattern": {
     "v": {
-     "climb": 67,
+     "climb": 62,
      "downwind": 95,
      "abeam": 80,
      "base": 75,
@@ -1691,7 +1691,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final); climb แก้มวล: speeds.VY_kt 67 KIAS ของบัตรเป็นแฟลป T/O ที่ 1,200 kg; ตาราง AFM 67/66/60/54 KIAS ที่ 1,200/1,150/1,000/850 kg [LD6] → 62 KIAS ที่มวลฝึก 1,050 kg เท่าหัวข้อ 08"
    },
    "stabilised": {
     "v": {
@@ -1765,7 +1765,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
    },
    "go_around": {
     "v": {
-     "speed": 67,
+     "speed": 62,
      "flapsSeq": [
       "T/O",
       "UP"
@@ -1773,7 +1773,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
      "steps": [
       "full power, mixture rich, prop high rpm",
       "flaps T/O",
-      "pitch 67 KIAS",
+      "pitch 62 KIAS",
       "flaps UP ที่ความสูงปลอดภัย"
      ]
     },
@@ -1788,7 +1788,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 67 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 62 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6); ความเร็ว go-around แก้มวลที่มวลฝึก เท่า procedures.pattern.climb"
    },
    "checklist_summary": {
     "v": {
@@ -1887,7 +1887,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
   "procedures": {
    "pattern": {
     "v": {
-     "climb": 66,
+     "climb": 62,
      "downwind": 90,
      "abeam": 78,
      "base": 76,
@@ -1906,7 +1906,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final); climb แก้มวล: speeds.VY_kt 66 KIAS ของบัตรเป็นแฟลป T/O ที่ 1,150 kg [LD8]; ตารางมวลของโครงเดียวกัน [LD6] → 62 KIAS ที่มวลฝึก 1,060 kg เท่าหัวข้อ 08"
    },
    "stabilised": {
     "v": {
@@ -1974,7 +1974,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
    },
    "go_around": {
     "v": {
-     "speed": 66,
+     "speed": 62,
      "flapsSeq": [
       "T/O",
       "UP"
@@ -1982,7 +1982,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
      "steps": [
       "power 100 %",
       "flaps T/O",
-      "pitch 66 KIAS",
+      "pitch 62 KIAS",
       "flaps UP ที่ความสูงปลอดภัย"
      ]
     },
@@ -1995,7 +1995,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 66 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 62 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6); ความเร็ว go-around แก้มวลที่มวลฝึก เท่า procedures.pattern.climb"
    },
    "checklist_summary": {
     "v": {
@@ -2083,7 +2083,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
   "procedures": {
    "pattern": {
     "v": {
-     "climb": 79,
+     "climb": 77,
      "downwind": 105,
      "abeam": 95,
      "base": 90,
@@ -2103,7 +2103,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final); climb แก้มวล: speeds.VY_kt 79 KIAS ของบัตรเป็นแถว >1,700 kg; แถว ≤1,700 kg = 77 KIAS ที่มวลฝึก 1,600 kg [LT5] เท่าหัวข้อ 08"
    },
    "stabilised": {
     "v": {
@@ -2141,7 +2141,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
      "takeoff": {
       "flaps": "UP",
       "VR": 72,
-      "Vy": 79
+      "Vy": 77
      },
      "landing": {
       "flaps": "LDG",
@@ -2179,7 +2179,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
    },
    "go_around": {
     "v": {
-     "speed": 79,
+     "speed": 77,
      "flapsSeq": [
       "APP",
       "UP"
@@ -2202,7 +2202,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 79 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 77 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6); ความเร็ว go-around แก้มวลที่มวลฝึก เท่า procedures.pattern.climb"
    },
    "checklist_summary": {
     "v": {
@@ -2797,7 +2797,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
       "vfr_circuit"
      ]
     },
-    "u": "kt IAS",
+    "u": "kt CAS",
     "scope": "aircraft",
     "src": [
      "LO28",
@@ -2810,7 +2810,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "Vapp = speeds.VAPP_kt ของบัตร p2002jf (ไฟล์ 13) 52 kt CAS ที่ airframe.weights.training_mass 573.2 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร p2002jf (ไฟล์ 13) 52 kt CAS ที่ airframe.weights.training_mass 573.2 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)"
    },
    "short_field": {
     "v": {
@@ -3012,7 +3012,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
       "vfr_circuit"
      ]
     },
-    "u": "kt IAS",
+    "u": "kt CAS",
     "scope": "aircraft",
     "src": [
      "LO31",
@@ -3026,7 +3026,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "Vapp = speeds.VAPP_kt ของบัตร p68c (ไฟล์ 13) 74 kt CAS ที่ airframe.weights.training_mass 1796 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร p68c (ไฟล์ 13) 74 kt CAS ที่ airframe.weights.training_mass 1796 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)"
    },
    "short_field": {
     "v": {
@@ -3443,7 +3443,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
       "vfr_circuit"
      ]
     },
-    "u": "kt IAS",
+    "u": "kt CAS",
     "scope": "aircraft",
     "src": [
      "LO34",
@@ -3454,7 +3454,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "Vapp = speeds.VAPP_kt ของบัตร ct4 (ไฟล์ 13) 60 kt CAS ที่ airframe.weights.training_mass 1038 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร ct4 (ไฟล์ 13) 60 kt CAS ที่ airframe.weights.training_mass 1038 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)"
    },
    "short_field": {
     "v": {
@@ -3643,7 +3643,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
       "vfr_circuit"
      ]
     },
-    "u": "kt IAS",
+    "u": "kt CAS",
     "scope": "aircraft",
     "src": [
      "LP1",
@@ -3654,7 +3654,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "Vapp = speeds.VAPP_kt ของบัตร pc7mk2 (ไฟล์ 07) 89 kt CAS ที่ airframe.weights.training_mass 2068.8 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และ speeds.ias_cas ของบัตรเป็นตาราง identity (ค่าประมาณ ไม่มีข้อมูล PEC สาธารณะ) จึงใช้เป็น KIAS ≈ KCAS; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร pc7mk2 (ไฟล์ 07) 89 kt CAS ที่ airframe.weights.training_mass 2068.8 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และ speeds.ias_cas ของบัตรเป็นตาราง identity (ค่าประมาณ ไม่มีข้อมูล PEC สาธารณะ) จึงใช้เป็น KIAS ≈ KCAS; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)"
    },
    "short_field": {
     "v": {
@@ -3851,7 +3851,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
       "vfr_circuit"
      ]
     },
-    "u": "kt IAS",
+    "u": "kt CAS",
     "scope": "aircraft",
     "src": [
      "LP2",
@@ -3862,7 +3862,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "Vapp = speeds.VAPP_kt ของบัตร pc9m (ไฟล์ 07) 90 kt CAS ที่ airframe.weights.training_mass 2123.8 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และ speeds.ias_cas ของบัตรเป็นตาราง identity (ค่าประมาณ ไม่มีข้อมูล PEC สาธารณะ) จึงใช้เป็น KIAS ≈ KCAS; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร pc9m (ไฟล์ 07) 90 kt CAS ที่ airframe.weights.training_mass 2123.8 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และ speeds.ias_cas ของบัตรเป็นตาราง identity (ค่าประมาณ ไม่มีข้อมูล PEC สาธารณะ) จึงใช้เป็น KIAS ≈ KCAS; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)"
    },
    "short_field": {
     "v": {
@@ -4058,7 +4058,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
       "vfr_circuit"
      ]
     },
-    "u": "kt IAS",
+    "u": "kt CAS",
     "scope": "aircraft",
     "src": [
      "LP27",
@@ -4069,7 +4069,7 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
     ],
     "conf": "กลาง",
     "est": true,
-    "note": "Vapp = speeds.VAPP_kt ของบัตร trainer_r2 (ไฟล์ 07) 95 kt CAS ที่ airframe.weights.training_mass 2250 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร trainer_r2 (ไฟล์ 07) 95 kt CAS ที่ airframe.weights.training_mass 2250 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)"
    },
    "short_field": {
     "v": {
@@ -5012,3 +5012,11 @@ $$\delta_{crab} = \arcsin\frac{W\sin(\psi_W-\chi)}{V},\qquad V_g = V\cos\delta_{
 - AIP: ความถี่ใหม่ ATIS ขาออก 118.55 และ Approach 119.4 MHz; AD 2.20 ข้อ 7.3 → 6.3 (TWY ST → S), 8.3 → 7.3; 250 kt จาก AD 2.20 ข้อ 5.1 → AD 2.22 ข้อ 4.1.2
 
 ที่ยังเหลือโดยรวม: พิกัดจุดรายงาน VFR; ระบบเชื้อเพลิงของ BE76 และ P2006T; DA42 NG AFM บท 3.7 และ 4A; กฎ VFR กลางคืนทั่วประเทศ; `roc_fpm` ที่เป็นค่าประมาณ (ไม่กระทบผลที่ดอนเมือง)
+
+## 09.14 บันทึกการแก้ตามงาน R2-08 (25 พ.ย. 2026)
+
+ผู้แก้: Claude Code งาน B6 ของแผนพัฒนา (รายการงานข้อ 8 ใน [02-light-aircraft.md](../02-light-aircraft.md)) สคริปต์ที่แก้: `lo_lib.mjs` (ความเร็วไต่ที่มวลฝึก), `lo_json.mjs` (note และหน่วยของ `stabilised`) แล้วรัน `lo_run.mjs`, `lo_json.mjs --apply` และ `lo_tests.mjs` ใหม่
+
+- **ความเร็วไต่ที่มวลฝึก**: บัตรเก็บ VY ของ AFM ที่ MTOM ส่วนหัวข้อ 08 และ 09 ใช้ค่าที่มวลฝึกเดียวกันและเขียน "แก้มวล": `da40_180` 67 → 62 KIAS (1,050 kg), `da40d` 66 → 62 KIAS (1,060 kg), `da42_tae125` 79 → 77 KIAS (1,600 kg) ตรงกับหัวข้อ 08 แล้ว ตัวตรวจ `xfile_vy` ของ `lm_merge` เทียบค่าของ 08 และ 09 กับ `speeds.VY_kt` ±0.5 kt และรายงานเป็น info เมื่อ note เขียน "แก้มวล"
+- **หน่วยของ `procedures.stabilised`**: `u` เป็น `kt CAS` สำหรับบัตรที่ `speeds.VAPP_kt` เป็น kt CAS (`p2002jf`, `p68c`, `ct4`, `pc7mk2`, `pc9m`, `trainer_r2`) ตัวเลขไม่เปลี่ยน
+- **ผลที่เปลี่ยน**: เวลาวงจรใน `scripts/out/lo_circuits.md` ของ `da40_180`, `da40d`, `da42_tae125` ยาวขึ้น 0.05–0.17 นาทีเพราะไต่ช้าลง (ตาราง §09.2.2 ไม่มีสามแบบนี้จึงไม่เปลี่ยน); T-LO-31 และแถวอื่นของ `lo_tests` ไม่เปลี่ยน

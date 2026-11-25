@@ -61,12 +61,15 @@ export const DEFAULTS = {
 
 // ───────────────────────── card helpers ─────────────────────────
 const CLEAN_KEYS = ['clean', 'cruise', '0', 'UP', 'up', 'retracted'];
-function pickCfg(v, order) {
+/** v[first key of order that holds a number]. Not strict: else the first numeric key, marked fallback (the trace flags it).
+ *  strict (every clean lookup, R2-07): null instead, so a flap-down value never stands in for the clean one. */
+export function pickCfg(v, order, { strict = false } = {}) {
   if (typeof v === 'number') return { v, key: null };
   if (isObj(v)) {
     for (const k of order) if (k != null && typeof v[k] === 'number') return { v: v[k], key: k };
+    if (strict) return null;
     const k0 = Object.keys(v).find(k => typeof v[k] === 'number');
-    if (k0 != null) return { v: v[k0], key: k0 };
+    if (k0 != null) return { v: v[k0], key: k0, fallback: true };
   }
   return null;
 }
@@ -81,7 +84,7 @@ export function detents(card) {
     const keys = isObj(cl0) ? Object.keys(cl0) : isObj(vfe) ? ['0', ...Object.keys(vfe)] : [];
     const deg = k => (CLEAN_KEYS.includes(k) ? 0 : /^-?\d+(\.\d+)?$/.test(k) ? +k : k === 'landing' || k === 'full' || k === 'LDG' ? 99 : NaN);
     out = [...new Set(keys)].map(k => ({ name: k, deg: deg(k) })).filter(x => !Number.isNaN(x.deg));
-    if (isObj(cl0)) { const c = pickCfg(cl0, CLEAN_KEYS); for (const x of out) if (typeof cl0[x.name] === 'number' && c) x.dCL0 = cl0[x.name] - c.v; }
+    if (isObj(cl0)) { const c = pickCfg(cl0, CLEAN_KEYS, { strict: true }); for (const x of out) if (typeof cl0[x.name] === 'number' && c) x.dCL0 = cl0[x.name] - c.v; }
   }
   out.sort((a, b) => a.deg - b.deg);
   if (!out.length || out[0].deg !== 0) out.unshift({ name: '0', deg: 0, dCL0: 0 });
@@ -193,7 +196,7 @@ export function buildAC(card, opts = {}) {
   // increment (that silently set CLflap = 0 instead of falling back to R1 and flagging it)
   const fullDet = dets.length > 1 ? dets[dets.length - 1] : {};
   const atKey = (o, k) => (isObj(o) && typeof o[k] === 'number' ? o[k] : null);
-  const cleanOf = o => pickCfg(o, CLEAN_KEYS)?.v ?? null;
+  const cleanOf = o => pickCfg(o, CLEAN_KEYS, { strict: true })?.v ?? null;   // R2-07: no flap-down value as the clean one
 
   const take = (field, legacyVal, fallbacks) => {
     if (typeof legacyVal === 'number') return T(field, legacyVal, 'aero.legacy.' + field, 'ตรง');
@@ -218,7 +221,7 @@ export function buildAC(card, opts = {}) {
     const v = val(card, 'aero.derivatives.' + n);
     const order = n === 'CD0' || n === 'K' ? ['clean', 'cruise', ...cfgOrder] : cfgOrder;
     const p = pickCfg(v, order);
-    if (p) T(n, ac[n] = p.v, 'aero.derivatives.' + n + (p.key ? `.${p.key}` : ''), p.key ? `เลือก config "${p.key}"` : 'ตรง');
+    if (p) T(n, ac[n] = p.v, 'aero.derivatives.' + n + (p.key ? `.${p.key}` : ''), p.key ? `เลือก config "${p.key}"` : 'ตรง', p.fallback ? 'fallback' : '');
     else {
       const est = opts.derivEstimates?.[n];
       if (typeof est === 'number') T(n, ac[n] = est, 'lm_derivs (ประมาณจากรูปทรง)', 'ค่าประมาณ', 'est');
@@ -228,7 +231,7 @@ export function buildAC(card, opts = {}) {
 
   // physical parabolic polar (aero.derivatives.CD0/K about CL = 0) → sim form about CL 0.15, same (L/D)max and CL*
   if (typeof leg.CD0 !== 'number' && typeof leg.K !== 'number') {
-    const pc = pickCfg(val(card, 'aero.derivatives.CD0'), ['clean', 'cruise', '0', 'UP']), pk = pickCfg(val(card, 'aero.derivatives.K'), ['clean', 'cruise', '0', 'UP']);
+    const pc = pickCfg(val(card, 'aero.derivatives.CD0'), ['clean', 'cruise', '0', 'UP'], { strict: true }), pk = pickCfg(val(card, 'aero.derivatives.K'), ['clean', 'cruise', '0', 'UP'], { strict: true });
     if (pc && pk) { const sp = toSimPolar({ CD0: pc.v, K: pk.v });
       T('CD0', ac.CD0 = sp.CD0, 'aero.derivatives.CD0 + K', `แปลงเป็นรูปแบบซิม: (L/D)max ${sp.Emax.toFixed(2)} และ CL* ${sp.CLstar.toFixed(3)} คงเดิม`, 'converted');
       T('K', ac.K = sp.K, 'aero.derivatives.CD0 + K', 'Ks = 1/(2E(CL* − 0.15))', 'converted'); }
@@ -377,6 +380,33 @@ export function applyAC(M, ac) {
   return () => { for (const k of AC_FIELDS) A[k] = old[k]; A.Iinv = old.Iinv; };
 }
 
+// ───────────────────────── per-point derivative sets (R2-07) ─────────────────────────
+// aero.derivatives.<n> may be keyed by configuration ({cruise, approach}); buildAC picks ONE value per field (opts.config,
+// else 'approach' first), so before R2-07 runCard linearised the cruise point with the approach set. runCard now swaps in
+// the set of each linearisation point around its modes() call. Order per point: the point's own key, then its synonyms;
+// a field with none of them keeps the value of the AC that runCard was given. CD0/K are left out: buildAC takes the
+// polar from aero.legacy or the clean/cruise value at every point (flap and gear drag are CDflap/CDgear).
+export const POINT_CFG = { cruise: ['cruise', 'clean', '0', 'UP', 'up', 'retracted'], approach: ['approach', 'landing'] };
+/** {cruise: {field: value}, approach: {...}, keys: {cruise: {field: key}, ...}} for the config-keyed aero.derivatives of a card */
+export function derivSets(card) {
+  const out = { cruise: {}, approach: {}, keys: { cruise: {}, approach: {} } };
+  for (const n of DERIV_NAMES) {
+    if (n === 'CD0' || n === 'K') continue;
+    const v = val(card, 'aero.derivatives.' + n);
+    if (!isObj(v)) continue;
+    for (const [pt, order] of Object.entries(POINT_CFG)) {
+      const k = order.find(x => typeof v[x] === 'number');
+      if (k != null) { out[pt][n] = v[k]; out.keys[pt][n] = k; }
+    }
+  }
+  return out;
+}
+/** run fn with the fields of `set` written into the harness AC, then put the old values back (inertia untouched) */
+export function withDerivs(M, set, fn) {
+  const keep = {}; for (const k of Object.keys(set || {})) { keep[k] = M.AC[k]; M.AC[k] = set[k]; }
+  try { return fn(); } finally { Object.assign(M.AC, keep); }
+}
+
 // ───────────────────────── card → test conditions ─────────────────────────
 export function cardInfo(card, ac, opts = {}) {
   const dets = flapMap(detents(card), opts.flapMap || 'lift');
@@ -385,17 +415,19 @@ export function cardInfo(card, ac, opts = {}) {
   const sp = (p, det) => speedCAS(card, p, det)?.kcas ?? null;
   const tt = n => val(card, `validation.trim_targets.${n}`);
   const cr = tt('cruise'), ap = tt('approach'), to = val(card, 'validation.takeoff_test');
-  const vne = sp('speeds.VNE_kt', '0'), vno = sp('speeds.VNO_kt', '0');
+  const clean = dets[0].name;   // R2-07: the card's own clean detent name (was '0', which iasCas only met by the first-row fallback on UP cards)
+  const vne = sp('speeds.VNE_kt', clean), vno = sp('speeds.VNO_kt', clean);
   const toDet = isObj(to) && to.flap != null ? dets.find(d => d.name === String(to.flap)) : dets[0];
   return {
     dets, retract,
     ias2cas: name => iasCas(card, name),
-    Vy: sp('speeds.VY_kt', '0'), Vx: sp('speeds.VX_kt', '0'), VS1: sp('speeds.VS1_kt', '0'), VS0: sp('speeds.VS0_kt', full.name),
+    Vy: sp('speeds.VY_kt', clean), Vx: sp('speeds.VX_kt', clean), VS1: sp('speeds.VS1_kt', clean), VS0: sp('speeds.VS0_kt', full.name),
     vmax: vne ?? (vno ? vno * 1.2 : 2.3 * ac.Vs0),
     cruise: isObj(cr) && cr.ias_kt ? { ias: cr.ias_kt, h: (cr.h_ft ?? 3000) * FT } : { ias: Math.round(0.85 * (vno ?? 1.9 * ac.Vs0)), h: 3000 * FT, est: true },
     approach: isObj(ap) && ap.ias_kt ? { ias: ap.ias_kt, h: (ap.h_m ?? 300), gammaDeg: ap.gamma_deg ?? -3 } : { ias: ac.Vapp, h: 300, gammaDeg: -3 },
-    takeoff: { f: toDet?.f ?? 0, name: toDet?.name ?? '0', VR: (isObj(to) && to.VR_kt) || sp('speeds.VR_kt', toDet?.name ?? '0') || null, theta: (isObj(to) && to.theta_deg) || 10 },
+    takeoff: { f: toDet?.f ?? 0, name: toDet?.name ?? clean, VR: (isObj(to) && to.VR_kt) || sp('speeds.VR_kt', toDet?.name ?? clean) || null, theta: (isObj(to) && to.theta_deg) || 10, mode: (isObj(to) && to.mode) || 'r1', rate: (isObj(to) && to.rate_dps) || 5 },
     stallStart: isObj(val(card, 'validation.stall_test')) ? val(card, 'validation.stall_test') : null,
+    derivSets: derivSets(card),
   };
 }
 
@@ -576,22 +608,46 @@ export function glideSweep(M, { h = 3000 * FT, v0, v1, step = 1, thr = 0 }) {
   const best = parabolicPeak(rows, 'LoverD');
   return { Vbg_kt: best.x, LD: best.y, Vbg_grid_kt: best.grid, LD_grid: best.gridY, sink_fpm: -rows[best.i].roc_fpm, edge: !!best.edge };
 }
-/** brakes on, full throttle 3 s, release; rotate at VR to theta at 3 deg/s; ground roll and 50 ft distance (v10_perf §4) */
-export function takeoffTest(M, { f = 0, VR, theta = 10 }) {
-  const { AC } = M;
-  const ac = new M.Aircraft(); ac.setParked(0, 0, 0); for (let i = 0; i < 240 * 5; i++) ac.step(dtS);
+/**
+ * Take-off to 50 ft wheel height, SL, calm: brakes on, full throttle 3 s, release, elevator 0 until IAS >= VR.
+ * mode 'r1' (default; round-1 v10_perf §4, T-LM-07 590 m, and every card whose VR/θ/thrust was fitted with it): at VR an
+ *   attitude command ramps from the ground attitude at 3 deg/s to theta (PI law); lift-off = first step with no wheel in
+ *   contact and IAS > 0.5 VR. The PI elevator builds up only as the ramp error grows, so the nose wheel leaves 1.2–3.1 s
+ *   after VR and the mains unload during the ramp at θ 3–8°, CL 0.8–1.14 (far below CLmax): V_LOF = VR + 6–19 kt and does
+ *   not depend on theta once theta exceeds that attitude (R2-19).
+ * mode 'rate' (R2-19, opt-in: validation.takeoff_test.mode / rate_dps): at VR a pitch-rate command of `rate` deg/s
+ *   (PI on q, so the elevator winds up until the nose wheel lifts) until theta, then the same attitude hold as 'r1';
+ *   lift-off = both main wheels unloaded. rate 5 deg/s is an estimate (ค่าประมาณ), not a sourced value.
+ * Both modes return the state at nose-wheel lift and at lift-off (θ, α, q, δe, CL, ground-effect factor φGE).
+ */
+export function takeoffTest(M, { f = 0, VR, theta = 10, mode = 'r1', rate = 5, isaDev = 0 }) {
+  const { AC } = M, byRate = mode === 'rate';
+  if (!byRate && mode !== 'r1') throw new Error(`takeoffTest: unknown mode ${mode}`);
+  const ac = new M.Aircraft(); if (isaDev) ac.isaDev = isaDev; ac.setParked(0, 0, 0); for (let i = 0; i < 240 * 5; i++) ac.step(dtS);
   ac.cmd.flaps = ac.flaps = f; ac.cmd.thr = 1; for (let i = 0; i < 240 * 3; i++) ac.step(dtS);
-  ac.cmd.brake = 0; const a = ac.air, n0 = ac.x[0], t0 = ac.t; let thC = null, deI = 0, lo = null, d50 = null;
+  ac.cmd.brake = 0; const a = ac.air, n0 = ac.x[0], t0 = ac.t; let thC = null, deI = 0, lo = null, d50 = null, rot = null, nose = null, hold = false;
+  const snap = () => ({ s: ac.x[0] - n0, t: ac.t - t0, ias: a.ias / KT, theta: a.theta * RAD, alpha: a.alpha * RAD, q: a.q * RAD, de: ac.de * RAD, CL: a.CL, phiGE: a.phiGE });
+  const attitude = () => { const e = thC - a.theta; deI = clamp(deI - 0.6 * e * dtS, -AC.deUp, AC.deDn); return clamp(deI - 2.5 * e + 0.85 * a.q, -AC.deUp, AC.deDn); };
   while (ac.t - t0 < 120 && d50 == null) {
-    if (a.ias / KT >= VR) { if (thC == null) thC = a.theta; thC = Math.min(theta * DEG, thC + 3 * DEG * dtS); const e = thC - a.theta; deI = clamp(deI - 0.6 * e * dtS, -AC.deUp, AC.deDn); ac.cmd.de = clamp(deI - 2.5 * e + 0.85 * a.q, -AC.deUp, AC.deDn); }
+    if (a.ias / KT >= VR) {
+      if (!rot) rot = snap();
+      if (!byRate) { if (thC == null) thC = a.theta; thC = Math.min(theta * DEG, thC + 3 * DEG * dtS); ac.cmd.de = attitude(); }
+      else if (!hold) {
+        const eq = rate * DEG - a.q; deI = clamp(deI - 20 * eq * dtS, -AC.deUp, AC.deDn); ac.cmd.de = clamp(deI - 4 * eq, -AC.deUp, AC.deDn);
+        if (a.theta + 0.3 * a.q >= theta * DEG) { hold = true; thC = theta * DEG; deI = clamp(ac.de - 0.85 * a.q + 2.5 * (thC - a.theta), -AC.deUp, AC.deDn); }
+      } else ac.cmd.de = attitude();
+    }
     else ac.cmd.de = 0;
     ac.cmd.dr = clamp(1.4 * (a.psi - 0) + 0.6 * a.r, -AC.drMax, AC.drMax); ac.cmd.steer = a.wow[0] ? clamp(-ac.cmd.dr / AC.drMax, -1, 1) * 10 * DEG : 0;
     ac.cmd.da = clamp(1.25 * (0 - a.phi) - 0.28 * a.p, -AC.daMax, AC.daMax);
     ac.step(dtS);
-    if (!lo && !a.onGround && a.ias / KT > 0.5 * VR) lo = { s: ac.x[0] - n0, t: ac.t - t0, ias: a.ias / KT };
+    if (rot && !nose && !a.wow[0]) nose = snap();
+    if (!lo && (byRate ? !(a.wow[1] || a.wow[2]) : !a.onGround) && a.ias / KT > 0.5 * VR) lo = snap();
     if (lo && a.hWheel >= 50 * FT) d50 = { s: ac.x[0] - n0, t: ac.t - t0, ias: a.ias / KT };
   }
-  return { VR, groundRoll_m: lo?.s ?? null, tLiftoff_s: lo?.t ?? null, V_LOF_kt: lo?.ias ?? null, dist50ft_m: d50?.s ?? null, V50_kt: d50?.ias ?? null };
+  return { VR, groundRoll_m: lo?.s ?? null, tLiftoff_s: lo?.t ?? null, V_LOF_kt: lo?.ias ?? null, dist50ft_m: d50?.s ?? null, V50_kt: d50?.ias ?? null,
+    mode, ...(byRate ? { rate_dps: rate } : {}), tVRtoNose_s: rot && nose ? nose.t - rot.t : null, V_nose_kt: nose?.ias ?? null, tVRtoLOF_s: rot && lo ? lo.t - rot.t : null,
+    theta_LOF_deg: lo?.theta ?? null, alpha_LOF_deg: lo?.alpha ?? null, q_LOF_dps: lo?.q ?? null, de_LOF_deg: lo?.de ?? null, CL_LOF: lo?.CL ?? null, phiGE_LOF: lo?.phiGE ?? null };
 }
 /** autoland from the standard approach, calm, oatC 15; distance from 50 ft wheel height to stop (v10_perf §5) */
 export function landingTest(M, { maxBrake = false, dist = 5500 } = {}) {
@@ -623,15 +679,17 @@ export function runCard(M, ac, info, opts = {}) {
   const cr = { ias: info.cruise.ias, h: info.cruise.h, flaps: 0, gear: info.retract ? 0 : 1, gammaDeg: 0 };
   const ap = { ias: info.approach.ias, h: info.approach.h, flaps: 1, gear: 1, gammaDeg: info.approach.gammaDeg };
   for (const [k, c] of [['cruise', cr], ['approach', ap]]) {
-    const m = modes(M, c, { adot: true });
+    const set = info.derivSets?.[k] ?? {};   // R2-07: each point with its own config-keyed derivatives
+    const m = withDerivs(M, set, () => modes(M, c, { adot: true }));
     out.trim[k] = { ias_kt: c.ias, h_m: c.h, ...m.trim };
     const pick = o => (o && o.wn ? { wn: o.wn, zeta: o.zeta, T: o.T } : o);
-    out.modes[k] = { sp: pick(m.sp), ph: pick(m.ph), dr: pick(m.dr), roll_tau: m.roll?.tau, spiral: m.spiral ? { lam: m.spiral.lam, t2: m.spiral.t2, grows: m.spiral.grows } : null, nAlpha: m.nAlpha, CAP: m.CAP };
+    out.modes[k] = { sp: pick(m.sp), ph: pick(m.ph), dr: pick(m.dr), roll_tau: m.roll?.tau, spiral: m.spiral ? { lam: m.spiral.lam, t2: m.spiral.t2, grows: m.spiral.grows } : null, nAlpha: m.nAlpha, CAP: m.CAP,
+      derivSet: Object.keys(set).length ? k : null };
   }
   if (opts.noGround) return out;
   // 4) takeoff, 5) landing
   const VR = info.takeoff.VR ?? Math.round(1.05 * out.stall[info.takeoff.name ?? info.dets[0].name].VSR_eas);
-  out.takeoff = { flap: info.takeoff.name, ...takeoffTest(M, { f: info.takeoff.f, VR, theta: info.takeoff.theta }) };
+  out.takeoff = { flap: info.takeoff.name, ...takeoffTest(M, { f: info.takeoff.f, VR, theta: info.takeoff.theta, mode: info.takeoff.mode, rate: info.takeoff.rate }) };
   for (const [k, mb] of [['asIs', false], ['maxBrake', true]]) out.landing[k] = landingTest(M, { maxBrake: mb });
   return out;
 }
