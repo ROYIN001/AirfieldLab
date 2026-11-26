@@ -163,7 +163,9 @@ for (const id of IDS) {
   const vs0 = sp(id, 'VS0_kt'), vs1 = sp(id, 'VS1_kt');
   const unit = leaf(c, 'speeds.VS0_kt').u;
   const tid = `T-LN-${String(n++).padStart(2, '0')}`;
-  const exp = `${vs1 != null ? 'VS1 ' + vs1 + ' / ' : ''}VS0 ${vs0} ±3 (${unit.replace('kt ', 'K')})`;
+  // R2-07: with no VS1 the clean detent is still flown and must stall faster than the full flap (+1 kt), so a flap-down
+  // CLmax taken as the clean one (lm_card pickCfg before R2-07: p68c 56.9 / 56.9 KEAS) fails the row
+  const exp = `${vs1 != null ? 'VS1 ' + vs1 + ' / ' : ''}VS0 ${vs0} ±3 (${unit.replace('kt ', 'K')})${vs1 == null ? '; ไม่มี VS1: แฟลปขึ้น > แฟลปเต็ม + 1' : ''}`;
   const cond = `stall idle 1 kt/s 3,000 ft ปีกระดับ มวล MTOW ${r(mtow, 1)} kg (lm_card buildAC จากบัตร, R1 สำหรับ leaf ที่ _na)`;
   if (!sim) { T(tid, cond, 'V_SR KEAS แฟลปขึ้น / แฟลปเต็ม', exp, 'บัตร §13.2 (speeds.VS1_kt / VS0_kt)', 'ไม่รองรับในซิมวันนี้ (ไม่พบ harness)', null, false); continue; }
   const { L, M } = sim;
@@ -176,10 +178,11 @@ for (const id of IDS) {
   simOut[id] = { m: ac.m, P_kW: r(ac.P / 1000, 1), T0_N: r(ac.T0, 0), stall: out.stall, climb: out.climb };
   const dn = val(c, 'aero.flaps.detents').map(d => d.name), sClean = out.stall[dn[0]], sFull = out.stall[dn.at(-1)];
   const parts = [], oks = [];
-  if (vs1 != null) { parts.push(`${dn[0]} ${r(sClean.VSR_eas)}`); oks.push(Math.abs(sClean.VSR_eas - vs1) <= 3); }
+  parts.push(`${dn[0]} ${r(sClean.VSR_eas)}`);
+  oks.push(vs1 != null ? Math.abs(sClean.VSR_eas - vs1) <= 3 : sClean.VSR_eas > sFull.VSR_eas + 1);
   parts.push(`${dn.at(-1)} ${r(sFull.VSR_eas)}`); oks.push(Math.abs(sFull.VSR_eas - vs0) <= 3);
   const ok = oks.every(Boolean);
-  T(tid, cond, `V_SR KEAS ${vs1 != null ? dn[0] + ' / ' : ''}${dn.at(-1)}`, exp, `บัตร §13.2 (speeds.VS1_kt / VS0_kt)`, parts.join(' / ') + (ok ? ' (ผ่าน)' : ' (ไม่ผ่าน)'), ok, false);
+  T(tid, cond, `V_SR KEAS ${dn[0]} / ${dn.at(-1)}`, exp, `บัตร §13.2 (speeds.VS1_kt / VS0_kt)`, parts.join(' / ') + (ok ? ' (ผ่าน)' : ' (ไม่ผ่าน)'), ok, false);
 }
 for (const id of IDS) {
   const c = own(id), mtow = val(c, 'airframe.weights.MTOW');

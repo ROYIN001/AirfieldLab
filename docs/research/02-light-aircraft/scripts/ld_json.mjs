@@ -41,14 +41,18 @@ function altLossLeaf(id) {
   return L(o.loss_ft, 'ft', ['LC2', 'LF1', 'LG5', 'LM0'], 'ต่ำ', true,
     `ค่าประมาณ (scripts/ld_vx.mjs, gap 18): AFM ที่เปิดอ่านได้ไม่ระบุความสูงที่เสียในการแก้ stall; ใช้ค่าคลาส Δh = c·VS1² (KCAS) โดย c เฉลี่ย ${a.coef_mean} จาก POH/AFM C172S 230 ft, C152 160 ft, P2006T 180 ft (บัตร 04/11/12) × VS1 ${o.VS1_kcas} KCAS ที่ training_mass ${o.mass} kg = ${o.loss_ft} ft (${Math.round(o.loss_ft * 0.3048)} m), ช่วง ${o.min_ft}–${o.max_ft} ft ตาม c ต่ำสุด/สูงสุด; การแก้ stall ปกติ ปีกระดับ idle (เกณฑ์ของ evaluator)`);
 }
-/** controls.pitch.derived_check (gap 18): round-1 hinge model with this card's leaves (ld_stickforce.mjs) */
-function sfLeaf(id) {
-  const o = sf?.ids?.[id]; if (!o) return undefined;
-  const t = o.train, m = o.mtom, c = o.cfr23_155;
-  return L({ mass_kg: t.mass, Fs_per_g_N: { approach: t.approach.Fs_per_g_N, cruise: t.cruise.Fs_per_g_N }, grad_N_per_kt: { approach: t.approach.grad_N_per_kt, cruise: t.cruise.grad_N_per_kt },
-    at_kcas: { approach: t.approach.ias_kt, cruise: t.cruise.ias_kt }, SM_fixed: t.SM_fixed, SM_free: t.SM_free, free_elevator_factor: t.free_elevator_factor,
-    mtom: { mass_kg: m.mass, Fs_per_g_N: m.cruise.Fs_per_g_N, pull_to_nL_lbf: c.model_lbf, cfr23_155_min_lbf: c.required_lbf } }, 'N/g, N/kt, MAC', ['LD12', 'LD15', 'LM0'], 'ต่ำ', true,
-    `ค่าประมาณ (scripts/ld_stickforce.mjs, gap 18): สมการ elevator แบบ reversible ของรอบที่ 1 §6 (trim เชิงเส้น + Ch = Ch0 + Chα·αt + Chδ·δe + Chtab·δtab, F = G·ηt·q·Se·ce·Ch) กับ controls.pitch.* ของบัตรนี้ ที่ training_mass ${t.mass} kg; ที่ MTOM ${m.mass} kg แรงดึงถึง 3.8 g = ${c.model_lbf} lbf (${r(c.model_lbf * 4.44822, 3)} N) ต่ำกว่าขั้นต่ำ 14 CFR 23.155(a)(2) ${c.required_lbf} lbf [LD12] แสดงว่า Chδ และ gearing ที่ยกมาจากรอบที่ 1 ต่ำไปสำหรับ DA40 (เครื่องจริงผ่านการรับรอง) เป้าของโมเดลแรงที่คันในอนาคตคือ Fs/g ≥ ${r(c.required_per_g_lbf * 4.44822, 3)} N/g ที่ MTOM (T-LD-43) และความชันต่อความเร็วเป็นบวก (T-LD-44); ซิมวันนี้ไม่มีโมเดลแรงที่คัน`);
+/** validation.stick_force_targets (R2-08: was controls.pitch.derived_check): {band, hinge_model} as the cards of 07
+ *  (lp_check.mjs) — band = MIL-F-8785C Level 1 centre stick + 14 CFR 23.155 (lh_stick.band via ld_stickforce.mjs),
+ *  hinge_model = the round-1 hinge model with this card's leaves (ld_stickforce.mjs) */
+function sftLeaf(id) {
+  const o = sf?.ids?.[id]; if (!o || !o.band) return undefined;
+  const t = o.train, m = o.mtom, c = o.cfr23_155, b = o.band;
+  return L({ band: b,
+    hinge_model: { mass_kg: t.mass, at_kt: { approach: t.approach.ias_kt, cruise: t.cruise.ias_kt }, Fs_per_g_N: { approach: t.approach.Fs_per_g_N, cruise: t.cruise.Fs_per_g_N },
+      grad_N_per_kt: { approach: t.approach.grad_N_per_kt, cruise: t.cruise.grad_N_per_kt }, SM_fixed: t.SM_fixed, SM_free: t.SM_free, free_elevator_factor: t.free_elevator_factor,
+      mtow: { mass_kg: m.mass, Fs_per_g_N_cruise: m.cruise.Fs_per_g_N, Fs_per_g_lbf_cruise: m.cruise.Fs_per_g_lbf, pull_to_nL_lbf: c.model_lbf } } },
+    'lbf/g, N/g, N/kt, g/rad, lbf, MAC', ['LD12', 'LD15', 'LM0'], 'ต่ำ', true,
+    `ค่าประมาณ (scripts/ld_stickforce.mjs, gap 18; ย้ายจาก controls.pitch.derived_check ตาม R2-08): band = ช่องแรงต่อ g ของคันแบบ centre stick ตาม MIL-F-8785C Level 1 (${b.mil_L1_centre_stick_lbf_per_g.min}–${b.mil_L1_centre_stick_lbf_per_g.max} lbf/g ที่ n/α ${b.nAlpha_cruise_g_per_rad} g/rad, nL ${b.nL}) รวมขั้นต่ำ 14 CFR 23.155(a)(2) ก่อน Amdt 64 [LD12] ${b.part23_155_force_lbf} lbf (${r(b.part23_155_force_lbf * 4.44822, 3)} N) ÷ (nL − 1) = ${b.part23_155_min_lbf_per_g} lbf/g ที่ MTOM ${m.mass} kg (W ${b.W_lb} lb) ได้ ${b.fs_per_g_lbf.min}–${b.fs_per_g_lbf.max} lbf/g (${b.fs_per_g_N.min}–${b.fs_per_g_N.max} N/g), สูตรเดียวกับ lh_stick.band; hinge_model = สมการ elevator แบบ reversible ของรอบที่ 1 §6 (F = G·ηt·q·Se·ce·Ch) กับ controls.pitch.* ของบัตรนี้ ที่ training_mass ${t.mass} kg; ที่ MTOM แรงดึงถึง ${b.nL} g = ${c.model_lbf} lbf (${r(c.model_lbf * 4.44822, 3)} N) ต่ำกว่าขั้นต่ำ 23.155 แสดงว่า Chδ/gearing ของรอบที่ 1 ต่ำไปสำหรับ DA40 (T-LD-43); ใช้เป็นเป้าของซิมเท่านั้น ไม่ใช่ค่าการรับรอง`);
 }
 /** performance.tests (gap 16): the T-LD rows of §05.11 that check this id (out/ld_tests.json, field ids) */
 function testsLeaf(id) {
@@ -144,12 +148,13 @@ const iasNG = ias ? ias.ng : null;
 ng.speeds = {
   VS0_kt: L(60, 'kt IAS', ['LD3', 'LD7'], 'กลาง', false, 'แฟลป LDG 1,310 kg ปีกระดับ idle; ≈ 58 KCAS (Diamond ระบุ stall landing config 58 KCAS ที่ MTOM [LD4]); 59 KIAS ที่ 1,200 kg [LD3]'),
   VS1_kt: L(66, 'kt IAS', ['LD3', 'LD7'], 'กลาง', false, 'แฟลป UP 1,310 kg; ตาราง: 58/61/64/66 KIAS ที่ 1,000/1,100/1,200/1,310 kg [LD3]'),
-  VY_kt: L(72, 'kt IAS', ['LD3', 'LD7'], 'กลาง', false, 'best rate ถึงความสูงปลอดภัย แฟลป T/O [LD3]; ไต่แบบ cruise climb แฟลป UP 88 KIAS'),
+  VY_kt: L(72, 'kt IAS', ['LD3', 'LD7'], 'กลาง', false, 'best rate ถึงความสูงปลอดภัย แฟลป T/O ทุกมวล [LD3]; ไต่แบบ cruise climb แฟลป UP 88 KIAS'),
   VR_kt: L(67, 'kt IAS', ['LD3'], 'กลาง', false, 'แฟลป T/O 1,280 kg; 56/58/61/65/67 KIAS ที่ 940/1,000/1,100/1,200/1,280 kg; V50 72 KIAS ที่ 1,280 kg [LD3]'),
   VAPP_kt: L(74, 'kt IAS', ['LD3'], 'กลาง', false, 'D1: ที่ training_mass 1,150 kg แฟลป LDG ลมสงบ = ตาราง speeds.approach_table อ่านเชิงเส้นระหว่าง 72 KIAS (1,100 kg) กับ 76 KIAS (1,200 kg) [LD3]; ตรวจด้วย V ∝ √m ใน CAS จากสองแถวนั้นได้ 73.5–74.5 KIAS; ≈ 73 KCAS (38 m/s); เท่ากับ VREF เพราะ checklist ให้ความเร็ว approach ค่าเดียวไม่มีส่วนเพิ่ม และ AFM รุ่นเดิมให้นักบินเพิ่มเองเมื่อลมแรง ลมกระโชก หรือ wind shear [LD6 p.4A-34]; ที่ MLM 1,280 kg = 77 KIAS'),
   VREF_kt: L(74, 'kt IAS', ['LD3'], 'กลาง', false, 'D1: ที่ training_mass 1,150 kg แฟลป LDG (checklist เรียกความเร็ว approach นี้ว่า VREF [LD3]); วิธีเดียวกับ VAPP_kt; แฟลป T/O 75.5, UP 80 KIAS ที่มวลเดียวกัน (ตาราง approach_table)'),
   approach_table: L({ axes: { mass_kg: [940, 1000, 1100, 1200, 1280], flap: ['UP', 'T/O', 'LDG'] }, data: [[71, 73, 78, 82, 83], [68, 70, 74, 77, 78], [66, 68, 72, 76, 77]] }, 'kt IAS', ['LD3'], 'กลาง', false, 'ความเร็ว approach (VREF) ตามมวลและแฟลปจาก checklist ของ Diamond Flight Training (ตัวเลขจัดใหม่ ไม่ได้คัดลอกรูปแบบตาราง) [LD3]; แถว 1,216 kg ให้ LDG 76 KIAS; ใช้ตั้ง VREF ของซิมที่มวลอื่นนอก training_mass (scripts/ld_tools.mjs card)'),
   VX_kt: vxLeaf('da40ng', ['LD3']),
+  climb_basis: L({ VX: { flap: 'UP', mass_kg: 1310 }, VY: { flap: 'T/O', mass_kg: null } }, '-, kg', ['LD3', 'LD17'], 'กลาง', false, 'โครงแบบและมวลของ speeds.VX_kt และ VY_kt (R2-08): VX คำนวณที่แฟลป UP และ MTOM 1,310 kg (scripts/ld_vx.mjs); VY 72 KIAS คือความเร็วไต่แฟลป T/O ของ AFM ใช้ทุกมวล (mass_kg null); คนละแฟลปจึงไม่เทียบ VX ≤ VY (lm_merge vx_vy รายงาน info); Vy แฟลป UP ของ NG ยังไม่พบในแหล่งสาธารณะ'),
   stall_altitude_loss_ft: altLossLeaf('da40ng'),
   VG_kt: L(88, 'kt IAS', ['LD2', 'LD3'], 'สูง', false, 'best glide แฟลป UP ใบพัดหมุนฟรี (ทุกมวล) [LD2 p.3-4]'),
   VA_kt: L({ 1080: 101, 1180: 108, 1310: 113 }, 'kt IAS', ['LD1', 'LD2'], 'สูง', false, 'AFM ใช้ vO (operating manoeuvring speed): 101 KIAS ถึง 1,080 kg, 108 KIAS 1,080–1,180 kg, 113 KIAS เกิน 1,180 kg [LD2 p.2-3][LD1 p.28]'),
@@ -425,7 +430,6 @@ Object.assign(ng.controls, {
     centring_spring: L({ Kc: 60, qFade: 400 }, 'N/rad, Pa', ['LD15'], 'ต่ำ', true, 'รอบที่ 1'),
     stops: L({ teu: 21, ted: 17 }, 'deg', ['LD1'], 'สูง', false, 'TCDS [LD1 p.29]'),
     rate_limit: L(70, 'deg/s', ['LD15'], 'ต่ำ', true, 'รอบที่ 1'),
-    derived_check: sfLeaf('da40ng'),
   },
   roll: {
     architecture: L({ kind: 'reversible', input: 'force' }, '-', ['LD6'], 'สูง', false, 'push rod'),
@@ -541,6 +545,7 @@ ng.validation = {
   classification: { hqClassCategory: L({ class: 'I', approachLanding: 'C', cruiseClimb: 'B', takeoff: 'C' }, '-', ['R1:V10'], 'สูง', false, 'เครื่องเบาเครื่องยนต์เดียว (MIL-F-8785C Class I)') },
   procedures: { v50MinFactor_singleEngine: L(1.2, '× VS1', ['LD12'], 'สูง', false, '14 CFR 23.53 เดิม; DA40 NG V50 72 KIAS ที่ 1,280 kg ≈ 1.2 × VS(T/O)') },
   takeoff_test: L({ flap: 'T/O', VR_kt: 66.9, theta_deg: 8 }, 'kt CAS, deg', ['LD3'], 'กลาง', true, 'VR 68 KIAS ที่ 1,310 kg (สเกลจาก 67 KIAS ที่ 1,280 kg [LD3]) → 66.9 KCAS ด้วยตาราง T/O; มุมเงย 8° ค่าประมาณ'),
+  stick_force_targets: sftLeaf('da40ng'),
   trim_targets: {
     cruise: L({ ias_kt: 110, h_ft: 3000, gamma_deg: 0 }, 'kt CAS, ft', ['LD1'], 'ต่ำ', true, 'สภาพ trim ของซิม (≈ 0.85 VNO) ไม่ใช่จุดจาก AFM'),
     approach: L({ ias_kt: 76, h_m: 300, gamma_deg: -3 }, 'kt CAS, m, deg', ['LD3'], 'กลาง', true, 'ค่าประมาณ: จุด trim/linearise ของซิมที่ MTOM 1,310 kg ใช้ speeds.approach_table แถว 1,280 kg (MLW, แถวสุดท้ายของตาราง) 77 KIAS แฟลป LDG → 76 KCAS ด้วย speeds.ias_cas (ld_iascas, ค่าประมาณ); VREF/VAPP ที่ training_mass 1,150 kg = 74 KIAS อยู่ใน speeds (D1)'),
@@ -577,6 +582,7 @@ const NA = [
   ['validation.currentModel.cruise155', 'เหมือนกัน; ดู validation.currentModel.cruise'],
   ['otherSims.*', 'หัวข้อ 03 (LB) เป็นเจ้าของ path otherSims'],
   // gap 16 (19 Nov 2026): no readable AFM chapter-5 tables for any of the three ids (also inherited by da40_180, da40d)
+  ['controls.pitch.derived_check', 'ย้ายไป validation.stick_force_targets (band + hinge_model) ตาม R2-08 ให้ path เดียวกับบัตรอื่น'],
   ['performance.ROC_table', 'AFM บท 5 ให้อัตราไต่ตามความสูง/อุณหภูมิเป็นแผนภูมิ (nomogram) ซึ่งเป็นภาพในฉบับ IO-360 ที่เปิดอ่านได้ [LD6 viewer 180–191] และสำเนา AFM NG [LD2] มีเฉพาะบท 1–3; จุด SL 30–35 °C จึงไม่มีจากเอกสาร (วันร้อนเป็นค่าประมาณใน T-LD-15/T-LD-33)'],
   ['performance.takeoff_table', 'เหตุผลเดียวกับ performance.ROC_table: แผนภูมิระยะวิ่งขึ้นของ AFM บท 5 อ่านค่าไม่ได้; ใช้ performance.takeoff ที่ SL ISA และสเกล σ สำหรับ 35 °C (T-LD-15, T-LD-33 ค่าประมาณ)'],
   ['performance.landing_table', 'เหตุผลเดียวกับ performance.ROC_table: แผนภูมิระยะลงจอดของ AFM บท 5 อ่านค่าไม่ได้; ใช้ performance.landing ที่ SL ISA'],
@@ -690,6 +696,7 @@ const v180 = {
     VREF_kt: L(65, 'kt IAS', ['LD6', 'LD8'], 'กลาง', false, 'D1: ที่ training_mass 1,050 kg แฟลป LDG วิธีเดียวกับ VAPP_kt; handout DA 40 D เรียกความเร็วนี้ว่า VREF (71 KIAS ที่ 1,150 kg ตรงกับ AFM) [LD8 p.24]; แฟลป UP หรือ T/O (แฟลปเสีย) AFM ให้ 68/73/76 KIAS ที่ 1,000/1,150/1,200 kg [LD6 p.4B-9]'),
     approach_table: L({ axes: { mass_kg: [850, 1000, 1092, 1150, 1200], flap: ['LDG'] }, data: [[58, 63, 67, 71, 73]] }, 'kt IAS', ['LD6'], 'สูง', false, 'ความเร็ว approach แฟลป LDG ตามมวลจาก AFM 4A.3.12 [LD6 p.4A-34 (viewer 150)]; แถว 1,200 kg ใช้เมื่อทำ MÄM 40-227; ตรงกับความเร็วลงจอดฉุกเฉินแฟลป LDG [LD6 p.3-4]; ใช้ตั้ง VREF ของซิมที่มวลอื่นนอก training_mass (scripts/ld_tools.mjs card)'),
     VX_kt: vxLeaf('da40_180', ['LD6']),
+    climb_basis: L({ VX: { flap: 'UP', mass_kg: 1200 }, VY: { flap: 'T/O', mass_kg: 1200 } }, '-, kg', ['LD6', 'LD17'], 'กลาง', false, 'โครงแบบและมวลของ speeds.VX_kt และ VY_kt (R2-08): VX คำนวณที่แฟลป UP และ MTOM 1,200 kg (scripts/ld_vx.mjs); VY 67 KIAS คือความเร็วไต่แฟลป T/O ที่ 1,200 kg [LD6 p.5-13]; ที่มวลฝึก 1,050 kg หัวข้อ 08 และ 09 ใช้ 62 KIAS (แก้มวล)'),
     stall_altitude_loss_ft: altLossLeaf('da40_180'),
     VG_kt: L(76, 'kt IAS', ['LD6'], 'สูง', false, 'best glide แฟลป UP ใบพัดหมุนฟรี 1,200 kg; 73/68/60 KIAS ที่ 1,150/1,000/850 kg [LD6 p.3-28]'),
     VA_kt: L({ 1036: 94, 1200: 111 }, 'kt IAS', ['LD1', 'LD6'], 'สูง', false, 'MÄM 40-227: 94 KIAS ถึง 1,036 kg, 111 KIAS เหนือกว่านั้น; มาตรฐาน 94 (≤ 980 kg) / 108 KIAS [LD1 p.6][LD6 p.2-3]'),
@@ -746,7 +753,7 @@ const v180 = {
     elevator: L({ travel_deg: { up: 18, down: 16 }, tol: null, rate_dps: null, actuator_tau_s: null }, 'deg', ['LD1'], 'สูง', false, 'MTOM 1,200 kg (MÄM 40-227) 18/16°; มาตรฐาน 23±1/15±1°, ถังพิสัยไกล 23/16° [LD1 p.7]'),
     rudder: L({ travel_deg: { left: 29, right: 31 }, tol: '±1', rate_dps: null, actuator_tau_s: null }, 'deg', ['LD1'], 'สูง', false, 'มาตรฐาน; ถังพิสัยไกลหรือ rudder ใหญ่ 24/26° [LD1 p.7]'),
   },
-  pitch: { stops: L({ teu: 18, ted: 16 }, 'deg', ['LD1'], 'สูง', false, 'MÄM 40-227 (MTOM 1,200 kg) 18/16° [LD1 p.7]'), derived_check: sfLeaf('da40_180') },
+  pitch: { stops: L({ teu: 18, ted: 16 }, 'deg', ['LD1'], 'สูง', false, 'MÄM 40-227 (MTOM 1,200 kg) 18/16° [LD1 p.7]') },
   yaw: { stops: L({ left: 29, right: 31, max: 29 }, 'deg', ['LD1'], 'สูง', false, 'มาตรฐาน 29/31° [LD1 p.7]; max = min(left, right)') } },
   interference: { slipstream: { diskDiameter: L(1.80, 'm', ['LD1'], 'สูง', false, 'MTV-12-B/180-17 [LD1 p.5]') }, groundEffect: { A: L(10.53, '-', ['LD6'], 'สูง', false, 'AR ปีกรุ่นเดิม [LD6 p.1-6]') } },
   aero: {
@@ -756,6 +763,7 @@ const v180 = {
     ...fit180L.aero,
   },
   validation: {
+    stick_force_targets: sftLeaf('da40_180'),
     takeoff_test: L({ flap: 'T/O', VR_kt: kcasC('T/O', 59), theta_deg: 8 }, 'kt CAS, deg', ['LD6'], 'กลาง', true, 'VR ≈ 59 KIAS [LD6 p.5-10] → KCAS ด้วยตาราง T/O รุ่นเดิม; มุมเงย 8° ค่าประมาณ'),
     trim_targets: { approach: L({ ias_kt: Math.round(kcasC('LDG', 73)), h_m: 300, gamma_deg: -3 }, 'kt CAS, m, deg', ['LD6'], 'ต่ำ', true, 'ค่าประมาณ: จุด trim/linearise ของซิมที่ MTOM 1,200 kg = speeds.approach_table 73 KIAS แฟลป LDG [LD6 p.4A-34] → KCAS ด้วยตาราง ias_cas รุ่นเดิม (ค่าประมาณ); VREF/VAPP ที่ training_mass 1,050 kg = 65 KIAS อยู่ใน speeds (D1)'), cruise: CRUISE_C },
     ...(card180 ? { currentModel: currentModel(card180, 1200, 'da40_180') } : {}),
@@ -793,12 +801,13 @@ const vD = {
   speeds: {
     VS0_kt: L(49, 'kt IAS', ['LD8', 'LD6'], 'กลาง', false, 'แฟลป LDG 1,150 kg; 42 KIAS ที่ 980 kg [LD8][LD6 p.5-8]'),
     VS1_kt: L(52, 'kt IAS', ['LD8', 'LD6'], 'กลาง', false, 'แฟลป UP 1,150 kg; 47 KIAS ที่ 980 kg'),
-    VY_kt: L(66, 'kt IAS', ['LD8'], 'ต่ำ', false, 'ความเร็วไต่หลังวิ่งขึ้น แฟลป T/O [LD8]; cruise climb แฟลป UP 73 KIAS'),
+    VY_kt: L(66, 'kt IAS', ['LD8'], 'ต่ำ', false, 'ความเร็วไต่หลังวิ่งขึ้น แฟลป T/O ที่ 1,150 kg [LD8]; cruise climb แฟลป UP 73 KIAS'),
     VR_kt: L(59, 'kt IAS', ['LD8'], 'กลาง', false, '[LD8]'),
     VAPP_kt: L(66, 'kt IAS', ['LD6', 'LD8'], 'กลาง', false, 'D1: ที่ training_mass 1,060 kg แฟลป LDG ลมสงบ = speeds.approach_table อ่านเชิงเส้นระหว่าง 63 KIAS (1,000 kg) กับ 67 KIAS (1,092 kg) ได้ 65.6 KIAS [LD6 p.4A-34] (โครงเดียวกัน; handout ให้ 71 KIAS ที่ 1,150 kg ตรงกับ AFM [LD8 p.24]); ≈ 66 KCAS (34 m/s); เท่ากับ VREF; ที่ MTOM 1,150 kg = 71 KIAS'),
     VREF_kt: L(66, 'kt IAS', ['LD6', 'LD8'], 'กลาง', false, 'D1: ที่ training_mass 1,060 kg; handout เรียกความเร็วนี้ว่า VREF (71 KIAS แฟลป LDG, 73 KIAS แฟลป UP ที่ 1,150 kg) [LD8 p.24]'),
     approach_table: L({ axes: { mass_kg: [850, 1000, 1092, 1150], flap: ['LDG'] }, data: [[58, 63, 67, 71]] }, 'kt IAS', ['LD6', 'LD8'], 'กลาง', false, 'ตาราง approach แฟลป LDG ของ AFM โครงรุ่นเดิม [LD6 p.4A-34] (AFM ของ DA 40 D เปิดอ่านไม่ได้; handout ของรุ่น D ให้ 71 KIAS ที่ 1,150 kg ตรงกัน [LD8 p.24]); ใช้ตั้ง VREF ของซิมที่มวลอื่นนอก training_mass (scripts/ld_tools.mjs card)'),
     VX_kt: vxLeaf('da40d', ['LD6', 'LD8']),
+    climb_basis: L({ VX: { flap: 'UP', mass_kg: 1150 }, VY: { flap: 'T/O', mass_kg: 1150 } }, '-, kg', ['LD8', 'LD17'], 'กลาง', false, 'โครงแบบและมวลของ speeds.VX_kt และ VY_kt (R2-08): VX คำนวณที่แฟลป UP และ MTOM 1,150 kg (scripts/ld_vx.mjs); VY 66 KIAS คือ takeoff climb แฟลป T/O ที่ 1,150 kg [LD8 p.5]; ที่มวลฝึก 1,060 kg หัวข้อ 08 และ 09 ใช้ 62 KIAS (แก้มวล)'),
     stall_altitude_loss_ft: altLossLeaf('da40d'),
     VG_kt: L(73, 'kt IAS', ['LD6'], 'ต่ำ', true, 'ค่าประมาณ: best glide ของโครงรุ่นเดิม 1,150 kg [LD6 p.3-28]; ใบพัดดีเซลหมุนฟรีอาจต่างกัน'),
     VA_kt: L({ 980: 94, 1150: 108 }, 'kt IAS', ['LD1'], 'สูง', false, '[LD1 p.13–14]'),
@@ -853,7 +862,7 @@ const vD = {
     elevator: L({ travel_deg: { up: 23, down: 15 }, tol: { up: '±1', down: '±1' }, rate_dps: null, actuator_tau_s: null }, 'deg', ['LD1'], 'สูง', false, 'มาตรฐาน; ถังพิสัยไกล 23/16° [LD1 p.14–15]'),
     rudder: L({ travel_deg: { left: 29, right: 31 }, tol: '±1', rate_dps: null, actuator_tau_s: null }, 'deg', ['LD1'], 'สูง', false, 'มาตรฐาน; ถังพิสัยไกลหรือ rudder ใหญ่ 24/26° [LD1 p.14–15]'),
   },
-  pitch: { stops: L({ teu: 23, ted: 15 }, 'deg', ['LD1'], 'สูง', false, 'มาตรฐาน 23/15° (ถังพิสัยไกล 23/16°) [LD1 p.14]'), derived_check: sfLeaf('da40d') },
+  pitch: { stops: L({ teu: 23, ted: 15 }, 'deg', ['LD1'], 'สูง', false, 'มาตรฐาน 23/15° (ถังพิสัยไกล 23/16°) [LD1 p.14]') },
   yaw: { stops: L({ left: 29, right: 31, max: 29 }, 'deg', ['LD1'], 'สูง', false, 'มาตรฐาน 29/31° [LD1 p.14–15]; max = min(left, right)') } },
   interference: { slipstream: { diskDiameter: L(1.87, 'm', ['LD1'], 'สูง', false, 'MTV-6-A/187-129 [LD1 p.13]') }, groundEffect: { A: L(10.53, '-', ['LD6'], 'สูง', false, 'AR ปีกรุ่นเดิม [LD6 p.1-6]') } },
   aero: {
@@ -863,6 +872,7 @@ const vD = {
     ...fitDL.aero,
   },
   validation: {
+    stick_force_targets: sftLeaf('da40d'),
     takeoff_test: L({ flap: 'T/O', VR_kt: kcasC('T/O', 59), theta_deg: 8 }, 'kt CAS, deg', ['LD8'], 'กลาง', true, 'VR 59 KIAS [LD8] → KCAS ด้วยตาราง T/O รุ่นเดิม'),
     trim_targets: { approach: L({ ias_kt: Math.round(kcasC('LDG', 71)), h_m: 300, gamma_deg: -3 }, 'kt CAS, m, deg', ['LD8'], 'กลาง', true, 'ค่าประมาณ: จุด trim/linearise ของซิมที่ MTOM 1,150 kg = speeds.approach_table 71 KIAS แฟลป LDG [LD6 p.4A-34][LD8] → KCAS ด้วยตาราง ias_cas รุ่นเดิม (ค่าประมาณ); VREF/VAPP ที่ training_mass 1,060 kg = 66 KIAS อยู่ใน speeds (D1)'), cruise: CRUISE_C },
     ...(cardD ? { currentModel: currentModel(cardD, 1150, 'da40d') } : {}),

@@ -1,0 +1,87 @@
+name: Screenshots
+
+# Renders the page of a pull request and of its base (main) with test/shots.mjs, set ci, and keeps both sets of
+# PNGs as the Actions artifact shots-pr-<n> (before/ and after/), so a change can be compared by eye (plan B8).
+# Chrome draws with SwiftShader on the CPU: the images are for looking at, never for timing. The check fails when
+# the PR's page does not load, throws, logs an error or misses a file; a broken base only shows in the log.
+# A push to main that changes the three.js pin only downloads the pinned files, so the cache lives in main's scope,
+# which every pull request can read (a cache saved by a pull request is visible to that pull request alone).
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'data/**'
+      - 'build.mjs'
+      - 'test/shots.mjs'
+      - 'test/lib/three-pin.mjs'
+      - '.github/workflows/shots.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'test/lib/three-pin.mjs'
+      - '.github/workflows/shots.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: .cache/base
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/cache@v4
+        with:
+          path: .cache/three-*
+          key: three-${{ hashFiles('test/lib/three-pin.mjs') }}
+      - name: three.js (pinned files only)
+        if: github.event_name == 'push'
+        run: node -e "import('./test/lib/three-pin.mjs').then((m) => m.ensureThree(m.CACHE_DIR))"
+      - name: Playwright (not a dependency of the repo; drives the runner's Google Chrome)
+        if: github.event_name != 'push'
+        run: npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.63.0
+      - name: Before (base branch)
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          SHOTS_CHROME: chrome
+        # the base's own three.js pin, when it has one, serves the base page (a PR may change the three.js version)
+        run: |
+          node .cache/base/build.mjs > /dev/null
+          pin=(); if [ -f .cache/base/test/lib/three-pin.mjs ]; then pin=(--pin .cache/base/test/lib/three-pin.mjs); fi
+          rc=0; node test/shots.mjs ci --dist .cache/base/dist --out shots/before "${pin[@]}" > before.log 2>&1 || rc=$?
+          cat before.log; { echo '### Before (base)'; echo '```'; cat before.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          exit $rc
+      - name: After (this pull request)
+        if: github.event_name != 'push'
+        env:
+          SHOTS_CHROME: chrome
+        run: |
+          rc=0; node test/shots.mjs ci --out shots/after > after.log 2>&1 || rc=$?
+          cat after.log; { echo '### After (this PR)'; echo '```'; cat after.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          exit $rc
+      - uses: actions/upload-artifact@v4
+        if: always() && github.event_name != 'push'
+        with:
+          name: shots-${{ github.event.pull_request.number && format('pr-{0}', github.event.pull_request.number) || github.run_id }}
+          path: shots
+          retention-days: 14
+          if-no-files-found: warn
+          overwrite: true
