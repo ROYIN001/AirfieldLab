@@ -25,7 +25,10 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `papi` (PAPI distance from MEHT, colour
   bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `input` (shaping, key ramps, the
   sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
-  phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `page` (parses the assembled page
+  phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `aip`
+  (`RWY_DATA`, the derived geometry and the AIP facts in the Thai UI text against `test/fixtures/aip_vtbd_current.json`,
+  research round 5 T-A01…T-A19, T-A21, T-A22, T-A24, T-A25), `licenses` (the AIRAC cycle cited in the footer,
+  `src/15-geo.js` and this file, research round 5 §11 T-K05), `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
   types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview` command
   line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers every file the
@@ -302,7 +305,11 @@ Suggested order, each with a Node test before tuning by feel in the browser:
    landing distances, and linearised modes (short period, phugoid, Dutch roll, spiral) frequency and damping.
 
 ## Data provenance (data/)
-- Runways, lights, navaids: AIP Thailand AD 2 VTBD, AIRAC 14 MAY 2026 (https://aip.caat.or.th).
+- Runways, lights, navaids: AIP Thailand AD 2 VTBD, AIRAC 29 OCT 2026 (AMDT 11/26, https://aip.caat.or.th). The values
+  are unchanged since AIRAC 14 MAY 2026 and in the 26 NOV and 24 DEC 2026 cycles (research round 5 §1 and 5D); check
+  again before AIRAC 21 JAN 2027. `test/fixtures/aip_vtbd_current.json` holds the published values (numbers only,
+  © CAAT): `test/aip.test.mjs` checks `RWY_DATA` against it, and `test/licenses.test.mjs` (T-K05) checks that the
+  footer, the source comment of `src/15-geo.js` and this line cite its cycle. For a new cycle, update the fixture first.
 - Taxiways, aprons, buildings, water, golf course, land use: OpenStreetMap map renders captured and vectorised
   by the scripts in `tools/` (the source captures are not included; regenerate only if the layout must change).
 - `city.json`: base64 records, generated buildings (9 bytes each) and street lights (5 bytes each); the artifact

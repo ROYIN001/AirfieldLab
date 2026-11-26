@@ -1,6 +1,9 @@
 // ───────────────────────── Don Mueang (VTBD): geodesy and AIP runway data (pure) ─────────────────────────
 // Local frame: origin at the aerodrome reference point (ARP), n north / e east in metres, ground at d = 0.
-// Source: AIP Thailand AD 2 VTBD (CAAT, AIRAC 14 MAY 2026) — AD 2.2, 2.12–2.15, 2.19.
+// Source: AIP Thailand AD 2 VTBD (CAAT, AIRAC 29 OCT 2026, AMDT 11/26) — AD 2.2, 2.12–2.15, 2.19. Runway, lighting and
+// ILS values are unchanged since AIRAC 14 MAY 2026, and AIRAC 26 NOV and 24 DEC 2026 change nothing for VTBD (research
+// round 5 §1 and 5D). The ARP keeps the 14 MAY 2026 value 135451.74N 1003620.49E (elevation 2.65 m) because AMDT 11/26
+// rounds it to 135452N 1003620E (3 m). test/aip.test.mjs checks RWY_DATA against test/fixtures/aip_vtbd_current.json.
 
 const dms = (d, m, s) => d + m / 60 + s / 3600;
 const ARP = { lat: dms(13, 54, 51.74), lon: dms(100, 36, 20.49), elev: 2.65 };
@@ -37,7 +40,7 @@ const RWY_DATA = [
     id: '03R/21L', w: 45, cl: false, conc: [0, 0],
     ends: [
       { id: '03R', thr: [dms(13, 53, 58.45), dms(100, 36, 5.50)], als: 'SALS300', tdz: false, mehtFt: 63.35,
-        appr: { kind: 'RNP', ident: 'RNP 03R', tchFt: 50 } },
+        appr: { kind: 'RNP', ident: 'RNP 03R', tchFt: 50 } },   // AD 2.24 chart RNAV/RNP RWY 03R: VPA 3.00°, TCH 50 ft
       { id: '21L', thr: [dms(13, 55, 28.33), dms(100, 36, 55.97)], disp: 350, als: 'CAT1', tdz: false, mehtFt: 63.81,
         appr: { kind: 'ILS', ident: 'IDMG', freq: '110.3', cat: 'I', loc: [dms(13, 53, 51.8), dms(100, 36, 1.8)], rdhFt: 53 } },
     ],

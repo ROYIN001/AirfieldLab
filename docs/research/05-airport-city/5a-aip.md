@@ -858,7 +858,7 @@ URL ของไฟล์กราฟิกแผนภูมิอยู่ใ�
 7. **คัดลอกไฟล์ JSON** `docs/research/05-airport-city/aip_vtbd_current.json` ไปเป็นข้อมูลอ้างอิงของเทสต์ (เช่น `test/aip_vtbd_current.json`) แทนการพิมพ์ค่าซ้ำในหลายไฟล์
 8. **ก่อน 24 DEC 2026** ให้ตรวจ amdt ของรอบ 24 DEC 2026 (https://aip.caat.or.th/2026-12-24-AIRAC/pdf/VT-amdt-en-GB.pdf) ว่ามีหน้า AD 2-VTBD เปลี่ยนหรือไม่ และเปิด eSUP A31/26, A32/26, B25/26, B26/26 กับ AIC 06/26–08/26 เพื่อหาเรื่องที่เกี่ยวกับ VTBD
 9. **ไม่ต้องทำ:** ไม่ต้องย้ายจุดกำเนิดไปที่ ARP ที่ปัดแล้ว ไม่ต้องเปลี่ยน `FIELD.elev` เป็น 3 m ไม่ต้องทำพื้นทางวิ่งเอียงตามโปรไฟล์ความลาด (ต่างกันไม่ถึง 0.5 m และโปรไฟล์ขัดกันเอง)
-10. **ไฟล์ประกอบ:** ต้นแบบเทสต์ `docs/research/05-airport-city/aip.test.mjs` และข้อมูล `docs/research/05-airport-city/aip_vtbd_current.json` ที่ข้อ 2 และ 7 อ้างถึงเก็บไว้ใน repo แล้วพร้อมรายงานนี้ (รันผ่านทุกข้อกับโค้ดปัจจุบันด้วย `node docs/research/05-airport-city/aip.test.mjs`) ถ้าจะย้ายเข้า `test/` ให้เปลี่ยนบรรทัด import เป็น `./harness.mjs`
+10. **ไฟล์ประกอบ:** ต้นแบบเทสต์ `docs/research/05-airport-city/aip.test.mjs` และข้อมูล `docs/research/05-airport-city/aip_vtbd_current.json` ที่ข้อ 2 และ 7 อ้างถึงเก็บไว้ใน repo แล้วพร้อมรายงานนี้ (รันผ่านทุกข้อกับโค้ดปัจจุบันด้วย `node docs/research/05-airport-city/aip.test.mjs`) ถ้าจะย้ายเข้า `test/` ให้เปลี่ยนบรรทัด import เป็น `./harness.mjs` (25 พ.ย. 2026: ย้ายแล้วตามแผนข้อ A3 เป็น `test/aip.test.mjs` และ `test/fixtures/aip_vtbd_current.json` CI รันทุกครั้ง)
 11. **เรื่องที่ต้องยืนยันก่อนใช้เป็นกฎในเกม:** ข้อความ AD 2.20 (จำนวนข้อ, hot spot, LVP) และหมายเหตุ LOC IBKD/พิกัด DME 03L ให้เปิดหน้า AD 2 รอบปัจจุบันในเบราว์เซอร์แล้วตรวจก่อน เพราะเครื่องมืออ่านหน้าเว็บตัดข้อความที่ราว 98,000–101,000 ตัวอักษร
 
 ### บันทึกการตรวจทาน
