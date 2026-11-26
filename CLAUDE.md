@@ -12,7 +12,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Estimated values (building and tower heights, parked aircraft) must be labelled as estimates.
 
 ## Commands
-- Build: `node build.mjs` → `dist/index.html`, and copies `data/*` into `dist/`.
+- Build: `node build.mjs` → `dist/index.html`, and copies `data/` (sub-folders included) into `dist/`.
+  `node build.mjs --preview <PR number>` builds a pull request's preview page into `dist-preview/pr-<n>/` and prints
+  the Artifact `files` map (see "Preview each pull request").
 - Run: `python3 -m http.server 8080 -d dist`, open http://localhost:8080 (needs HTTP: the page fetches its data).
 - Tests (Node ≥ 22, no dependencies, `node:test` + `node:assert/strict`): `node --test "test/**/*.test.mjs"`
   (quote the glob: a bare `node --test` would also run `test/shots.mjs`, `test/harness.mjs`, `test/lib/*.mjs` and
@@ -21,13 +23,15 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01), `modes` (trim, linearise and
   MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `keys` (keyboard map and key handling,
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `page` (parses the assembled page
-  module and checks the element ids the scripts use). Autoland score floors sit just under the values measured on
-  2026-11-19 (the assist robot's floor is a loose 50); touchdown points and every mode value have regression bands.
-  A physics change that moves them updates the test in the same PR.
+  module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches,
+  in types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview`
+  command line). Autoland score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is
+  a loose 50); touchdown points and every mode value have regression bands. A physics change that moves them updates
+  the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, and
   `test/keys.test.mjs` evaluates `18-keys.js` the same way, so those four files must stay DOM-free. `build.mjs`
-  exports `assemble()` for the page test.
+  exports `assemble()`, `build()`, `dataFiles()`, `checkPr()` and `previewHtml()` for the page test.
 - Screenshots: `test/shots.mjs <set>` (Playwright + Chrome, SwiftShader). Paths inside it point at the original
   cloud workspace (`/home/claude/...`, `/opt/npm-tools`, vendored three.js); adjust before use.
 
@@ -135,14 +139,29 @@ Suggested order, each with a Node test before tuning by feel in the browser:
   host refuses `.bin`, so binary data travels inside JSON.
 
 ## Working in the cloud (Claude Code on the web)
-- The owner works from the cloud so their computer can stay off. Test changes on the GitHub Pages site:
-  `.github/workflows/pages.yml` runs all tests and the build for pull requests into `main` (a check on the PR,
-  nothing deployed) and for every push to `main`, which then deploys. The job stops after 15 min.
-  One-time setup in the repo: Settings → Pages → Source: GitHub Actions.
+- The owner works from the cloud so their computer can stay off. The GitHub Pages site shows `main`; a pull request
+  is tried on its own claude.ai preview (below). `.github/workflows/pages.yml` runs all tests and the build for pull
+  requests into `main` (a check on the PR, nothing deployed; that build, of the PR merged into `main`, is kept as
+  the Actions artifact `dist-pr-<n>` for 14 days) and for every push to `main`, which then deploys. The job stops
+  after 15 min. One-time setup in the repo: Settings → Pages → Source: GitHub Actions.
 - Work on a branch and open a pull request for anything that changes the flight model, so the owner can try it
   before merging.
+
+### Preview each pull request
+Pages deploys only `main`, so the owner tries a pull request on a private claude.ai artifact of its own build.
+1. On the PR's branch (merge `main` in first if it is behind), `node build.mjs --preview <PR number>`. It writes
+   `dist-preview/pr-<n>/`: the page with "พรีวิว PR #n" in its title and a badge beside the brand, nothing else
+   changed (`test/page.test.mjs`), and every file under `data/`. It prints the `files` map for step 2.
+2. Publish `dist-preview/pr-<n>/index.html` with the Artifact tool, with that `files` map and
+   `capabilities: {downloads: true}` (the PNG button), as a new private artifact. A folder per PR gives each preview
+   its own file path, so one conversation never redeploys another PR's preview or the live slug (f3207a70…).
+3. Put the link, the commit it was built from and what to try under "ลองก่อน merge" at the top of the PR body
+   (`.github/pull_request_template.md`). After a push that changes the page or its data, build again and publish to
+   the same artifact (same file path in the same conversation, or its URL as `url` in a later one).
 
 ## Publishing
 - Live as a claude.ai artifact (multi-file: index.html + the four data files), title "Airfield Lab ดอนเมือง VTBD",
   slug f3207a70-5bd7-43d8-a606-a2b9b946413a, `downloads` capability declared for the PNG snapshot button.
 - The earlier fictional-airfield prototype is a separate artifact (827d3f8b-1c74-4a51-b9e5-6ef7ea33b59c).
+- Pull request previews are separate private artifacts titled "พรีวิว PR #n · Airfield Lab ดอนเมือง VTBD". The live
+  artifact is always republished from a plain `node build.mjs` (`dist/`), never from `dist-preview/`.
