@@ -14,7 +14,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `data/LICENSE-DATA.md`. A new data file gets a row there, and a new JSON file in `data/` `source` and `license`
   fields (top level, or in `_meta` where a parameter card keeps its metadata). Its credit joins the footer of both
   panes (explore and train) when its data arrives, not before; the PNG snapshot stamps `SHOT_CREDIT`
-  (`src/90-app.js`), the ODbL notice a screenshot needs. Never commit a source from §11 table 11.3 (GlobalBuildingAtlas, FABDEM, TanDEM-X, IVAO sector
+  (`src/85-shot.js`), the ODbL notice and the link to the data that a screenshot needs. Never commit a source from §11 table 11.3 (GlobalBuildingAtlas, FABDEM, TanDEM-X, IVAO sector
   files, X-Plane CIFP, BMA BDCTL_POLYGON), an AIP chart or PDF, or GPL/LGPL text or a JSBSim file.
   `test/licenses.test.mjs` fails on the names in `forbidden_sources` (any case, in `data/`, `src/`, `tools/`, `test/`),
   on .tif/.tiff/.jp2/.pdf files and on GPL/LGPL or JSBSim text. Review keeps out the rest: an AIP chart in another
@@ -43,8 +43,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, and
-  `test/keys.test.mjs` evaluates `18-keys.js` the same way, so those four files must stay DOM-free. `build.mjs`
-  exports `assemble()` for the page test.
+  `test/keys.test.mjs` evaluates `18-keys.js` and `test/licenses.test.mjs` `85-shot.js` the same way, so those five
+  files must stay DOM-free. `build.mjs` exports `assemble()` for the page test.
 - Screenshots: `test/shots.mjs <set>` (Playwright + Chrome, SwiftShader). Paths inside it point at the original
   cloud workspace (`/home/claude/...`, `/opt/npm-tools`, vendored three.js); adjust before use.
 
@@ -64,6 +64,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 60-lights.js | point-sprite lights with directional colour (`LightSet`) and the AIP lighting layout |
 | 70-aircraft.js | trainer model, control-surface and gear animation |
 | 80-hud.js | conformal HUD, ILS/PAPI widget, debrief charts |
+| 85-shot.js | pure: `SHOT_CREDIT` and `stampCredit(g, w, h)`, the credit drawn into the PNG snapshot (ODbL 4.3 and 4.6) |
 | 90-app.js | UI, camera presets and hotspots (Thai), input, training flow, frame loop |
 
 ## Frames and units
@@ -171,9 +172,10 @@ Suggested order, each with a Node test before tuning by feel in the browser:
 - Licences: `vtbd_af.json`, `land_in.png`, `land_out.png` and `city.json` are derived from OpenStreetMap and
   available under the ODbL 1.0 (`data/LICENSE-DATA.md`, which `node build.mjs` copies into `dist/` with them).
   `vtbd_af.json` and `city.json` predate the `source`/`license` field rule (`legacy_data_without_fields` in the
-  policy); a regenerated file gets the fields and leaves that list. The code is under MIT (`LICENSE`, the owner's
-  choice on 2026-11-25); the files in `data/` follow `data/LICENSE-DATA.md`, and `docs/research/` keeps the licences
-  of the sources each report cites.
+  policy); a regenerated file gets the fields and leaves that list. The code (every script, those in `docs/research/`
+  included) and the repo's own text are under MIT (`LICENSE`, the owner's choice on 2026-11-25); the files in `data/`
+  follow `data/LICENSE-DATA.md`, data files and quoted material in `docs/research/` that state their own licence
+  (ODbL, CC BY 4.0, Copernicus) keep it, and AIP values are used as numbers with CAAT cited.
 
 ## Working in the cloud (Claude Code on the web)
 - The owner works from the cloud so their computer can stay off. Test changes on the GitHub Pages site:

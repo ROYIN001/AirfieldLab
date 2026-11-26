@@ -3,8 +3,10 @@
 The files in this folder are served beside the page: `node build.mjs` copies them into `dist/` with `index.html`.
 Research round 5 §11 (`docs/research/05-airport-city.md`) gives the licence rules; `test/licenses.test.mjs` checks
 this file, the page footer and `README.md` against `test/fixtures/license_policy.json`. The code of the repository
-is under the MIT licence (`LICENSE`); it does not change the licence of the files below, which stay under the ODbL,
-nor of the data and research material in `docs/research/`, which keeps the licences of the sources each report cites.
+(every script, those in `docs/research/` included) and its own text are under the MIT licence (`LICENSE`); it does
+not change the licence of the files below, which stay under the ODbL, nor of the data files and quoted material in
+`docs/research/` that state their own licence (ODbL, CC BY 4.0, Copernicus data), and AIP values are used as numbers
+with CAAT cited.
 
 ## OpenStreetMap derived files (ODbL)
 
@@ -31,8 +33,10 @@ or not, keeps this notice and the ODbL.
 A picture rendered from them (a Produced Work, such as a screenshot of the page) does not take the ODbL itself, but it
 needs a notice that it uses OpenStreetMap data and that the data is available under the ODbL, for example
 "© OpenStreetMap contributors, data available under the ODbL" with a link to https://www.openstreetmap.org/copyright
-(ODbL 4.3). A Produced Work made from a changed copy of the files must also offer that changed copy (ODbL 4.6). The
-page itself hands these files to the browser, so they travel with this notice (ODbL 4.2), and its footer carries the
+(ODbL 4.3). Whoever publishes such a picture must also offer its recipients the data it was made from (ODbL 4.6):
+for these files, changed or not, a link to `data/` in https://github.com/ROYIN001/AirfieldLab is enough, and the
+page's PNG snapshot carries that link with the notice; for a changed copy, offer that copy, a file of the changes or
+the method that made them. The page itself hands these files to the browser, so they travel with this notice (ODbL 4.2), and its footer carries the
 credit and the links.
 
 ## Other sources in the page (not files in this folder)
@@ -60,7 +64,9 @@ share-alike ใช้กับไฟล์ข้อมูลเท่านั�
 
 ภาพที่เรนเดอร์จากข้อมูลนี้ (Produced Work) เช่น ภาพหน้าจอ ไม่ต้องใช้ ODbL กับตัวภาพ แต่ต้องบอกว่าใช้ข้อมูลจาก
 OpenStreetMap และข้อมูลอยู่ภายใต้ ODbL เช่น "© ผู้ร่วมพัฒนา OpenStreetMap ข้อมูลภายใต้ ODbL" พร้อมลิงก์ไปที่
-https://www.openstreetmap.org/copyright ถ้าภาพสร้างจากไฟล์ที่ดัดแปลงแล้ว ต้องเปิดให้ผู้รับได้ไฟล์ที่ดัดแปลงนั้นด้วย
+https://www.openstreetmap.org/copyright และผู้ที่เผยแพร่ภาพต้องเปิดให้ผู้รับได้ข้อมูลที่ใช้สร้างภาพด้วย (ODbL 4.6) สำหรับไฟล์ชุดนี้
+ไม่ว่าจะดัดแปลงหรือไม่ ลิงก์ไปที่โฟลเดอร์ `data/` ใน https://github.com/ROYIN001/AirfieldLab ก็พอ และภาพ PNG ที่บันทึกจากหน้าเว็บ
+มีลิงก์นี้พร้อมเครดิตอยู่แล้ว ถ้าดัดแปลงไฟล์ ต้องเปิดไฟล์ที่ดัดแปลง รายการที่แก้ หรือวิธีที่ใช้แก้
 
 ค่าทางวิ่ง ไฟ และเครื่องช่วยเดินอากาศมาจาก AIP Thailand ซึ่งเป็นลิขสิทธิ์ของ กพท. repo ใช้เฉพาะตัวเลขและอ้างรอบ AIRAC
 ข้อมูลในเกมใช้เพื่อการฝึกเท่านั้น ไม่ใช้เพื่อการเดินอากาศจริง

@@ -79,6 +79,11 @@ test(`T-K05 the footer cites the fixture's cycle (${cycleTH}) and no other one`,
   const cited = [...FOOT.text.matchAll(/AIRAC\s+\d{1,2}\s+\S+\s+\d{4}/g)].map((m) => m[0].replace(/\s+/g, ' '));
   assert.ok(cited.length >= 1 && cited.every((c) => c === cycleTH), `cycles in the footer: ${cited.join(', ')}`);
   assert.equal([...FOOT.text.matchAll(/AIRAC/g)].length, cited.length, 'every AIRAC in the footer names a cycle');
+  // any date in the footer, with or without the word AIRAC, is the fixture's (research round 5 T-K05: no 14 พ.ค. 2026)
+  const MON = [...TH, ...EN].map((m) => m.replace(/\./g, '\\.')).join('|');
+  const dates = [...FOOT.text.matchAll(new RegExp(`\\d{1,2}\\s+(?:${MON})\\s+\\d{4}`, 'gi'))].map((m) => m[0].replace(/\s+/g, ' '));
+  assert.ok(dates.length >= 1 && dates.every((d) => `AIRAC ${d}` === cycleTH), `dates in the footer: ${dates.join(', ')}`);
+  assert.ok(!FOOT.text.includes('14 พ.ค. 2026'), 'the 14 พ.ค. 2026 cycle is gone');
 });
 
 test(`T-K05 src/15-geo.js names ${cycleEN} as its source and CLAUDE.md does the same`, () => {
@@ -113,11 +118,20 @@ test('T-K01 each pane of the built page has every required credit, with the OSM,
       assert.equal(open, close, `${pane}: <${tag}> opened ${open} times and closed ${close} times before the credits`);
     }
   }
-  // the PNG snapshot (a Produced Work, ODbL 4.3) carries the notice too
-  const shot = read('src/90-app.js').match(/const SHOT_CREDIT = '([^']+)'/);
-  assert.ok(shot, 'src/90-app.js: SHOT_CREDIT');
-  for (const t of ['OpenStreetMap', 'ODbL', 'openstreetmap.org/copyright', 'AIP Thailand']) assert.ok(shot[1].includes(t), `snapshot credit lacks "${t}"`);
-  assert.ok(/fillText\(SHOT_CREDIT/.test(read('src/90-app.js')), 'the snapshot draws SHOT_CREDIT');
+  // the PNG snapshot (a Produced Work, ODbL 4.3 and 4.6) carries the notice too: src/85-shot.js draws it whole and
+  // inside the picture at any size, and src/90-app.js stamps the copy it saves (code only, comments removed)
+  const { SHOT_CREDIT, stampCredit } = new Function(`'use strict';\n${read('src/85-shot.js')}\nreturn { SHOT_CREDIT, stampCredit };`)();
+  for (const t of ['OpenStreetMap', 'ODbL', 'openstreetmap.org/copyright', 'github.com/ROYIN001/AirfieldLab', 'AIP Thailand']) assert.ok(SHOT_CREDIT.includes(t), `snapshot credit lacks "${t}"`);
+  for (const [w, h] of [[1920, 1080], [1000, 396], [600, 900], [320, 568], [300, 500]]) {
+    const drawn = [], g = { font: '', measureText: (s) => ({ width: s.length * parseFloat(g.font) * 0.5 }), fillRect() {}, fillText: (s, x, y) => drawn.push({ s, x, y, px: parseFloat(g.font) }) };
+    stampCredit(g, w, h);
+    assert.equal(drawn.map((d) => d.s).join(' · '), SHOT_CREDIT, `${w}×${h}: the whole credit is drawn`);
+    for (const d of drawn) assert.ok(d.px >= 7 && d.x >= 0 && d.y <= h && d.y > d.px, `${w}×${h}: "${d.s.slice(0, 20)}…" at ${d.x}, ${d.y}, ${d.px} px`);
+    for (const d of drawn) assert.ok(d.x + d.s.length * d.px * 0.5 <= w, `${w}×${h}: "${d.s.slice(0, 20)}…" runs off the right edge`);
+  }
+  const app = read('src/90-app.js').replace(/\/\*[\s\S]*?\*\//g, '').split('\n').map((l) => l.replace(/(^|[\s;])\/\/.*$/, '$1')).join('\n');
+  assert.match(app, /g\.drawImage\(src, 0, 0\);\s*stampCredit\(g, shot\.width, shot\.height\);\s*shot\.toBlob\(/, 'the snapshot stamps the credit on the copy it saves');
+  assert.equal((app.match(/\.toBlob\(/g) || []).length, 1, 'no other picture is saved without the credit');
   // links in the footer open beside the running page, not in place of it
   for (const a of FOOT.html.match(/<a\b[^>]*>/g)) assert.match(a, /target="_blank" rel="noopener"/, a);
 });
@@ -141,12 +155,21 @@ function decode(buf) {
 // Lines of a text file to search for a forbidden source. A JSON file contributes its keys and string values, without
 // base64 payloads (city.json packs records as base64, where a short name can occur by chance; base64 may be wrapped
 // in lines, while prose has spaces or punctuation, so it is never skipped).
-const B64 = /^[A-Za-z0-9+/=\r\n]{256,}$/;
+// a base64 payload: 256 or more base64 characters in one run, or lines wrapped at one width (a multiple of 4, at
+// least 60, as PEM and MIME wrap) with a last line no longer than the others; a list of short words is not one
+const B64_RUN = /^[A-Za-z0-9+/=]+$/;
+function isB64(v) {
+  if (v.length < 256) return false;
+  if (B64_RUN.test(v)) return true;
+  const ls = v.split(/\r?\n/); if (ls.at(-1) === '') ls.pop();
+  const w = ls[0].length;
+  return ls.length > 1 && w >= 60 && w % 4 === 0 && ls.every((l, i) => B64_RUN.test(l) && (i < ls.length - 1 ? l.length === w : l.length <= w));
+}
 function searchableLines(p, text) {
   if (!/\.(geo)?json$/i.test(p)) return text.split('\n');
   const out = [];
   const visit = (v) => {
-    if (typeof v === 'string') { if (!B64.test(v)) out.push(...v.split('\n')); }
+    if (typeof v === 'string') { if (!isB64(v)) out.push(...v.split('\n')); }
     else if (Array.isArray(v)) v.forEach(visit);
     else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) { out.push(k); visit(x); }
   };
@@ -190,7 +213,7 @@ test('T-K04 no GeoTIFF, JPEG 2000 or PDF file (.tif, .tiff, .pdf, .jp2) in the r
 const W = (...w) => new RegExp(w.join('[\\s#*/;!%>\x27\\uFFFD-]+'), 'i');
 const GPL_PATTERNS = {
   jsbsim_model: new RegExp('<' + 'fdm_config\\b', 'i'),                         // a JSBSim aircraft model (JSBSim is LGPL)
-  jsbsim_parts: new RegExp('<(?:(?:piston|turbine|turboprop|electric|rocket)_' + 'engine|brushless_dc_' + 'motor)\\b|<propeller\\s[^>\\n]*\\bname\\s*' + '=|<run' + 'script\\b|JSBSim(?:Script)?\\.' + 'xsd', 'i'),
+  jsbsim_parts: new RegExp('<(?:(?:piston|turbine|turboprop|electric|rocket)_' + 'engine|brushless_dc_' + 'motor)\\b|<propeller\\s[^>]*\\b(?:name|version)\\s*' + '=|<run' + 'script\\b|JSBSim(?:Script)?\\.' + 'xsd', 'i'),
   license_name: new RegExp('license' + 'Name\\s*=\\s*["\\x27]\\s*(?:L|A)?GPL', 'i'),   // a JSBSim or FlightGear file header
   gpl: W('GNU', 'GENERAL', 'PUBLIC', 'LICENSE'), lgpl: W('GNU', 'LESSER', 'GENERAL', 'PUBLIC'),
   library_gpl: W('GNU', 'LIBRARY', 'GENERAL', 'PUBLIC'), agpl: W('GNU', 'AFFERO', 'GENERAL', 'PUBLIC'),
@@ -217,9 +240,9 @@ test('the guards work: each T-S-11 pattern and the T-K03 scan catch a sample bui
   const g = (...w) => w.join('');
   const samples = {
     jsbsim_model: g('<', 'fdm_config name="x" version="2.0">'),
-    jsbsim_parts: [g('<turboprop', '_engine name="x">'), g('<brushless_dc', '_motor name="m">'), g('<prop', 'eller name="prop">'), g('<prop', 'eller version="1.01" name="p">'), g('<run', 'script name="s">'), g('xsi:noNamespaceSchemaLocation="http://jsbsim.sf.net/JSBSim', 'Script.xsd"')],
+    jsbsim_parts: [g('<turboprop', '_engine name="x">'), g('<brushless_dc', '_motor name="m">'), g('<prop', 'eller name="prop">'), g('<prop', 'eller version="1.01" name="p">'), g('<prop', 'eller version="1.01"\n    name="p">'), g('<prop', 'eller version="1.01">'), g('<run', 'script name="s">'), g('xsi:noNamespaceSchemaLocation="http://jsbsim.sf.net/JSBSim', 'Script.xsd"')],
     license_name: [g('<license license', 'Name="GPL (General Public License)"/>'), g("<license license", "Name='LGPL'/>")],
-    gpl: [g('GNU General ', 'Public License'), g('# the GNU General\n# ', 'Public License'), g('GNU\u00a0General ', 'Public License'), g('% the GNU General\n% ', 'Public License'), g('> GNU General\n> ', 'Public License'), g('GNU\uFFFDGeneral ', 'Public License')],
+    gpl: [g('GNU General ', 'Public License'), g('# the GNU General\n# ', 'Public License'), g('GNU\u00a0General ', 'Public License'), g('% the GNU General\n% ', 'Public License'), g('> GNU General\n> ', 'Public License'), g("' GNU General\n' ", 'Public License'), g('GNU\uFFFDGeneral ', 'Public License')],
     lgpl: [g('GNU Lesser ', 'General Public License'), g(' * GNU Lesser General\n * ', 'Public License')],
     library_gpl: g('GNU Library ', 'General Public License'),
     agpl: g('GNU Affero ', 'General Public License'),
@@ -240,10 +263,18 @@ test('the guards work: each T-S-11 pattern and the T-K03 scan catch a sample bui
   }
   // a base64 payload, wrapped or not, is skipped where a name can occur by chance; long prose is not taken for base64
   const b64name = POL.forbidden_sources.find((n) => /^[A-Za-z]+$/.test(n));   // a name that can occur inside base64
-  assert.equal(forbiddenHits('data/x.json', JSON.stringify({ bld: 'QUJD'.repeat(70) + b64name, w: ('QUJD'.repeat(19) + '\n').repeat(4) + b64name.toLowerCase() })).length, 0, 'base64 is skipped');
-  for (const n of POL.forbidden_sources) assert.equal(forbiddenHits('data/x.json', JSON.stringify({ note: 'x '.repeat(150) + n })).length, 1, `long prose naming ${n}`);
+  assert.equal(forbiddenHits('data/x.json', JSON.stringify({ bld: 'QUJD'.repeat(70) + b64name, w: ('QUJD'.repeat(19) + '\n').repeat(4) + b64name.toLowerCase(), crlf: ('QUJD'.repeat(16) + '\r\n').repeat(5) + b64name })).length, 0, 'base64 is skipped');
+  for (const n of POL.forbidden_sources) {
+    assert.equal(forbiddenHits('data/x.json', JSON.stringify({ note: 'x '.repeat(150) + n })).length, 1, `long prose naming ${n}`);
+    assert.equal(forbiddenHits('data/x.json', JSON.stringify({ note: 'roads\n'.repeat(50) + n })).length, 1, `a word list naming ${n}`);
+  }
+  // the ODbL licence check takes the long name as well
+  for (const l of ['ODbL 1.0', 'odbl-1.0', 'Open Database License', 'Open Database Licence 1.0']) assert.ok(odblLicence(l), l);
+  for (const l of ['CC BY 4.0', 'MIT', 'CC0']) assert.ok(!odblLicence(l), l);
 });
 
+// a licence string that names the ODbL
+const odblLicence = (license) => /ODbL|Open\s*Database\s*Licen[cs]e/i.test(license);
 // source and license of a data JSON file: top level, or _meta for a parameter card whose leaves are {v, u, scope, ...}
 const fieldsOf = (d) => ({ source: d.source ?? d._meta?.source, license: d.license ?? d._meta?.license });
 
@@ -262,8 +293,8 @@ test('§11 item 3: every JSON file under data/ carries source and license (ODbL 
     assert.ok(typeof source === 'string' && source.trim(), `${f}: "source" (where the data comes from)`);
     assert.ok(typeof license === 'string' && license.trim(), `${f}: "license"`);
     const odbl = POL.odbl_derived_files.includes(f) || /OpenStreetMap|\bOSM\b/i.test(source);
-    if (odbl) assert.match(license, /ODbL/, `${f} is derived from OpenStreetMap (ODbL) data: its license must name ODbL`);
-    if (/ODbL|Open\s*Database\s*Licen[cs]e/i.test(license) || odbl) assert.ok(POL.odbl_derived_files.includes(f), `${f} is ODbL: add it to odbl_derived_files (and README, data/LICENSE-DATA.md)`);
+    if (odbl) assert.ok(odblLicence(license), `${f} is derived from OpenStreetMap (ODbL) data: its license must name ODbL`);
+    if (odblLicence(license) || odbl) assert.ok(POL.odbl_derived_files.includes(f), `${f} is ODbL: add it to odbl_derived_files (and README, data/LICENSE-DATA.md)`);
   }
 });
 
@@ -301,7 +332,7 @@ test('§12 P3-9 the code licence: LICENSE holds the full MIT text the owner chos
   const lic = read(L.file).replace(/\r\n/g, '\n').match(/^MIT License\n\s*\n([^\n]+)\n\s*\n([\s\S]+)$/);
   assert.ok(lic, 'LICENSE: "MIT License", a blank line, the copyright line, a blank line, the licence');
   assert.equal(lic[1].trim(), L.copyright, 'the copyright line in LICENSE and in the policy');
-  assert.match(L.copyright, /^Copyright \(c\) 20\d\d(?:[-–]20\d\d)? \S/, 'policy code_license.copyright');
+  assert.match(L.copyright, /^Copyright \(c\) 20\d\d(?:\s*[-–,]\s*20\d\d)* \S/, 'policy code_license.copyright');
   assert.equal(lic[2].replace(/\s+/g, ' ').trim(), MIT_TEXT, 'LICENSE is the MIT text, unchanged');
   // MIT for the code, ODbL for the OSM-derived files: the data notice says so in both languages
   const [en, th] = read('data/LICENSE-DATA.md').split('## สรุปภาษาไทย');
