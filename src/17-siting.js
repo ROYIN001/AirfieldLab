@@ -177,10 +177,11 @@ class SiteIndex {
   }
   // The land-use class at (e, n), 0 outside the map or without one: calls fn(class, share) for each cell that touches
   // the point. That is one cell with share 1, or the two or four that meet there, in equal shares, when the point is
-  // on a cell border. A border is a micrometre wide: wide enough for the rounding of the arithmetic, and narrow enough
-  // that the answer is that of four points a micrometre around the point, a quarter each (with a millimetre, one
-  // sample in 650 that lies inside a cell was read as a border sample). Given to one cell, a border would go to the
-  // one east or south of it, and the answer would depend on which side of a road or a bank a house stands.
+  // on a cell border. A border reaches a micrometre to each side: wide enough for the rounding of the arithmetic,
+  // and narrow enough that the answer is that of four points a micrometre around the point, a quarter each (with a
+  // millimetre, one sample in 650 that lies inside a cell was read as a border sample). Given to one cell, a border
+  // would go to the one east or south of it, and the answer would depend on which side of a road or a bank a house
+  // stands.
   eachClassAt(e, n, fn) {
     if (!this.raster) return fn(0, 1);
     const { cls, land: L } = this.raster, fx = (e - L.e0) / L.res, fy = (L.n1 - n) / L.res, rx = Math.round(fx), ry = Math.round(fy);
@@ -352,9 +353,10 @@ const WET_MAX = 0.2;
 // It may reach into a road, which the map draws wider than it is, but not with a third of its footprint (our choice).
 // Measured on 2026-11-26 in the balanced quality: a third drops 2,334 of 57,895 buildings (4 %), nearly all of them
 // shophouses; 1,898 stand alone and no group of them (linked at 25 m) is larger than five, so no row of houses goes.
-// A half would drop 812 and leave houses that a road cuts in two: 4 in the balanced quality and 11 in the high one.
-// At a third none is left in balanced and one in high, where two lanes meet corner to corner under it
-// (test/siting.test.mjs looks at every kept building).
+// A half would drop 812 and leave houses that a road cuts in two (a twentieth of the footprint or more beyond the
+// road, ground that hangs on by less than half a metre counted as beyond): 10 in the balanced quality and 23 in the
+// high one. At a third it is one in balanced, with 6 % beyond a lane that turns under it, and one more in high, with
+// a quarter beyond two lanes that meet corner to corner (test/siting.test.mjs looks at every kept building).
 // The centre is not asked: the city data never puts one inside a road cell, only on a cell border, and a house with
 // its centre on the kerb line is not in the road.
 const ROAD_MAX = 1 / 3;

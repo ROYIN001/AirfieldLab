@@ -174,7 +174,7 @@ test('the whole layout runs on the real data: PAPI, beacon, obstruction, road an
     g[0]++; g[1] = Math.min(g[1], l.I); g[2] = Math.max(g[2], l.I);
   }
   assert.deepEqual(Object.fromEntries(Object.entries(groups).map(([k, [n, lo, hi]]) => [k, lo === hi ? [n, lo] : [n, Math.round(lo * 100) / 100, Math.round(hi * 100) / 100]])), {
-    '0 blue cat 0 day 0.4 y 0.3': [401, 0.13],                                             // taxiway edge
+    '0 blue cat 0 day 0.4 y 0.3': [417, 0.13],                                             // taxiway edge
     '0 red cat 1 day 1.4 y 60': [1, 0.25], '5 flash cat 2 day 0.5 y 54.4': [1, 3],         // tower top; the beacon (plain white, as the flashers)
     '6 red cat 1 day 1.4 y 31.4': [2, 0.2], '0 led cat 2 day 0.2 y 29.6': [6, 1.4],        // masts: obstruction light, three floodlights each
     '0 warm cat 2 day 0.1 y 6.6': [1, 0.12],                                               // windsock
@@ -191,7 +191,7 @@ test('the whole layout runs on the real data: PAPI, beacon, obstruction, road an
 
 test('taxiway edge lights: on every taxiway (AIP AD 2.15), at the edge, never on pavement, none missing without a cause', () => {
   const { af, W, all } = REAL;
-  assert.deepEqual([M.TWY_W, M.EDGE_OUT, M.TWY_EDGE, M.APRON_EDGE], [23, 0.6, { step: 45, chord: 25, gap: 7.5 }, 3]);
+  assert.deepEqual([M.TWY_W, M.EDGE_OUT, M.TWY_EDGE, M.APRON_EDGE], [23, 0.6, { step: 45, chord: 25, gap: 7.5, out: 3 }, 3]);
   assert.equal(live('50-airfield.js').split('ribbonGeo(t.p, TWY_W)').length - 1, 2, 'the page draws taxiways and taxilanes that wide');
   assert.ok(live('50-airfield.js').includes('const hw = TWY_W / 2;'), 'and the holding position bars across them');
   const blue = all.filter((l) => l.kind === 0 && l.a === W.LC.blue), at2 = blue.map((l) => [l.p[0], -l.p[2]]);
@@ -221,7 +221,16 @@ test('taxiway edge lights: on every taxiway (AIP AD 2.15), at the edge, never on
   // lines, seven connectors shorter than 45 m had no light at all, and with a gap of 15 m a light across a junction,
   // 9 to 11 m away on the edge of another taxiway, stood in for the light of three straight edges, dark over 62 to
   // 67 m.)
-  let places = 0, lit = 0; const why = { other: 0, apron: 0, gap: 0, bend: 0 };
+  // A place on the pavement of one other line has its light at the corner where the two edges meet (our own
+  // geometry: straight away from the nearest point of that line, out to its edge), when that corner is free and
+  // within 3 m of the edge of the line itself. The place is taken as the rule moves it first: out to 12.1 m from its
+  // own line where a jog or a bend brings the line nearer (most of the vector lines have one near a junction).
+  // (The regression: where three taxiways meet south of the terminal, the last stations of two of them fell on each
+  // other's pavement, and the inside of that corner was dark over 82 m of edge.)
+  const footOn = (P, e, n) => { let best = null; for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], dx = b[0] - a[0], dy = b[1] - a[1], k = Math.min(1, Math.max(0, ((e - a[0]) * dx + (n - a[1]) * dy) / (dx * dx + dy * dy || 1))), q = [a[0] + k * dx, a[1] + k * dy], d = Math.hypot(e - q[0], n - q[1]); if (!best || d < best.d) best = { d, q }; } return best; };
+  const outTo = (f, e, n) => [f.q[0] + (e - f.q[0]) * off / f.d, f.q[1] + (n - f.q[1]) * off / f.d];
+  const clear = (e, n, m) => lines.every((q) => lineDist(q.p, e, n) >= M.TWY_W / 2 + m) && !onApron(e, n) && apronEdge(e, n) >= M.APRON_EDGE + m;
+  let places = 0, lit = 0, corners = 0; const why = { other: 0, apron: 0, gap: 0, bend: 0 };
   for (const t of lines) {
     // the whole steps in the length, taken to a micrometre: the sum of the pieces is not exact
     const len = lineLen(t.p), steps45 = Math.floor(Math.round(len * 1e6) / 45e6);
@@ -232,6 +241,14 @@ test('taxiway edge lights: on every taxiway (AIP AD 2.15), at the edge, never on
       for (const sd of [-1, 1]) {
         const e = p[0] + (b[1] - a[1]) / l * sd * off, n = p[1] - (b[0] - a[0]) / l * sd * off, nearest = Math.min(...at2.map((q) => Math.hypot(q[0] - e, q[1] - n)));
         places++;
+        const g = footOn(t.p, e, n), x = g.d < off ? outTo(g, e, n) : [e, n], under = lines.filter((q) => q !== t && lineDist(q.p, x[0], x[1]) < M.TWY_W / 2 - 0.05);
+        if (under.length === 1 && lines.filter((q) => q !== t && lineDist(q.p, x[0], x[1]) < M.TWY_W / 2 + 0.05).length === 1) {
+          const c = outTo(footOn(under[0].p, x[0], x[1]), x[0], x[1]), own = lineDist(t.p, c[0], c[1]);
+          if (clear(c[0], c[1], 0.05) && own < M.TWY_W / 2 + M.TWY_EDGE.out - 0.05) {
+            corners++;
+            assert.ok(Math.min(...at2.map((q) => Math.hypot(q[0] - c[0], q[1] - c[1]))) < M.TWY_EDGE.gap, `no light at the corner ${c.map((v) => v.toFixed(0))}, where the ${t.k} line from ${t.p[0].map((v) => v.toFixed(0))} meets another`);
+          }
+        }
         if (nearest <= 5) { lit++; continue; }
         const cause = lines.some((q) => q !== t && lineDist(q.p, e, n) < M.TWY_W / 2 + 1) ? 'other' : onApron(e, n) || apronEdge(e, n) < M.APRON_EDGE + 1 ? 'apron'
           : nearest < M.TWY_EDGE.gap ? 'gap' : lineDist(t.p, e, n) < M.TWY_W / 2 - 0.5 ? 'bend' : null;
@@ -240,8 +257,44 @@ test('taxiway edge lights: on every taxiway (AIP AD 2.15), at the edge, never on
       }
     }
   }
+  // Annex 14, 5.3.18: edge lights not more than 60 m apart on a straight. Along each side of every line, a metre at
+  // a time (the place as above, moved out at a jog): a stretch of bare edge (no pavement of another line, no apron,
+  // off the runways) with no light within 3 m of it is a dark run. Where a run ends with no light, the edge goes on
+  // as the edge of another line if a run of that line ends there too, within 5 m (the inside of a corner where two
+  // taxiways meet). No two points of a dark edge, followed round such corners, are more than 54 m apart: no two
+  // lights along a straight edge are more than 60 m apart. (The regressions, by this measure: 64 m with a gap of
+  // 15 m, where a light across a junction stood in for the light of another edge, and 72 m without the corner
+  // lights, across the inside of the corner where three taxiways meet south of the terminal. It is measured straight
+  // across, not along the edge: round the three sides of a patch of grass between taxiways the edge is dark over
+  // 90 m at two junctions, each side of it 23 to 42 m long.)
+  const runs = [];
+  for (const t of lines) {
+    const len = lineLen(t.p);
+    for (const sd of [-1, 1]) {
+      let run = null, wasLit = false;
+      for (let s = 0; s <= len + 1; s++) {
+        const p = alongLine(t.p, Math.min(s, len)), a = alongLine(t.p, s - 12.5), b = alongLine(t.p, s + 12.5), l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        const e = p[0] + (b[1] - a[1]) / l * sd * off, n = p[1] - (b[0] - a[0]) / l * sd * off, g = footOn(t.p, e, n), x = g.d < off ? outTo(g, e, n) : [e, n];
+        const bare = s <= len && !W.RUNWAYS.some((R) => { const [rs, rt] = W.rwyST(R, p[0], p[1]); return rs > -40 && rs < R.len + 40 && Math.abs(rt) < R.w / 2 + 40; })
+          && lines.every((q) => q === t || lineDist(q.p, x[0], x[1]) >= M.TWY_W / 2) && !onApron(x[0], x[1]) && apronEdge(x[0], x[1]) >= M.APRON_EDGE;
+        if (bare && !at2.some((q) => Math.hypot(q[0] - x[0], q[1] - x[1]) < 3)) { if (!run) runs.push(run = { t, sd, pts: [], lit: [wasLit, false] }); run.pts.push(x); } else { if (run) run.lit[1] = bare; run = null; }
+        wasLit = bare && !run;
+      }
+    }
+  }
+  const apart = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1]), ends = (r) => [r.pts[0], r.pts.at(-1)].filter((_, k) => !r.lit[k]);
+  const meet = (r, o) => !(o.t === r.t && o.sd === r.sd) && ends(r).some((p) => ends(o).some((q) => apart(p, q) < 5));
+  let dark = 0, where = ''; const done = new Set();
+  for (const r0 of runs) {
+    if (done.has(r0)) continue;
+    const edge = [r0]; done.add(r0);
+    for (const r of edge) for (const o of runs) if (!done.has(o) && meet(r, o)) { done.add(o); edge.push(o); }
+    const pts = edge.flatMap((r) => r.pts), across = Math.max(...pts.map((p) => Math.max(...pts.map((q) => apart(p, q)))));
+    if (across > dark) { dark = across; where = `${edge.length} line${edge.length > 1 ? 's' : ''}, from ${pts[0].map((v) => v.toFixed(0))}`; }
+  }
+  assert.ok(dark <= 54, `${dark.toFixed(1)} m across a bare edge without a light (${where})`);
   // measured on 2026-11-26 (regression pins): lights of both kinds of line, and TWY C beside the main runway
-  assert.deepEqual([blue.length, places, lit, why], PINS.edge);
+  assert.deepEqual([blue.length, places, lit, why, corners, Math.round(dark * 10) / 10], PINS.edge);
   // with every line drawn the other way round, the same places to a micrometre (the stations are centred on a line)
   const turned = W.taxiEdgeLights({ ...af, tw: af.tw.map((t) => ({ ...t, p: [...t.p].reverse() })) }), key = (q) => q.map(r6).join();
   assert.deepEqual(turned.map(key).sort(), at2.map(key).sort(), 'the layout does not depend on the direction a line was drawn in');
@@ -253,7 +306,7 @@ test('taxiway edge lights: on every taxiway (AIP AD 2.15), at the edge, never on
   const sides = [twyC.filter(([, t]) => t < -182).length, twyC.filter(([, t]) => t > -182).length];
   assert.ok(laneLit > 150 && sides[0] > 40 && sides[1] > 40, `${laneLit} lights on lines tagged lane, ${sides} on the two sides of TWY C`);
 });
-const PINS = { edge: [401, 942, 406, { other: 147, apron: 384, gap: 5, bend: 0 }] };
+const PINS = { edge: [417, 942, 424, { other: 127, apron: 384, gap: 7, bend: 0 }, 26, 50.6] };
 
 test('taxiway edge lights on a made-up field: a junction, an apron with a hole, short and parallel lines, a jog, a corner', () => {
   // far from the runways: a taxiway A along e at n 9000, a taxiway B that crosses its east end, a solid apron south
@@ -322,8 +375,9 @@ test('taxiway edge lights on a made-up field: a junction, an apron with a hole, 
   assert.deepEqual([joined(97), joined(97.5), joined(100)], [[3.5, 48.5, 93.5, 145.5, 190.5], [3.75, 48.75, 93.75, 101.25, 146.25, 191.25], [5, 50, 95, 105, 150, 195]]);
   // The gap is not wide enough for a light on the edge of one taxiway to stand in for the light of another. B leaves
   // A to the north at 65 m; its first pair stands 20 m up, and the west one of them is 11.2 m from A's light at 45 m.
-  // (With the gap of 15 m it was left out, and the west edge of B was dark for its first 65 m: three straight edges
-  // of the real taxiways were dark over 62 to 67 m that way, more than the 60 m of Annex 14, 5.3.18.)
+  // (With the gap of 15 m it was left out, and the west edge of B had no light over the 53.5 m from the edge of A to
+  // B's second station: three straight edges of the real taxiways were dark over 62 to 67 m that way, more than the
+  // 60 m of Annex 14, 5.3.18.)
   const tee = places({ tw: [line([0, 0], [90, 0]), line([65, 0], [65, 130])] });
   assert.deepEqual(tee, [[0, 12.1], [0, -12.1], [45, 12.1], [45, -12.1], [90, 12.1], [90, -12.1], [52.9, 20], [77.1, 20], [52.9, 65], [77.1, 65], [52.9, 110], [77.1, 110]]);
   near(Math.hypot(52.9 - 45, 20 - 12.1), 11.17, 0.01, 'the two lights at the west corner of the junction');
@@ -336,6 +390,52 @@ test('taxiway edge lights on a made-up field: a junction, an apron with a hole, 
   const fwd = places({ tw: [line(...hair)] }), back = places({ tw: [line(...[...hair].reverse())] });
   assert.equal(fwd.length, 6, 'a pair at each end and one in the middle');
   assert.deepEqual(back.map((q) => q.map((v) => Math.round(v * 1e6) / 1e6).join()).sort(), fwd.map((q) => q.map((v) => Math.round(v * 1e6) / 1e6).join()).sort(), 'the same places drawn the other way');
+  // A place on the pavement of one joining taxiway: the light moves out to the corner where the two edges meet.
+  // B leaves A to the north at 49 m. A's light at 45 m north would stand 4 m from B's centre line: it stands at the
+  // west corner of the mouth instead. B's first station is 5 m up, on A's pavement: its west light would stand on
+  // the one already at that corner, its east light stands at the east corner.
+  const mouth = places({ tw: [line([0, 0], [90, 0]), line([49, 0], [49, 100])] });
+  assert.deepEqual(mouth, [[0, 12.1], [0, -12.1], [36.9, 12.1], [45, -12.1], [90, 12.1], [90, -12.1], [61.1, 12.1], [36.9, 50], [61.1, 50], [36.9, 95], [61.1, 95]]);
+  // Two taxiways that meet end to end in a right angle, their last stations 5 m from the joint: outside the corner
+  // each sets its light; inside it both places are on the other's pavement, and one light stands at the corner of
+  // the two edges, 37.9 m from the next light of either line. (Before, the inside had none between those two: 75.8 m
+  // of edge, and 82 m at the real junction.)
+  const elbow = places({ tw: [line([0, 0], [100, 0]), line([100, 0], [100, -100])] });
+  assert.deepEqual(elbow, [[5, 12.1], [5, -12.1], [50, 12.1], [50, -12.1], [95, 12.1], [87.9, -12.1], [112.1, -5], [112.1, -50], [87.9, -50], [112.1, -95], [87.9, -95]]);
+  // No corner light where the corner is more than 3 m outside the edge of the line itself: B leaves A at 38 m, at
+  // 30° to it, and A's place at 45 m north is 7 m from B's centre line. The corner of the two edges is 16.5 m from
+  // A's centre line, 5 m outside its edge: no light of A there. Nor for B's place 5 m up on the south side, on A's
+  // pavement: the corner there is 15.7 m from B. B's own lights stand 12.1 m to its left and right (its right light
+  // at 50 m would be 3.6 m from A's at 90 m, under the gap).
+  const c30 = Math.cos(Math.PI / 6), onB = (along, left) => [r6(38 + along * c30 - left * 12.1 * 0.5), r6(along * 0.5 + left * 12.1 * c30)];
+  const slant = places({ tw: [line([0, 0], [90, 0]), line([38, 0], [38 + 100 * c30, 50])] });
+  assert.deepEqual(slant, [[0, 12.1], [0, -12.1], [45, -12.1], [90, 12.1], [90, -12.1], onB(5, 1), onB(50, 1), onB(95, 1), onB(95, -1)]);
+  // and none on two pavements at once: B and C cross A side by side, 12 m apart, and A's places at 45 m are on both
+  const two = places({ tw: [line([0, 0], [90, 0]), line([40, -60], [40, 60]), line([52, -60], [52, 60])] });
+  assert.deepEqual(two, [[0, 12.1], [0, -12.1], [90, 12.1], [90, -12.1], [27.9, -45], [27.9, 45], [64.1, -45], [64.1, 45]]);
+  // nor where a third line leaves the same junction: C leaves A at 45 m to the north-west, across the start of B.
+  // A's place at 45 m north is on the pavement of B and of C. (Moved out of B alone it would stand clear of all
+  // three, at 52.1, 12.1: which of the two it is moved out of would follow the order of the lines.)
+  const fork = places({ tw: [line([0, 0], [90, 0]), line([40, 0], [40, 100]), line([45, 0], [-55, 100])] });
+  assert.deepEqual(fork.filter(([e, n]) => Math.hypot(e - 45, n) < 30), [[45, -12.1]]);
+  // The 3 m, to a decimetre: B leaves A at 46.175 m, 53° to it (3 east, 4 north). A's place at 45 m north is 8.2 m
+  // from B's centre line; the corner of the two edges is 2.94 m outside A's edge, and A's light stands there. With B
+  // a quarter of a metre further west the place is 8 m from B's centre line and the corner 3.06 m outside: no light
+  const lean = (c) => places({ tw: [line([0, 0], [90, 0]), line([c, 0], [c + 108, 144])] }).filter(([e, n]) => Math.hypot(e - 45, n) < 25);
+  assert.deepEqual([lean(46.175), lean(45.925)], [[[41.88, 14.44], [45, -12.1]], [[45, -12.1]]]);
+  // A gentle bend at a station (15°): the place inside the bend, 12.1 m square to the chord, is 12 m from the line
+  // beyond the bend, off its pavement but not at the line of lights. It is moved out to 12.1 m like any other
+  const kink = [[0, 0], [45, 0], [90, 12]], bent = M.taxiEdgeLights({ apron: [], tw: [line(...kink)] });
+  assert.equal(bent.length, 6);
+  for (const [e, n] of bent) near(lineDist(P(kink), e, n), 12.1, 1e-9, `the light at ${(e - e0).toFixed(1)}, ${(n - n0).toFixed(1)} of the bent line`);
+  // A line that comes back within the gap of its own lights (a U-shaped lane, legs 26 m apart: the lights between
+  // the legs would stand 1.8 m apart): one row of lights between the legs, not two. Which leg's edge it stands at
+  // follows the direction the line was drawn in (the limit stated in 60-lights.js; no real line does this).
+  const U = [[0, 0], [100, 0], [100, 26], [0, 26]], uA = places({ tw: [line(...U)] }), uB = places({ tw: [line(...[...U].reverse())] });
+  const closest = (L) => Math.min(...L.flatMap((a, i) => L.slice(0, i).map((b) => Math.hypot(a[0] - b[0], a[1] - b[1]))));
+  assert.deepEqual([uA.length, uB.length], [9, 9]);
+  assert.ok(closest(uA) >= M.TWY_EDGE.gap && closest(uB) >= M.TWY_EDGE.gap, 'no two lights within the gap');
+  assert.deepEqual([uA.filter(([e, n]) => e < 80 && n > 0 && n < 26).map(([, n]) => n), uB.filter(([e, n]) => e < 80 && n > 0 && n < 26).map(([, n]) => n)], [[12.1, 12.1], [13.9, 13.9]]);
 });
 
 test('threshold lights: a green row 3 m apart at every threshold, green only toward the approach', () => {

@@ -108,15 +108,21 @@ const EDGE_OUT = 0.6;
 // and C (south), which are not drawn: the lines of vtbd_af.json carry no names (research round 5 has them in
 // tw_names.json, not yet taken into the data). The lights stand `step` metres apart (ค่าประมาณ; Annex 14, 5.3.18: not
 // more than 60 m on a straight), the stations centred on each line so that a short connector has a pair in its
-// middle and the layout does not depend on the direction a line was drawn in. They stand EDGE_OUT outside the edge
+// middle and a line has the same stations whichever way it was drawn. They stand EDGE_OUT outside the edge
 // of a taxiway TWY_W wide (5.3.18: not more than 3 m; AIP AD 2.8 gives 23 to 50 m, all are drawn 23 m), square to
 // the run of the line over `chord` metres: the vector lines have jogs of a few metres, and the piece under a station
-// points up to 50° off that run. No two lights are set closer than `gap`, whichever lines they belong to (our
-// choice, ค่าประมาณ): in the corner where two taxiways meet each line sets a light, and two lights 3 to 7 m apart
-// read as one doubled light (seven corners of the real taxiways). The gap must stay small: with 15 m a light on the
-// edge of one taxiway took the place of the light of another, 9 to 11 m away across a junction, and three straight
-// edges were dark over 62 to 67 m.
-const TWY_EDGE = { step: 45, chord: 25, gap: 7.5 };
+// points up to 50° off that run. Where one other taxiway joins and the place falls on its pavement, the light moves
+// to the corner where the two edges meet, if that corner is within `out` of this line's edge (the 3 m of 5.3.18);
+// in the mouth of a wider junction, or on two pavements at once, there is none. (Without the corner lights the
+// inside of a corner where three taxiways meet was dark over 82 m of edge. Still dark: the edge round a patch of
+// grass between taxiways, over 90 m at two junctions, each of its three sides under 45 m.) No two lights are set
+// closer than `gap`, whichever lines they belong to (our choice, ค่าประมาณ): two lines set their lights for the same
+// corner, and two lights a few metres apart read as one doubled light. The gap must stay small: with 15 m a light
+// on the edge of one taxiway took the place of the light of another, 9 to 11 m away across a junction, and three
+// straight edges were dark over 62 to 67 m. The layout does not depend on the direction a line was drawn in, as
+// long as the line does not come within `gap` of its own lights (a U-shaped lane with legs 24 to 32 m apart would;
+// no real line does).
+const TWY_EDGE = { step: 45, chord: 25, gap: 7.5, out: 3 };
 // An edge light marks the edge of the pavement and never stands on it: none where the place is on a taxiway or
 // taxilane ribbon (where taxiways join or cross) or on an apron. An apron counts APRON_EDGE wider than its outline
 // (our choice, ค่าประมาณ: the outline runs within a metre of the edge of the taxiways beside it, so a row along it
@@ -137,6 +143,8 @@ function onTaxiPavement(pave, e, n) {
 // The places [e, n] of the taxiway edge lights of the airfield vectors `af`.
 function taxiEdgeLights(af) {
   const pave = taxiPavement(af), out = [], off = TWY_W / 2 + EDGE_OUT;
+  // x moved straight away from the nearest point of the line P, out to `off` from it
+  const outTo = (P, x) => { const q = nearestOnLine(P, x); return q.d > 1e-6 ? [q.p[0] + (x[0] - q.p[0]) * off / q.d, q.p[1] + (x[1] - q.p[1]) * off / q.d] : x; };
   for (const t of af.tw) {
     if (t.p.length < 2) continue;
     // n + 1 stations `step` apart, centred on the line (pointAlong keeps them on it). The 1e-9 is for a length that
@@ -150,8 +158,10 @@ function taxiEdgeLights(af) {
       for (const sd of [-1, 1]) {
         let x = [p[0] + (b[1] - a[1]) / l * sd * off, p[1] - (b[0] - a[0]) / l * sd * off];
         // on the inside of a bend the line is nearer than that: out to the edge, straight away from its nearest point
-        const q = nearestOnLine(t.p, x);
-        if (q.d < off && q.d > 1e-6) x = [q.p[0] + (x[0] - q.p[0]) * off / q.d, q.p[1] + (x[1] - q.p[1]) * off / q.d];
+        if (nearestOnLine(t.p, x).d < off) x = outTo(t.p, x);
+        // on the pavement of one other line: out to its edge, where the two edges meet in a corner
+        const on = pave.lines.filter((o) => o.p !== t.p && nearestOnLine(o.p, x).d < TWY_W / 2);
+        if (on.length === 1) { const y = outTo(on[0].p, x); if (nearestOnLine(t.p, y).d <= TWY_W / 2 + TWY_EDGE.out) x = y; }
         if (!onTaxiPavement(pave, x[0], x[1]) && !out.some((o) => Math.hypot(o[0] - x[0], o[1] - x[1]) < TWY_EDGE.gap)) out.push(x);
       }
     }

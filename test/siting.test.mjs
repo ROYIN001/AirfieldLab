@@ -260,7 +260,7 @@ test('SiteIndex: water of the land-use map', () => {
   assert.deepEqual([cells(110, 194), cells(112.5, 194)], [[[1, 0.5], [S.WATER_CLASS, 0.5]], [[1, 0.5], [S.WATER_CLASS, 0.5]]], 'on its west and on its east border');
   assert.deepEqual([cells(111, 195), cells(111, 192.5)], [[[1, 0.5], [S.WATER_CLASS, 0.5]], [[1, 0.5], [S.WATER_CLASS, 0.5]]], 'on its north and on its south border');
   assert.deepEqual(cells(110, 195), [[1, 0.25], [1, 0.25], [1, 0.25], [S.WATER_CLASS, 0.25]], 'on its corner: four cells');
-  assert.deepEqual([cells(110 + 5e-7, 194).length, cells(110 + 2e-6, 194), cells(110 - 2e-6, 194)], [2, [[S.WATER_CLASS, 1]], [[1, 1]]], 'a border is a micrometre wide');
+  assert.deepEqual([cells(110 + 5e-7, 194).length, cells(110 + 2e-6, 194), cells(110 - 2e-6, 194)], [2, [[S.WATER_CLASS, 1]], [[1, 1]]], 'a border reaches a micrometre to each side');
   assert.deepEqual([cells(111, 195 - 5e-7).length, cells(111, 195 - 2e-6), cells(111, 195 + 2e-6)], [2, [[S.WATER_CLASS, 1]], [[1, 1]]], 'north-south too');
   // so the answer is that of four points a micrometre around the point, a quarter each: on a lattice of an eighth of
   // a metre over the map and beyond it (every point is on a border or well inside a cell)
@@ -532,35 +532,54 @@ test('what is mapped: buildings, aprons, taxiways, water and the three viaducts 
   }
 });
 
-// Does a road cut the footprint of a building in two: the share of the footprint in the second largest part of its
-// ground that is not road or rail. A road along one side leaves one part; a road through under the house leaves two.
-// The ground is read at points of our own a quarter of a metre apart on the axes of the map, none of them on a cell
-// border, and joined east-west and north-south only. So two pieces of ground that meet only at the corner of a cell,
-// between two road cells that meet at that corner, are two parts. (Joined along the rows and columns of the house,
-// as this measure first was, the points of a turned house step through such a corner: it missed a house of the high
-// quality that stands with a quarter of its footprint beyond two lanes that meet corner to corner.)
+// Does a road cut the footprint of a building in two: the share of the footprint that is ground (not road or rail)
+// outside the largest part of its ground. A road along one side leaves one part; a road through under the house leaves
+// ground beyond it, in one piece or in several. The ground is read at points of our own a quarter of a metre apart on
+// the axes of the map, none of them on a cell border. A point is solid when it and the eight points around it are all
+// ground of the footprint, and solid points that touch make a part: ground hangs together through a passage three
+// quarters of a metre wide or wider, between two roads or between a road and a wall, and never through one under
+// half a metre (between the two it follows where the points fall). So two pieces of ground that meet only at the
+// corner of a cell, between two road cells that meet at that corner, are two parts, and so are two that a strip a
+// few centimetres wide joins along a wall. The rest of the ground (beside a road or a wall, and in a narrow passage)
+// goes with the part that reaches it first, east-west and north-south a step at a time; ground that no part reaches
+// counts as outside the largest. (This measure first joined the points along the rows and columns of the house: the
+// points of a turned house step through a corner between two road cells, and it missed a house of the high quality
+// that stands with a quarter of its footprint beyond two lanes that meet corner to corner. Then it joined every
+// point of ground east-west and north-south and took the second largest part: a house along such a lane, with a
+// sixth of its footprint beyond it and joined to the rest by a neck of 13 cm, passed as whole, and so did one whose
+// ground beyond the lane came in five pieces of 2 % each.)
 function cutByRoad(b, classOf = classAtPoint) {
   const c = Math.cos(b.yaw), s = Math.sin(b.yaw), R = Math.hypot(b.w, b.d) / 2, P = 0.25;
   const i0 = Math.floor((b.e - R) / P), j0 = Math.floor((b.n - R) / P), nx = Math.ceil((b.e + R) / P) - i0, ny = Math.ceil((b.n + R) / P) - j0;
-  const g = new Uint8Array(nx * ny), parts = [];
-  let inside = 0;
+  const g = new Uint8Array(nx * ny), part = new Int32Array(nx * ny), sizes = [0];   // g: 0 outside the footprint, 1 ground, 2 road or rail
+  let inside = 0, ground = 0;
   for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
     const e = (i0 + i + 0.5) * P, n = (j0 + j + 0.5) * P, de = e - b.e, dn = n - b.n;
     if (Math.abs(de * c + dn * s) >= b.w / 2 || Math.abs(de * s - dn * c) >= b.d / 2) continue;
     inside++;
     const k = classOf(e, n);
-    if (!(k >= 13 && k <= 18)) g[j * nx + i] = 1;
+    if (k >= 13 && k <= 18) g[j * nx + i] = 2; else { g[j * nx + i] = 1; ground++; }
   }
-  for (let k0 = 0; k0 < g.length; k0++) {
-    if (g[k0] !== 1) continue;
-    let size = 0; const todo = [k0]; g[k0] = 2;
+  const BESIDE = [[1, 0], [-1, 0], [0, 1], [0, -1]], AROUND = [...BESIDE, [1, 1], [1, -1], [-1, 1], [-1, -1]];
+  const at = (A, i, j) => (i >= 0 && i < nx && j >= 0 && j < ny ? A[j * nx + i] : 0);
+  const solid = (i, j) => at(g, i, j) === 1 && AROUND.every(([di, dj]) => at(g, i + di, j + dj) === 1);
+  // the parts of the solid ground (two solid points corner to corner have ground on both sides of that corner)
+  let edge = [];
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+    if (part[j * nx + i] || !solid(i, j)) continue;
+    const id = sizes.length, todo = [[i, j]]; part[j * nx + i] = id; sizes.push(0);
     while (todo.length) {
-      const k = todo.pop(), i = k % nx, j = (k - i) / nx; size++;
-      for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const I = i + di, J = j + dj; if (I >= 0 && I < nx && J >= 0 && J < ny && g[J * nx + I] === 1) { g[J * nx + I] = 2; todo.push(J * nx + I); } }
+      const [x, y] = todo.pop(); sizes[id]++; edge.push([x, y]);
+      for (const [di, dj] of AROUND) { const X = x + di, Y = y + dj; if (!at(part, X, Y) && solid(X, Y)) { part[Y * nx + X] = id; todo.push([X, Y]); } }
     }
-    parts.push(size);
   }
-  return (parts.sort((x, y) => y - x)[1] || 0) / inside;
+  // the rest of the ground, outward from the parts a step at a time
+  while (edge.length) {
+    const next = [];
+    for (const [x, y] of edge) for (const [di, dj] of BESIDE) { const X = x + di, Y = y + dj, id = part[y * nx + x]; if (at(g, X, Y) === 1 && !part[Y * nx + X]) { part[Y * nx + X] = id; sizes[id]++; next.push([X, Y]); } }
+    edge = next;
+  }
+  return inside ? (ground - Math.max(...sizes)) / inside : 0;
 }
 test('the measure of a road cutting a building in two, on made-up roads', () => {
   assert.ok([L.e0, L.n1, L.res].every((v) => Number.isInteger(v / 0.25)), 'no point of the measure lies on a cell border of the real map');
@@ -575,11 +594,37 @@ test('the measure of a road cutting a building in two, on made-up roads', () => 
   near(cutByRoad(b(42.5), classOf), 0.375, 1e-9, 'a railway cuts as a road does');
   near(cutByRoad(b(2.5, 20, Math.PI / 2), classOf), 0.25, 1e-9, 'the house turned to lie along the road, 10 m wide over the 5 m road: a strip of 2.5 m on each side');
   near(cutByRoad(b(2.5, 20, 0.5), classOf), 0.3575, 0.005, 'turned half a radian across the road: the two ends, a little less than 0.375 each');
-  // a lane drawn as cells that meet corner to corner (cells of 2.5 m on the diagonal): a 10 m square house on it has
-  // a quarter of its footprint on the lane and three eighths on each side, whichever way it is turned
+  // A passage of ground beside the road joins the two sides only if it is wide enough. The road under the middle of
+  // the house stops short of its north wall: half a metre short, the two sides are two parts still (each takes half
+  // of the strip, 0.375 + 0.00625 of the footprint); a metre short, they are one. The same for a gap in the road
+  const short = (m) => (e, n) => (e >= 0 && e < 5 && n < 5 - m ? 13 : 2), gap = (m) => (e, n) => (e >= 0 && e < 5 && Math.abs(n) >= m / 2 ? 13 : 2);
+  near(cutByRoad(b(2.5), short(0.5)), 0.38125, 1e-9, 'a strip of half a metre along the wall does not join the two sides');
+  near(cutByRoad(b(2.5), gap(0.5)), 0.38125, 1e-9, 'nor does a gap of half a metre in the road');
+  assert.deepEqual([cutByRoad(b(2.5), short(1)), cutByRoad(b(2.5), gap(1))], [0, 0], 'a passage of a metre does');
+  // and for a passage that crosses the road at 45°: 0.85 m wide it joins the two sides, 0.42 m wide it does not
+  const slit = (h) => (e, n) => (e >= 0 && e < 5 && Math.abs(e - 2.5 - n) >= h ? 13 : 2);
+  assert.equal(cutByRoad(b(2.5), slit(0.6)), 0, 'a passage of 0.85 m across the road at 45°');
+  near(cutByRoad(b(2.5), slit(0.3)), 0.384, 0.002, 'a passage of 0.42 m at 45°: two parts, and half of the passage');
+  // Ground that touches a part only corner to corner is not of that part: a pocket of half a metre in the east kerb
+  // of the road, with the road around it but for the corner where it meets the ground east of the road. The house
+  // has 5 m of ground west of the road and 10 m east of it: the west side and the pocket are outside the largest part
+  const pocket = (e, n) => ((e >= 0 && e < 5 && !(e >= 4.5 && n >= 0 && n < 0.5)) || (e >= 5 && e < 5.5 && n >= 0 && n < 0.5) ? 13 : 2);
+  near(cutByRoad(b(5), pocket), 0.25 + 4 / 3200, 1e-9, 'the west side and the four points of the pocket');
+  // A lane drawn as cells that meet corner to corner (cells of 2.5 m on the diagonal): a 10 m square house on it,
+  // square to the map, has a quarter of its footprint on the lane and three eighths on each side. Turned, less of it
+  // is on the lane and more on each side: at 45° a sixth and five twelfths. (At 10° it is 0.39 on each side; a corner
+  // of the house, 1 % of it, lies past a cell of the lane and hangs on its side by a neck of half a metre: 0.4 in all)
   const stairs = (e, n) => (Math.floor(e / 2.5) === Math.floor(n / 2.5) ? 13 : 2), sq = (yaw) => ({ e: 5, n: 5, w: 10, d: 10, yaw });
   near(cutByRoad(sq(0), stairs), 0.375, 1e-9, 'square to the map');
-  for (const deg of [10, 20, 30, 45]) { const v = cutByRoad(sq(deg * Math.PI / 180), stairs); assert.ok(v > 0.37 && v < 0.43, `turned ${deg}°: ${v.toFixed(3)} of the house beyond the lane`); }
+  for (const [deg, share] of [[10, 0.4], [20, 0.401], [30, 0.41], [45, 5 / 12]]) near(cutByRoad(sq(deg * Math.PI / 180), stairs), share, 0.005, `turned ${deg}°: the share of the house beyond the lane`);
+  // A house 6 × 20 m that lies along that lane, its centre line 1.1 m to one side: the lane runs under its whole
+  // length, and the ground beyond it, a sixth of the footprint, hangs on the rest by necks of 13 cm between the
+  // corners of the lane and the long wall. 1.4 m to the side the ground beyond comes in separate pieces of 2 % each,
+  // an eighth of the footprint together. 3 m to the side only the corners of the lane reach under the wall
+  const lying = (t) => ({ e: 20 + t * Math.SQRT1_2, n: 20 - t * Math.SQRT1_2, w: 20, d: 6, yaw: Math.PI / 4 });
+  near(cutByRoad(lying(1.1), stairs), 0.16, 0.02, 'ground beyond the lane that hangs on by necks of 13 cm');
+  near(cutByRoad(lying(1.4), stairs), 0.12, 0.02, 'ground beyond the lane in five pieces');
+  assert.equal(cutByRoad(lying(3), stairs), 0, 'beside the lane: one part');
 });
 
 for (const quality of ['balanced', 'high']) {
@@ -625,11 +670,13 @@ for (const quality of ['balanced', 'high']) {
     const dropped = Object.values(blds.dropped).reduce((a, b) => a + b, 0);
     assert.equal(blds.kept.length + dropped, list.length);
     assert.ok(dropped > 0 && dropped < 0.06 * list.length, `${dropped} of ${list.length} generated buildings dropped (under 6 %)`);
-    // Is a house that stays cut in two by a road (a second part of a twentieth of its footprint beyond the road)?
-    // None of the balanced quality. One that only the high quality has: 5.75 × 15.25 m where two lanes meet corner to
-    // corner, 27 % of it on them and a quarter beyond. With a half for ROAD_MAX it would be 4 of the balanced
-    // and 11 of the high buildings (measured on 2026-11-26).
-    assert.deepEqual(cut, quality === 'high' ? ['-2831.5, 205'] : [], 'kept buildings that a road cuts in two');
+    // Is a house that stays cut in two by a road (a twentieth of its footprint or more as ground outside the largest
+    // part)? One of the balanced quality: 7.25 × 11 m with 32 % of it on a lane that turns under it, and 6 % beyond
+    // the lane, joined to the rest by a passage about half a metre wide between the corner of the lane and a wall.
+    // One more that only the high quality has: 5.75 × 15.25 m where two lanes meet corner to corner, 27 % of it on
+    // them and a quarter beyond. With a half for ROAD_MAX it would be 10 of the balanced and 23 of the high
+    // buildings (measured on 2026-11-26; the next after these two, at a third, have 4.9 and 4.8 % beyond a road).
+    assert.deepEqual(cut, quality === 'high' ? ['-2831.5, 205'] : ['1468, -784.5'], 'kept buildings that a road cuts in two');
     for (const why of ['water', 'road', 'deck']) assert.ok(count[why] > 0, `the check itself finds "${why}" (${JSON.stringify(count)})`);
     // the page's own numbers (CLAUDE.md)
     assert.deepEqual([list.length, blds.kept.length, blds.dropped], quality === 'high'
