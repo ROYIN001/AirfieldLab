@@ -88,8 +88,8 @@
 | `5d-aip-update.md` | อัปเดต 18 พ.ย. 2026: AD 2.19–2.25, OCA/H ทุกแผ่น, ตรวจ AIRAC ถัดไป | 1–4, 7 | ข้อเท็จจริงจาก AIP (© CAAT) |
 | `aip_vtbd_iap_minima.json`, `iap_minima.test.mjs` | OCA/H, FAF, missed approach ของ 13 แผ่น และข้อเท็จจริง AD 2.20 พร้อมต้นแบบเทสต์ T-U01–T-U08 (ผ่านทุกข้อ) | 4, 5D | ข้อเท็จจริงจาก AIP (© CAAT); โค้ดของโครงการ |
 | `README.md` | รายการไฟล์ในโฟลเดอร์นี้และสัญญาอนุญาต | — | — |
-| `aip_vtbd_current.json` | ค่าทางวิ่ง เครื่องช่วยเดินอากาศ และระยะประกาศของ AIRAC ปัจจุบัน | 1 | ข้อเท็จจริงจาก AIP (© CAAT) อ้าง AIRAC |
-| `aip.test.mjs` | ต้นแบบเทสต์ T-A (รันผ่านทุกข้อกับโค้ดปัจจุบัน: `node docs/research/05-airport-city/aip.test.mjs`) | 1 | โค้ดของโครงการ |
+| `aip_vtbd_current.json` (ย้ายไป `test/fixtures/` ในแผนข้อ A3) | ค่าทางวิ่ง เครื่องช่วยเดินอากาศ และระยะประกาศของ AIRAC ปัจจุบัน | 1 | ข้อเท็จจริงจาก AIP (© CAAT) อ้าง AIRAC |
+| `aip.test.mjs` (กลายเป็น `test/aip.test.mjs` ในแผนข้อ A3) | ต้นแบบเทสต์ T-A (รันผ่านทุกข้อกับโค้ดตอนค้นคว้า) | 1 | โค้ดของโครงการ |
 | `derived_points.json` | ตำแหน่งรอ stop bar และ hot spot ที่หาจากเส้น OSM ตัดกับระยะใน AIP | 2, 3 | ODbL (อนุพันธ์จาก OSM) |
 | `tw_names.json` | ชื่อทางขับของเส้น `tw` ทั้ง 137 เส้นตามลำดับใน `data/vtbd_af.json` | 3, 7 | ODbL (อนุพันธ์จาก OSM ผ่าน Overture) |
 | `vtbd_ops.json`, `ops.test.mjs` | พารามิเตอร์จราจรและต้นแบบเทสต์ T-G01–T-G18 (ผ่านทุกข้อ) | 7 | สถิติ ทอท. (ข้อเท็จจริง) และค่าประมาณของโครงการ |

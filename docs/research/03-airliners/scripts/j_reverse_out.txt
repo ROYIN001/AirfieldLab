@@ -1,0 +1,8 @@
+b737_800 (CFM56_7B26_class, m 66360 kg): 130 kt: max 83.7 kN (0.129 g), idle 11.5 kN | 100 kt: max 76.2 kN (0.117 g), idle 10.4 kN | 60 kt: max 66.2 kN (0.102 g), idle 9.1 kN | REV green at 1.80 s, amber at 0.20 s
+a320ceo (CFM56_5B6_class, m 64500 kg): 130 kt: max 74.8 kN (0.118 g), idle 10.2 kN | 100 kt: max 68.1 kN (0.108 g), idle 9.3 kN | 70 kt: max 61.4 kN (0.097 g), idle 8.4 kN | REV green at 1.80 s, amber at 0.20 s
+a320neo (LEAP_1A26_class, m 67400 kg): 130 kt: max 86.3 kN (0.131 g), idle 11.8 kN | 100 kt: max 78.6 kN (0.119 g), idle 10.8 kN | 70 kt: max 70.9 kN (0.107 g), idle 9.7 kN | REV green at 1.80 s, amber at 0.20 s
+a321neo (LEAP_1A32_class, m 79200 kg): 130 kt: max 102.3 kN (0.132 g), idle 14.0 kN | 100 kt: max 93.2 kN (0.120 g), idle 12.8 kN | 70 kt: max 84.0 kN (0.108 g), idle 11.5 kN | REV green at 1.80 s, amber at 0.20 s
+a330_300 (TRENT_772B_class, m 187000 kg): 130 kt: max 226.3 kN (0.123 g), idle 31.0 kN | 100 kt: max 206.0 kN (0.112 g), idle 28.2 kN | 70 kt: max 185.8 kN (0.101 g), idle 25.5 kN | REV green at 2.25 s, amber at 0.25 s
+737 (60 kt): power allowed at 1.800 s, back to reverse idle at 18.01 s (V0 130 kt, decel 2.0 m/s^2)
+Airbus (70 kt): power allowed at 1.800 s, back to reverse idle at 15.43 s (V0 130 kt, decel 2.0 m/s^2)
+ratio Frev(130 kt)/Frev(60 kt) = 1.264; Frev/F00 max at 130 kt 0.358, at 60 kt 0.283; phiMax 0.73

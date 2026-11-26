@@ -1,6 +1,9 @@
 // ───────────────────────── Don Mueang (VTBD): geodesy and AIP runway data (pure) ─────────────────────────
 // Local frame: origin at the aerodrome reference point (ARP), n north / e east in metres, ground at d = 0.
-// Source: AIP Thailand AD 2 VTBD (CAAT, AIRAC 14 MAY 2026) — AD 2.2, 2.12–2.15, 2.19.
+// Source: AIP Thailand AD 2 VTBD (CAAT, AIRAC 29 OCT 2026, AMDT 11/26) — AD 2.2, 2.12–2.15, 2.19. Runway, lighting and
+// ILS values are unchanged since AIRAC 14 MAY 2026, and AIRAC 26 NOV and 24 DEC 2026 change nothing for VTBD (research
+// round 5 §1 and 5D). The ARP keeps the 14 MAY 2026 value 135451.74N 1003620.49E (elevation 2.65 m) because AMDT 11/26
+// rounds it to 135452N 1003620E (3 m). test/aip.test.mjs checks RWY_DATA against test/fixtures/aip_vtbd_current.json.
 
 const dms = (d, m, s) => d + m / 60 + s / 3600;
 const ARP = { lat: dms(13, 54, 51.74), lon: dms(100, 36, 20.49), elev: 2.65 };
@@ -11,8 +14,17 @@ const GEO = (() => {
 function llToNE(lat, lon) { return [(lat - ARP.lat) * DEG * GEO.M, (lon - ARP.lon) * DEG * GEO.N * GEO.cosp]; }
 function neToLL(n, e) { return [ARP.lat + n / GEO.M * RAD, ARP.lon + e / (GEO.N * GEO.cosp) * RAD]; }
 
-// PAPI distance from threshold derived from the published MEHT (eye height over the threshold at 2°50′).
-const papiFromMEHT = (ft) => Math.round(ft * FT / Math.tan((2 + 50 / 60) * DEG) / 5) * 5;
+// PAPI (ICAO Annex 14 §5.3.5, 3° setting): four units on the left of each landing threshold, the inner one 15 m outside
+// the runway edge and 9 m apart, light centre PAPI_GEOM.h above the ground (the light sprites in 60-lights.js use it).
+// Settings from the inner unit outward: 3°30′, 3°10′, 2°50′, 2°30′.
+const PAPI_GEOM = { h: 0.64, off: [15, 24, 33, 42], ang: [3.5, 3 + 10 / 60, 2 + 50 / 60, 2.5] };
+// AIP AD 2.14 publishes MEHT but not the PAPI distance, so the distance is an estimate solved from MEHT in the same
+// geometry the sim draws and colours: an eye on the centre line at MEHT over the threshold sits exactly on the lower
+// edge of the on-slope signal, i.e. sees the 2°50′ unit (33 m outside the edge, light at h) at 2°50′.
+function papiFromMEHT(ft, w) {
+  const r = (ft * FT - PAPI_GEOM.h) / Math.tan(PAPI_GEOM.ang[2] * DEG), t = w / 2 + PAPI_GEOM.off[2];
+  return Math.round(Math.sqrt(r * r - t * t) * 10) / 10;
+}
 
 const RWY_DATA = [
   {
@@ -28,7 +40,7 @@ const RWY_DATA = [
     id: '03R/21L', w: 45, cl: false, conc: [0, 0],
     ends: [
       { id: '03R', thr: [dms(13, 53, 58.45), dms(100, 36, 5.50)], als: 'SALS300', tdz: false, mehtFt: 63.35,
-        appr: { kind: 'RNP', ident: 'RNP 03R', tchFt: 50 } },
+        appr: { kind: 'RNP', ident: 'RNP 03R', tchFt: 50 } },   // AD 2.24 chart RNAV/RNP RWY 03R: VPA 3.00°, TCH 50 ft
       { id: '21L', thr: [dms(13, 55, 28.33), dms(100, 36, 55.97)], disp: 350, als: 'CAT1', tdz: false, mehtFt: 63.81,
         appr: { kind: 'ILS', ident: 'IDMG', freq: '110.3', cat: 'I', loc: [dms(13, 53, 51.8), dms(100, 36, 1.8)], rdhFt: 53 } },
     ],
@@ -66,7 +78,7 @@ RWY_DATA.forEach((r, ri) => r.ends.forEach((E, k) => {
   }
   RWY_END[E.id] = {
     id: E.id, rwy: R, ri, k, u, r: [-u[1], u[0]], thr, far, lda, w: R.w, hdg: wrap360(Math.atan2(u[1], u[0]) * RAD),
-    disp: E.disp || 0, als: E.als, tdz: E.tdz, papi: papiFromMEHT(E.mehtFt), appr: a, aim, locDist,
+    disp: E.disp || 0, als: E.als, tdz: E.tdz, papi: papiFromMEHT(E.mehtFt, R.w), meht: E.mehtFt * FT, appr: a, aim, locDist,
     gpAntenna: a.gp ? along(llToNE(...a.gp)) : null,
   };
 }));

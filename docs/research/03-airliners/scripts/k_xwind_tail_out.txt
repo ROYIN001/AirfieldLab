@@ -1,0 +1,24 @@
+A320 VAPP 133.5: crab 10 kt 4.3°, 20 kt 8.6°, 30 kt 13°, 38 kt 16.5°
+737 Vref30+5 142: crab 10 kt 4°, 20 kt 8.1°, 30 kt 12.2°, 38 kt 15.5°
+ATR 106: crab 10 kt 5.4°, 20 kt 10.9°, 30 kt 16.4°, 38 kt 21°
+A321neo 144.2: crab 10 kt 4°, 20 kt 8°, 30 kt 12°, 38 kt 15.3°
+A320 (topic-3 derivs) sideslip 10 kt: beta 4.3°, rudder 4°, bank 1.2°, CY_eff -0.5/rad
+A320 (topic-3 derivs) sideslip 20 kt: beta 8.6°, rudder 8°, bank 2.4°, CY_eff -0.5/rad
+A320 (topic-3 derivs) sideslip 30 kt: beta 13°, rudder 12.1°, bank 3.6°, CY_eff -0.5/rad
+737-800 (topic-2 derivs) sideslip 10 kt: beta 4°, rudder 5.7°, bank 1.5°, CY_eff -0.544/rad
+737-800 (topic-2 derivs) sideslip 20 kt: beta 8.1°, rudder 11.5°, bank 3.1°, CY_eff -0.544/rad
+737-800 (topic-2 derivs) sideslip 30 kt: beta 12.2°, rudder 17.3°, bank 4.6°, CY_eff -0.544/rad
+Airbus FOBN 10 kt -> 3° bank implies |CY_eff| = 1.25/rad (CL 1.786)
+Airbus FOBN 30 kt -> 9° bank implies |CY_eff| = 1.23/rad (CL 1.786)
+737-800 nacelle h 0.48 m: static bank to contact 13.6°
+737-800 nacelle h 0.64 m: static bank to contact 18.2°
+737-800 wingtip h 3.66 m: static bank to contact 14.1°
+737-800 wingtip h 3.91 m: static bank to contact 15.1°
+737-800: approach 2.4° + flare 2.5° = TD 4.9°; margin to compressed limit 4.1°, to extended 6.1°
+A320: approach 2.5° + flare 4° = TD 6.5°; margin to compressed limit 5.2°, to extended 7°
+A321: approach 2.4° + flare 4.2° = TD 6.6°; margin to compressed limit 3.1°, to extended 4.6°
+ATR 72-600: approach -0.75° + flare 4.5° = TD 3.8°; margin to compressed limit 2.2°, to extended 4.3°
+737-800 F30: dθ/dV ≈ 0.222°/kt -> 5 kt slow = +1.11°, 10 kt slow = +2.22°
+A320 FULL: dθ/dV ≈ 0.289°/kt -> 5 kt slow = +1.45°, 10 kt slow = +2.89°
+A321 FULL: dθ/dV ≈ 0.271°/kt -> 5 kt slow = +1.35°, 10 kt slow = +2.71°
+rules: Boeing 0.30°/kt (K10), FCTM 0.20°/kt (K31), A321 FCOM 0.26°/kt (K27)

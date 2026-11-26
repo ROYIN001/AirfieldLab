@@ -1,0 +1,13 @@
+{
+  k_main_Npm: 2007689,
+  c_main_Nspm: 786823,
+  k_nose_Npm: 786190,
+  c_nose_Nspm: 583133
+}
+187000 kg: main leg 843.6 kN static x 0.42 m zeta 0.947 f_n 0.769 Hz | nose 146.7 kN x 0.187 m zeta 2.688
+242000 kg: main leg 1091.7 kN static x 0.544 m zeta 0.832 f_n 0.676 Hz | nose 189.9 kN x 0.241 m zeta 2.363
+{
+  tyre_speed_rating_mps: 105.05,
+  gs_limit_204kt_mps: 104.95,
+  nose_static_share_check: 'ดูหัวข้อ 5'
+}

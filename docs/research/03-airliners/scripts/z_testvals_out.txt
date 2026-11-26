@@ -1,0 +1,71 @@
+# unit conversions
+VMO 350 kt                         180.06 m/s
+VMO+6 = 356 kt                     183.14 m/s
+VMO+16 = 366 kt                    188.29 m/s
+6 kt / 15 kt / 16 kt offsets       3.087 7.717 8.231 m/s
+5-10 kt above VSW                  2.57 5.14 m/s
+C* Vco 400 ft/s                    121.92 m/s = 237.0 kt
+FBW A32NX Vm 100 m/s               194.4 kt
+15 deg/s                           0.2618 rad/s
+50 ft / 30 ft / 100 ft             15.24 9.144 30.48 m
+
+# sidestick (PPRuNe copy of an Airbus publication [Z27]; KNKT [Z1])
+breakout 1.1 lbf                   4.89 N
+pitch 22.5 lbf @16 deg             100.1 N
+roll out 5.6 lbf / in 7.8 lbf @20  24.9 34.7 N
+gradient pitch                     5.949 N/deg
+gradient roll out/in               1.001 1.490 N/deg
+AP override 5 daN / 3.5 daN        50 35 N  (KNKT: AP engaged, solenoid detent)
+dual input 2 deg of 16 / 20        0.1250 0.1000 stick fraction
+
+# load factor and bank
+level-turn nz at 30 deg            1.1547 g
+level-turn nz at 33 deg            1.1924 g
+level-turn nz at 45 deg            1.4142 g
+level-turn nz at 67 deg            2.5593 g
+max bank for level flight @2.5 g   66.42 deg
+max bank for level flight @2.0 g   60.00 deg
+turn rate 33 deg @133.5 kt         5.313 deg/s
+stick->dnz clean +1/+0.5/-1        1.5 0.75 -2 g (from 1 g)
+stick->dnz FULL +1/-1              1 -1 g
+
+# alpha / speed relations
+CL(amax)/CLmax from D-AXLA         0.8734 (VS1g = 123/1.23 = 100 kt, Vamax = 107 kt)
+Vamax/VS1g                         1.070
+if VLS = 1.28 VS1g                 0.8065 ratio; Vamax/VS1g 1.113
+Habsheim amax-aprot, afloor-aprot  3 0.5 deg
+US1549 margin 17.5-13.5 / 17.5-14  4 3.5 deg
+ALT stall warning 1.03 VS1g -> CL ratio 0.9426
+AF447 cruise: 1 deg AoA ~ 25 kt; 1.5 deg 37.5 kt
+
+# flare (Habsheim [Z8], FBW code [Z19])
+theta memo 2.5: rate, t to -2      0.5625 deg/s 8.0 s
+theta memo 5: rate, t to -2        0.8750 deg/s 8.0 s
+theta memo -1: rate, t to -2       0.1250 deg/s 8.0 s
+blend w at 40 ft (50->30 ft)       0.50
+sink 3 deg @133.5 kt               3.594 m/s = 708 fpm
+time 50 ft -> 0 at that sink       4.24 s
+time 30 ft -> 0                    2.54 s
+
+# roll law
+bank return at 50 deg (lim 67)     7.500 deg/s
+bank return at 40 deg (lim 45)     8.750 deg/s
+HSP return at 20 deg (lim 40)      7.500 deg/s
+time 0->33 deg at 15 deg/s         2.20 s
+time 0->67 (ideal, ramp-down)      see z_fbw_proto
+Lp, Lu @133.5 kt 300 m             -0.848 0.335
+Kphi, Kp, Ki (pole placement)      11.92 7.01 5.96
+steady p for full u                22.7 deg/s (open-loop authority, ClRollMax 0.05)
+
+# HSP (estimate law)
+Vpred 350: dnz_hsp, ND authority   0.000 1.00
+Vpred 356: dnz_hsp, ND authority   0.000 1.00
+Vpred 361: dnz_hsp, ND authority   0.375 0.50
+Vpred 366: dnz_hsp, ND authority   0.750 0.00
+Vpred 370: dnz_hsp, ND authority   0.750 0.00
+
+# input shaping interaction (round 1 topic 11)
+expo 0.3: x=0.5 -> out, dnz clean  0.3875 0.5812 g
+expo 0.5: x=0.5 -> out, dnz clean  0.3125 0.4688 g
+keyboard ramp 0.5/s: t to full     2.0 s ; centring 2.5/s: 0.40 s
+240 Hz step                        4.167 ms ; 0.10 s budget = 24 steps

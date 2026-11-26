@@ -1,0 +1,1031 @@
+{
+ "_meta": {
+  "note": "ค่าร่วมของเครื่องบินโดยสาร (scope environment/sim) สร้างอัตโนมัติด้วย scripts/r3_merge.mjs"
+ },
+ "visual": {
+  "papi_unit_settings_deg": {
+   "v": [
+    2.5,
+    2.8333,
+    3.1667,
+    3.5
+   ],
+   "u": "deg",
+   "scope": "environment",
+   "src": [
+    "D40",
+    "D24"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "PAPI 3° มาตรฐาน 2°30′, 2°50′, 3°10′, 3°30′ (หน่วยนอกถึงในตามที่ repo ใช้)"
+  },
+  "on_slope_band_deg": {
+   "v": {
+    "lower": 2.8333,
+    "upper": 3.1667
+   },
+   "u": "deg",
+   "scope": "environment",
+   "src": [
+    "D24",
+    "D23"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "2 ขาว 2 แดง"
+  },
+  "meht_angle_M_deg": {
+   "v": {
+    "icao_tc_B_minus_2arcmin": 2.8,
+    "stac_check_theta_minus_10arcmin": 2.8333
+   },
+   "u": "deg",
+   "scope": "environment",
+   "src": [
+    "D23",
+    "D24"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "TC: M = B − 2′ = 2°48′; STAC ใช้ θ − 10′ = 2°50′ ในการตรวจ; repo ใช้ 2°50′"
+  },
+  "icao_wheel_clearance_table": {
+   "v": {
+    "axes": {
+     "ewh_upper_m": [
+      3,
+      5,
+      8,
+      14
+     ]
+    },
+    "data": [
+     [
+      6,
+      3
+     ],
+     [
+      9,
+      4
+     ],
+     [
+      9,
+      5
+     ],
+     [
+      9,
+      6
+     ]
+    ]
+   },
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "D24",
+    "D23",
+    "D25"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "โครงสร้าง ICAO Annex 14 Table 5-2: [desired, minimum] wheel clearance over threshold ต่อกลุ่ม EWH (< 3, 3 ถึง < 5, 5 ถึง < 8, 8 ถึง < 14 m); อ่านผ่าน STAC §5.3.2"
+  },
+  "canada_tp312_groups": {
+   "v": {
+    "axes": {
+     "ewh_upper_m": [
+      3,
+      7.5,
+      14
+     ]
+    },
+    "data": [
+     [
+      6,
+      3,
+      6
+     ],
+     [
+      9,
+      4.5,
+      12
+     ],
+     [
+      9,
+      6,
+      20
+     ]
+    ]
+   },
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "D23"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "[desired WTH, minimum WTH, MEHT] ของ AP/P1, P2, P3"
+  },
+  "faa_visual_tch_height_groups": {
+   "v": {
+    "axes": {
+     "group": [
+      1,
+      2,
+      3,
+      4
+     ]
+    },
+    "data": [
+     [
+      3.048,
+      12.19
+     ],
+     [
+      4.572,
+      13.72
+     ],
+     [
+      6.096,
+      15.24
+     ],
+     [
+      7.62,
+      22.86
+     ]
+    ]
+   },
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "D22"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "[cockpit-to-wheel, VTCH]: ≤10 ft/40 ft, 15/45, 20/50, >25/75 ft; tolerance +5/−20 ft (HG1-2), +5/−15 ft (HG3-4)"
+  },
+  "faa_papi_gs_colocation_tol": {
+   "v": {
+    "same_distance_tol": 9.144,
+    "hg4_extra": 91.44
+   },
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "D22"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "±30 ft ของ virtual source ของ GS; Height Group 4 เพิ่ม 300 ft (+50/−0 ft)"
+  },
+  "ils_tch_typical": {
+   "v": {
+    "nominal": 15.24,
+    "min": 12.19,
+    "max": 18.29
+   },
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "D23"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "50 ft ปกติ ช่วง 40 ถึง 60 ft (Transport Canada)"
+  },
+  "vtbd_papi_distance_est": {
+   "v": {
+    "03L": 440,
+    "21R": 405,
+    "03R": 390,
+    "21L": 395
+   },
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "D35",
+    "D36",
+    "D40"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "MEHT/tan 2°50′ ปัด 5 m ตาม repo; ถ้าใช้ 2°48′: 447.8/407.7/394.8/397.7 m; AIP ไม่ประกาศระยะ"
+  },
+  "vtbd_meht": {
+   "v": {
+    "03L": 21.9,
+    "21R": 19.94,
+    "03R": 19.31,
+    "21L": 19.45
+   },
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "D35",
+    "D36"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "71.85/65.42/63.35/63.81 ft"
+  },
+  "vtbd_ils_rdh": {
+   "v": {
+    "03L": 16.76,
+    "21R": 16.46,
+    "03R": 15.24,
+    "21L": 16.15
+   },
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "D35",
+    "D36"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "55/54/53 ft ILS; 03R RNP TCH 50 ft เป็นค่าสมมติของ repo (ต่ำ)"
+  },
+  "vtbd_harmonisation_offset_needed": {
+   "v": {
+    "03L": 6.3,
+    "21R": 4.77,
+    "03R": 5.2,
+    "21L": 4.55
+   },
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "D35",
+    "D23"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "(D_PAPI − RDH/tan3°)·tan3°: ระยะตาเหนือ beam ที่ทำให้ PAPI ตรงกับ ILS; เครื่องจริงมี 0.9 ถึง 2.8 m"
+  }
+ },
+ "controls": {
+  "requirements": {
+   "part25_force_limits_N": {
+    "v": {
+     "short_two_hands": {
+      "pitch": 334,
+      "roll": 222
+     },
+     "short_one_hand": {
+      "pitch": 222,
+      "roll": 111
+     },
+     "short_yaw": 667,
+     "long_term": {
+      "pitch": 44.5,
+      "roll": 22.2,
+      "yaw": 89
+     }
+    },
+    "u": "N",
+    "scope": "sim",
+    "src": [
+     "Y30"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "14 CFR 25.143(d): 75/50, 50/25, 150, 10/5/20 lbf"
+   },
+   "part25_out_of_trim": {
+    "v": {
+     "mistrim_s_at_normal_rate": 3,
+     "g_range": [
+      -1,
+      2.5
+     ],
+     "recovery_g": 1.5,
+     "max_force_N": 556
+    },
+    "u": "s, g, N",
+    "scope": "sim",
+    "src": [
+     "Y31"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "14 CFR 25.255"
+   },
+   "fstd_dynamic_tolerance": {
+    "v": {
+     "force_N": 8.9,
+     "force_pct": 10,
+     "T_P0_pct": 10
+    },
+    "u": "N, %",
+    "scope": "sim",
+    "src": [
+     "Y32"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "14 CFR Part 60 App. A: dynamic ±2 lb หรือ ±10%; T(P0) ±10%"
+   }
+  },
+  "actuator_model": {
+   "v": {
+    "form": "first-order lag + rate limit + position limit",
+    "update": "explicit Euler นอก RK4 ทุกก้าว 240 Hz (dt/τ ≤ 0.083 จึงเสถียร; t90 ต่างจาก exact discretisation < 1 ms)"
+   },
+   "u": "-",
+   "scope": "sim",
+   "src": [
+    "R1:C14",
+    "R1:C17"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "ดูสมการใน 3.7.6"
+  },
+  "force_cue_marks_N": {
+   "v": {
+    "pitch": [
+     44.5,
+     222.4,
+     333.6
+    ],
+    "roll": [
+     22.2,
+     111.2,
+     222.4
+    ],
+    "yaw": [
+     89,
+     667.2
+    ]
+   },
+   "u": "N",
+   "scope": "sim",
+   "src": [
+    "Y30"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "ขีดบนแถบแรง = long-term, one hand, two hands ของ 25.143(d)"
+  }
+ },
+ "afcs": {
+  "categories": {
+   "v": {
+    "CAT_I": {
+     "DH_min": 60.96,
+     "RVR_min": 550,
+     "VIS_min": 800
+    },
+    "CAT_II": {
+     "DH_min": 30.48,
+     "DH_max": 60.96,
+     "RVR_min": 300
+    },
+    "CAT_IIIA": {
+     "DH_max": 30.48,
+     "RVR_min": 175
+    },
+    "CAT_IIIB": {
+     "DH_max": 15.24,
+     "RVR_min": 50,
+     "RVR_max": 175
+    },
+    "typeA_min": 76.2
+   },
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "O7",
+    "O9"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "DH 200/100/<100/<50 ft; Type A ≥ 250 ft"
+  },
+  "rvr_tables": {
+   "v": {
+    "CAT2_DH100_120": 300,
+    "CAT2_DH121_140": 400,
+    "CAT2_DH141_199": 450,
+    "CAT3_DH50_99": 175,
+    "CAT3_lt50_fail_passive": 125,
+    "CAT3_lt50_fail_operational": 75
+   },
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "O7"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "EASA/ICAO; Cat D ที่ DH 100-120 ft ใช้ 350 m เว้นแต่ autoland/HUDLS"
+  },
+  "fail_passive_DH_min": {
+   "v": 15.24,
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "O8",
+    "O9",
+    "O3"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "50 ft; ต่ำกว่านั้นต้อง fail-operational (CS-AWO 312: fail-op ที่ DH < 50 ft ต้องมี AH ≥ 100 ft; ผู้ตรวจยืนยันจาก [O3])"
+  },
+  "AH_typical_max": {
+   "v": 30.48,
+   "u": "m",
+   "scope": "environment",
+   "src": [
+    "O8"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "\"100 ft or less\" (SRVSOP); CS-AWO 312 ตามที่อ่านได้: at least 100 ft (ขัดแย้ง)"
+  },
+  "cert_touchdown": {
+   "v": {
+    "early": 60,
+    "late_avg": 823,
+    "late_limit": 914,
+    "lateral_outboard_gear": 21.3,
+    "sink_limit": 3.048,
+    "p_avg": 0.000001,
+    "p_limit": 0.00001,
+    "p_bank_avg_easa": 1e-8,
+    "p_bank_faa": 1e-7
+   },
+   "u": "m, m/s, -",
+   "scope": "environment",
+   "src": [
+    "O1",
+    "O2",
+    "O3"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "200 ft, 2700 ft, 3000 ft, 70 ft, 10 ft/s"
+  },
+  "cert_rollout": {
+   "v": {
+    "lateral_outboard_gear": 21.3,
+    "p": 0.000001,
+    "speed_above": 20.578,
+    "normal_dev": 8.2,
+    "p_normal": 0.05
+   },
+   "u": "m, m/s, -",
+   "scope": "environment",
+   "src": [
+    "O3",
+    "O1"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "70 ft ที่ > 40 kt; 27 ft ใน < 5 %"
+  },
+  "ac2057a_2sigma": {
+   "v": {
+    "long_total": 457.2,
+    "lat_each_side": 8.23,
+    "min_from_thr": 60.96,
+    "demo_wind": {
+     "headwind": 12.861,
+     "tailwind": 5.1444,
+     "crosswind": 7.7167,
+     "shear_per_100ft": 4.1156
+    }
+   },
+   "u": "m, m/s",
+   "scope": "environment",
+   "src": [
+    "O4"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "1500 ft, 27 ft, 200 ft; HW 25, TW 10, XW 15 kt, shear 8 kt/100 ft"
+  },
+  "ops_success": {
+   "v": {
+    "td_min": 150,
+    "td_max": 750,
+    "speed_tol": 2.5722,
+    "vs_max": 1.8288,
+    "bank_max_deg": 7,
+    "rollout_dev": 8
+   },
+   "u": "m, m/s, deg",
+   "scope": "environment",
+   "src": [
+    "O8",
+    "O7"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "±5 kt, 360 fpm, 7°, 8 m (SRVSOP AC 91-020 App 3 §4(a)(1), §5 p.31; ผู้ตรวจรอบต่อยืนยันข้อความตรง จึงเพิ่ม conf จากกลางเป็นสูง)"
+  },
+  "cat2_approach": {
+   "v": {
+    "p_success_below_500ft": 0.95,
+    "loc_uA_95pct": 25
+   },
+   "u": "-, uA",
+   "scope": "environment",
+   "src": [
+    "O2"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "AC 20-191 §4.2.9, §4.2.6.2.2"
+  },
+  "ils_signal": {
+   "v": {
+    "loc_full_DDM": 0.155,
+    "gs_full_DDM": 0.175,
+    "full_scale_uA": 150,
+    "dot_uA": 75,
+    "loc_sector_at_thr": 210,
+    "gs_width_deg": 1.4,
+    "gs_dot_deg": 0.36
+   },
+   "u": "DDM, uA, m, deg",
+   "scope": "environment",
+   "src": [
+    "O10",
+    "O11",
+    "O6",
+    "O43"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "1 dot = 75 uA เป็นค่าคำนวณสำหรับ PFD 2 dot; gs_dot 0.36° (ICAO 0.12θ) ความเชื่อมั่นกลางตามตารางความขัดแย้ง; DDM มาจากขั้นตอนทดสอบของ R&S (ทุติยภูมิ) จึงลด conf จากสูงเป็นกลาง (ผู้ตรวจ)"
+  },
+  "z_quantiles": {
+   "v": {
+    "p1e5": 4.265,
+    "p1e6": 4.753,
+    "p1e7": 5.199,
+    "p1e8": 5.612
+   },
+   "u": "-",
+   "scope": "sim",
+   "src": [
+    "O3"
+   ],
+   "conf": "สูง",
+   "est": true,
+   "note": "คำนวณ (o_autoland.mjs)"
+  },
+  "flare_reference": {
+   "v": {
+    "patent_K": 0.205,
+    "patent_hB": 3.658,
+    "dials_sink_mean": 0.732,
+    "dials_sink_sd": 0.213,
+    "cr3074_td_sd": 34.5,
+    "cr3074_sink_mean": 0.665
+   },
+   "u": "1/s, m, m/s",
+   "scope": "environment",
+   "src": [
+    "O13",
+    "O14",
+    "O15"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "ค่าอ้างอิงสำหรับทดสอบกฎ flare"
+  },
+  "dmk": {
+   "v": {
+    "ils": {
+     "21R": "CAT II",
+     "21L": "CAT I",
+     "03L": "CAT I",
+     "03R": "none"
+    },
+    "lvp_rvr_below": 550,
+    "lvp_ceiling_below": 60.96,
+    "lvp_runway": "21R",
+    "loc_dot_deg": {
+     "21R": 0.751,
+     "03L": 0.749,
+     "21L": 0.889
+    }
+   },
+   "u": "m, deg",
+   "scope": "environment",
+   "src": [
+    "O36",
+    "O37"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "LVP: RVR < 550 m หรือ ceiling < 200 ft, ใช้ 21R เท่านั้น; dot คำนวณ (o_autoland.mjs)"
+  }
+ },
+ "ops": {
+  "stabilised_criteria": {
+   "v": {
+    "gate_IMC_m": 304.8,
+    "gate_VMC_m": 152.4,
+    "circling_wings_level_m": 91.44,
+    "speed_min_rel_Vref_mps": 0,
+    "speed_max_rel_Vref_mps": 10.289,
+    "sink_max_mps": 5.08,
+    "ils_max_dots": 1,
+    "airbus_callouts": {
+     "speed_low_rel_Vapp_mps": -2.572,
+     "speed_high_rel_Vapp_mps": 5.144,
+     "vs_max_mps": 5.08,
+     "bank_deg": 7,
+     "loc_dots": 0.25,
+     "gs_dots": 1
+    },
+    "operator_typical": {
+     "speed_rel_target_mps": [
+      -2.572,
+      5.144
+     ],
+     "wings_level_by_m": 152.4
+    },
+    "action": "go-around if not stabilised at gate"
+   },
+   "u": "m, m/s, dots, deg",
+   "scope": "sim",
+   "src": [
+    "K1",
+    "K2",
+    "K3",
+    "K58",
+    "K23"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "FSF BN 7.1: 1,000 ft IMC / 500 ft VMC, VREF..VREF+20 kt, ≤1,000 fpm, ±1 dot; Airbus FOBN: VAPP −5/+10 kt, V/S −1,000 fpm, bank 7°, LOC 1/4 dot, G/S 1 dot; ผู้ให้บริการ (ATSB): −5/+10 kt, wings level by 500 ft; AC 120-71B ย้ายเกณฑ์ไปไว้ใน AC 91-79 แล้ว [K76]"
+  },
+  "tdz_target_m": {
+   "v": {
+    "aiming_marking_start": 400,
+    "aiming_marking_end": 450,
+    "ac91_79b_air_distance": 457.2,
+    "ac91_79b_min_air_distance": 304.8,
+    "score_perfect": [
+     300,
+     600
+    ],
+    "score_good": [
+     220,
+     750
+    ],
+    "tdz_end": 900,
+    "dmk_gp_origin": {
+     "21R": 314.1,
+     "21L": 308.2,
+     "03L": 319.9
+    }
+   },
+   "u": "m from threshold",
+   "scope": "environment",
+   "src": [
+    "K12",
+    "K51",
+    "K52"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "AC 91-79B ¶3.9: 1,500 ft หรือ 7 s air distance, สั้นสุด 1,000 ft; เครื่องหมาย aiming point 400 m ตามที่ repo วาด (ICAO, LDA ≥ 2,400 m) ไม่ได้อ่าน Annex 14 เอง; GP origin = RDH/tan3° (AIP); ช่วงคะแนนเป็นค่าที่เลือก (est)"
+  },
+  "hard_landing": {
+   "v": {
+    "design_sink_MLW_mps": 3.048,
+    "design_sink_MTOW_mps": 1.829,
+    "boeing_amm_nz": 2.2,
+    "boeing_amm_max_roll_deg": 2,
+    "airbus_load15_nz": 2.6,
+    "airbus_load15_sink_mps": 2.743,
+    "airbus_severe_sink_mps": 4.267,
+    "score_cap_sink_mps": 3.048,
+    "typical_td_sink_mps": [
+     0.5,
+     1.5
+    ],
+    "dials_autoland_sink_mean_mps": 0.732
+   },
+   "u": "m/s, g, deg",
+   "scope": "sim",
+   "src": [
+    "K13",
+    "K58",
+    "K57",
+    "K47",
+    "K15",
+    "K23"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "25.473: 10 ft/s (600 fpm) ที่ MLW, 6 ft/s (360 fpm) ที่ MTOW; Boeing AMM: peak nz เกิน 2.2 g (ใช้ได้เมื่อ roll ≤ 2°); Airbus LOAD<15>: VRTA > 2.6 g หรือ RALR < −9 ft/s (540 fpm); 14 ft/s = severe hard; typical 100–300 fpm เป็นค่าประมาณจากเหตุการณ์ปกติในรายงาน (est)"
+  },
+  "landing_distance_factors": {
+   "v": {
+    "dispatch_dry_factor": 1.667,
+    "wet_factor": 1.15,
+    "toa_margin": 1.15,
+    "speed_plus10pct_distance_factor": 1.2,
+    "tch_plus10ft_add_m": 60.96,
+    "delay_2s_118kt_add_m": 121.92,
+    "downhill_1pct_factor": 1.1,
+    "tailwind_10kt_factor": 1.21,
+    "fsf_tailwind_per_5kt": 1.1,
+    "fsf_headwind_per_5kt": 0.975,
+    "fsf_elevation_per_1000ft": 1.05,
+    "ldf_columns": [
+     "Dry 6",
+     "Good 5 grooved/PFC",
+     "Good 5 smooth",
+     "Good to Medium 4",
+     "Medium 3",
+     "Medium to Poor 2",
+     "Poor 1"
+    ],
+    "ldf_turbojet_with_reverse": [
+     1.67,
+     1.92,
+     2.2,
+     2.3,
+     2.5,
+     2.9,
+     3.4
+    ],
+    "ldf_turbojet_no_reverse": [
+     1.67,
+     2.3,
+     2.6,
+     2.8,
+     3.2,
+     4,
+     5.1
+    ]
+   },
+   "u": "-, m",
+   "scope": "environment",
+   "src": [
+    "K12",
+    "K75",
+    "K69"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "14 CFR 121.195(b)(d): หยุดภายใน 60 % ของทางวิ่ง, เปียก ×1.15; AC 91-79B ¶3.1, ¶5.2.2–5.2.9, Table 3-1 (หัวแถว RCC \"6 5 Grooved/ PFC 5 Smooth 4 3 2 1\": คอลัมน์ที่ 2 คือ Good บนทางวิ่ง grooved/PFC และคอลัมน์ที่ 3 คือ Good บนทางวิ่งเรียบ ผู้ตรวจแก้ลำดับแล้ว; ยังอ่านจากข้อความที่สกัดด้วยเครื่องมือ); FSF BN 8.5: tailwind +10 %/5 kt, headwind −2.5 %/5 kt, elevation +5 %/1,000 ft"
+  },
+  "crosswind_limits": {
+   "v": {
+    "cert_min_mps": {
+     "rule": "max(20 kt, 0.2 VSR0), need not exceed 25 kt",
+     "min": 10.289,
+     "cap": 12.861
+    },
+    "airbus_contaminated_typical": {
+     "good_5": "max demonstrated",
+     "good_medium_4": 15.433,
+     "medium_3": 12.861,
+     "medium_poor_2": 10.289,
+     "poor_1": 7.717,
+     "unreliable_9": 2.572
+    },
+    "mu_bands": {
+     "good": 0.4,
+     "good_medium": [
+      0.36,
+      0.39
+     ],
+     "medium": [
+      0.3,
+      0.35
+     ],
+     "medium_poor": [
+      0.26,
+      0.29
+     ],
+     "poor": 0.25
+    },
+    "demonstrated_is_not_limit": true
+   },
+   "u": "m/s, mu",
+   "scope": "environment",
+   "src": [
+    "K14",
+    "K4",
+    "K64"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "14 CFR 25.237; Airbus FOBN Crosswind Landings Table 1 (typical); EASA SIB 2014-20: ผู้ให้บริการตั้งขีดปฏิบัติจากค่า demonstrated เมื่อ AFM ไม่มีค่าที่จำกัดกว่า ผู้ผลิตควรบอกว่ารวม gust หรือไม่; demonstrated_is_not_limit อิงถ้อยคำ \"demonstrated to be safe\" ของ 25.237 (SIB ไม่ได้เขียนว่าไม่ใช่ขีดจำกัดโครงสร้าง)"
+  },
+  "crosswind_technique": {
+   "v": {
+    "crab_angle": "psi = asin(Vxw/TAS)",
+    "airbus_td_max_crab_deg": 5,
+    "airbus_td_max_bank_deg": 5,
+    "sideslip_bank_per_kt_deg": 0.3,
+    "sideslip_only_max_kt_737": 26,
+    "examples": {
+     "xw10kt": {
+      "sideslip_bank_deg": 3,
+      "wings_level_crab_deg": [
+       4,
+       5
+      ]
+     },
+     "xw30kt": {
+      "sideslip_bank_deg": 9,
+      "wings_level_crab_deg": 13,
+      "combined": {
+       "crab": 5,
+       "bank": 5
+      }
+     }
+    }
+   },
+   "u": "deg",
+   "scope": "sim",
+   "src": [
+    "K4",
+    "K11",
+    "K42"
+   ],
+   "conf": "สูง",
+   "est": true,
+   "note": "ตัวอย่างที่ MLW config ลงจอด (Airbus FOBN); 0.3°/kt เป็นค่าเฉลี่ยของ 3°/10 kt และ 9°/30 kt (est); 737 FCTM: sideslip-only ไม่แนะนำเกิน 26 kt (ผ่าน code7700)"
+  },
+  "autobrake": {
+   "v": {
+    "typical_low_mps2": 1.543,
+    "typical_medium_mps2": 3.087,
+    "range_kt_per_s": [
+     3,
+     6
+    ],
+    "max_pedal_mps2": [
+     4.116,
+     5.144
+    ],
+    "model": "deceleration command: brake force = clamp(m*a_cmd - other decel forces, 0, mu limit)"
+   },
+   "u": "m/s^2",
+   "scope": "sim",
+   "src": [
+    "K70",
+    "K69",
+    "K68"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "FSF BN 8.4/8.5: autobrake low ราว 3 kt/s, medium ราว 6 kt/s, pedal สูงสุด 8–10 kt/s (ค่าทั่วไป ไม่ใช่รายแบบ); แปลงหน่วยใน k_testvals.mjs"
+  },
+  "reverse": {
+   "v": {
+    "use": "max reverse as soon as possible after touchdown",
+    "reverse_idle_speed_range_mps": [
+     30.867,
+     41.156
+    ],
+    "effectiveness": "higher at high airspeed; force independent of runway condition",
+    "full_stop_after_selection": true
+   },
+   "u": "m/s",
+   "scope": "sim",
+   "src": [
+    "K70",
+    "K69",
+    "K53"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "FSF BN 8.4: กลับ reverse idle ที่ราว 60–80 KIAS; BN 8.5: reverse ได้ผลมากเมื่อความเร็วสูงและเมื่อ decel จากเบรกต่ำ; Airbus SF#14: เลือก reverse แล้วต้องหยุดเต็ม"
+  },
+  "ground_spoilers": {
+   "v": {
+    "weight_on_wheels_without": 0.6,
+    "weight_on_wheels_with": 0.85,
+    "drag_increase": 1.3,
+    "bounce_note": "auto extension at touchdown gives nose-up pitch and loss of lift"
+   },
+   "u": "-",
+   "scope": "sim",
+   "src": [
+    "K70",
+    "K15",
+    "K20"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "FSF BN 8.4 Figure 1 (แผนภาพทั่วไป ไม่ใช่รายแบบ): ป้าย negligible ตอนแตะพื้น, 60 % เมื่อล้อหน้าลง (without = ยังไม่กาง spoiler), 85 % + drag 130 % เมื่อ spoiler กาง; ลำดับอนุมานจากป้าย"
+  },
+  "flare_law": {
+   "v": {
+    "form": "hdot = -K (h + hB)",
+    "K": "(s0 - std)/hF",
+    "hB": "std/K",
+    "std_mps": 0.762,
+    "flare_time_nominal_s": [
+     3,
+     6.5
+    ],
+    "boeing_fctm_flare_time_s": [
+     4,
+     8
+    ]
+   },
+   "u": "m, s",
+   "scope": "sim",
+   "src": [
+    "K15",
+    "K6",
+    "K47"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ตระกูลเดียวกับ flare law ของหัวข้อ 9; std 2.5 ft/s เลือกให้ใกล้ sink ตอนแตะพื้นที่สังเกตได้ (JTSB 100 fpm, NASA DIALS 2.4 ft/s); ผลใน k_flare.mjs"
+  },
+  "go_around": {
+   "v": {
+    "pitch_target_deg": 15,
+    "rotation_rate_dps": 3,
+    "ultimate_pitch_deg": 25,
+    "pitch_callout_deg": 20,
+    "bank_callout_deg": 15,
+    "triggers": [
+     "unstabilised at gate",
+     "high hard bounce",
+     "not in TDZ"
+    ],
+    "fsf_go_around_rate_pct": 17
+   },
+   "u": "deg, deg/s, %",
+   "scope": "sim",
+   "src": [
+    "K2",
+    "K71",
+    "K44",
+    "K15"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "FSF BN 6.2: หมุนเท่าตอนวิ่งขึ้น ราว 3°/s, ห้ามเกินค่าสูงสุด เช่น 25° (เรียกที่ 20°), bank call > 15°; 15° = F/D TO/GA (หัวข้อ 9); FSF BN 6.1: มีเพียง 17 % ที่ go-around จริง"
+  },
+  "evaluator": {
+   "v": {
+    "weights": {
+     "sink": 40,
+     "pos": 25,
+     "cl": 15,
+     "spd": 10,
+     "att": 10
+    },
+    "sink_pts": {
+     "full_mps": 1.219,
+     "p30_mps": 1.829,
+     "p10_mps": 3.048
+    },
+    "caps": {
+     "tailstrike": 25,
+     "podstrike": 30,
+     "hard": 35,
+     "high_bounce": 40,
+     "long": 50
+    },
+    "penalties": {
+     "bounce": 10,
+     "unstable": 10,
+     "duck_under": 5,
+     "float": 5,
+     "pitch_call": 5
+    },
+    "bounce_detect": {
+     "min_air_s": 0.5,
+     "min_h_m": 0.3,
+     "high_h_m": 1.5
+    },
+    "float_max_s": 8,
+    "duck_under": {
+     "below_ft": 200,
+     "dots_low": 1
+    }
+   },
+   "u": "points, m/s, s, m",
+   "scope": "sim",
+   "src": [
+    "K15",
+    "K13",
+    "K12",
+    "K58",
+    "K57"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ข้อเสนอขยาย Evaluator (k_score.mjs) เกณฑ์ทั้งหมดเลือกเอง โดยยึด 25.473, FCTM flare 4–8 s, AC 91-79B air distance 1,500 ft, เกณฑ์ hard landing ของ Boeing/Airbus"
+  }
+ }
+}

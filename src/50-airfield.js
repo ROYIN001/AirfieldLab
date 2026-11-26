@@ -487,7 +487,7 @@ function buildAirfield(scene, renderer, data, quality) {
     }
     // PAPI: four units each side of the runway
     for (const sd of [-1, 1]) for (let i = 0; i < 4; i++) {
-      const t = sd * (E.w / 2 + 15 + i * 9), ang = [3.5, 3 + 10 / 60, 2 + 50 / 60, 2.5][i];
+      const t = sd * (E.w / 2 + PAPI_GEOM.off[i]), ang = PAPI_GEOM.ang[i];
       put(M.dark, boxGeo(1.2, 0.9, 0.9, 0, 0.45, 0), E.papi, t);
       put(M.grey, boxGeo(1.4, 0.15, 1.1, 0, 0.08, 0), E.papi, t);
       out.papiPos.push({ e: at(E.papi, t)[0], n: at(E.papi, t)[1], u: [ue, un], ang });

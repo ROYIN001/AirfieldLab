@@ -1,0 +1,20 @@
+T-J-01: LEAP-1A26 27120 lbf = 120635.8 N; 7B26 11699 daN = 116990 N; Trent 772B 71100 lbf = 316269 N
+T-J-02: CFM56-5B 5200/1.04 = 5000.0 rpm; CFM56-7B 5382/1.04 = 5175.0 rpm; LEAP N2 19391/1.165 = 16644.6 rpm
+T-J-03: CFM56_7B26_class Theta(38 C) = 0.9480, Theta(45 C) = 0.9025
+T-J-03: CFM56_5B6_class Theta(38 C) = 1.0000, Theta(45 C) = 1.0000
+T-J-03: LEAP_1A26_class Theta(38 C) = 1.0000, Theta(45 C) = 0.9935
+T-J-03: LEAP_1A32_class Theta(38 C) = 0.9480, Theta(45 C) = 0.9025
+T-J-03: TRENT_772B_class Theta(38 C) = 1.0000, Theta(45 C) = 0.9565
+T-J-04: CFM56_7B26_class: F_static = 112256 N (0.9595 F00), delta 0.99450
+T-J-04: CFM56_5B6_class: F_static = 104230 N (0.9971 F00), delta 0.99450
+T-J-04: LEAP_1A26_class: F_static = 120293 N (0.9971 F00), delta 0.99450
+T-J-04: TRENT_772B_class: F_static = 315391 N (0.9971 F00), delta 0.99450
+T-J-05: BPR 5.1: SL M0.2 0.8169; 1000 ft M0.2 0.8046
+T-J-05: BPR 5.9: SL M0.2 0.8100; 1000 ft M0.2 0.7979
+T-J-05: BPR 11.1: SL M0.2 0.7817; 1000 ft M0.2 0.7707
+T-J-07: model F(51)/F(35) = 0.8925; ATSB N1 ratio^2 = 0.9016, ^2.5 = 0.8785
+T-J-08: LEAP-1A26 FF(0.30) = 0.2440, FF(0.50) = 0.4135, FF(1.0) = 0.8610 kg/s; 7B26 FF(0.5) = 0.5692
+T-J-09: TSFC TO 7B26 = 10.368 g/(kN s); LEAP-1A26 = 7.139; ratio LEAP/7B26 = 0.689
+T-J-19: b737_800: Vc/sqrt(V^2+Vc^2) at 70 m/s = 0.8059 vs B&Y 0.8124; T(70) = 188576 N
+T-J-19: a320neo: Vc/sqrt(V^2+Vc^2) at 70 m/s = 0.7667 vs B&Y 0.7765; T(70) = 184993 N
+T-J-20: 7B24 cruise ratio 0.2264, 5B4 0.1886; B&Y at M0.8 35 kft BPR 5.3: 0.1730

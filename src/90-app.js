@@ -215,7 +215,13 @@ async function main() {
       const btn = $('#btnShot'); btn.hidden = false;
       btn.onclick = () => {
         renderer.render(scene, camera);
-        renderer.domElement.toBlob(async (blob) => {
+        // the picture is a Produced Work of the OSM-derived data: it carries the ODbL notice (src/85-shot.js)
+        const src = renderer.domElement, shot = document.createElement('canvas');
+        shot.width = src.width; shot.height = src.height;
+        const g = shot.getContext('2d');
+        g.drawImage(src, 0, 0);
+        stampCredit(g, shot.width, shot.height);
+        shot.toBlob(async (blob) => {
           if (!blob) return;
           try { await dl.save({ filename: `airfield-lab-${hhmm(localParts(app.date).min).replace(':', '')}.png`, data: blob }); toast('บันทึกภาพแล้ว'); }
           catch (err) { if (err && err.code !== 'declined') toast('บันทึกภาพไม่ได้ในหน้านี้'); }
@@ -622,7 +628,7 @@ async function main() {
         camera.fov = 50;
       } else if (cam === 'cockpit') {
         camera.near = 0.15;
-        camera.position.set(0.95, 1.0, 0).applyMatrix4(ac3.group.matrixWorld);
+        camera.position.set(AC.eye[0], -AC.eye[2], AC.eye[1]).applyMatrix4(ac3.group.matrixWorld);   // pilot's eye (FRD → model x fwd, y up, z right)
         camera.quaternion.copy(ac3.group.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -Math.PI / 2, 0))).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(-3 * DEG, 0, 0)));
         camera.fov = 58; ac3.helmets[0].visible = false;
       } else if (cam === 'tower') {
@@ -684,7 +690,7 @@ async function main() {
     if (app.mode === 'train' && fl) {
       const showAc = recF ? null : fl;
       if (showAc && app.trainCam === 'cockpit' && app.train.state !== 'setup') drawHUD(hctx, hud.width, hud.height, dpr, camera, fl, fl.pilot === 'man' ? fl.ap.guidance() : null);
-      else if (showAc) { const e = new THREE.Vector3(0.95, 0.97, 0).applyMatrix4(ac3.group.matrixWorld); const ex = -e.z, ee = e.x; drawILSWidget(hctx, hud.width - 182 * dpr, 50 * dpr, dpr, fl, papiSeen(ex, ee, e.y)); }
+      else if (showAc) { const e = fl.ac.air.eye; drawILSWidget(hctx, hud.width - 182 * dpr, 50 * dpr, dpr, fl, papiSeen(e[0], e[1], e[2])); }
     }
     if (performance.now() > calloutUntil) $('#callout').classList.remove('on');
     // DOM readouts at 10 Hz
@@ -705,9 +711,12 @@ async function main() {
       $('#fma').innerHTML = fma.filter(([t]) => t).map(([t, c]) => `<span class="${c}">${t}</span>`).join('');
       if (app.train.state === 'fly') {
         gateRows($('#gates'), fl, true);
-        const pw = papiSeen(fl.ac.x[0], fl.ac.x[1], -fl.ac.x[2] + 1.0);
+        const e = a.eye, pw = papiSeen(e[0], e[1], e[2]);
         const nW = pw.filter((v) => v > 0.5).length;
-        $('#papiTxt').textContent = pw[0] < 0 ? 'ผ่านตำแหน่ง PAPI แล้ว' : `ขาว ${nW} แดง ${4 - nW} · ${['ต่ำมาก', 'ต่ำเล็กน้อย', 'อยู่บนแนวร่อน', 'สูงเล็กน้อย', 'สูงมาก'][nW]}`;
+        // On the ILS the PAPI of Don Mueang reads low near the threshold: its MEHT (AIP AD 2.14) is 3.3 to 5.1 m above the ILS beam over the threshold, while
+        // the trainer's eye is 1.3 m above its glide-slope antenna (research round 3, topic 3.5).
+        const onIls = FIELD.appr === 'ILS' && Math.abs(a.gsDots) < 0.5 && Math.abs(a.locDots) < 1 && nW < 2 && a.s > -1500;
+        $('#papiTxt').textContent = pw[0] < 0 ? 'ผ่านตำแหน่ง PAPI แล้ว' : `ขาว ${nW} แดง ${4 - nW} · ${['ต่ำมาก', 'ต่ำเล็กน้อย', 'อยู่บนแนวร่อน', 'สูงเล็กน้อย', 'สูงมาก'][nW]}` + (onIls ? ' · บน ILS ช่วงท้าย PAPI แสดงต่ำได้ ให้ยึด ILS' : '');
         $('#liveTitle').textContent = { APP: `ร่อนเข้าหาทางวิ่ง ${FIELD.rwy}`, FLARE: 'ถอนคันบังคับก่อนแตะพื้น', ROLLOUT: 'วิ่งบนทางวิ่งและเบรก', DONE: 'หยุดเรียบร้อย', STOP: 'หยุดเรียบร้อย', CRASH: 'เครื่องบินกระแทกพื้น' }[ph] || 'กำลังบิน';
         $('#liveLede').textContent = fl.pilot === 'ap' ? 'ออโต้ไพลอตบินตามสัญญาณ ILS ถอนคันบังคับที่ราว 20 ฟุต จัดหัวให้ตรงทางวิ่งก่อนแตะพื้น แล้วเบรกจนหยุด' : (app.tilt.on ? `บังคับด้วยการเอียงโทรศัพท์: ${TILT_BANK[app.tilt.stick.grip]} เอียงขอบบนเข้าหาตัวเพื่อเงยหัว ออกจากตัวเพื่อกดหัว กดค้างที่วงกลมเพื่อตั้งศูนย์ใหม่` : isTouch ? 'ลากคันบังคับซ้ายล่าง: ซ้าย/ขวาเพื่อเอียง ลงเพื่อเงยหัว ขึ้นเพื่อกดหัว' : 'ใช้ลูกศรบังคับ ↑ กดหัว ↓ เงยหัว ←/→ เอียง') + ' · พาวงกลมเส้นทางบินไปทับวงกลมสีชมพูในมุมห้องนักบิน';
       }

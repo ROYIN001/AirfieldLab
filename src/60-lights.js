@@ -281,7 +281,7 @@ function airfieldLights(field, data) {
     }
   }
   // ── PAPI (always on, high daytime intensity) ──
-  for (const pp of field.papiPos) S.add(P3(pp.e - pp.u[0] * 0.55, pp.n - pp.u[1] * 0.55, 0.64), { kind: 3, axis: [pp.u[0], -pp.u[1]], I: 0.5, param: pp.ang, cat: 1, day: 8 });
+  for (const pp of field.papiPos) S.add(P3(pp.e - pp.u[0] * 0.55, pp.n - pp.u[1] * 0.55, PAPI_GEOM.h), { kind: 3, axis: [pp.u[0], -pp.u[1]], I: 0.5, param: pp.ang, cat: 1, day: 8 });
   // ── taxiway edge lights (blue) ──
   for (const [e, n] of taxiEdgeLights(data.af)) S.add(P3(e, n, 0.3), { kind: 0, a: LC.blue, I: 0.13, day: 0.4 });
   // ── obstruction lights, aerodrome beacon, mast lamps, windsocks ──

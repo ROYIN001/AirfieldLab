@@ -1,0 +1,49 @@
+== 1. A320 flare height (ft) vs V/S (fpm) ==
+VS 400 fpm -> flare 45 ft (13.72 m); time-to-go h/VS = 6.75 s
+VS 500 fpm -> flare 45 ft (13.72 m); time-to-go h/VS = 5.4 s
+VS 600 fpm -> flare 45 ft (13.72 m); time-to-go h/VS = 4.5 s
+VS 675 fpm -> flare 45 ft (13.72 m); time-to-go h/VS = 4 s
+VS 709 fpm -> flare 47.3 ft (14.41 m); time-to-go h/VS = 4 s
+VS 750 fpm -> flare 50 ft (15.24 m); time-to-go h/VS = 4 s
+VS 800 fpm -> flare 53.3 ft (16.26 m); time-to-go h/VS = 4 s
+VS 900 fpm -> flare 60 ft (18.29 m); time-to-go h/VS = 4 s
+VS 1000 fpm -> flare 60 ft (18.29 m); time-to-go h/VS = 3.6 s
+GS 120 kt on 3 deg: VS 637 fpm
+GS 133.6 kt on 3 deg: VS 709 fpm
+GS 140 kt on 3 deg: VS 743 fpm
+GS 150 kt on 3 deg: VS 796 fpm
+
+== 2. LAND engagement height (ft) = 400 - VS*1.2/60 ==
+VS 600: LAND at 388 ft (FBW docs: must show before 350 ft)
+VS 709: LAND at 385.8 ft (FBW docs: must show before 350 ft)
+VS 800: LAND at 384 ft (FBW docs: must show before 350 ft)
+VS 1000: LAND at 380 ft (FBW docs: must show before 350 ft)
+
+== 3. 737 RETARD trigger (ideal L1v flare, hB = 12 ft) ==
+GS 130 kt: tau 5.39 s, RA 27 ft reached 2.5 s after flare -> RETARD by 27 ft at 2.5 s
+GS 142.1 kt: tau 4.93 s, RA 27 ft reached 2.29 s after flare -> RETARD by 27 ft at 2.29 s
+GS 155 kt: tau 4.52 s, RA 27 ft reached 2.1 s after flare -> RETARD by 27 ft at 2.1 s
+
+== 4. Capture thresholds in dots (21R LOC 0.751 deg/dot, GS 0.36 deg/dot) ==
+FBW LOC* |e|<1.92 deg = 2.56 dot; LOC track 0.16 deg = 0.21 dot; G/S* 0.1333 deg = 0.37 dot
+737 LOC capture 1/2 dot = 0.376 deg; G/S capture 2/5 dot = 0.144 deg
+Airbus AUTOLAND warning LOC 1/4 dot = 0.188 deg = 18.8 uA; GS 1 dot = 0.36 deg; Safety First 20 uA = 0.267 dot
+
+== 5. Wind components on RWY 21R (true course 208.72 deg) ==
+wind 209/20 kt: HW 20 XW 0.1 -> autoland allowed {"a320ceo":true,"b737_800":true,"b737_800_xw25":true,"a330_300":true}
+wind 250/25 kt: HW 18.8 XW 16.5 -> autoland allowed {"a320ceo":true,"b737_800":true,"b737_800_xw25":true,"a330_300":true}
+wind 270/24 kt: HW 11.5 XW 21 -> autoland allowed {"a320ceo":false,"b737_800":false,"b737_800_xw25":true,"a330_300":false}
+wind 30/9 kt: HW -9 XW -0.2 -> autoland allowed {"a320ceo":true,"b737_800":true,"b737_800_xw25":true,"a330_300":true}
+wind 30/12 kt: HW -12 XW -0.3 -> autoland allowed {"a320ceo":false,"b737_800":true,"b737_800_xw25":true,"a330_300":false}
+wind 180/40 kt: HW 35.1 XW -19.2 -> autoland allowed {"a320ceo":false,"b737_800":false,"b737_800_xw25":false,"a330_300":false}
+
+== 6. Minima gating ==
+{"rvr":2000,"ceilFt":1000} {"lvp":false,"rwys":["21R","21L","03L","03R"],"op":"CAT I (DA 200 ft)"}
+{"rvr":600,"ceilFt":150} {"lvp":true,"rwys":["21R"],"op":"CAT I (DA 200 ft)"}
+{"rvr":400,"ceilFt":100} {"lvp":true,"rwys":["21R"],"op":"CAT II 21R (DH 100 ft)"}
+{"rvr":250,"ceilFt":50} {"lvp":true,"rwys":["21R"],"op":"below DMK minima -> divert/hold"}
+CAT II DH 100 ft -> RVR 300 m (Cat A-C)
+CAT II DH 113 ft -> RVR 300 m (Cat A-C)
+CAT II DH 120 ft -> RVR 300 m (Cat A-C)
+CAT II DH 130 ft -> RVR 400 m (Cat A-C)
+CAT II DH 143 ft -> RVR 450 m (Cat A-C)

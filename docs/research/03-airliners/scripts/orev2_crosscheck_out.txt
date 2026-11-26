@@ -1,0 +1,53 @@
+== T-O-01 LOC dot (locDist = LDA/runway length + LOC beyond far end) ==
+21R: locDist 4001.8 m, width 3.006 deg, 1 dot 0.7515 deg, 1/4 dot at THR 13.12 m
+03L: locDist 4014.0 m, width 2.997 deg, 1 dot 0.7492 deg, 1/4 dot at THR 13.12 m
+21L: locDist 3382.6 m, width 3.556 deg, 1 dot 0.8890 deg, 1/4 dot at THR 13.12 m
+T-O-17: 1/4 dot 21R = 0.1879 deg = 18.75 uA; T-O-22: 25 uA = 0.333 dot = 0.250 deg
+== T-O-02 wheel path, RDH 54 ft, 3 deg ==
+b737: over THR 12.222 m (40.1 ft), wheel GPI 233.2 m, s(400ft) -2093 m, s(350) -1802, s(200) -930, s(100) -348
+a320: over THR 11.579 m (38.0 ft), wheel GPI 220.9 m, s(400ft) -2105 m, s(350) -1815, s(200) -942, s(100) -361
+a330: over THR 7.899 m (25.9 ft), wheel GPI 150.7 m, s(400ft) -2176 m, s(350) -1885, s(200) -1012, s(100) -431
+atr: over THR 14.159 m (46.5 ft), wheel GPI 270.2 m, s(400ft) -2056 m, s(350) -1765, s(200) -893, s(100) -311
+== T-O-03 737 L1v at 142.1 kt ==
+tau 4.9326 s, flare 8.100 s, sink 0.7415 m/s (146.0 fpm), sF -57.6, sTD 534.6 m (1754 ft), RETARD(27ft) t 2.287 s s 110 m
+== T-O-04 patent prior art K = 0.205, hB 12 ft ==
+110 kt: hF 35.46 ft, TD 1334 ft from THR (569 ft from wheel GPI); Vtau-const 42 ft: TD 1513 ft
+125 kt: hF 41.94 ft, TD 1512 ft from THR (747 ft from wheel GPI); Vtau-const 42 ft: TD 1513 ft
+140 kt: hF 48.41 ft, TD 1704 ft from THR (939 ft from wheel GPI); Vtau-const 42 ft: TD 1514 ft
+== T-O-05 / T-O-06 Airbus (FBW form) ==
+hF(VS): 400->45.00 ft/13.72 m, 709->47.27 ft/14.41 m, 750->50.00 ft/15.24 m, 800->53.33 ft/16.26 m, 1000->60.00 ft/18.29 m
+a320 133.6 kt: VS 709.1 fpm, hF 47.27 ft (14.408 m), tau 5.073 s, flare 7.880 s, sink 0.762, sF -54.0, sTD 487.6 m; 30 ft at s 64, 10 ft at s 285; straight-line 30 ft s 46, 10 ft s 163
+a330 140 kt: VS 743.0 fpm, hF 49.53 ft (15.098 m), tau 5.012 s, flare 8.019 s, sink 0.762, sF -137.4, sTD 440.2 m; 30 ft at s -1, 10 ft at s 228; straight-line 30 ft s -24, 10 ft s 93
+737 straight-line 27 ft s 76
+== T-O-07 LAND after 1.2 s below 400 ft ==
+600 fpm -> 388.0 ft, 709 fpm -> 385.8 ft, 800 fpm -> 384.0 ft, 1000 fpm -> 380.0 ft
+== T-O-08 737 RETARD = min(t(27 ft), 2.5 s) ==
+130 kt: t(27ft) 2.500 s -> RETARD 2.500 s
+142.1 kt: t(27ft) 2.287 s -> RETARD 2.287 s
+155 kt: t(27ft) 2.096 s -> RETARD 2.096 s
+== T-O-11 quantiles by Simpson tail integration ==
+z: 0.00001 4.2649, 0.000001 4.7534, 1e-7 5.1993, 1e-8 5.6120
+sigma_x <= 80.26 m (mean 441.5); AC20-57A sigma_x <= 114.30 m, sigma_y <= 4.115 m; sigma_sink <= 0.481 m/s
+737: sigma_y <= 3.817 m
+A320: sigma_y <= 3.618 m
+A330: sigma_y <= 3.292 m
+ATR: sigma_y <= 3.987 m
+== T-O-14 wind components, 21R true course 208.72 ==
+209/20: HW 20.00 XW 0.10
+250/25: HW 18.79 XW 16.49
+270/24: HW 11.53 XW 21.05
+30/12: HW -12.00 XW -0.27
+200/40: HW 39.54 XW -6.06
+180/40: HW 35.08 XW -19.22
+== T-O-20 gains and engine lag ==
+b737: Tmax 234.0 kN, Kp 0.0317 Tmax/kt, Ki 0.00297 Tmax/(kt s)
+a320: Tmax 240.2 kN, Kp 0.0332 Tmax/kt, Ki 0.00311 Tmax/(kt s)
+a330: Tmax 632.5 kN, Kp 0.0361 Tmax/kt, Ki 0.00339 Tmax/(kt s)
+first-order lag 1.5 s reaches 95 % at 4.494 s
+== T-O-21 trainer (h_F = clamp(2.4*sink, 4.5, 9) m, hdot = -(0.22 + h/2.4)) ==
+75 kt H 1: hF 4.853 m (15.9 ft), sTD 417 m, sink 0.220 m/s
+88 kt H 1.37: hF 5.694 m (18.7 ft), sTD 447 m, sink 0.220 m/s
+== JSON unit spot checks ==
+25 kt=12.8611 20 kt=10.2889 15 kt=7.7167 35 kt=18.0056 30 kt=15.4333 29 kt=14.9189 17 kt=8.7456 10 kt=5.1444 40 kt=20.5778 84 kt=43.2133 8 kt=4.1156
+1500ft=457.200 800ft=243.840 400ft=121.920 350ft=106.680 2000ft=609.600 200ft=60.960 160ft=48.768 250ft=76.200 500ft=152.400 600ft=182.880 100ft=30.480 50ft=15.240 30ft=9.144 20ft=6.096 10ft=3.048 9200ft=2804.160 1000ft=304.800 2700ft=822.960 3000ft=914.400 70ft=21.336 27ft=8.230 12ft=3.658
+360 fpm=1.8288 m/s, 10 ft/s=3.0480, 2.4 ft/s=0.7315, 0.7 ft/s=0.2134, 2.5 ft/s=0.7620
