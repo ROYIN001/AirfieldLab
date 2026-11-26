@@ -104,7 +104,10 @@ const TREE_SCALE = [0.75, 1.35];
 //   deck      a whole crown from the edge of a viaduct deck, a station or a footbridge
 //   apron     7.5 m, the clearance between an aircraft on a stand and an object (Annex 14, 3.13.6), beyond the crown
 //   taxiway   43.5 m from the centre line of a taxiway and 40 m from that of a stand taxilane to an object
-//             (Annex 14 Table 3-1, code letter E; AIP AD 2.8 gives taxiways of 23 to 50 m)
+//             (Annex 14 Table 3-1, code letter E; AIP AD 2.8 gives taxiways of 23 to 50 m). Which line is which is
+//             read from the tag of the vectors (`twy` or `lane`), which does not follow the published names (research
+//             round 5, tw_names.json: most of TWY C is tagged `lane`, Taxilane T `twy`); the 3.5 m between the two
+//             moves one tree
 //   water     one cell of the land-use map (2.5 m) beyond the crown, since the drawn shoreline is only that sharp
 const SITE_GAP = { building: [0, 0.5], deck: [0, 1], apron: [7.5, 1], taxiway: [43.5, 0], taxilane: [40, 0], water: [2.5, 1] };
 // Every taxiway and stand taxilane is drawn this wide: the narrowest width of AIP AD 2.8 (23 to 50 m; which taxiway
@@ -172,13 +175,19 @@ class SiteIndex {
     if (pointInPoly(p, it.ring) && !it.holes.some((h) => pointInPoly(p, h))) return 0;
     return Math.min(edges(it.ring, true), ...it.holes.map((h) => edges(h, true)));
   }
-  // the land-use class at (e, n), 0 outside the map or without one
-  classAt(e, n) {
-    if (!this.raster) return 0;
-    const { cls, land: L } = this.raster, x = Math.floor((e - L.e0) / L.res), y = Math.floor((L.n1 - n) / L.res);
-    return x >= 0 && x < L.w && y >= 0 && y < L.h ? cls[y * L.w + x] : 0;
+  // The land-use class at (e, n), 0 outside the map or without one: calls fn(class, share) for each cell that touches
+  // the point. That is one cell with share 1, or the two or four that meet there, in equal shares, when the point is
+  // on a cell border (to a millimetre). Given to one cell, a border would go to the one east or south of it, and the
+  // answer would depend on which side of a road or a bank a house stands.
+  eachClassAt(e, n, fn) {
+    if (!this.raster) return fn(0, 1);
+    const { cls, land: L } = this.raster, fx = (e - L.e0) / L.res, fy = (L.n1 - n) / L.res, rx = Math.round(fx), ry = Math.round(fy);
+    const onX = Math.abs(fx - rx) * L.res < 1e-3, onY = Math.abs(fy - ry) * L.res < 1e-3;
+    const x0 = onX ? rx - 1 : Math.floor(fx), x1 = onX ? rx : x0, y0 = onY ? ry - 1 : Math.floor(fy), y1 = onY ? ry : y0, share = 1 / ((x1 - x0 + 1) * (y1 - y0 + 1));
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) fn(x >= 0 && x < L.w && y >= 0 && y < L.h ? cls[y * L.w + x] : 0, share);
   }
-  waterAt(e, n) { return this.classAt(e, n) === WATER_CLASS; }
+  // is (e, n) in a water cell, or on the border of one?
+  waterAt(e, n) { let wet = false; this.eachClassAt(e, n, (k) => { if (k === WATER_CLASS) wet = true; }); return wet; }
   waterWithin(e, n, r) {
     if (!this.raster) return false;
     const { cls, land: L } = this.raster, k = Math.ceil(r / L.res), x0 = Math.floor((e - L.e0) / L.res), y0 = Math.floor((L.n1 - n) / L.res);
@@ -320,33 +329,37 @@ function placeTrees(cls, L, quality, rnd, site) {
 const isRoad = (k) => k >= ROAD_CLASSES[0] && k <= ROAD_CLASSES[1];
 // The shares of a building's footprint that lie on water cells and on road or rail cells of the land-use map, from
 // a grid of sample points no further apart than half a cell, and at least eight along each side (b: centre e, n;
-// sides w along (cos yaw, sin yaw) and d across; yaw).
+// sides w along (cos yaw, sin yaw) and d across; yaw). A sample on a cell border counts half for each side (the
+// samples of a house square to the map often are): the share is the same on either side of a road.
 function groundShare(site, b) {
   const c = Math.cos(b.yaw), s = Math.sin(b.yaw), res = site.raster ? site.raster.land.res / 2 : 1;
   const nu = Math.max(8, Math.ceil(b.w / res)), nv = Math.max(8, Math.ceil(b.d / res));
   let wet = 0, road = 0;
+  const add = (k, share) => { if (k === WATER_CLASS) wet += share; else if (isRoad(k)) road += share; };
   for (let i = 0; i < nu; i++) for (let j = 0; j < nv; j++) {
-    const u = ((i + 0.5) / nu - 0.5) * b.w, v = ((j + 0.5) / nv - 0.5) * b.d, k = site.classAt(b.e + u * c + v * s, b.n + u * s - v * c);
-    if (k === WATER_CLASS) wet++; else if (isRoad(k)) road++;
+    const u = ((i + 0.5) / nu - 0.5) * b.w, v = ((j + 0.5) / nv - 0.5) * b.d;
+    site.eachClassAt(b.e + u * c + v * s, b.n + u * s - v * c, add);
   }
   return { water: wet / (nu * nv), road: road / (nu * nv) };
 }
-// A generated building may have a side on a bank, but not this share of its footprint (or its centre) on water. The
-// share is our choice: the city data put houses along the canals, and the drawn shoreline is only a cell sharp.
+// A generated building may have a side on a bank, but not this share of its footprint on water, nor its centre in
+// water or on a bank line (a house astride a canal one cell wide). The share is our choice: the city data put houses
+// along the canals, and the drawn shoreline is only a cell sharp. On the data of 2026-11-26 the centre alone drops
+// one house (on a bank line, an eighth of it on water); every other house with its centre in water has the share too.
 const WET_MAX = 0.2;
 // It may reach into a road, which the map draws wider than it is, but not with a third of its footprint (our choice).
-// Measured on 2026-11-26 in the balanced quality: a third drops 2,333 of 57,895 buildings (4 %), nearly all of them
-// shophouses; 1,897 stand alone and no group of them (linked at 25 m) is larger than five, so no row of houses goes.
-// A half would drop 814 and leave several times as many lying right across a lane (at a third, 3 stay:
-// test/siting.test.mjs counts them).
-// The centre is not asked: the city data never puts one inside a road cell, only on a cell border, where the answer
-// would depend on which side of the road the house stands.
+// Measured on 2026-11-26 in the balanced quality: a third drops 2,329 of 57,895 buildings (4 %), nearly all of them
+// shophouses; 1,895 stand alone and no group of them (linked at 25 m) is larger than five, so no row of houses goes.
+// A half would drop 809 and leave houses that a road cuts in two (4 in the balanced quality, 8 in the high one; at a
+// third, none: test/siting.test.mjs looks at every kept building).
+// The centre is not asked: the city data never puts one inside a road cell, only on a cell border, and a house with
+// its centre on the kerb line is not in the road.
 const ROAD_MAX = 1 / 3;
 // Why a generated (not mapped) building cannot stand where the city data puts it, or null. Nine points are tried, the
 // centre, the corners and the middles of the sides: none may be in an approach light lane ('lane'), under a surface the
 // building would rise through ('ols'), inside a mapped building, a viaduct deck or a station, or closer to a pavement
-// than its clearance. Then the ground of the land-use map: 'water' when the centre or WET_MAX of the footprint is on
-// water, 'road' when ROAD_MAX of it is on a road or a railway.
+// than its clearance. Then the ground of the land-use map: 'water' when the centre is in water or on a bank line or
+// WET_MAX of the footprint is on water, 'road' when ROAD_MAX of it is on a road or a railway.
 function buildingProblem(site, b) {
   const c = Math.cos(b.yaw), s = Math.sin(b.yaw);
   for (const i of [0, -1, 1]) for (const j of [0, -1, 1]) {

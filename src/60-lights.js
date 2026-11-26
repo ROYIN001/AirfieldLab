@@ -103,12 +103,16 @@ const TDZ_T = [9, 10.5, 12];
 // Runway edge lights stand this far outside the runway edge (Annex 14, 5.3.9: not more than 3 m; the 0.6 m is an
 // estimate, ค่าประมาณ).
 const EDGE_OUT = 0.6;
-// Taxiway edge lights. AIP AD 2.15 (AIRAC 29 OCT 2026; research round 5, table B4): blue edge lights on every
-// taxiway, and centre line lights on TWY D, E, F, J, O, R, S and C (south), which are not drawn (the vector lines
-// carry no names). The lights stand `step` metres apart (ค่าประมาณ; Annex 14, 5.3.18: not more than 60 m on a
-// straight) and EDGE_OUT outside the edge of a taxiway TWY_W wide (5.3.18: not more than 3 m; AIP AD 2.8 gives 23 to
-// 50 m, all are drawn 23 m), square to the run of the line over `chord` metres: the vector lines have jogs of a few
-// metres that point up to 48° off it. Two lights of lines that meet end to end are not set closer than `gap`.
+// Taxiway edge lights. AIP AD 2.15 (AIRAC 29 OCT 2026; research round 5, `5a-aip.md`: table B4 has edge lights on
+// every taxiway, the JSON block of that section gives them as blue), and centre line lights on TWY D, E, F, J, O, R, S
+// and C (south), which are not drawn: the lines of vtbd_af.json carry no names (research round 5 has them in
+// tw_names.json, not yet taken into the data). The lights stand `step` metres apart (ค่าประมาณ; Annex 14, 5.3.18: not
+// more than 60 m on a straight), the stations centred on each line so that a short connector has a pair in its
+// middle and the layout does not depend on the direction a line was drawn in. They stand EDGE_OUT outside the edge
+// of a taxiway TWY_W wide (5.3.18: not more than 3 m; AIP AD 2.8 gives 23 to 50 m, all are drawn 23 m), square to
+// the run of the line over `chord` metres: the vector lines have jogs of a few metres, and the piece under a station
+// points up to 50° off that run. No two lights are set closer than `gap`, whichever lines they belong to (lines
+// that meet end to end would each set a pair at the joint).
 const TWY_EDGE = { step: 45, chord: 25, gap: 15 };
 // An edge light marks the edge of the pavement and never stands on it: none where the place is on a taxiway or
 // taxilane ribbon (where taxiways join or cross) or on an apron. An apron counts APRON_EDGE wider than its outline
@@ -132,7 +136,7 @@ function taxiEdgeLights(af) {
   const pave = taxiPavement(af), out = [], off = TWY_W / 2 + EDGE_OUT;
   for (const t of af.tw) {
     if (t.p.length < 2) continue;
-    for (let s = 0, len = lineLength(t.p); s <= len; s += TWY_EDGE.step) {
+    for (let len = lineLength(t.p), s = (len % TWY_EDGE.step) / 2; s <= len; s += TWY_EDGE.step) {
       const p = pointAlong(t.p, s);
       if (onAnyRunway(p[0], p[1], 40)) continue;
       const a = pointAlong(t.p, s - TWY_EDGE.chord / 2), b = pointAlong(t.p, s + TWY_EDGE.chord / 2), l = Math.hypot(b[0] - a[0], b[1] - a[1]);

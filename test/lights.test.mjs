@@ -9,7 +9,8 @@ import fs from 'node:fs';
 const read = (f) => fs.readFileSync(new URL('../src/' + f, import.meta.url), 'utf8');
 const strip = (t) => t.replace(/\/\*(?! glsl \*\/)[\s\S]*?\*\//g, '').replace(/(^|\s)\/\/.*$/gm, '$1');
 const live = (f) => strip(read(f));
-// 60-lights.js on top of the pure files; plSample (50-airfield.js) only walks the taxiways and roads, left empty here
+// 60-lights.js on top of the pure files; plSample (50-airfield.js) walks the roads and the railway for their lamps and
+// is left empty here (the taxiway edge lights have their own walk, pointAlong)
 const PURE = ['10-atmo.js', '15-geo.js', '17-siting.js', '20-flight.js', '48-data.js', '60-lights.js'].map(read).join('\n');
 // LightSet.build only fills typed arrays and hands them to three.js: these stand-ins keep what it was given
 const THREE_STUB = {
@@ -164,6 +165,28 @@ test('the whole layout runs on the real data: PAPI, beacon, obstruction, road an
   assert.deepEqual(all.filter((l) => l.kind === 6).map((l) => [l.p[0], l.p[1], -l.p[2], name(l.a), l.cat]), field.masts.map(([e, n]) => [e, 31.4, n, 'red', 1]), 'a red light on each mast');
   // the only steady lights in the airfield category are the taxiway edge lights (next test)
   assert.ok(all.filter((l) => l.kind === 0 && l.cat === 0).every((l) => l.a === W.LC.blue), 'steady airfield lights are blue');
+  // Every steady light, the beacon and the mast lights: kind, colour, category, day factor and height, then how many
+  // and how bright (set by eye: regression pins, measured on 2026-11-26). The lamps of the tollway, the railway and
+  // Phahonyothin road, the street lights of city.json and the far suburbs are lit at night only (category 2).
+  const groups = {};
+  for (const l of all) if (l.kind === 0 || l.kind === 5 || l.kind === 6) {
+    const k = `${l.kind} ${name(l.a)} cat ${l.cat} day ${l.day} y ${l.p[1]}`, g = groups[k] || (groups[k] = [0, l.I, l.I]);
+    g[0]++; g[1] = Math.min(g[1], l.I); g[2] = Math.max(g[2], l.I);
+  }
+  assert.deepEqual(Object.fromEntries(Object.entries(groups).map(([k, [n, lo, hi]]) => [k, lo === hi ? [n, lo] : [n, Math.round(lo * 100) / 100, Math.round(hi * 100) / 100]])), {
+    '0 blue cat 0 day 0.4 y 0.3': [386, 0.13],                                             // taxiway edge
+    '0 red cat 1 day 1.4 y 60': [1, 0.25], '5 flash cat 2 day 0.5 y 54.4': [1, 3],         // tower top; the beacon (plain white, as the flashers)
+    '6 red cat 1 day 1.4 y 31.4': [2, 0.2], '0 led cat 2 day 0.2 y 29.6': [6, 1.4],        // masts: obstruction light, three floodlights each
+    '0 warm cat 2 day 0.1 y 6.6': [1, 0.12],                                               // windsock
+    '0 led cat 2 day 0.05 y 24': [510, 0.32], '0 sodium cat 2 day 0.05 y 10': [374, 0.3],  // tollway deck and the road beside it
+    '0 led cat 2 day 0.05 y 19': [217, 0.16], '0 sodium cat 2 day 0.05 y 9': [466, 0.28],  // railway viaduct, Phahonyothin road
+    '0 sodium cat 2 day 0.02 y 9': [7244, 0.26],                                           // street lights of city.json: main roads
+    '0 warm cat 2 day 0.02 y 6': [36224, 0.1], '0 led cat 2 day 0.02 y 6': [18046, 0.1],   //   and the others, one in three of them LED
+    '0 warm cat 2 day 0.02 y 5': [2080, 0.12, 0.24], '0 sodium cat 2 day 0.02 y 5': [3139, 0.12, 0.24],  // far suburbs, each cluster at its own brightness
+  });
+  assert.equal(7244 + 36224 + 18046, street, 'one light per street-light record');
+  // the lights are drawn whatever the camera frames (no bounds are worked out for them), late in the frame
+  assert.ok(live('60-lights.js').includes('const pts = new THREE.Points(g, mat); pts.frustumCulled = false; pts.renderOrder = 20;'));
 });
 
 test('taxiway edge lights: on every taxiway (AIP AD 2.15), at the edge, never on pavement, none missing without a cause', () => {
@@ -178,8 +201,9 @@ test('taxiway edge lights: on every taxiway (AIP AD 2.15), at the edge, never on
   const rings = af.apron.flatMap((a) => [a.o, ...(a.h || [])].map((r) => [...r, r[0]]));
   const onApron = (e, n) => af.apron.some((a) => inside(a.o, e, n) && !(a.h || []).some((h) => inside(h, e, n)));
   const apronEdge = (e, n) => Math.min(...rings.map((r) => lineDist(r, e, n)));
-  // Sound: every light stands at the edge of a taxiway and on no pavement (the regression: 101 of the 248 lights
-  // the page had stood on the pavement of a joining taxiway, a taxilane or an apron).
+  // Sound: every light stands at the edge of a taxiway and on no pavement (the regression: of the 248 lights the
+  // page had, 87 stood on the pavement of a joining taxiway, a taxilane or an apron and 14 on that of their own
+  // taxiway, at jogs of the line).
   at2.forEach(([e, n], i) => {
     const d = Math.min(...lines.map((t) => lineDist(t.p, e, n))), what = `the light at ${e.toFixed(0)}, ${n.toFixed(0)}`;
     assert.ok(d >= M.TWY_W / 2, `${what}: ${d.toFixed(1)} m from a taxiway centre line, on the pavement`);
@@ -188,28 +212,36 @@ test('taxiway edge lights: on every taxiway (AIP AD 2.15), at the edge, never on
     for (const R of W.RUNWAYS) { const [s, t] = W.rwyST(R, e, n); assert.ok(!(s > -M.RWY_PAD && s < R.len + M.RWY_PAD && Math.abs(t) < R.w / 2 + 20), `${what}: ${Math.abs(t).toFixed(0)} m from the centre line of ${R.id}`); }
     for (let j = 0; j < i; j++) assert.ok(Math.hypot(at2[j][0] - e, at2[j][1] - n) >= M.TWY_EDGE.gap, `${what}: another light within ${M.TWY_EDGE.gap} m`);
   });
-  // Complete: at every station of every line (45 m apart, our own walk along it), on both sides, there is a light
-  // within 5 m of the place 12.1 m square to the line, or a cause for none: the pavement of another line or an
-  // apron (within a metre of the rule's limits), a light of another line close by, or the inside of a tight bend,
-  // where the place falls on the line's own pavement. (The regression: jogs of a few metres in the vector lines
-  // left holes of 90 to 135 m in straight rows, and lights came and went by centimetres along an apron.)
+  // Complete: at every station of every line (45 m apart and centred on the line, our own walk along it), on both
+  // sides, there is a light within 5 m of the place 12.1 m square to the line, or a cause for none: the pavement of
+  // another line or an apron (within a metre of the rule's limits), a light of another line close by, or the inside
+  // of a tight bend, where the place falls on the line's own pavement. (The regressions: jogs of a few metres in the
+  // vector lines left holes of 90 to 135 m in straight rows, lights came and went by centimetres along an apron,
+  // and with the stations counted from the first point of a line, which is a junction on 129 of the 137 lines,
+  // seven connectors shorter than 45 m had no light at all.)
   let places = 0, lit = 0; const why = { other: 0, apron: 0, gap: 0, bend: 0 };
-  for (const t of lines) for (let s = 0, len = lineLen(t.p); s <= len; s += 45) {
-    const p = alongLine(t.p, s);
-    if (W.RUNWAYS.some((R) => { const [rs, rt] = W.rwyST(R, p[0], p[1]); return rs > -40 && rs < R.len + 40 && Math.abs(rt) < R.w / 2 + 40; })) continue;
-    const a = alongLine(t.p, s - 12.5), b = alongLine(t.p, s + 12.5), l = Math.hypot(b[0] - a[0], b[1] - a[1]);
-    for (const sd of [-1, 1]) {
-      const e = p[0] + (b[1] - a[1]) / l * sd * off, n = p[1] - (b[0] - a[0]) / l * sd * off, nearest = Math.min(...at2.map((q) => Math.hypot(q[0] - e, q[1] - n)));
-      places++;
-      if (nearest <= 5) { lit++; continue; }
-      const cause = lines.some((q) => q !== t && lineDist(q.p, e, n) < M.TWY_W / 2 + 1) ? 'other' : onApron(e, n) || apronEdge(e, n) < M.APRON_EDGE + 1 ? 'apron'
-        : nearest < M.TWY_EDGE.gap + 1 ? 'gap' : lineDist(t.p, e, n) < M.TWY_W / 2 - 0.5 ? 'bend' : null;
-      assert.ok(cause, `no light ${s} m along the ${t.k} line from ${t.p[0].map((v) => v.toFixed(0))}, side ${sd}, and no cause (nearest light ${nearest.toFixed(0)} m)`);
-      why[cause]++;
+  for (const t of lines) {
+    const len = lineLen(t.p);
+    for (let s = (len % 45) / 2; s <= len; s += 45) {
+      const p = alongLine(t.p, s);
+      if (W.RUNWAYS.some((R) => { const [rs, rt] = W.rwyST(R, p[0], p[1]); return rs > -40 && rs < R.len + 40 && Math.abs(rt) < R.w / 2 + 40; })) continue;
+      const a = alongLine(t.p, s - 12.5), b = alongLine(t.p, s + 12.5), l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      for (const sd of [-1, 1]) {
+        const e = p[0] + (b[1] - a[1]) / l * sd * off, n = p[1] - (b[0] - a[0]) / l * sd * off, nearest = Math.min(...at2.map((q) => Math.hypot(q[0] - e, q[1] - n)));
+        places++;
+        if (nearest <= 5) { lit++; continue; }
+        const cause = lines.some((q) => q !== t && lineDist(q.p, e, n) < M.TWY_W / 2 + 1) ? 'other' : onApron(e, n) || apronEdge(e, n) < M.APRON_EDGE + 1 ? 'apron'
+          : nearest < M.TWY_EDGE.gap + 1 ? 'gap' : lineDist(t.p, e, n) < M.TWY_W / 2 - 0.5 ? 'bend' : null;
+        assert.ok(cause, `no light ${s.toFixed(1)} m along the ${t.k} line from ${t.p[0].map((v) => v.toFixed(0))}, side ${sd}, and no cause (nearest light ${nearest.toFixed(0)} m)`);
+        why[cause]++;
+      }
     }
   }
   // measured on 2026-11-26 (regression pins): lights of both kinds of line, and TWY C beside the main runway
   assert.deepEqual([blue.length, places, lit, why], PINS.edge);
+  // with every line drawn the other way round, the same places to a micrometre (the stations are centred on a line)
+  const turned = W.taxiEdgeLights({ ...af, tw: af.tw.map((t) => ({ ...t, p: [...t.p].reverse() })) }), key = (q) => q.map(r6).join();
+  assert.deepEqual(turned.map(key).sort(), at2.map(key).sort(), 'the layout does not depend on the direction a line was drawn in');
   const [R0] = W.RUNWAYS, laneLit = at2.filter(([e, n]) => { const d = lines.map((t) => lineDist(t.p, e, n)); return lines[d.indexOf(Math.min(...d))].k === 'lane'; }).length;
   assert.equal(R0.ends.join('/'), '03L/21R');
   // TWY C runs 183 m west of the centre line of 03L/21R (research round 5, 5a-aip.md; the vector line is 2 m nearer):
@@ -218,9 +250,9 @@ test('taxiway edge lights: on every taxiway (AIP AD 2.15), at the edge, never on
   const sides = [twyC.filter(([, t]) => t < -182).length, twyC.filter(([, t]) => t > -182).length];
   assert.ok(laneLit > 150 && sides[0] > 40 && sides[1] > 40, `${laneLit} lights on lines tagged lane, ${sides} on the two sides of TWY C`);
 });
-const PINS = { edge: [343, 952, 345, { other: 260, apron: 341, gap: 6, bend: 0 }] };
+const PINS = { edge: [386, 942, 391, { other: 152, apron: 384, gap: 15, bend: 0 }] };
 
-test('taxiway edge lights on a made-up field: a junction, an apron with a hole, a jog in the line', () => {
+test('taxiway edge lights on a made-up field: a junction, an apron with a hole, short and parallel lines, a jog, a corner', () => {
   // far from the runways: a taxiway A along e at n 9000, a taxiway B that crosses its east end, a solid apron south
   // of A whose east side ends 2.5 m short of a light, and a ring-shaped apron north of it
   const e0 = 9000, n0 = 9000, P = (pts) => pts.map(([e, n]) => [e0 + e, n0 + n]);
@@ -228,36 +260,60 @@ test('taxiway edge lights on a made-up field: a junction, an apron with a hole, 
     tw: [{ k: 'lane', p: P([[0, 0], [180, 0]]) }, { k: 'twy', p: P([[180, -100], [180, 100]]) }],
     apron: [{ o: P([[30, -40], [132.5, -40], [132.5, -5], [30, -5]]) }, { o: P([[60, 0], [120, 0], [120, 65], [60, 65]]), h: [P([[70, 8], [110, 8], [110, 60], [70, 60]])] }],
   };
-  const got = M.taxiEdgeLights(af).map(([e, n]) => [r6(e - e0), r6(n - n0)]), has = (e, n) => got.some((g) => g[0] === e && g[1] === n);
-  // A: stations at 0, 45, 90, 135 and 180 m, a light 12.1 m to each side
+  const places = (f) => M.taxiEdgeLights({ apron: [], ...f }).map(([e, n]) => [r6(e - e0), r6(n - n0)]);
+  const got = places(af), has = (e, n) => got.some((g) => g[0] === e && g[1] === n);
+  // A is 180 m long: stations at 0, 45, 90, 135 and 180 m, a light 12.1 m to each side
   assert.ok(has(0, 12.1) && has(0, -12.1), 'the west end of A: both sides');
   assert.ok(has(45, 12.1) && !has(45, -12.1), '45 m: the south light would stand on the solid apron');
   assert.ok(has(90, 12.1), '90 m: the north light stands in the hole of the ring-shaped apron, 4.1 m from its edge');
   assert.ok(!has(90, -12.1), '90 m: south, on the apron');
   assert.ok(has(135, 12.1) && !has(135, -12.1), '135 m: the south light would be 2.5 m beside the apron, under the 3 m');
   assert.ok(!has(180, 12.1) && !has(180, -12.1), '180 m: on the centre line of B');
-  // B: its lights 10 m south of A's end: the west one is 10 m from A, on its pavement; the east one is clear
-  assert.ok(!has(167.9, -10) && has(192.1, -10), 'B beside the end of A');
-  for (const n of [-100, -55, 35, 80]) assert.ok(has(167.9, n) && has(192.1, n), `B at ${n} m: both sides`);
+  // B is 200 m long: its five stations are centred on it, 10 m in from each end. Where A ends on it the west light
+  // would stand on A's pavement; the east one is clear
+  assert.ok(!has(167.9, 0) && has(192.1, 0), 'B where A ends on it');
+  for (const n of [-90, -45, 45, 90]) assert.ok(has(167.9, n) && has(192.1, n), `B at ${n} m: both sides`);
   assert.equal(got.length, 5 + 9, 'five lights along A, nine along B, and no other');
   // with the hole filled in, the light at 90 m north goes too
   assert.equal(M.taxiEdgeLights({ ...af, apron: af.apron.map((a) => ({ o: a.o })) }).length, got.length - 1);
   // and with the edge of the hole 2.1 m from that light: in the hole still, but under the 3 m beside the apron
   const tight = [af.apron[0], { o: af.apron[1].o, h: [P([[70, 10], [110, 10], [110, 60], [70, 60]])] }];
-  const gotTight = M.taxiEdgeLights({ ...af, apron: tight }).map(([e, n]) => [r6(e - e0), r6(n - n0)]);
+  const gotTight = places({ ...af, apron: tight });
   assert.ok(gotTight.length === got.length - 1 && !gotTight.some((g) => g[0] === 90 && g[1] === 12.1), 'the 3 m count from the edge of a hole too');
+  // The stations are centred on a line, whichever way it was drawn: a connector shorter than the 45 m has a pair in
+  // its middle (counted from its first point it had one pair, at the junction it starts from), a 100 m one has
+  // three pairs 5 m in from its ends
+  const line = (...pts) => ({ k: 'twy', p: P(pts) });
+  assert.deepEqual(places({ tw: [line([0, 0], [30, 0])] }), [[15, 12.1], [15, -12.1]]);
+  assert.deepEqual(places({ tw: [line([0, 0], [100, 0])] }), [[5, 12.1], [5, -12.1], [50, 12.1], [50, -12.1], [95, 12.1], [95, -12.1]]);
+  assert.deepEqual(places({ tw: [line([100, 0], [0, 0])] }), [[95, -12.1], [95, 12.1], [50, -12.1], [50, 12.1], [5, -12.1], [5, 12.1]], 'the same six places');
+  // Two taxiways side by side. 22 m apart, the lights between them would stand 9.9 m from the other centre line, on
+  // its pavement: none there. 24 m apart they are clear of it by 0.4 m, and one row serves both (the second row
+  // would stand 0.2 m from the first). 40 m apart, a row each.
+  const beside = (gap) => places({ tw: [line([0, 0], [90, 0]), { k: 'lane', p: P([[0, gap], [90, gap]]) }] }).map(([, n]) => n).filter((n, i, a) => a.indexOf(n) === i).sort((x, y) => x - y);
+  assert.deepEqual([beside(22), beside(24), beside(40)], [[-12.1, 34.1], [-12.1, 12.1, 36.1], [-12.1, 12.1, 27.9, 52.1]]);
   // A jog of 2 m in a straight line (the vector lines have them): the lights at the jog still stand square to the
   // run of the taxiway, 12.1 m from the line, one on each side. Square to the 2.8 m piece under the station they
-  // would stand 8.6 m from it, on the pavement.
-  const jog = { tw: [{ k: 'twy', p: P([[0, 0], [88, 0], [90, 2], [92, 0], [180, 0]]) }], apron: [] };
-  const lit = M.taxiEdgeLights(jog).map(([e, n]) => [e - e0, n - n0]);
+  // would stand 9.8 and 7.3 m from it, on the pavement.
+  const jog = { tw: [line([0, 0], [87, 0], [89, 2], [91, 0], [180, 0])] }, jogP = jog.tw[0].p;
+  const lit = M.taxiEdgeLights({ apron: [], ...jog }).map(([e, n]) => [e - e0, n - n0]);
   assert.equal(lit.length, 10, 'both sides of all five stations');
-  for (const [e, n] of lit) near(lineDist(jog.tw[0].p, e0 + e, n0 + n), 12.1, 1e-9, `the light at ${e.toFixed(1)}, ${n.toFixed(1)}`);
+  for (const [e, n] of lit) near(lineDist(jogP, e0 + e, n0 + n), 12.1, 1e-9, `the light at ${e.toFixed(1)}, ${n.toFixed(1)}`);
   const at90 = lit.filter(([e]) => Math.abs(e - 90) < 6);
   assert.ok(at90.length === 2 && at90.some(([, n]) => n > 11) && at90.some(([, n]) => n < -11), 'the two lights at the jog');
+  // A right-angle turn with a station on the corner: the light outside the corner stands 12.1 m from it, square to
+  // the run through the corner; the place inside it is on the pavement of the line itself, whichever way it is
+  // pushed out, and stays dark
+  const turn = [[0, 0], [180, 0], [180, 180]], round = places({ tw: [line(...turn)] });
+  assert.equal(round.length, 2 * 9 - 1, 'a pair at each of the nine stations but the inside of the corner');
+  for (const [e, n] of round) near(lineDist(P(turn), e0 + e, n0 + n), 12.1, 1e-6, `the light at ${e}, ${n}`);
+  const corner = round.filter(([e, n]) => Math.hypot(e - 180, n) < 30);
+  assert.equal(corner.length, 1); near(corner[0][0], 180 + 12.1 * Math.SQRT1_2, 1e-6, 'east of the corner'); near(corner[0][1], -12.1 * Math.SQRT1_2, 1e-6, 'and south of it');
+  assert.deepEqual(places({ tw: [line(...[...turn].reverse())] }).map(String).sort(), round.map(String).sort(), 'the same drawn the other way');
   // two lines that meet end to end: the lights of the second at the joint would stand on those of the first
-  const two = { tw: [{ k: 'twy', p: P([[0, 0], [90, 0]]) }, { k: 'twy', p: P([[90, 0], [180, 0]]) }], apron: [] };
-  assert.equal(M.taxiEdgeLights(two).length, 10, 'one pair at the joint, not two');
+  assert.equal(places({ tw: [line([0, 0], [90, 0]), line([90, 0], [180, 0])] }).length, 10, 'one pair at the joint, not two');
+  // and with their last stations 10 m apart across the joint, the pair of the second line is left out (under the gap)
+  assert.deepEqual(places({ tw: [line([0, 0], [100, 0]), line([100, 0], [200, 0])] }).filter(([, n]) => n > 0).map(([e]) => e), [5, 50, 95, 150, 195]);
 });
 
 test('threshold lights: a green row 3 m apart at every threshold, green only toward the approach', () => {

@@ -254,6 +254,16 @@ test('SiteIndex: water of the land-use map', () => {
   const site = new S.SiteIndex(); site.setRaster(cls, land);
   assert.ok(site.waterAt(111, 194)); assert.ok(!site.waterAt(109.9, 194)); assert.ok(!site.waterAt(111, 195.1)); assert.ok(!site.waterAt(111, 192.4));
   assert.ok(!site.waterAt(50, 194) && !site.waterAt(111, 500), 'off the map is not water');
+  // a point on a cell border touches the cells on both sides of it, in equal shares
+  const cells = (e, n) => { const out = []; site.eachClassAt(e, n, (k, share) => out.push([k, share])); return out.sort((a, b) => a[0] - b[0]); };
+  assert.deepEqual(cells(111, 194), [[S.WATER_CLASS, 1]], 'inside a cell: that cell alone');
+  assert.deepEqual([cells(110, 194), cells(112.5, 194)], [[[1, 0.5], [S.WATER_CLASS, 0.5]], [[1, 0.5], [S.WATER_CLASS, 0.5]]], 'on its west and on its east border');
+  assert.deepEqual([cells(111, 195), cells(111, 192.5)], [[[1, 0.5], [S.WATER_CLASS, 0.5]], [[1, 0.5], [S.WATER_CLASS, 0.5]]], 'on its north and on its south border');
+  assert.deepEqual(cells(110, 195), [[1, 0.25], [1, 0.25], [1, 0.25], [S.WATER_CLASS, 0.25]], 'on its corner: four cells');
+  assert.deepEqual([cells(110 + 5e-4, 194).length, cells(110 + 2e-3, 194), cells(110 - 2e-3, 194)], [2, [[S.WATER_CLASS, 1]], [[1, 1]]], 'a border is a millimetre wide');
+  assert.deepEqual([cells(100, 194), cells(51, 194)], [[[0, 0.5], [1, 0.5]], [[0, 1]]], 'on the edge of the map, and off it (class 0)');
+  assert.ok(site.waterAt(110, 194) && site.waterAt(112.5, 194) && site.waterAt(110, 195) && !site.waterAt(109.99, 194) && !site.waterAt(112.51, 194), 'waterAt: in a water cell or on its border, whichever side');
+  { const none = []; new S.SiteIndex().eachClassAt(111, 194, (k, share) => none.push([k, share])); assert.deepEqual(none, [[0, 1]], 'no map: class 0'); }
   assert.ok(site.waterWithin(115.4, 194, 3)); assert.ok(!site.waterWithin(115.6, 194, 3), '3 m east of the cell edge');
   assert.ok(site.waterWithin(111, 197.9, 3)); assert.ok(!site.waterWithin(111, 198.1, 3), '3 m north of it');
   assert.ok(site.waterWithin(114.4, 196.9, 3)); assert.ok(!site.waterWithin(114.7, 197.2, 3), 'off its corner (2.69 m and 3.11 m)');
@@ -365,6 +375,8 @@ function touching(F, e, n, crown, skip = null) {
 const isWater = (x, y) => x >= 0 && x < L.w && y >= 0 && y < L.h && cls[y * L.w + x] === 12;
 const waterAtPoint = (e, n) => isWater(Math.floor((e - L.e0) / L.res), Math.floor((L.n1 - n) / L.res));
 const classAtPoint = (e, n) => { const x = Math.floor((e - L.e0) / L.res), y = Math.floor((L.n1 - n) / L.res); return x >= 0 && x < L.w && y >= 0 && y < L.h ? cls[y * L.w + x] : 0; };
+// is (e, n) in a water cell or on the border of one: the four points a hundredth of a millimetre around it
+const touchesWater = (e, n) => [[-1, -1], [-1, 1], [1, -1], [1, 1]].some(([a, b]) => waterAtPoint(e + a * 1e-5, n + b * 1e-5));
 function waterCloserThan(e, n, r) {
   const k = Math.ceil(r / L.res) + 1, x0 = Math.floor((e - L.e0) / L.res), y0 = Math.floor((L.n1 - n) / L.res);
   for (let y = y0 - k; y <= y0 + k; y++) for (let x = x0 - k; x <= x0 + k; x++) {
@@ -508,15 +520,35 @@ test('what is mapped: buildings, aprons, taxiways, water and the three viaducts 
   }
 });
 
-// Does a road pass right through under a building: a whole line of points across the footprint on road or rail cells,
-// with ground that is not all road on both sides of that line (a road along one edge is not through it).
-function roadThrough(b) {
-  const c = Math.cos(b.yaw), s = Math.sin(b.yaw), N = 15, g = [];
-  for (let p = 0; p < N; p++) { g.push([]); for (let q = 0; q < N; q++) { const u = ((p + 0.5) / N - 0.5) * b.w, v = ((q + 0.5) / N - 0.5) * b.d, k = classAtPoint(b.e + u * c + v * s, b.n + u * s - v * c); g[p].push(k >= 13 && k <= 18); } }
-  const inside = (a) => a.indexOf(true) > 0 && a.lastIndexOf(true) < a.length - 1;
-  return inside(g.map((r) => r.every(Boolean))) || inside(g[0].map((_, q) => g.every((r) => r[q])));
+// Does a road cut the footprint of a building in two: the share of the footprint in the second largest part of its
+// ground that is not road or rail (25 × 25 points of our own, parts joined along rows and columns). A road along
+// one side leaves one part; a road through under the house leaves two.
+function cutByRoad(b, classOf = classAtPoint) {
+  const c = Math.cos(b.yaw), s = Math.sin(b.yaw), N = 25, g = new Uint8Array(N * N), parts = [];
+  for (let p = 0; p < N; p++) for (let q = 0; q < N; q++) { const u = ((p + 0.5) / N - 0.5) * b.w, v = ((q + 0.5) / N - 0.5) * b.d, k = classOf(b.e + u * c + v * s, b.n + u * s - v * c); g[p * N + q] = k >= 13 && k <= 18 ? 1 : 0; }
+  for (let i = 0; i < N * N; i++) {
+    if (g[i]) continue;
+    let size = 0; const todo = [i]; g[i] = 2;
+    while (todo.length) {
+      const k = todo.pop(), p = Math.floor(k / N), q = k % N; size++;
+      for (const [dp, dq] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const P = p + dp, Q = q + dq; if (P >= 0 && P < N && Q >= 0 && Q < N && !g[P * N + Q]) { g[P * N + Q] = 2; todo.push(P * N + Q); } }
+    }
+    parts.push(size);
+  }
+  return (parts.sort((a, b) => b - a)[1] || 0) / (N * N);
 }
-const THROUGH_MAX = { balanced: 3, high: 1 };   // measured on 2026-11-26; high counts only the buildings balanced does not have
+test('the measure of a road cutting a building in two, on a made-up road', () => {
+  // a road 5 m wide along n, at e 0 … 5 (class 13), and a railway at e 40 … 45 (class 18)
+  const classOf = (e) => (e >= 0 && e < 5 ? 13 : e >= 40 && e < 45 ? 18 : 2);
+  const b = (e, w = 20, yaw = 0) => ({ e, n: 0, w, d: 10, yaw });
+  near(cutByRoad(b(2.5), classOf), 0.36, 1e-9, 'the road under the middle of a 20 m house: 9 of 25 columns on each side of it');
+  near(cutByRoad(b(-2.5), classOf), 0.12, 1e-9, 'the road under one end: 3 columns beyond it');
+  assert.equal(cutByRoad(b(10), classOf), 0, 'the road along one side: one part');
+  assert.equal(cutByRoad(b(-20), classOf), 0, 'beside the road');
+  assert.equal(cutByRoad(b(2.5, 4), classOf), 0, 'wholly on the road: no ground at all');
+  near(cutByRoad(b(42.5), classOf), 0.36, 1e-9, 'a railway cuts as a road does');
+  near(cutByRoad(b(2.5, 20, Math.PI / 2), classOf), 0.24, 1e-9, 'the house turned to lie along the road, 10 m wide over the 5 m road: a strip of 6 rows of 25 on each side');
+});
 
 for (const quality of ['balanced', 'high']) {
   test(`generated buildings on the real map (${quality}): none in water, on a road, on a mapped building, under a deck or a station, in a lane or through a surface`, () => {
@@ -527,7 +559,7 @@ for (const quality of ['balanced', 'high']) {
     // holds the shared ones to the verdict balanced gave them.
     const seen = new Map();
     if (quality === 'high') { const B = place('balanced'), k = new Set(B.blds.kept); for (const b of B.list) seen.set(keyOf(b), k.has(b)); }
-    let through = 0, tried = 0, shared = 0;
+    let cut = 0, tried = 0, shared = 0;
     list.forEach((b) => {
       if (seen.has(keyOf(b))) { shared++; assert.equal(keptSet.has(b), seen.get(keyOf(b)), `building at e ${b.e}, n ${b.n}: the same verdict in both qualities`); return; }
       tried++;
@@ -545,13 +577,13 @@ for (const quality of ['balanced', 'high']) {
         const u = ((p + 0.5) / 31 - 0.5) * b.w, v = ((q + 0.5) / 31 - 0.5) * b.d, k = classAtPoint(b.e + u * c + v * s, b.n + u * s - v * c);
         if (k === 12) wet++; else if (k >= 13 && k <= 18) road++;
       }
-      const centreWet = classAtPoint(b.e, b.n) === 12, kept = keptSet.has(b), over = 1 / 3 + 0.1, under = 1 / 3 - 0.1;
+      const centreWet = touchesWater(b.e, b.n), kept = keptSet.has(b), over = 1 / 3 + 0.1, under = 1 / 3 - 0.1;
       const what = `building at e ${b.e}, n ${b.n} (${b.w} × ${b.d} × ${b.h} m), ${(100 * wet / 961).toFixed(0)} % on water, ${(100 * road / 961).toFixed(0)} % on road`;
       if (kept) {
         assert.equal(faults.size, 0, `${what}: kept, faults: ${[...faults].join(' ')}`);
         assert.ok(!centreWet && wet / 961 < 0.3, `${what}: kept`);
         assert.ok(road / 961 < over, `${what}: kept`);
-        if (roadThrough(b)) through++;
+        if (road > 0 && cutByRoad(b) >= 0.05) cut++;   // the 961 points are closer together than a cell: none on a road, no road
       } else assert.ok(faults.size > 0 || centreWet || wet / 961 >= 0.1 || road / 961 >= under, `${what}: dropped for no reason`);
       for (const f of faults) count[f] = (count[f] || 0) + 1;
       if (centreWet || wet / 961 >= 0.3) count.water = (count.water || 0) + 1;
@@ -561,12 +593,33 @@ for (const quality of ['balanced', 'high']) {
     const dropped = Object.values(blds.dropped).reduce((a, b) => a + b, 0);
     assert.equal(blds.kept.length + dropped, list.length);
     assert.ok(dropped > 0 && dropped < 0.06 * list.length, `${dropped} of ${list.length} generated buildings dropped (under 6 %)`);
-    // a few houses that stay still lie right across a lane with less than a third of their footprint on it
-    assert.ok(through <= THROUGH_MAX[quality], `${through} kept buildings have a road passing right through under them`);
+    // no house that stays is cut in two by a road (a second part of a twentieth of its footprint beyond the road);
+    // with a half for ROAD_MAX, 4 of the balanced and 8 of the high buildings would be (measured on 2026-11-26)
+    assert.equal(cut, 0, `${cut} kept buildings are cut in two by a road`);
     for (const why of ['water', 'road', 'deck']) assert.ok(count[why] > 0, `the check itself finds "${why}" (${JSON.stringify(count)})`);
     // the page's own numbers (CLAUDE.md)
     assert.deepEqual([list.length, blds.kept.length, blds.dropped], quality === 'high'
-      ? [94612, 89854, { road: 3537, water: 1107, deck: 106, building: 4, ols: 4 }] : [57895, 54775, { road: 2333, water: 683, deck: 101, ols: 1, building: 2 }]);
+      ? [94612, 89857, { road: 3533, water: 1108, deck: 106, building: 4, ols: 4 }] : [57895, 54778, { road: 2329, water: 684, deck: 101, ols: 1, building: 2 }]);
+    // The verdict of the land-use map does not depend on the side: with the map and every building mirrored east to
+    // west, and north to south, each building has the same shares and the same centre answer (a border sample used
+    // to go to the cell east or south of it, and an axis-aligned house on the other kerb got another verdict)
+    if (quality === 'balanced') {
+      const { site } = place(quality);
+      for (const [name, fe, fn] of [['east-west', 1, 0], ['north-south', 0, 1]]) {
+        const m = new Uint8Array(cls.length);
+        for (let y = 0; y < L.h; y++) for (let x = 0; x < L.w; x++) m[(fn ? L.h - 1 - y : y) * L.w + (fe ? L.w - 1 - x : x)] = cls[y * L.w + x];
+        const mirror = new S.SiteIndex(); mirror.setRaster(m, L);
+        const E = 2 * L.e0 + L.w * L.res, N = 2 * L.n1 - L.h * L.res;
+        let onBorder = 0;
+        for (const b of list) {
+          const mb = { ...b, e: fe ? E - b.e : b.e, n: fn ? N - b.n : b.n, yaw: -b.yaw };
+          const a = S.groundShare(site, b), z = S.groundShare(mirror, mb);
+          if (Math.abs(a.water - z.water) > 1e-9 || Math.abs(a.road - z.road) > 1e-9 || site.waterAt(b.e, b.n) !== mirror.waterAt(mb.e, mb.n)) assert.fail(`building at e ${b.e}, n ${b.n} mirrored ${name}: ${JSON.stringify(a)} against ${JSON.stringify(z)}`);
+          if (b.yaw === 0 && (((b.e - b.w / 16 - L.e0) / L.res) % 1 === 0 || ((b.e - L.e0) / L.res) % 1 === 0)) onBorder++;
+        }
+        assert.ok(onBorder > 100, `the list has houses square to the map with samples or centres on cell borders (${onBorder})`);
+      }
+    }
   });
 }
 
@@ -667,7 +720,7 @@ test('a kept building is a box in the index: a tree keeps half a crown from its 
   assert.equal(S.buildingProblem(tw, b), 'taxiway');
 });
 
-test('a building with a side on a canal bank stays; one with its centre or a fifth of its footprint on water goes', () => {
+test('a building with a side on a canal bank stays; one with its centre in water or on a bank line, or a fifth of its footprint on water, goes', () => {
   // cells of 2.5 m; water west of e = 0
   const land = { e0: -50, n1: 4050, res: 2.5, w: 40, h: 40 }, c = new Uint8Array(1600).fill(1);
   for (let y = 0; y < 40; y++) for (let x = 0; x < 20; x++) c[y * 40 + x] = S.WATER_CLASS;
@@ -677,7 +730,7 @@ test('a building with a side on a canal bank stays; one with its centre or a fif
   // the share: points 1.25 m apart (half a cell) and at least eight along a side, so a 10 m side has eight columns
   const wetShare = (st, x) => S.groundShare(st, x).water;
   assert.deepEqual([10, 4.5, 4, 2.5, 0, -2.5, -20].map((e) => wetShare(site, b(e))), [0, 0, 0.125, 0.25, 0.5, 0.75, 1]);
-  near(wetShare(site, b(0, Math.PI / 4)), 28 / 64, 1e-9, 'turned 45° about a point on the bank: half of it, less the eight points on the bank line itself');
+  near(wetShare(site, b(0, Math.PI / 4)), 0.5, 1e-9, 'turned 45° about a point on the bank: half of it (the eight points on the bank line itself count half)');
   near(wetShare(site, { e: 1, n: 4000, w: 30, d: 4, h: 6, yaw: Math.PI / 2 }), 0.25, 1e-9, 'a long building along the bank, a metre of its 4 m in the water');
   assert.deepEqual(S.groundShare(new S.SiteIndex(), b(-20)), { water: 0, road: 0 }, 'no land-use map: neither water nor road');
   assert.equal(S.buildingProblem(site, b(10)), null, 'dry');
@@ -690,6 +743,10 @@ test('a building with a side on a canal bank stays; one with its centre or a fif
   const sc = new S.SiteIndex(); sc.setRaster(canal, land);
   near(wetShare(sc, { ...b(1), w: 20 }), 0.125, 1e-9, 'one cell of eight');
   assert.equal(S.buildingProblem(sc, { ...b(1), w: 20 }), 'water', 'astride the canal');
+  // the centre on either bank line of that canal: the same house, the same eighth, the same verdict
+  assert.deepEqual([wetShare(sc, { ...b(0), w: 20 }), wetShare(sc, { ...b(2.5), w: 20 })], [0.125, 0.125]);
+  assert.deepEqual([S.buildingProblem(sc, { ...b(0), w: 20 }), S.buildingProblem(sc, { ...b(2.5), w: 20 })], ['water', 'water'], 'the centre on the west and on the east bank line');
+  assert.deepEqual([S.buildingProblem(sc, { ...b(-0.01), w: 20 }), S.buildingProblem(sc, { ...b(2.51), w: 20 })], [null, null], 'a centimetre off the bank on either side: the share decides, an eighth');
   assert.equal(S.buildingProblem(sc, { ...b(8), w: 20 }), null, 'the same canal under one end of it');
   // a pond smaller than the building, missed by the centre and by every point on the outline
   const pond = new Uint8Array(1600).fill(1); for (let y = 16; y < 20; y++) for (let x = 21; x < 25; x++) pond[y * 40 + x] = S.WATER_CLASS;   // e 2.5 … 12.5, n 4000 … 4010
@@ -708,7 +765,8 @@ test('a building may reach into a road, but not stand in it: a third of its foot
   for (let y = 0; y < 40; y++) { for (let x = 20; x < 23; x++) c[y * 40 + x] = 13; for (let x = 32; x < 34; x++) c[y * 40 + x] = 18; }
   const site = new S.SiteIndex(); site.setRaster(c, land);
   const b = (e, w = 10) => ({ e, n: 4000, w, d: 10, h: 6, yaw: 0 });
-  assert.deepEqual([site.classAt(1, 4000), site.classAt(-1, 4000), site.classAt(31, 4000), site.classAt(500, 4000)], [13, 2, 18, 0]);
+  const classes = (e) => { const o = new Set(); site.eachClassAt(e, 4000, (k) => o.add(k)); return [...o].sort((x, y) => x - y); };
+  assert.deepEqual([1, -1, 31, 500].map(classes), [[13], [2], [18], [0]]);
   assert.deepEqual([-10, -3, -1.25, 10.5].map((e) => S.groundShare(site, b(e))), [{ water: 0, road: 0 }, { water: 0, road: 0.25 }, { water: 0, road: 0.375 }, { water: 0, road: 0.25 }]);
   assert.equal(S.buildingProblem(site, b(-3)), null, 'a quarter of it over the west edge of the road');
   assert.equal(S.buildingProblem(site, b(10.5)), null, 'and over the east edge');
@@ -718,12 +776,30 @@ test('a building may reach into a road, but not stand in it: a third of its foot
   assert.equal(S.groundShare(site, b(7.5, 15)).road, 0.5, 'a 15 m house from one kerb across the 7.5 m road and as far beyond');
   assert.equal(S.buildingProblem(site, b(7.5, 15)), 'road', 'half of it on the road');
   assert.equal(S.buildingProblem(site, b(11.25, 15)), null, 'moved a cell and a half further: a quarter');
-  // The regression: the city data puts no centre inside a road cell, only on cell borders, and a border point belongs
-  // to the cell east or south of it. A long house with its centre on the west kerb used to go and the same house on
-  // the east kerb to stay; with a quarter of the footprint on the road both stay.
-  assert.deepEqual([site.classAt(0, 4000), site.classAt(7.5, 4000)], [13, 2], 'the west kerb reads as road, the east kerb does not');
+  // The regression: the city data puts no centre inside a road cell, only on cell borders, and a border point was
+  // read as the cell east or south of it. A long house with its centre on the west kerb used to go and the same house
+  // on the east kerb to stay; with a quarter of the footprint on the road both stay.
+  assert.deepEqual([classes(0), classes(7.5)], [[2, 13], [2, 13]], 'either kerb is a cell border: road on one side of it');
   assert.deepEqual([S.groundShare(site, b(0, 30)).road, S.groundShare(site, b(7.5, 30)).road], [0.25, 0.25]);
   assert.deepEqual([S.buildingProblem(site, b(0, 30)), S.buildingProblem(site, b(7.5, 30))], [null, null], 'the centre on either kerb: the share decides');
+  // A house square to the map has whole columns of sample points on cell borders. An 8 m house 2.5 m into the road
+  // from the west (e −5.5 … 2.5) and its mirror image from the east (e 5 … 13): 0.3125 each, under a third. With a
+  // border given to one side they read 0.375 and 0.25, and only the western one went.
+  near(S.groundShare(site, b(-1.5, 8)).road, 0.3125, 1e-12, 'from the west'); near(S.groundShare(site, b(9, 8)).road, 0.3125, 1e-12, 'from the east');
+  assert.deepEqual([S.buildingProblem(site, b(-1.5, 8)), S.buildingProblem(site, b(9, 8))], [null, null]);
+  // and 3 m into it from either side (0.375): both go
+  assert.deepEqual([S.buildingProblem(site, b(-1, 8)), S.buildingProblem(site, b(8.5, 8))], ['road', 'road']);
+  // the centre is not asked, wherever it is: a 30 m house with its centre inside a road cell and a quarter on the road
+  assert.deepEqual(classes(3.75), [13]);
+  assert.equal(S.groundShare(site, b(3.75, 30)).road, 0.25); assert.equal(S.buildingProblem(site, b(3.75, 30)), null, 'the centre in the road, a quarter of the house on it');
+  // a long house lying along the road, three quarters of its 10 m on it: size does not excuse it
+  assert.equal(S.buildingProblem(site, { e: 3.75, n: 4001, w: 34, d: 10, h: 6, yaw: Math.PI / 2 }), 'road');
+  // which classes are road: a 7.5 m strip of each class from 11 to 20 under a narrow house
+  for (let k = 11; k <= 20; k++) {
+    const ck = new Uint8Array(1600).fill(2); for (let y = 0; y < 40; y++) for (let x = 20; x < 23; x++) ck[y * 40 + x] = k;
+    const sk = new S.SiteIndex(); sk.setRaster(ck, land);
+    assert.equal(S.buildingProblem(sk, b(3.75, 6)), k === 12 ? 'water' : k >= 13 && k <= 18 ? 'road' : null, `a strip of class ${k}`);
+  }
   assert.equal(S.buildingProblem(site, b(31)), 'road', 'on the railway');
   assert.equal(S.buildingProblem(site, b(20)), null, 'between the road and the railway');
   // water comes first: a building with a quarter of it in a canal and three eighths on the road is reported as 'water'

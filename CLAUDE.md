@@ -33,12 +33,15 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   (the Annex 14 and AIP numbers in `17-siting.js`, surface heights worked by hand, the approach light lanes,
   `SiteIndex`; then the trees and generated buildings of the real data in both quality settings, every one tried
   again with separate geometry code and against the page's own counts: the trees that stay are the same trees as
-  before the rules, drawn from the random stream as the page leaves it after the footprint colours, about 8 s),
+  before the rules, drawn from the random stream as the page leaves it after the footprint colours; no kept building
+  is cut in two by a road, and the map mirrored east-west or north-south gives every building the same answer;
+  about 12 s),
   `lights` (`airfieldLights` in `60-lights.js`: every runway and approach light read back by its place and by the
   colour a pilot sees from the approach, from the runway and from beyond the end; the brightness of each system
   (regression pins) and the slots `LightSet.build` fills for the shader, on a stand-in for three.js; the whole layout
-  run on the real taxiways, roads and street-light records, with PAPI, beacon and obstruction lights; every taxiway
-  edge light tried with separate geometry code, and every place without one held to a cause; the stands of
+  run on the real taxiways, roads and street-light records, with PAPI, beacon and obstruction lights and a pinned
+  table of every steady light; every taxiway edge light tried with separate geometry code, every place without one
+  held to a cause, and the same places with every line drawn the other way round; the stands of
   `alsStands` against the real pavements; every flash seen at 20, 30 and 60 frames a second). Autoland
   score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is a loose 50); touchdown
   points and every mode value have regression bands. A physics change that moves them updates the test in the same PR.
@@ -136,19 +139,21 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   - Clearances: 43.5 m from a taxiway centre line and 40 m from a stand taxilane (Annex 14 Table 3-1, code letter
     E), 7.5 m from an apron (3.13.6), and our own choices: half a crown from a building, a whole crown from a viaduct
     deck or station, one map cell (2.5 m) plus the crown from water. A generated building also goes when its centre
-    or a fifth of its footprint (`WET_MAX`) is on water, when a third of its footprint (`ROAD_MAX`) is on a road or
-    railway of the land-use map (`groundShare` samples the footprint; a building beside a road stays, and the centre
-    is not asked: the city data puts centres on cell borders only, where the answer would depend on the side of the
-    road), or when any of nine points of its outline is on a mapped building, under a deck or a station roof, or in
-    a lane.
+    is in water or on a bank line, when a fifth of its footprint (`WET_MAX`) is on water, when a third of its
+    footprint (`ROAD_MAX`) is on a road or railway of the land-use map, or when any of nine points of its outline is
+    on a mapped building, under a deck or a station roof, or in a lane. `groundShare` samples the footprint; a sample
+    on a cell border counts half for each side (`SiteIndex.eachClassAt`), so a house gets the same answer on either
+    side of a road or a canal. A building beside a road stays, and for roads the centre is not asked: the city data
+    puts no centre inside a road cell, only on a cell border.
   - The index (`mappedSite`) holds the stations and the footbridge before anything is placed; `buildCity` does not
     keep it (with every building in it, it is 35 to 55 MB).
-  - Measured on 2026-11-26 (balanced quality): 7,393 of 9,911 trees and 54,775 of 57,895 generated buildings stay
-    (2,333 buildings stood on a road or railway, nearly all single shophouses and no row of them; 683 in water, 101
-    under a deck or a station; high quality: 16,631 of 24,029 trees and 89,854 of 94,612 buildings).
-    `test/siting.test.mjs` pins these counts. Three kept buildings still lie right across a lane with less than a
-    third of their footprint on it.
-    The wood before THR 03R (OpenStreetMap) stays from about 560 m out, where it is under the 2 % surfaces.
+  - Measured on 2026-11-26 (balanced quality): 7,393 of 9,911 trees and 54,778 of 57,895 generated buildings stay
+    (2,329 buildings stood on a road or railway, nearly all shophouses, four in five of them standing alone and no
+    group larger than five; 684 in water, 101 under a deck or a station; high quality: 16,631 of 24,029 trees and
+    89,857 of 94,612 buildings). `test/siting.test.mjs` pins these counts. No kept building is cut in two by a road
+    (with a half instead of a third, four would be).
+    The wood before THR 03R (OpenStreetMap) stays from about 700 m before the threshold, where it is under the 2 %
+    surfaces; single trees on farm land stay from about 490 m.
 - Runway and approach lights follow AIP AD 2.14 for what each end has and Annex 14, 5.3 for the layout: threshold
   lights 3 m apart, green toward the approach only (THR 21L is displaced: a one-way green row with wing bars at the
   threshold, red end lights at the pavement end); edge lights 60 m, red before THR 21L, yellow over the last 600 m;
@@ -159,15 +164,19 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   cross-arm per group of lights (`alsArms`), 0.9 m high at the end of the pad and rising 1.2 % outward (up to 11 m
   at 900 m before THR 21R, 6.8 m before THR 21L). A flashing light stays lit 40 ms (`SFL_FLASH`) so that no flash
   falls between two frames.
-- Taxiway edge lights: AIP AD 2.15 (AIRAC 29 OCT 2026; research round 5, `5a-aip.md` table B4) gives blue edge
-  lights on every taxiway, so `taxiEdgeLights(af)` walks every taxiway polyline of `vtbd_af.json`, whatever its tag
-  (before, only the 28 % tagged `twy` had lights, and TWY C beside the main runway had none): a light on each side
-  every 45 m, 0.6 m outside the edge of the 23 m `TWY_W` (Annex 14, 5.3.18), square to the run of the line over
-  25 m (the vector lines have jogs). An edge light never stands on pavement: none within `TWY_W / 2` of any taxiway
-  centre line (junctions), on an apron or within 3 m of an apron outline (`APRON_EDGE`), so the side of a taxiway
-  that runs along an apron is dark; 343 lights of 952 places stay. Not drawn: the taxiway centre line lights of TWY
-  D, E, F, J, O, R, S and C (south) (the vector lines carry no names) and the intermediate holding position lights
-  along TWY C.
+- Taxiway edge lights: AIP AD 2.15 (AIRAC 29 OCT 2026; research round 5, `5a-aip.md`: table B4 has edge lights on
+  every taxiway, the JSON block of that section gives them as blue), so `taxiEdgeLights(af)` walks every taxiway
+  polyline of `vtbd_af.json`, whatever its tag (before, only the 28 % tagged `twy` had lights, and TWY C beside the
+  main runway had four, on one 72 m piece): a light on each side every 45 m, the stations centred on each line (a
+  short connector has a pair in its middle, and the layout is the same whichever way a line was drawn), 0.6 m
+  outside the edge of the 23 m `TWY_W` (Annex 14, 5.3.18), square to the run of the line over 25 m (the vector
+  lines have jogs). An edge light never stands on pavement: none within `TWY_W / 2` of any taxiway centre line
+  (junctions), on an apron or within 3 m of an apron outline (`APRON_EDGE`), so the side of a taxiway that runs
+  along an apron is dark, and no two lights stand within 15 m of each other; 386 lights, at 391 of the 942 places.
+  One of them stands inside a mapped water outline beside a taxiway (a data overlap, as before). Not drawn: the
+  taxiway centre line lights of TWY D, E, F, J, O, R, S and C (south) (the vector lines carry no names; research
+  round 5 has them in `tw_names.json`, not yet in the page data) and the intermediate holding position lights along
+  TWY C.
 - Estimates in the lighting: the 30 m spacing of the 420 m simple system on 03L (60 m is also allowed), stand
   heights and their rise, the wing bars at 21L (the AIP column was not read), that the 900 m of the 21L system are
   measured from the displaced threshold (so its first 350 m are inset in the runway), the number of lights in a
