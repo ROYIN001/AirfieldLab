@@ -344,11 +344,12 @@ Suggested order, each with a Node test before tuning by feel in the browser:
   host refuses `.bin`, so binary data travels inside JSON.
 - Licences: `vtbd_af.json`, `land_in.png`, `land_out.png` and `city.json` are derived from OpenStreetMap and
   available under the ODbL 1.0 (`data/LICENSE-DATA.md`, which `node build.mjs` copies into `dist/` with them).
-  `vtbd_af.json` and `city.json` predate the `source`/`license` field rule (`legacy_data_without_fields` in the
-  policy); a regenerated file gets the fields and leaves that list. The code (every script, those in `docs/research/`
-  included) and the repo's own text are under MIT (`LICENSE`, the owner's choice on 2026-11-25); the files in `data/`
-  follow `data/LICENSE-DATA.md`, data files and quoted material in `docs/research/` that state their own licence
-  (ODbL, CC BY 4.0, Copernicus) keep it, and AIP values are used as numbers with CAAT cited.
+  Both JSON files carry top-level `source` and `license` fields (added on 2026-11-26; `tools/assemble.py` writes
+  them into `vtbd_af.json`, the packer of `city.json` is not kept), so `legacy_data_without_fields` in the policy is
+  empty. The code (every script, those in `docs/research/` included) and the repo's own text are under MIT
+  (`LICENSE`, the owner's choice on 2026-11-25); the files in `data/` follow `data/LICENSE-DATA.md`, data files and
+  quoted material in `docs/research/` that state their own licence (ODbL, CC BY 4.0, Copernicus) keep it, and AIP
+  values are used as numbers with CAAT cited.
 
 ## Working in the cloud (Claude Code on the web)
 - The owner works from the cloud so their computer can stay off. The GitHub Pages site shows `main`; a pull request
