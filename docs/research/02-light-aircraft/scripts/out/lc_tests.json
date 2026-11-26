@@ -462,8 +462,8 @@
     "t_Vmin": 16.471,
     "de_end_deg": -23.902,
     "ias0": 64,
-    "VSR_kias": 40.352,
-    "Vmin_kias": 38.834
+    "VSR_kias": 39.519,
+    "Vmin_kias": 38.001
    },
    "30": {
     "f": 1,
@@ -579,13 +579,7 @@
     },
     "nAlpha": 14.451,
     "CAP": 2.167,
-    "trim": {
-     "V_kt": 115,
-     "alpha_deg": 1.3394,
-     "theta_deg": 1.3394,
-     "de_deg": -1.9854,
-     "thr": 1.128
-    }
+    "derivSet": "cruise"
    },
    "approach": {
     "sp": {
@@ -610,7 +604,8 @@
      "grows": true
     },
     "nAlpha": 5.3612,
-    "CAP": 2.2177
+    "CAP": 2.2177,
+    "derivSet": "approach"
    }
   },
   "takeoff": {
@@ -620,7 +615,17 @@
    "tLiftoff_s": 15.471,
    "V_LOF_kt": 65.065,
    "dist50ft_m": 487.89,
-   "V50_kt": 67.72
+   "V50_kt": 67.72,
+   "mode": "r1",
+   "tVRtoNose_s": 3,
+   "V_nose_kt": 61.63,
+   "tVRtoLOF_s": 4.2792,
+   "theta_LOF_deg": 7.6409,
+   "alpha_LOF_deg": 7.5285,
+   "q_LOF_dps": 5.0137,
+   "de_LOF_deg": -10.464,
+   "CL_LOF": 1.0104,
+   "phiGE_LOF": 0.67613
   },
   "landing": {
    "asIs": {
@@ -643,31 +648,6 @@
    }
   },
   "extra": {
-   "modesCruise_approachCfg": {
-    "sp": {
-     "wn": 5.5967,
-     "zeta": 0.70104,
-     "T": 1.5743
-    },
-    "ph": {
-     "wn": 0.19425,
-     "zeta": 0.19625,
-     "T": 32.987
-    },
-    "dr": {
-     "wn": 2.7787,
-     "zeta": 0.291,
-     "T": 2.3634
-    },
-    "roll_tau": 0.13765,
-    "spiral": {
-     "lam": 0.009867,
-     "t2": 70.249,
-     "grows": true
-    },
-    "nAlpha": 14.451,
-    "CAP": 2.1675
-   },
    "tmLateralSensitivity": {
     "cruise": {
      "sp": {
@@ -749,7 +729,17 @@
     "tLiftoff_s": 15.979,
     "V_LOF_kt": 64.559,
     "dist50ft_m": 513.73,
-    "V50_kt": 67.168
+    "V50_kt": 67.168,
+    "mode": "r1",
+    "tVRtoNose_s": 3.0167,
+    "V_nose_kt": 61.216,
+    "tVRtoLOF_s": 4.325,
+    "theta_LOF_deg": 7.8144,
+    "alpha_LOF_deg": 7.7071,
+    "q_LOF_dps": 4.9842,
+    "de_LOF_deg": -10.533,
+    "CL_LOF": 1.0261,
+    "phiGE_LOF": 0.67647
    },
    "climb8k": {
     "Vy_kt": 65.051,

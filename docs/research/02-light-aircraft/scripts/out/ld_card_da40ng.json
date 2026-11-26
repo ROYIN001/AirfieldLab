@@ -495,6 +495,10 @@
     "VSR_eas": 62.0867,
     "VSR_cas": 62.094,
     "Vmin_eas": 59.5908,
+    "nz_Vmin": 0.254496,
+    "CL_Vmin": 0.376478,
+    "alpha_Vmin_deg": 17.3605,
+    "t_Vmin": 24.6458,
     "de_end_deg": -21,
     "ias0": 84,
     "VSR_kias": 63.494,
@@ -513,6 +517,10 @@
     "VSR_eas": 57.4887,
     "VSR_cas": 57.4944,
     "Vmin_eas": 55.3384,
+    "nz_Vmin": 0.553424,
+    "CL_Vmin": 0.949341,
+    "alpha_Vmin_deg": 12.5275,
+    "t_Vmin": 23.45,
     "de_end_deg": -21,
     "ias0": 78,
     "VSR_kias": 58.7944,
@@ -531,6 +539,10 @@
     "VSR_eas": 55.7383,
     "VSR_cas": 55.7435,
     "Vmin_eas": 53.8013,
+    "nz_Vmin": 0.62713,
+    "CL_Vmin": 1.13812,
+    "alpha_Vmin_deg": 10.8787,
+    "t_Vmin": 22.5,
     "de_end_deg": -21,
     "ias0": 75,
     "VSR_kias": 57.7435,
@@ -551,9 +563,9 @@
     "ias_kt": 110,
     "h_m": 914.4,
     "V_kt": 115.003,
-    "alpha_deg": 0.999903,
-    "theta_deg": 0.999903,
-    "de_deg": -0.309218,
+    "alpha_deg": 0.999897,
+    "theta_deg": 0.999897,
+    "de_deg": -0.307744,
     "thr": 0.774707
    },
    "approach": {
@@ -606,28 +618,29 @@
   "modes": {
    "cruise": {
     "sp": {
-     "wn": 5.1155,
-     "zeta": 0.583232,
-     "T": 1.51207
+     "wn": 5.11787,
+     "zeta": 0.585087,
+     "T": 1.51386
     },
     "ph": {
-     "wn": 0.206306,
-     "zeta": 0.129028,
-     "T": 30.7123
+     "wn": 0.206204,
+     "zeta": 0.129116,
+     "T": 30.7279
     },
     "dr": {
-     "wn": 2.27566,
-     "zeta": 0.227191,
-     "T": 2.83518
+     "wn": 2.1526,
+     "zeta": 0.19299,
+     "T": 2.9748
     },
-    "roll_tau": 0.15972,
+    "roll_tau": 0.156701,
     "spiral": {
-     "lam": 0.0198096,
-     "t2": 34.9904,
+     "lam": 0.00700457,
+     "t2": 98.9564,
      "grows": true
     },
     "nAlpha": 12.5534,
-    "CAP": 2.08456
+    "CAP": 2.08649,
+    "derivSet": "cruise"
    },
    "approach": {
     "sp": {
@@ -652,7 +665,8 @@
      "grows": true
     },
     "nAlpha": 5.99907,
-    "CAP": 2.11463
+    "CAP": 2.11463,
+    "derivSet": "approach"
    }
   },
   "takeoff": {
@@ -662,7 +676,17 @@
    "tLiftoff_s": 15.875,
    "V_LOF_kt": 72.4585,
    "dist50ft_m": 518.706,
-   "V50_kt": 73.1754
+   "V50_kt": 73.1754,
+   "mode": "r1",
+   "tVRtoNose_s": 1.11667,
+   "V_nose_kt": 70.1937,
+   "tVRtoLOF_s": 1.95833,
+   "theta_LOF_deg": 1.90656,
+   "alpha_LOF_deg": 1.80925,
+   "q_LOF_dps": 3.98935,
+   "de_LOF_deg": -6.61103,
+   "CL_LOF": 1.01449,
+   "phiGE_LOF": 0.381272
   },
   "landing": {
    "asIs": {

@@ -10,6 +10,7 @@
 import fs from 'node:fs';
 import { loadType, val, iasCas, trainingMassKg } from './lm_lib.mjs';
 import { loadSim, buildAC, applyAC } from './lm_card.mjs';
+import { band } from './lh_stick.mjs';   // R2-08: the same MIL-F-8785C Level 1 + 23.155 band as the other cards (centre stick)
 const M = await loadSim();
 const { KT, RAD, G0, atmosphere } = M;
 const LBF = 4.44822, LB = 0.45359237, FT = 0.3048;
@@ -46,13 +47,19 @@ for (const [id, mtom, nL] of IDS) {
       };
       const vapp = iasCas(card, 'LDG').f(val(card, 'speeds.VAPP_kt')), crz = val(card, 'validation.trim_targets.cruise');
       const Fe = 1 - p.tau * p.Cha / p.Chd, SMfix = -A.Cma / A.CLa, SMfree = -(A.Cma + p.eta * (val(card, 'airframe.tail.S_h') * p.lt / (A.S * A.c)) * p.at * (1 - p.deda) * (1 - Fe)) / A.CLa;
+      if (tag === 'mtom') res.nAlpha = 0.5 * 1.225 * ((crz.ias_kt ?? 110) * KT) ** 2 * A.S * A.CLa / W;   // g/rad at the cruise trim speed, as lh_stick.mjs
       res[tag] = { mass: A.m, approach: point(Math.round(vapp), 1, 300), cruise: point(crz.ias_kt, 0, (crz.h_ft ?? 3000) * FT),
         SM_fixed: +SMfix.toFixed(3), SM_free: +SMfree.toFixed(3), free_elevator_factor: +Fe.toFixed(3) };
     } finally { restore(); }
   }
   const Wlb = mtom / LB, req = Math.min(Math.max(Wlb / 140, 15), 35);
   const Flim = res.mtom.cruise.Fs_per_g_lbf * (nL - 1);
-  out.ids[id] = { p, ...res, cfr23_155: { W_lb: Math.round(Wlb), nL, required_lbf: +req.toFixed(1), required_per_g_lbf: +(req / (nL - 1)).toFixed(2), model_lbf: +Flim.toFixed(1), ok: Flim >= req } };
+  const nAlpha = res.nAlpha; delete res.nAlpha;
+  const b = band('stick', nAlpha, nL, Wlb);
+  const bandOut = { controller: 'centre_stick', nL, W_lb: Math.round(Wlb), nAlpha_cruise_g_per_rad: +nAlpha.toFixed(2),
+    mil_L1_centre_stick_lbf_per_g: { min: +b.mil_min.toFixed(2), max: +b.mil_max.toFixed(2) }, part23_155_force_lbf: +b.p23_force_lbf.toFixed(1), part23_155_min_lbf_per_g: +b.p23_per_g.toFixed(2),
+    fs_per_g_lbf: { min: +b.min.toFixed(2), max: +b.max.toFixed(2) }, fs_per_g_N: { min: +(b.min * LBF).toFixed(1), max: +(b.max * LBF).toFixed(1) } };
+  out.ids[id] = { p, ...res, band: bandOut, cfr23_155: { W_lb: Math.round(Wlb), nL, required_lbf: +req.toFixed(1), required_per_g_lbf: +(req / (nL - 1)).toFixed(2), model_lbf: +Flim.toFixed(1), ok: Flim >= req } };
   const t = res.train;
   console.log(`${id}: train ${t.mass} kg approach ${t.approach.ias_kt} KCAS Fs/g ${t.approach.Fs_per_g_N} N (${t.approach.Fs_per_g_lbf} lbf), grad ${t.approach.grad_N_per_kt} N/kt; cruise ${t.cruise.ias_kt} KCAS Fs/g ${t.cruise.Fs_per_g_N} N, grad ${t.cruise.grad_N_per_kt} N/kt; SM fixed/free ${t.SM_fixed}/${t.SM_free}`);
   console.log(`   MTOM ${mtom} kg: pull to n ${nL} = ${Flim.toFixed(1)} lbf vs 23.155 min ${req.toFixed(1)} lbf → ${Flim >= req ? 'ok' : 'LOW'}`);

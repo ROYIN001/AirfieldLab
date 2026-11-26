@@ -118,7 +118,7 @@ T.da40ng = { ops: { attitude_power: ap('da40ng', {
 T.da40_180 = { ops: { attitude_power: ap('da40_180', {
   takeoff_roll: [0, 'MAX PWR (คันเร่งเต็มไม่กระชาก) 2,680 ± 20 rpm, mixture RICH, fuel pump ON', 'T/O', 0, ['LD6'], 'สูง', 'รอบวิ่งขึ้น 2,680 ± 20 rpm ถ้าไม่ถึงให้ยกเลิก (p.4A-25); mixture RICH (p.4A-27)', null],
   rotation: [59, 'MAX PWR', 'T/O', 0, ['LD6', 'LD8'], 'สูง', 'ยกล้อหน้า 59 KIAS (30.4 m/s) ค่าเดียวทุกมวล (p.4A-25)', 'calc'],
-  initial_climb: [62, 'MAX PWR แล้ว 2,400 rpm เมื่อสูงปลอดภัย, mixture RICH, fuel pump OFF', 'T/O', 780, ['LD6', 'LD4'], 'กลาง', 'ค่าประมาณ (ประมาณเชิงเส้นตามมวล): 67/66/60/54 KIAS ที่ 1,200/1,150/1,000/850 kg (p.4A-26, 4A-27) → 62 KIAS (31.9 m/s) ที่ 1,050 kg; ROC 780 fpm (4.0 m/s) [LD4]', 'calc'],
+  initial_climb: [62, 'MAX PWR แล้ว 2,400 rpm เมื่อสูงปลอดภัย, mixture RICH, fuel pump OFF', 'T/O', 780, ['LD6', 'LD4'], 'กลาง', 'ค่าประมาณ แก้มวล (ประมาณเชิงเส้นตามมวล) จาก speeds.VY_kt 67 KIAS ที่ 1,200 kg ของบัตร: 67/66/60/54 KIAS ที่ 1,200/1,150/1,000/850 kg (p.4A-26, 4A-27) → 62 KIAS (31.9 m/s) ที่ 1,050 kg; ROC 780 fpm (4.0 m/s) [LD4]', 'calc'],
   cruise_climb: [70, 'MAX PWR / 2,400 rpm, mixture RICH (คง RICH เหนือ 5,000 ft ตาม AFM)', 'UP', 600, ['LD6'], 'กลาง', 'ค่าประมาณ (ประมาณเชิงเส้นตามมวล): 76/73/68/60 KIAS ที่ 1,200/1,150/1,000/850 kg (p.4A-28) → 70 KIAS ที่ 1,050 kg; rate ผู้เขียนตั้ง', 'calc'],
   cruise: [110, '≈22–23 inHg / 2,400 rpm (≈ 65 %, ค่าประมาณ), mixture best economy', 'UP', 0, ['LD6', 'LD4', 'LH0'], 'ต่ำ', 'rpm 1,800–2,400 และ MAP ตามตารางบท 5 (p.4A-29) ซึ่งเป็นภาพอ่านไม่ได้: ค่าประมาณ MAP จากสัดส่วน MAP × rpm ของ IO-360 (100 % ≈ 29 inHg ที่ 2,700 rpm) บวกความสูญเสียราว 1 inHg; mixture best economy ใช้ได้ถึง 75 % (หรี่จนเครื่องสะดุดแล้วดันกลับให้เรียบ EGT สูงสุด) หรือ best power EGT ต่ำกว่า peak 100 °F (55 °C) (p.4A-31, 4A-32); ias ค่าประมาณจาก 137 KTAS ที่ 75 % 6,000 ft [LD4]', 'calc'],
   descent: [105, 'คันเร่งตามต้อง 1,800–2,400 rpm, mixture ปรับตามต้อง', 'UP', -500, ['LD6', 'LH0'], 'ต่ำ', 'CHT ลดไม่เกิน 50 °F (28 °C) ต่อนาที (p.4A-33); ias และ rate ค่าประมาณ (ผู้เขียนตั้ง)', 'calc'],
@@ -133,7 +133,7 @@ T.da40_180 = { ops: { attitude_power: ap('da40_180', {
 T.da40d = { ops: { attitude_power: ap('da40d', {
   takeoff_roll: [0, '100 % load (FADEC คันเดียว) ใบพัด ≈ 2,300 rpm', 'T/O', 0, ['LD8'], 'กลาง', 'กำลังต่อเนื่องสูงสุด 99 kW (135 hp) ที่ใบพัด 2,300 rpm (handout p.11)', null],
   rotation: [59, '100 %', 'T/O', 0, ['LD8', 'LD6'], 'สูง', 'rotate 59 KIAS (30.4 m/s) (handout p.23–24; AFM p.4A-25)', 'calc'],
-  initial_climb: [62, '100 %', 'T/O', 550, ['LD8', 'LD6', 'LD14'], 'ต่ำ', 'ค่าประมาณ: takeoff climb 66 KIAS ที่ 1,150 kg (handout p.5) ประมาณเชิงเส้นด้วยตารางมวลของโครงเดียวกัน (60 ที่ 1,000 kg, AFM p.4A-27) → 62 KIAS ที่ 1,060 kg; ROC ≈ 550 fpm (2.8 m/s) ค่าประมาณของบัตร 05 [LD14]', 'calc'],
+  initial_climb: [62, '100 %', 'T/O', 550, ['LD8', 'LD6', 'LD14'], 'ต่ำ', 'ค่าประมาณ แก้มวล จาก speeds.VY_kt ของบัตร: takeoff climb 66 KIAS ที่ 1,150 kg (handout p.5) ประมาณเชิงเส้นด้วยตารางมวลของโครงเดียวกัน (60 ที่ 1,000 kg, AFM p.4A-27) → 62 KIAS ที่ 1,060 kg; ROC ≈ 550 fpm (2.8 m/s) ค่าประมาณของบัตร 05 [LD14]', 'calc'],
   cruise_climb: [70, '100 % (หรือ ≥ 80 %)', 'UP', 450, ['LD8', 'LD6'], 'ต่ำ', 'ค่าประมาณ: cruise climb 73 KIAS ที่ 1,150 kg (handout p.5) → 70 KIAS ที่ 1,060 kg (ตาราง AFM p.4A-28); rate ผู้เขียนตั้ง', 'calc'],
   cruise: [105, '55–70 % load', 'UP', 0, ['LD8'], 'ต่ำ', 'ตัวอย่าง 70 % load ที่ 6,000 ft ISA ได้ 121 KTAS (handout p.23) ราว 5 USgal/h (19 l/h) (p.14); ias ค่าประมาณที่ระดับต่ำ', 'calc'],
   descent: [100, '≈30–40 % load', 'UP', -500, ['LH0'], 'ต่ำ', 'ค่าประมาณ (ผู้เขียนตั้ง): handout ไม่ให้ค่า descent', 'calc'],
@@ -148,7 +148,7 @@ T.da40d = { ops: { attitude_power: ap('da40d', {
 T.da42ng = { ops: { attitude_power: ap('da42ng', {
   takeoff_roll: [0, 'MAX ทั้งสองเครื่อง', 'UP', 0, ['LT9'], 'กลาง', '', null],
   rotation: [76, 'MAX', 'UP', 0, ['LT9'], 'กลาง', 'VR 76 KIAS (39.1 m/s)', 'calc'],
-  initial_climb: [90, 'MAX', 'UP', 1100, ['LT9', 'LH29'], 'กลาง', 'Vy 90 KIAS (46.3 m/s); เก็บล้อเมื่อ positive rate; ROC 1,180 fpm MTOM', 'calc'],
+  initial_climb: [90, 'MAX', 'UP', 1100, ['LT9', 'LH29'], 'กลาง', 'Vy 90 KIAS (46.3 m/s) ≤ 1,900 kg [LT9] (da42_vi รับค่านี้ที่มวลฝึก 1,752 kg: แก้มวล จาก VY 92 KIAS แถว >1,900 kg ของบัตร da42_vi); เก็บล้อเมื่อ positive rate; ROC 1,180 fpm MTOM', 'calc'],
   cruise_climb: [100, '≈92 %', 'UP', 900, ['LH29'], 'ต่ำ', 'rate ค่าประมาณ; แหล่งเป็นรุ่น L360', 'calc'],
   cruise: [140, '60–75 %', 'UP', 0, ['LT10'], 'ต่ำ', 'ค่าประมาณ: ias ≈ 140 KIAS จาก cruise_table ของบัตร 06 ที่ 60–75 % ระดับต่ำ', 'calc'],
   descent: [130, 'ลดให้ได้ ≈500 fpm', 'UP', -500, ['LH29'], 'ต่ำ', '130–140 KIAS (L360)', 'calc'],
@@ -163,7 +163,7 @@ T.da42ng = { ops: { attitude_power: ap('da42ng', {
 T.da42_tae125 = { ops: { attitude_power: ap('da42_tae125', {
   takeoff_roll: [0, '100 % load ทั้งสองเครื่อง (FADEC คันละเครื่อง)', 'UP', 0, ['LT5'], 'กลาง', '', null],
   rotation: [70, '100 %', 'UP', 0, ['LT5', 'LT16'], 'สูง', 'VR 70 KIAS (36.0 m/s) ≤ 1,700 kg (72 > 1,700 kg) [LT5 p.4A-3]; การจับแถวตาราง 4A.2 เป็นการอนุมานของบัตร 06', 'calc'],
-  initial_climb: [77, '100 %', 'UP', 1060, ['LT5', 'LT16'], 'กลาง', 'Vy 77 KIAS (39.6 m/s) ≤ 1,700 kg [LT5]; ROC 1,060 fpm (5.4 m/s) [LT16]; เก็บล้อเมื่อ positive rate', 'calc'],
+  initial_climb: [77, '100 %', 'UP', 1060, ['LT5', 'LT16'], 'กลาง', 'Vy 77 KIAS (39.6 m/s) ≤ 1,700 kg [LT5] ที่มวลฝึก 1,600 kg (แก้มวล: speeds.VY_kt ของบัตร 79 KIAS เป็นแถว >1,700 kg); ROC 1,060 fpm (5.4 m/s) [LT16]; เก็บล้อเมื่อ positive rate', 'calc'],
   cruise_climb: [90, '≈ 80–100 %', 'UP', 800, ['LT16', 'LH0'], 'ต่ำ', 'ค่าประมาณ (ผู้เขียนตั้ง) ทั้ง ias load และ rate', 'calc'],
   cruise: [125, '60 % load', 'UP', 0, ['LT16'], 'ต่ำ', '60 % ได้ 138 KTAS ที่ 10,000 ft 16.7 l/h ต่อเครื่อง [LT16]; ias ค่าประมาณที่ระดับต่ำ', 'calc'],
   descent: [120, '≈30–40 % load', 'UP', -500, ['LH0'], 'ต่ำ', 'ค่าประมาณ (ผู้เขียนตั้ง)', 'calc'],

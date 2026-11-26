@@ -42,11 +42,11 @@
   "VS0_target": 57,
   "stall_clean": {
    "VSR_eas": 65.6,
-   "Vmin_eas": 62.3
+   "Vmin_eas": 64.2
   },
   "stall_full": {
    "VSR_eas": 58.4,
-   "Vmin_eas": 55.7
+   "Vmin_eas": 58
   },
   "climb": {
    "Vy_kt": 79.8,

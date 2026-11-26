@@ -30,17 +30,13 @@ export async function run() {
   const info = cardInfo(card, ac);
   const R = runCard(M, ac, info);
 
-  // Review fix (2026-11-18): runCard linearises cruise and approach with ONE AC, and buildAC picks the "approach" value of
-  // every config-dependent derivative (Clr, Cnp, Cnda, CYdr, Cldr, CYr, CLq, CLadot, Cmadot) unless opts.config is given,
-  // so the cruise modes above used approach derivatives. Re-linearise the cruise point with an AC built from the "cruise"
-  // values; keep the old numbers in raw.extra.modesCruise_approachCfg for the record.
+  // R2-07 (lm_card.runCard linearises cruise with the card's "cruise" derivatives and approach with "approach"): the former
+  // re-linearisation of the cruise point here is gone. acC (the "cruise" AC) is still used by the sensitivity run below.
   const pickM = m => { const pk = o => (o && o.wn ? { wn: o.wn, zeta: o.zeta, T: o.T } : o);
     return { sp: pk(m.sp), ph: pk(m.ph), dr: pk(m.dr), roll_tau: m.roll?.tau, spiral: m.spiral ? { lam: m.spiral.lam, t2: m.spiral.t2, grows: m.spiral.grows } : null, nAlpha: m.nAlpha, CAP: m.CAP, trim: m.trim }; };
   const acC = buildAC(card, { mass: MTOW, config: 'cruise' });
   const crCond = { ias: info.cruise.ias, h: info.cruise.h, flaps: 0, gear: 1, gammaDeg: 0 };
   const apCond = { ias: info.approach.ias, h: info.approach.h, flaps: 1, gear: 1, gammaDeg: info.approach.gammaDeg };
-  const modesCruiseApproachCfg = R.modes.cruise;
-  { const rc = applyAC(M, acC); R.modes.cruise = pickM(modes(M, crCond, { adot: true })); rc(); }
   // Sensitivity (not a test): Clr and Cnp from the flight-test linear fits of NASA TM-80163 Table X (flaps up; CL 0.3 for
   // cruise, CL 1.0 for approach; OCR reading, review 2026-11-18) in place of the lm_derivs estimates.
   const tmLat = {};
@@ -48,7 +44,7 @@ export async function run() {
   { const keep = { Clr: M.AC.Clr, Cnp: M.AC.Cnp }; Object.assign(M.AC, { Clr: 0.13, Cnp: -0.115 }); tmLat.approach = pickM(modes(M, apCond, { adot: true })); Object.assign(M.AC, keep); }
 
   // extra sim cases --------------------------------------------------------------------------
-  const X = { modesCruise_approachCfg: modesCruiseApproachCfg, tmLateralSensitivity: tmLat };
+  const X = { tmLateralSensitivity: tmLat };
   // short-field landing: POH technique 61 KIAS flaps 30 (63.9 KCAS) to the threshold, max braking
   { const keep = { Vapp: M.AC.Vapp, Vref: M.AC.Vref }; M.AC.Vapp = 64; M.AC.Vref = 64;
     X.ldgShort = landingTest(M, { maxBrake: true }); Object.assign(M.AC, keep); }

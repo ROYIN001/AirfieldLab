@@ -8,7 +8,17 @@
   "tLiftoff_s": 14.867,
   "V_LOF_kt": 60.919,
   "dist50ft_m": 440.09,
-  "V50_kt": 61.889
+  "V50_kt": 61.889,
+  "mode": "r1",
+  "tVRtoNose_s": 2.0833,
+  "V_nose_kt": 58.084,
+  "tVRtoLOF_s": 3.2083,
+  "theta_LOF_deg": 5.8646,
+  "alpha_LOF_deg": 5.7426,
+  "q_LOF_dps": 5.1627,
+  "de_LOF_deg": -10.571,
+  "CL_LOF": 0.83304,
+  "phiGE_LOF": 0.60265
  },
  "climbHot": {
   "Vy": 61.252,

@@ -532,7 +532,7 @@
    "band_lbf_per_g": {
     "min": 7.5,
     "max": 21.78,
-    "from": "computed here (stick, n/α 11.02 g/rad, nL 3.8, W 2888 lb)"
+    "from": "card validation.stick_force_targets"
    },
    "band_N_per_g": {
     "min": 33.4,
@@ -673,7 +673,7 @@
    "band_lbf_per_g": {
     "min": 7.5,
     "max": 23.61,
-    "from": "computed here (stick, n/α 10.16 g/rad, nL 3.8, W 2646 lb)"
+    "from": "card validation.stick_force_targets"
    },
    "band_N_per_g": {
     "min": 33.4,
@@ -814,7 +814,7 @@
    "band_lbf_per_g": {
     "min": 7.5,
     "max": 22.63,
-    "from": "computed here (stick, n/α 10.61 g/rad, nL 3.8, W 2535 lb)"
+    "from": "card validation.stick_force_targets"
    },
    "band_N_per_g": {
     "min": 33.4,
