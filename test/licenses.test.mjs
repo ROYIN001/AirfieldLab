@@ -65,6 +65,12 @@ test('license policy fixture: the files it names live where the tests look', () 
   for (const f of [...POL.odbl_derived_files, ...POL.legacy_data_without_fields]) assert.match(f, /^data\//, f);
   for (const f of POL.legacy_data_without_fields) assert.ok(POL.odbl_derived_files.includes(f), `${f}: a legacy data file must be in odbl_derived_files`);
   assert.deepEqual(POL.forbidden_sources_dirs, ['data', 'src', 'tools', 'test']);
+  // the lists that a smaller policy would weaken keep at least what §11 asks (a change here is visible in the test too)
+  const has = (list, need, what) => { for (const x of need) assert.ok(list.includes(x), `${what} lacks ${x}`); };
+  has(POL.forbidden_extensions_in_repo, ['.tif', '.tiff', '.pdf', '.jp2'], 'forbidden_extensions_in_repo');
+  has(POL.required_footer_terms, ['OpenStreetMap', 'ODbL', 'AIP Thailand', 'ใช้เพื่อการฝึกในเกมเท่านั้น'], 'required_footer_terms');
+  has(Object.keys(POL.conditional_footer_terms), ['data/city_v2.json', 'data/landmarks.json', 'src/16-palette.js'], 'conditional_footer_terms');
+  has(POL.odbl_derived_files, ['data/vtbd_af.json', 'data/city.json', 'data/land_in.png', 'data/land_out.png'], 'odbl_derived_files');
   for (const f of POL.forbidden_sources_skip) assert.ok(REPO_FILES.includes(f), `forbidden_sources_skip: ${f} is not a repo file`);
 });
 
@@ -91,11 +97,21 @@ test('T-K01 each pane of the built page has every required credit, with the OSM,
   }
   assert.ok(FOOT.panes.paneExplore.html.includes('/data/LICENSE-DATA.md"'), 'footer link to data/LICENSE-DATA.md');
   // the credit paragraph is the pane's own last child, so it shows whatever state the pane is in (the train pane
-  // shows one of trSetup, trLive and trResult at a time), and nothing hides it
+  // shows one of trSetup, trLive and trResult at a time), and nothing hides it: it holds every credit and link
+  // itself, and every element opened before it in the pane is closed again (an unclosed <div> would take it in)
   for (const [pane, f] of Object.entries(FOOT.panes)) {
-    const at = f.src.lastIndexOf('<p class="foot">');
-    assert.ok(at > 0 && f.src.slice(at, f.src.indexOf('</p>', at) + 4).includes('OpenStreetMap'), `${pane}: its last foot paragraph is the credits`);
-    assert.match(f.src.slice(f.src.indexOf('</p>', at) + 4), /^\s*<\/section>/, `${pane}: the credits sit directly in the pane, after its sub-panes`);
+    const at = f.src.lastIndexOf('<p class="foot">'), end = f.src.indexOf('</p>', at) + 4, last = footOf(f.src.slice(at, end));
+    assert.ok(at > 0, `${pane}: a foot paragraph`);
+    for (const t of POL.required_footer_terms) assert.ok(last.text.includes(t), `${pane}: the last foot paragraph lacks "${t}"`);
+    for (const href of ['https://www.openstreetmap.org/copyright', 'https://opendatacommons.org/licenses/odbl/1-0/', 'https://aip.caat.or.th'])
+      assert.ok(last.html.includes(`href="${href}"`), `${pane}: the last foot paragraph lacks the link ${href}`);
+    assert.match(f.src.slice(end), /^\s*<\/section>/, `${pane}: the credits sit directly in the pane, after its sub-panes`);
+    const before = f.src.slice(0, at);
+    for (const tag of ['section', 'div', 'template', 'details', 'dialog', 'span', 'form', 'fieldset', 'ul', 'ol', 'li', 'p']) {
+      const open = (before.match(new RegExp(`<${tag}[\\s>]`, 'g')) || []).length - (tag === 'section' ? 1 : 0);
+      const close = (before.match(new RegExp(`</${tag}>`, 'g')) || []).length;
+      assert.equal(open, close, `${pane}: <${tag}> opened ${open} times and closed ${close} times before the credits`);
+    }
   }
   // the PNG snapshot (a Produced Work, ODbL 4.3) carries the notice too
   const shot = read('src/90-app.js').match(/const SHOT_CREDIT = '([^']+)'/);
@@ -280,13 +296,15 @@ const MIT_TEXT = 'Permission is hereby granted, free of charge, to any person ob
 test('§12 P3-9 the code licence: LICENSE holds the full MIT text the owner chose, and the data notice keeps ODbL apart', () => {
   const L = POL.code_license;
   assert.equal(L.spdx, 'MIT');
-  const lic = read(L.file).replace(/\s+/g, ' ').trim();
-  const head = lic.match(/^MIT License Copyright \(c\) 20\d\d [^.]*?(?= Permission)/);
-  assert.ok(head, 'title and copyright line');
-  // the rest is the MIT licence (opensource.org/license/mit), word for word
-  assert.equal(lic.slice(head[0].length + 1), MIT_TEXT, 'LICENSE is the MIT text, unchanged');
+  // the title, the copyright line the policy records (the owner may change the holder in both places), then the MIT
+  // licence (opensource.org/license/mit) word for word, with nothing between them
+  const lic = read(L.file).replace(/\r\n/g, '\n').match(/^MIT License\n\s*\n([^\n]+)\n\s*\n([\s\S]+)$/);
+  assert.ok(lic, 'LICENSE: "MIT License", a blank line, the copyright line, a blank line, the licence');
+  assert.equal(lic[1].trim(), L.copyright, 'the copyright line in LICENSE and in the policy');
+  assert.match(L.copyright, /^Copyright \(c\) 20\d\d(?:[-–]20\d\d)? \S/, 'policy code_license.copyright');
+  assert.equal(lic[2].replace(/\s+/g, ' ').trim(), MIT_TEXT, 'LICENSE is the MIT text, unchanged');
   // MIT for the code, ODbL for the OSM-derived files: the data notice says so in both languages
   const [en, th] = read('data/LICENSE-DATA.md').split('## สรุปภาษาไทย');
   assert.ok(th !== undefined, 'data/LICENSE-DATA.md has the Thai summary');
-  for (const part of [en, th]) assert.ok(part.includes('MIT') && part.includes('`LICENSE`'), 'data/LICENSE-DATA.md names the code licence in both languages');
+  for (const part of [en, th]) assert.match(part, /MIT[^\n]*`LICENSE`/, 'data/LICENSE-DATA.md names the code licence (MIT, `LICENSE`) in both languages');
 });

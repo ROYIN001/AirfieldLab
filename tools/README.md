@@ -3,7 +3,9 @@
 These scripts produced the files in `data/`. They need the original screen captures (AIP charts and
 OpenStreetMap renders at zoom 15–17), which are not included; `shots_meta.json` records the capture centres.
 They run on Python 3 with numpy, opencv-python, scikit-image and networkx, which you install yourself; they are not
-kept in the repository and keep their own licences. Some steps are not kept: see the "made by" column of
+kept in the repository and keep their own licences: numpy, scikit-image and networkx are BSD-3-Clause and OpenCV is
+Apache-2.0, but the opencv-python wheels also bundle FFmpeg (LGPL 2.1) and, outside the headless build, Qt (LGPL 3).
+The scripts open no window, so `opencv-python-headless` is enough. Some steps are not kept: see the "made by" column of
 `data/LICENSE-DATA.md`.
 
 1. `mosaic.py` – georeference captures (Web Mercator) into local ENU mosaics around the ARP (`geo.py`).
