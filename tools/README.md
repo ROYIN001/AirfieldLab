@@ -29,3 +29,9 @@ ceilings, density altitude) from the IEM METAR archive. Node ≥ 18, no dependen
     node tools/climo/metar-climo.mjs --from 2016 --to 2025 --out docs/research/data/vtbd-metar-climo.json
 
 Commit only the derived summary, not the raw METAR downloads.
+
+## JSBSim oracle (`jsbsim/`)
+
+`jsbsim/run_cases.py` regenerates `test/fixtures/jsbsim_trainer_doublet.json`, which `test/oracle.test.mjs` checks
+our flight model against (research round 1 §12.8, plan item B1). Offline, Python with `jsbsim==1.3.3`; see
+`jsbsim/README.md`.
