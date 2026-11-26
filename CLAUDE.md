@@ -34,8 +34,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `SiteIndex`; then the trees and generated buildings of the real data in both quality settings, every one tried
   again with separate geometry code and against the page's own counts: the trees that stay are the same trees as
   before the rules, drawn from the random stream as the page leaves it after the footprint colours; no kept building
-  is cut in two by a road, and the map mirrored east-west or north-south gives every building the same answer;
-  about 12 s),
+  of the balanced quality is cut in two by a road (one of the high quality is, and is pinned), and the map mirrored
+  east-west or north-south gives every building the same answer; about 13 s),
   `lights` (`airfieldLights` in `60-lights.js`: every runway and approach light read back by its place and by the
   colour a pilot sees from the approach, from the runway and from beyond the end; the brightness of each system
   (regression pins) and the slots `LightSet.build` fills for the shader, on a stand-in for three.js; the whole layout
@@ -142,16 +142,17 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
     is in water or on a bank line, when a fifth of its footprint (`WET_MAX`) is on water, when a third of its
     footprint (`ROAD_MAX`) is on a road or railway of the land-use map, or when any of nine points of its outline is
     on a mapped building, under a deck or a station roof, or in a lane. `groundShare` samples the footprint; a sample
-    on a cell border counts half for each side (`SiteIndex.eachClassAt`), so a house gets the same answer on either
-    side of a road or a canal. A building beside a road stays, and for roads the centre is not asked: the city data
-    puts no centre inside a road cell, only on a cell border.
+    on a cell border (a micrometre wide) counts half for each side (`SiteIndex.eachClassAt`), so a house gets the
+    same answer on either side of a road or a canal. A building beside a road stays, and for roads the centre is
+    not asked: the city data puts no centre inside a road cell, only on a cell border.
   - The index (`mappedSite`) holds the stations and the footbridge before anything is placed; `buildCity` does not
     keep it (with every building in it, it is 35 to 55 MB).
-  - Measured on 2026-11-26 (balanced quality): 7,393 of 9,911 trees and 54,778 of 57,895 generated buildings stay
-    (2,329 buildings stood on a road or railway, nearly all shophouses, four in five of them standing alone and no
+  - Measured on 2026-11-26 (balanced quality): 7,393 of 9,911 trees and 54,773 of 57,895 generated buildings stay
+    (2,334 buildings stood on a road or railway, nearly all shophouses, four in five of them standing alone and no
     group larger than five; 684 in water, 101 under a deck or a station; high quality: 16,631 of 24,029 trees and
-    89,857 of 94,612 buildings). `test/siting.test.mjs` pins these counts. No kept building is cut in two by a road
-    (with a half instead of a third, four would be).
+    89,852 of 94,612 buildings). `test/siting.test.mjs` pins these counts. No kept building of the balanced quality
+    is cut in two by a road, and one of the high quality is, where two lanes meet corner to corner under it (with a
+    half instead of a third: 4 and 11).
     The wood before THR 03R (OpenStreetMap) stays from about 700 m before the threshold, where it is under the 2 %
     surfaces; single trees on farm land stay from about 490 m.
 - Runway and approach lights follow AIP AD 2.14 for what each end has and Annex 14, 5.3 for the layout: threshold
@@ -172,7 +173,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   outside the edge of the 23 m `TWY_W` (Annex 14, 5.3.18), square to the run of the line over 25 m (the vector
   lines have jogs). An edge light never stands on pavement: none within `TWY_W / 2` of any taxiway centre line
   (junctions), on an apron or within 3 m of an apron outline (`APRON_EDGE`), so the side of a taxiway that runs
-  along an apron is dark, and no two lights stand within 15 m of each other; 386 lights, at 391 of the 942 places.
+  along an apron is dark, and no two lights stand within 7.5 m of each other (`TWY_EDGE.gap`: the corner where two
+  taxiways meet gets one light, not one from each line; with 15 m a light across a junction stood in for the light
+  of another edge, and three straight edges were dark over 62 to 67 m); 401 lights, at 406 of the 942 places.
   One of them stands inside a mapped water outline beside a taxiway (a data overlap, as before). Not drawn: the
   taxiway centre line lights of TWY D, E, F, J, O, R, S and C (south) (the vector lines carry no names; research
   round 5 has them in `tw_names.json`, not yet in the page data) and the intermediate holding position lights along
@@ -182,10 +185,10 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   measured from the displaced threshold (so its first 350 m are inset in the runway), the number of lights in a
   barrette, the 1.5 m between the lights of the 300 m crossbar and the places of the 150 m crossbar lights, the 60 m
   between touchdown zone barrettes, the 0.6 m of edge lights outside the edge (`EDGE_OUT`), the length of a flash
-  and the 15 ms between one flashing light and the next, the 45 m between taxiway edge lights and the 3 m kept from
-  an apron. Estimates in the siting: every taxiway is taken 23 m wide (AIP AD 2.8 gives 23 to 50 m), and the
-  positions of the three stations carry no recorded source (research round 5, `5c-city.md`, has the Red Line
-  station 656 m from the one drawn: to be checked).
+  and the 15 ms between one flashing light and the next, the 45 m between taxiway edge lights, the 3 m kept from an
+  apron and the 7.5 m under which two taxiway edge lights count as one. Estimates in the siting: every taxiway is
+  taken 23 m wide (AIP AD 2.8 gives 23 to 50 m), and the positions of the three stations carry no recorded source
+  (research round 5, `5c-city.md`, has the Red Line station 656 m from the one drawn: to be checked).
 
 ## Controls (current)
 - Keyboard (physical keys, `KeyboardEvent.code`, so a Thai layout works; map in `src/18-keys.js`): W/S or ↑/↓

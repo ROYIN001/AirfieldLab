@@ -111,9 +111,12 @@ const EDGE_OUT = 0.6;
 // middle and the layout does not depend on the direction a line was drawn in. They stand EDGE_OUT outside the edge
 // of a taxiway TWY_W wide (5.3.18: not more than 3 m; AIP AD 2.8 gives 23 to 50 m, all are drawn 23 m), square to
 // the run of the line over `chord` metres: the vector lines have jogs of a few metres, and the piece under a station
-// points up to 50° off that run. No two lights are set closer than `gap`, whichever lines they belong to (lines
-// that meet end to end would each set a pair at the joint).
-const TWY_EDGE = { step: 45, chord: 25, gap: 15 };
+// points up to 50° off that run. No two lights are set closer than `gap`, whichever lines they belong to (our
+// choice, ค่าประมาณ): in the corner where two taxiways meet each line sets a light, and two lights 3 to 7 m apart
+// read as one doubled light (seven corners of the real taxiways). The gap must stay small: with 15 m a light on the
+// edge of one taxiway took the place of the light of another, 9 to 11 m away across a junction, and three straight
+// edges were dark over 62 to 67 m.
+const TWY_EDGE = { step: 45, chord: 25, gap: 7.5 };
 // An edge light marks the edge of the pavement and never stands on it: none where the place is on a taxiway or
 // taxilane ribbon (where taxiways join or cross) or on an apron. An apron counts APRON_EDGE wider than its outline
 // (our choice, ค่าประมาณ: the outline runs within a metre of the edge of the taxiways beside it, so a row along it
@@ -136,8 +139,11 @@ function taxiEdgeLights(af) {
   const pave = taxiPavement(af), out = [], off = TWY_W / 2 + EDGE_OUT;
   for (const t of af.tw) {
     if (t.p.length < 2) continue;
-    for (let len = lineLength(t.p), s = (len % TWY_EDGE.step) / 2; s <= len; s += TWY_EDGE.step) {
-      const p = pointAlong(t.p, s);
+    // n + 1 stations `step` apart, centred on the line (pointAlong keeps them on it). The 1e-9 is for a length that
+    // is a whole number of steps but for the rounding of its sum, which depends on the direction the line is walked in
+    const len = lineLength(t.p), n = Math.floor(len / TWY_EDGE.step + 1e-9), s0 = (len - n * TWY_EDGE.step) / 2;
+    for (let k = 0; k <= n; k++) {
+      const s = s0 + k * TWY_EDGE.step, p = pointAlong(t.p, s);
       if (onAnyRunway(p[0], p[1], 40)) continue;
       const a = pointAlong(t.p, s - TWY_EDGE.chord / 2), b = pointAlong(t.p, s + TWY_EDGE.chord / 2), l = Math.hypot(b[0] - a[0], b[1] - a[1]);
       if (l < 1e-6) continue;
