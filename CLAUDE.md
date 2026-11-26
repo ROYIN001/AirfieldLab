@@ -12,8 +12,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Estimated values (building and tower heights, parked aircraft) must be labelled as estimates.
 - Licences (research round 5 §11, round 1 §12): the OSM-derived files in `data/` are ODbL and listed in
   `data/LICENSE-DATA.md`. A new data file gets a row there, and a new JSON file in `data/` `source` and `license`
-  fields (top level, or `_meta` for a parameter card); its credit joins the footer of both panes when its data
-  arrives, not before. Never commit a source from §11 table 11.3 (GlobalBuildingAtlas, FABDEM, TanDEM-X, IVAO sector
+  fields (top level, or in `_meta` where a parameter card keeps its metadata). Its credit joins the footer of both
+  panes (explore and train) when its data arrives, not before; the PNG snapshot stamps `SHOT_CREDIT`
+  (`src/90-app.js`), the ODbL notice a screenshot needs. Never commit a source from §11 table 11.3 (GlobalBuildingAtlas, FABDEM, TanDEM-X, IVAO sector
   files, X-Plane CIFP, BMA BDCTL_POLYGON), an AIP chart or PDF, or GPL/LGPL text or a JSBSim file.
   `test/licenses.test.mjs` fails on the names in `forbidden_sources` (any case, in `data/`, `src/`, `tools/`, `test/`),
   on .tif/.tiff/.jp2/.pdf files and on GPL/LGPL or JSBSim text. Review keeps out the rest: an AIP chart in another
@@ -22,7 +23,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `test/fixtures/license_policy.json`.
 
 ## Commands
-- Build: `node build.mjs` → `dist/index.html`, and copies `data/*` into `dist/`.
+- Build: `node build.mjs` → `dist/index.html`, and copies `data/` (with any subfolders) into `dist/`.
 - Run: `python3 -m http.server 8080 -d dist`, open http://localhost:8080 (needs HTTP: the page fetches its data).
 - Tests (Node ≥ 22, no dependencies, `node:test` + `node:assert/strict`): `node --test "test/**/*.test.mjs"`
   (quote the glob: a bare `node --test` would also run `test/shots.mjs`, `test/harness.mjs`, `test/lib/*.mjs` and
@@ -162,15 +163,17 @@ Suggested order, each with a Node test before tuning by feel in the browser:
   again before AIRAC 21 JAN 2027. `test/fixtures/aip_vtbd_current.json` holds the published values (numbers only,
   © CAAT): `test/aip.test.mjs` checks `RWY_DATA` against it, and `test/licenses.test.mjs` (T-K05) checks that the
   footer, the source comment of `src/15-geo.js` and this line cite its cycle. For a new cycle, update the fixture first.
-- Taxiways, aprons, buildings, water, golf course, land use: OpenStreetMap map renders captured and vectorised
-  by the scripts in `tools/` (the source captures are not included; regenerate only if the layout must change).
+- Taxiways, aprons, buildings, water, golf course, land use: OpenStreetMap map renders captured and vectorised,
+  mostly by the scripts in `tools/` (the source captures and a few steps are not included, see the "made by" column
+  of `data/LICENSE-DATA.md`; regenerate only if the layout must change).
 - `city.json`: base64 records, generated buildings (9 bytes each) and street lights (5 bytes each); the artifact
   host refuses `.bin`, so binary data travels inside JSON.
 - Licences: `vtbd_af.json`, `land_in.png`, `land_out.png` and `city.json` are derived from OpenStreetMap and
   available under the ODbL 1.0 (`data/LICENSE-DATA.md`, which `node build.mjs` copies into `dist/` with them).
   `vtbd_af.json` and `city.json` predate the `source`/`license` field rule (`legacy_data_without_fields` in the
-  policy); a regenerated file gets the fields and leaves that list. The code is under MIT (`LICENSE`, the owner's choice on
-  2026-11-25); the ODbL files keep the ODbL.
+  policy); a regenerated file gets the fields and leaves that list. The code is under MIT (`LICENSE`, the owner's
+  choice on 2026-11-25); the files in `data/` follow `data/LICENSE-DATA.md`, and `docs/research/` keeps the licences
+  of the sources each report cites.
 
 ## Working in the cloud (Claude Code on the web)
 - The owner works from the cloud so their computer can stay off. Test changes on the GitHub Pages site:

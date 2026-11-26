@@ -207,6 +207,7 @@ async function main() {
     b.onclick = () => { if (b.dataset.q === app.q) return; store.set('afl-quality', b.dataset.q); toast('กำลังโหลดใหม่ตามคุณภาพที่เลือก…'); setTimeout(() => location.reload(), 300); };
   }
   // snapshot via the downloads capability (button appears only where saving is possible)
+  const SHOT_CREDIT = '© ผู้ร่วมพัฒนา OpenStreetMap ข้อมูลภายใต้ ODbL (openstreetmap.org/copyright) · AIP Thailand · ใช้เพื่อการฝึกเท่านั้น';
   (async () => {
     try {
       if (!window.claude || typeof window.claude.use !== 'function') return;
@@ -214,7 +215,17 @@ async function main() {
       const btn = $('#btnShot'); btn.hidden = false;
       btn.onclick = () => {
         renderer.render(scene, camera);
-        renderer.domElement.toBlob(async (blob) => {
+        // the picture is a Produced Work of the OSM-derived data: it carries the ODbL notice (data/LICENSE-DATA.md)
+        const src = renderer.domElement, shot = document.createElement('canvas');
+        shot.width = src.width; shot.height = src.height;
+        const g = shot.getContext('2d');
+        g.drawImage(src, 0, 0);
+        let px = Math.max(11, Math.round(shot.height / 70));
+        do { g.font = `${px}px system-ui, sans-serif`; } while (g.measureText(SHOT_CREDIT).width > shot.width * 0.96 && --px > 6);
+        const pad = Math.round(px * 0.45), w = g.measureText(SHOT_CREDIT).width;
+        g.fillStyle = 'rgba(0, 0, 0, 0.55)'; g.fillRect(shot.width - w - 2 * pad, shot.height - px - 2 * pad, w + 2 * pad, px + 2 * pad);
+        g.fillStyle = '#fff'; g.textBaseline = 'bottom'; g.fillText(SHOT_CREDIT, shot.width - w - pad, shot.height - pad);
+        shot.toBlob(async (blob) => {
           if (!blob) return;
           try { await dl.save({ filename: `airfield-lab-${hhmm(localParts(app.date).min).replace(':', '')}.png`, data: blob }); toast('บันทึกภาพแล้ว'); }
           catch (err) { if (err && err.code !== 'declined') toast('บันทึกภาพไม่ได้ในหน้านี้'); }

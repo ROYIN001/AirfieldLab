@@ -3,13 +3,15 @@
 The files in this folder are served beside the page: `node build.mjs` copies them into `dist/` with `index.html`.
 Research round 5 §11 (`docs/research/05-airport-city.md`) gives the licence rules; `test/licenses.test.mjs` checks
 this file, the page footer and `README.md` against `test/fixtures/license_policy.json`. The code of the repository
-is under the MIT licence (`LICENSE`); it does not change the licence of the files below, which stay under the ODbL.
+is under the MIT licence (`LICENSE`); it does not change the licence of the files below, which stay under the ODbL,
+nor of the data and research material in `docs/research/`, which keeps the licences of the sources each report cites.
 
 ## OpenStreetMap derived files (ODbL)
 
 These files are derived databases of OpenStreetMap data, © OpenStreetMap contributors
 (https://www.openstreetmap.org/copyright). They were captured from the OpenStreetMap standard map at zoom 15–17 around
-the airport and vectorised or classified by the scripts in `tools/` (see `tools/README.md`; the captures are not kept).
+the airport and vectorised or classified, mostly by the scripts in `tools/` (see `tools/README.md` and the table; the
+captures are not kept).
 
 They are made available under the Open Database License v1.0: https://opendatacommons.org/licenses/odbl/1-0/.
 Any rights in individual contents of the databases are licensed under the Database Contents License:
@@ -42,8 +44,8 @@ credit and the links.
 
 ## A new data file
 
-- A new JSON file in this folder carries top-level `source` and `license` fields (a parameter card whose leaves follow
-  `{v, u, scope, ...}` may keep them in `_meta`); `license` names ODbL when any of its sources is ODbL, and an ODbL
+- A new JSON file in this folder carries `source` and `license` fields, at the top level or in `_meta` when the file
+  keeps its metadata there (a parameter card whose leaves follow `{v, u, scope, ...}`); `license` names ODbL when any of its sources is ODbL, and an ODbL
   file joins the table above and `odbl_derived_files` in `test/fixtures/license_policy.json`. `vtbd_af.json` and
   `city.json` predate the rule and are described here instead.
 - Every file in this folder has a row in a table of this file (content, made by, licence), and a new data source adds

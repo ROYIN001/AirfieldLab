@@ -18,6 +18,6 @@ if (isMain) {
   const { html, files } = assemble();
   fs.mkdirSync(new URL('./dist/', import.meta.url), { recursive: true });
   fs.writeFileSync(new URL('./dist/index.html', import.meta.url), html);
-  for (const f of fs.readdirSync(new URL('./data/', import.meta.url))) fs.copyFileSync(new URL('./data/' + f, import.meta.url), new URL('./dist/' + f, import.meta.url));
+  fs.cpSync(new URL('./data/', import.meta.url), new URL('./dist/', import.meta.url), { recursive: true });   // with subfolders (data/aircraft/)
   console.log('built dist/index.html', (html.length / 1024).toFixed(0) + ' KB from', files.join(', '));
 }

@@ -28,14 +28,15 @@ const footOf = (html) => {
   const ps = [...html.matchAll(/<p class="foot">([\s\S]*?)<\/p>/g)].map((m) => m[1]).join(' · ');
   return { html: ps, text: ps.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ') };
 };
-const PAGE = assemble().html.replace(/<!--[\s\S]*?-->/g, '');
+const PAGE = assemble().html.replace(/<!--[\s\S]*?--!?>/g, '');
 const FOOT = (() => {
   const f = footOf(PAGE);
   assert.ok(f.html, 'no <p class="foot"> in the page');
   const at = (id) => PAGE.indexOf(`<section class="pane" id="${id}"`);
   const iE = at('paneExplore'), iT = at('paneTrain'), iEnd = PAGE.indexOf('</aside>', iT);
   assert.ok(iE > 0 && iT > iE && iEnd > iT, 'the panel holds paneExplore, then paneTrain');
-  return { ...f, panes: { paneExplore: footOf(PAGE.slice(iE, iT)), paneTrain: footOf(PAGE.slice(iT, iEnd)) } };
+  const html = { paneExplore: PAGE.slice(iE, iT), paneTrain: PAGE.slice(iT, iEnd) };
+  return { ...f, html: f.html, panes: { paneExplore: { ...footOf(html.paneExplore), src: html.paneExplore }, paneTrain: { ...footOf(html.paneTrain), src: html.paneTrain } } };
 })();
 
 // Files of the repo: tracked plus untracked files that .gitignore does not exclude (so a file copied in but not yet
@@ -67,10 +68,11 @@ test('license policy fixture: the files it names live where the tests look', () 
   for (const f of POL.forbidden_sources_skip) assert.ok(REPO_FILES.includes(f), `forbidden_sources_skip: ${f} is not a repo file`);
 });
 
-test(`T-K05 the footer cites the fixture's cycle (${cycleTH}) and no older one`, () => {
-  assert.ok(FOOT.text.includes(cycleTH), `footer: ${FOOT.text.slice(0, 120)}…`);
-  assert.equal([...FOOT.text.matchAll(/AIRAC/g)].length, 1, 'one AIRAC cycle in the footer');
-  assert.ok(!FOOT.text.includes('14 พ.ค. 2026'), 'the 14 พ.ค. 2026 cycle is gone');
+test(`T-K05 the footer cites the fixture's cycle (${cycleTH}) and no other one`, () => {
+  assert.ok(FOOT.panes.paneExplore.text.includes(cycleTH), `footer: ${FOOT.panes.paneExplore.text.slice(0, 120)}…`);
+  const cited = [...FOOT.text.matchAll(/AIRAC\s+\d{1,2}\s+\S+\s+\d{4}/g)].map((m) => m[0].replace(/\s+/g, ' '));
+  assert.ok(cited.length >= 1 && cited.every((c) => c === cycleTH), `cycles in the footer: ${cited.join(', ')}`);
+  assert.equal([...FOOT.text.matchAll(/AIRAC/g)].length, cited.length, 'every AIRAC in the footer names a cycle');
 });
 
 test(`T-K05 src/15-geo.js names ${cycleEN} as its source and CLAUDE.md does the same`, () => {
@@ -88,29 +90,42 @@ test('T-K01 each pane of the built page has every required credit, with the OSM,
       assert.ok(f.html.includes(`href="${href}"`), `${pane} footer link ${href}`);
   }
   assert.ok(FOOT.panes.paneExplore.html.includes('/data/LICENSE-DATA.md"'), 'footer link to data/LICENSE-DATA.md');
+  // the credit paragraph is the pane's own last child, so it shows whatever state the pane is in (the train pane
+  // shows one of trSetup, trLive and trResult at a time), and nothing hides it
+  for (const [pane, f] of Object.entries(FOOT.panes)) {
+    const at = f.src.lastIndexOf('<p class="foot">');
+    assert.ok(at > 0 && f.src.slice(at, f.src.indexOf('</p>', at) + 4).includes('OpenStreetMap'), `${pane}: its last foot paragraph is the credits`);
+    assert.match(f.src.slice(f.src.indexOf('</p>', at) + 4), /^\s*<\/section>/, `${pane}: the credits sit directly in the pane, after its sub-panes`);
+  }
+  // the PNG snapshot (a Produced Work, ODbL 4.3) carries the notice too
+  const shot = read('src/90-app.js').match(/const SHOT_CREDIT = '([^']+)'/);
+  assert.ok(shot, 'src/90-app.js: SHOT_CREDIT');
+  for (const t of ['OpenStreetMap', 'ODbL', 'openstreetmap.org/copyright', 'AIP Thailand']) assert.ok(shot[1].includes(t), `snapshot credit lacks "${t}"`);
+  assert.ok(/fillText\(SHOT_CREDIT/.test(read('src/90-app.js')), 'the snapshot draws SHOT_CREDIT');
   // links in the footer open beside the running page, not in place of it
   for (const a of FOOT.html.match(/<a\b[^>]*>/g)) assert.match(a, /target="_blank" rel="noopener"/, a);
 });
 
 test('T-K02 a data source in use has its credit in the footer, and no credit comes ahead of its data', () => {
   const inUse = Object.entries(POL.conditional_footer_terms).filter(([f]) => exists(f));
-  for (const [f, terms] of inUse) for (const t of terms) assert.ok(FOOT.text.includes(t), `${f} is in the repo: footer needs "${t}"`);
-  const used = new Set(inUse.flatMap(([, terms]) => terms));
+  for (const [pane, p] of Object.entries(FOOT.panes))
+    for (const [f, terms] of inUse) for (const t of terms) assert.ok(p.text.includes(t), `${f} is in the repo: the ${pane} footer needs "${t}"`);
+  const used = new Set(inUse.flatMap(([, terms]) => terms)), low = FOOT.text.toLowerCase();
   for (const t of new Set(Object.values(POL.conditional_footer_terms).flat()))
-    if (!used.has(t) && !POL.required_footer_terms.includes(t)) assert.ok(!FOOT.text.includes(t), `footer credits "${t}" before its data is in the repo`);
+    if (!used.has(t) && !POL.required_footer_terms.includes(t)) assert.ok(!low.includes(t.toLowerCase()), `footer credits "${t}" before its data is in the repo`);
 });
 
 // Text of a file, decoded: UTF-16 when it starts with a byte-order mark, else UTF-8; null for a binary file (a NUL
 // byte in the first 8 KB, as git decides).
 function decode(buf) {
   if (buf[0] === 0xff && buf[1] === 0xfe) return buf.subarray(2).toString('utf16le');
-  if (buf[0] === 0xfe && buf[1] === 0xff) return Buffer.from(buf.subarray(2)).swap16().toString('utf16le');
+  if (buf[0] === 0xfe && buf[1] === 0xff) return Buffer.from(buf.subarray(2, 2 + ((buf.length - 2) & ~1))).swap16().toString('utf16le');
   return buf.subarray(0, 8192).includes(0) ? null : buf.toString('utf8');
 }
 // Lines of a text file to search for a forbidden source. A JSON file contributes its keys and string values, without
-// base64 payloads (city.json packs records as base64, where a short name can occur by chance; prose has spaces or
-// punctuation, so it is never skipped).
-const B64 = /^[A-Za-z0-9+/=]{256,}$/;
+// base64 payloads (city.json packs records as base64, where a short name can occur by chance; base64 may be wrapped
+// in lines, while prose has spaces or punctuation, so it is never skipped).
+const B64 = /^[A-Za-z0-9+/=\r\n]{256,}$/;
 function searchableLines(p, text) {
   if (!/\.(geo)?json$/i.test(p)) return text.split('\n');
   const out = [];
@@ -156,14 +171,14 @@ test('T-K04 no GeoTIFF, JPEG 2000 or PDF file (.tif, .tiff, .pdf, .jp2) in the r
 
 // T-S-11 patterns, assembled from parts so that this file does not match itself. The words of a licence name may be
 // split over lines that start with a comment mark (# , * , //).
-const W = (...w) => new RegExp(w.join('[\\s#*/;!-]+'), 'i');
+const W = (...w) => new RegExp(w.join('[\\s#*/;!%>\x27\\uFFFD-]+'), 'i');
 const GPL_PATTERNS = {
   jsbsim_model: new RegExp('<' + 'fdm_config\\b', 'i'),                         // a JSBSim aircraft model (JSBSim is LGPL)
-  jsbsim_parts: new RegExp('<(?:piston|turbine|turboprop|electric|rocket)_' + 'engine\\b|<propeller\\s+' + 'version\\s*=|<run' + 'script\\b|JSBSim(?:Script)?\\.' + 'xsd', 'i'),
+  jsbsim_parts: new RegExp('<(?:(?:piston|turbine|turboprop|electric|rocket)_' + 'engine|brushless_dc_' + 'motor)\\b|<propeller\\s[^>\\n]*\\bname\\s*' + '=|<run' + 'script\\b|JSBSim(?:Script)?\\.' + 'xsd', 'i'),
   license_name: new RegExp('license' + 'Name\\s*=\\s*["\\x27]\\s*(?:L|A)?GPL', 'i'),   // a JSBSim or FlightGear file header
   gpl: W('GNU', 'GENERAL', 'PUBLIC', 'LICENSE'), lgpl: W('GNU', 'LESSER', 'GENERAL', 'PUBLIC'),
   library_gpl: W('GNU', 'LIBRARY', 'GENERAL', 'PUBLIC'), agpl: W('GNU', 'AFFERO', 'GENERAL', 'PUBLIC'),
-  spdx: new RegExp('SPDX-' + 'License-Identifier:[^\\n]*\\b(?:L|A)?GPL-', 'i'),       // also inside an AND/OR expression
+  spdx: new RegExp('SPDX-' + 'License-Identifier:[^\\n]*\\b(?:L|A)?GPL', 'i'),        // also inside an AND/OR expression
 };
 const gplHits = (text) => Object.keys(GPL_PATTERNS).filter((k) => GPL_PATTERNS[k].test(text));
 
@@ -186,27 +201,31 @@ test('the guards work: each T-S-11 pattern and the T-K03 scan catch a sample bui
   const g = (...w) => w.join('');
   const samples = {
     jsbsim_model: g('<', 'fdm_config name="x" version="2.0">'),
-    jsbsim_parts: [g('<turboprop', '_engine name="x">'), g('<propeller ', 'version="1.01" name="p">'), g('<run', 'script name="s">'), g('xsi:noNamespaceSchemaLocation="http://jsbsim.sf.net/JSBSim', 'Script.xsd"')],
+    jsbsim_parts: [g('<turboprop', '_engine name="x">'), g('<brushless_dc', '_motor name="m">'), g('<prop', 'eller name="prop">'), g('<prop', 'eller version="1.01" name="p">'), g('<run', 'script name="s">'), g('xsi:noNamespaceSchemaLocation="http://jsbsim.sf.net/JSBSim', 'Script.xsd"')],
     license_name: [g('<license license', 'Name="GPL (General Public License)"/>'), g("<license license", "Name='LGPL'/>")],
-    gpl: [g('GNU General ', 'Public License'), g('# the GNU General\n# ', 'Public License'), g('GNU\u00a0General ', 'Public License')],
+    gpl: [g('GNU General ', 'Public License'), g('# the GNU General\n# ', 'Public License'), g('GNU\u00a0General ', 'Public License'), g('% the GNU General\n% ', 'Public License'), g('> GNU General\n> ', 'Public License'), g('GNU\uFFFDGeneral ', 'Public License')],
     lgpl: [g('GNU Lesser ', 'General Public License'), g(' * GNU Lesser General\n * ', 'Public License')],
     library_gpl: g('GNU Library ', 'General Public License'),
     agpl: g('GNU Affero ', 'General Public License'),
-    spdx: [g('// SPDX-', 'License-Identifier: GPL-2.0-only'), g('# SPDX-', 'License-Identifier: MIT AND LGPL-2.1-or-later')],
+    spdx: [g('// SPDX-', 'License-Identifier: GPL-2.0-only'), g('# SPDX-', 'License-Identifier: MIT AND LGPL-2.1-or-later'), g('# SPDX-', 'License-Identifier: GPLv3')],
   };
   assert.deepEqual(Object.keys(samples).sort(), Object.keys(GPL_PATTERNS).sort(), 'one sample per pattern');
   for (const [k, ss] of Object.entries(samples)) for (const s of [ss].flat()) assert.deepEqual(gplHits(s), [k], JSON.stringify(s));
   assert.deepEqual(gplHits('MIT License\nPermission is hereby granted, free of charge'), [], 'the MIT text is not GPL');
-  // UTF-16 with a byte-order mark is read as text
+  // UTF-16 with a byte-order mark is read as text, either byte order, even with an odd byte at the end
   assert.equal(decode(Buffer.concat([Buffer.from([0xff, 0xfe]), Buffer.from('GNU', 'utf16le')])), 'GNU');
+  assert.equal(decode(Buffer.concat([Buffer.from([0xfe, 0xff]), Buffer.from('GNU', 'utf16le').swap16(), Buffer.from([0x41])])), 'GNU');
+  assert.equal(decode(Buffer.from([0x50, 0x4e, 0x47, 0x00, 0x01])), null, 'a NUL byte means binary');
   // T-K03: each forbidden name, in any case, in code, in a JSON key and in a JSON value; a ห้ามใช้ comment is exempt
   for (const n of POL.forbidden_sources) {
     assert.equal(forbiddenHits('tools/x.py', `heights = load("${n.toLowerCase()}")`).length, 1, n);
     assert.equal(forbiddenHits('data/x.json', JSON.stringify({ source: `tiles from ${n}`, [n]: 1 })).length, 2, n);
     assert.equal(forbiddenHits('src/x.js', `// ห้ามใช้ ${n}`).length, 0, n);
   }
-  assert.equal(forbiddenHits('data/x.json', JSON.stringify({ bld: 'A'.repeat(300) + POL.forbidden_sources[0] })).length, 0, 'a base64 payload is skipped');
-  assert.equal(forbiddenHits('data/x.json', JSON.stringify({ note: 'x '.repeat(150) + POL.forbidden_sources[0] })).length, 1, 'long prose is not taken for base64');
+  // a base64 payload, wrapped or not, is skipped where a name can occur by chance; long prose is not taken for base64
+  const b64name = POL.forbidden_sources.find((n) => /^[A-Za-z]+$/.test(n));   // a name that can occur inside base64
+  assert.equal(forbiddenHits('data/x.json', JSON.stringify({ bld: 'QUJD'.repeat(70) + b64name, w: ('QUJD'.repeat(19) + '\n').repeat(4) + b64name.toLowerCase() })).length, 0, 'base64 is skipped');
+  for (const n of POL.forbidden_sources) assert.equal(forbiddenHits('data/x.json', JSON.stringify({ note: 'x '.repeat(150) + n })).length, 1, `long prose naming ${n}`);
 });
 
 // source and license of a data JSON file: top level, or _meta for a parameter card whose leaves are {v, u, scope, ...}
@@ -228,7 +247,7 @@ test('§11 item 3: every JSON file under data/ carries source and license (ODbL 
     assert.ok(typeof license === 'string' && license.trim(), `${f}: "license"`);
     const odbl = POL.odbl_derived_files.includes(f) || /OpenStreetMap|\bOSM\b/i.test(source);
     if (odbl) assert.match(license, /ODbL/, `${f} is derived from OpenStreetMap (ODbL) data: its license must name ODbL`);
-    if (/ODbL/.test(license) || odbl) assert.ok(POL.odbl_derived_files.includes(f), `${f} is ODbL: add it to odbl_derived_files (and README, data/LICENSE-DATA.md)`);
+    if (/ODbL|Open\s*Database\s*Licen[cs]e/i.test(license) || odbl) assert.ok(POL.odbl_derived_files.includes(f), `${f} is ODbL: add it to odbl_derived_files (and README, data/LICENSE-DATA.md)`);
   }
 });
 
@@ -256,17 +275,18 @@ test('§11 item 4: data/LICENSE-DATA.md and README.md name the ODbL files, and e
   assert.ok(sec.includes('](LICENSE)') && sec.includes(POL.code_license.spdx), `README links LICENSE and names ${POL.code_license.spdx}`);
 });
 
+const MIT_TEXT = 'Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.';
+
 test('§12 P3-9 the code licence: LICENSE holds the full MIT text the owner chose, and the data notice keeps ODbL apart', () => {
   const L = POL.code_license;
   assert.equal(L.spdx, 'MIT');
-  const lic = read(L.file).replace(/\s+/g, ' ');
-  assert.match(lic, /^MIT License Copyright \(c\) 20\d\d \S/, 'title and copyright line');
-  // the two paragraphs of the MIT text that carry the grant and its one condition, word for word
-  for (const s of ['Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction',
-    'The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.',
-    'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND'])
-    assert.ok(lic.includes(s), `LICENSE lacks: ${s.slice(0, 50)}…`);
+  const lic = read(L.file).replace(/\s+/g, ' ').trim();
+  const head = lic.match(/^MIT License Copyright \(c\) 20\d\d [^.]*?(?= Permission)/);
+  assert.ok(head, 'title and copyright line');
+  // the rest is the MIT licence (opensource.org/license/mit), word for word
+  assert.equal(lic.slice(head[0].length + 1), MIT_TEXT, 'LICENSE is the MIT text, unchanged');
   // MIT for the code, ODbL for the OSM-derived files: the data notice says so in both languages
-  const data = read('data/LICENSE-DATA.md');
-  assert.ok(data.includes('MIT') && data.includes('`LICENSE`'), 'data/LICENSE-DATA.md names the code licence');
+  const [en, th] = read('data/LICENSE-DATA.md').split('## สรุปภาษาไทย');
+  assert.ok(th !== undefined, 'data/LICENSE-DATA.md has the Thai summary');
+  for (const part of [en, th]) assert.ok(part.includes('MIT') && part.includes('`LICENSE`'), 'data/LICENSE-DATA.md names the code licence in both languages');
 });
