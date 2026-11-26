@@ -215,7 +215,13 @@ async function main() {
       const btn = $('#btnShot'); btn.hidden = false;
       btn.onclick = () => {
         renderer.render(scene, camera);
-        renderer.domElement.toBlob(async (blob) => {
+        // the picture is a Produced Work of the OSM-derived data: it carries the ODbL notice (src/85-shot.js)
+        const src = renderer.domElement, shot = document.createElement('canvas');
+        shot.width = src.width; shot.height = src.height;
+        const g = shot.getContext('2d');
+        g.drawImage(src, 0, 0);
+        stampCredit(g, shot.width, shot.height);
+        shot.toBlob(async (blob) => {
           if (!blob) return;
           try { await dl.save({ filename: `airfield-lab-${hhmm(localParts(app.date).min).replace(':', '')}.png`, data: blob }); toast('บันทึกภาพแล้ว'); }
           catch (err) { if (err && err.code !== 'declined') toast('บันทึกภาพไม่ได้ในหน้านี้'); }
