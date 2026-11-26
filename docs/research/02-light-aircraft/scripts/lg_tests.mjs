@@ -11,6 +11,7 @@ import { F, compute } from './lg_calc.mjs';
 import { run } from './lg_card.mjs';
 import { clmaxFromStall, G0, RHO0, KT } from './lm_polar.mjs';
 import { isMainModule, loadType, val } from './lm_lib.mjs';
+import { derivSets } from './lm_card.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const r = (x, n = 4) => (x == null || Number.isNaN(x) ? null : +(+x).toPrecision(n));
@@ -40,7 +41,8 @@ export async function tests() {
   add('T-LG-10', 'เหมือน T-LG-09', 'V best glide KCAS', 82, 3, 'AFM S3-56: best glide 83 KIAS (บท 3 เรียกว่า VY; บัตรใช้ VY 80 จาก S4-7) [LG3]', A.res.glide.idle.Vbg_kt);
   // trim physics: cruise α from CL (training mass 1,128 kg, 110 KCAS, 3,000 ft) using the card's legacy CL0/CLa and CLde·de
   const ac = Tm.ac, tc = Tm.res.trim.cruise, rho3 = 1.121, V3 = 110 * KT / Math.sqrt(rho3 / RHO0);
-  const CLc = ac.m * G0 / (0.5 * rho3 * V3 * V3 * ac.S), aExp = (CLc - ac.CL0 - ac.CLde * tc.de_deg * Math.PI / 180) / ac.CLa * 180 / Math.PI;
+  const CLdeC = derivSets(loadType('p2006t', { dir: path.join(HERE, '..') })).cruise.CLde ?? ac.CLde;   // R2-07: the trim uses the cruise set
+  const CLc = ac.m * G0 / (0.5 * rho3 * V3 * V3 * ac.S), aExp = (CLc - ac.CL0 - CLdeC * tc.de_deg * Math.PI / 180) / ac.CLa * 180 / Math.PI;
   add('T-LG-11', 'trim cruise 110 KCAS 3,000 ft ISA มวลฝึก 1,128 kg clean ล้อขึ้น', 'α deg', aExp, 0.3, 'ฟิสิกส์ α = (CL − CL0 − CLde δe)/CLα', tc.alpha_deg);
   // modes vs flight test (110 kt) [LG7]
   const mc = Tm.res.modes.cruise;

@@ -2814,7 +2814,7 @@
      ],
      "conf": "กลาง",
      "est": true,
-     "note": "ค่าประมาณ (ประมาณเชิงเส้นตามมวล): 67/66/60/54 KIAS ที่ 1,200/1,150/1,000/850 kg (p.4A-26, 4A-27) → 62 KIAS (31.9 m/s) ที่ 1,050 kg; ROC 780 fpm (4.0 m/s) [LD4]; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
+     "note": "ค่าประมาณ แก้มวล (ประมาณเชิงเส้นตามมวล) จาก speeds.VY_kt 67 KIAS ที่ 1,200 kg ของบัตร: 67/66/60/54 KIAS ที่ 1,200/1,150/1,000/850 kg (p.4A-26, 4A-27) → 62 KIAS (31.9 m/s) ที่ 1,050 kg; ROC 780 fpm (4.0 m/s) [LD4]; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
     },
     "cruise_climb": {
      "v": {
@@ -3273,7 +3273,7 @@
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: takeoff climb 66 KIAS ที่ 1,150 kg (handout p.5) ประมาณเชิงเส้นด้วยตารางมวลของโครงเดียวกัน (60 ที่ 1,000 kg, AFM p.4A-27) → 62 KIAS ที่ 1,060 kg; ROC ≈ 550 fpm (2.8 m/s) ค่าประมาณของบัตร 05 [LD14]; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
+     "note": "ค่าประมาณ แก้มวล จาก speeds.VY_kt ของบัตร: takeoff climb 66 KIAS ที่ 1,150 kg (handout p.5) ประมาณเชิงเส้นด้วยตารางมวลของโครงเดียวกัน (60 ที่ 1,000 kg, AFM p.4A-27) → 62 KIAS ที่ 1,060 kg; ROC ≈ 550 fpm (2.8 m/s) ค่าประมาณของบัตร 05 [LD14]; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
     },
     "cruise_climb": {
      "v": {
@@ -3729,7 +3729,7 @@
      ],
      "conf": "กลาง",
      "est": true,
-     "note": "Vy 90 KIAS (46.3 m/s); เก็บล้อเมื่อ positive rate; ROC 1,180 fpm MTOM; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
+     "note": "Vy 90 KIAS (46.3 m/s) ≤ 1,900 kg [LT9] (da42_vi รับค่านี้ที่มวลฝึก 1,752 kg: แก้มวล จาก VY 92 KIAS แถว >1,900 kg ของบัตร da42_vi); เก็บล้อเมื่อ positive rate; ROC 1,180 fpm MTOM; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
     },
     "cruise_climb": {
      "v": {
@@ -4181,7 +4181,7 @@
      ],
      "conf": "กลาง",
      "est": true,
-     "note": "Vy 77 KIAS (39.6 m/s) ≤ 1,700 kg [LT5]; ROC 1,060 fpm (5.4 m/s) [LT16]; เก็บล้อเมื่อ positive rate; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
+     "note": "Vy 77 KIAS (39.6 m/s) ≤ 1,700 kg [LT5] ที่มวลฝึก 1,600 kg (แก้มวล: speeds.VY_kt ของบัตร 79 KIAS เป็นแถว >1,700 kg); ROC 1,060 fpm (5.4 m/s) [LT16]; เก็บล้อเมื่อ positive rate; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
     },
     "cruise_climb": {
      "v": {

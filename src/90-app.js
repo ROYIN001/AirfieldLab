@@ -61,12 +61,13 @@ const SPOTS = [
 const app = {
   mode: 'explore', q: store.get('afl-quality', isTouch ? 'balanced' : 'high'),
   view: 'overview', trainCam: 'chase', spot: null,
-  wind: { fromDeg: 40, kt: 9 }, visIdx: 2, cloudIdx: 1,
+  wind: { fromDeg: 40, kt: 9 }, visIdx: 5, cloudIdx: 1,
   train: { state: 'setup', scn: 'xr', dist: 5556, pilot: 'ap', assist: true, autoThr: true, warp: 1, rwy: '03L' },
   input: { x: 0, y: 0, rud: 0, thr: 0.25, brake: 0 }, keys: new KeyState(), pin: new PilotInput(), padIndex: null,
 };
 if (!QUALITY[app.q]) app.q = 'balanced';
-const VIS = [5000, 10000, 20000, 40000], VIS_T = ['5 กม.', '10 กม.', '20 กม.', '40 กม.'];
+// visibility (MOR, m); 500 m to 3 km are the morning fog and haze of research round 4 (§1, §5.7)
+const VIS = [500, 1500, 3000, 5000, 10000, 20000, 40000], VIS_T = ['500 ม.', '1.5 กม.', '3 กม.', '5 กม.', '10 กม.', '20 กม.', '40 กม.'];
 const CLOUD = [0, 0.32, 0.5, 0.68], CLOUD_T = ['ไม่มี', 'บางส่วน', 'มาก', 'ครึ้ม'];
 
 async function main() {
@@ -132,7 +133,7 @@ async function main() {
     $('#outWdir').textContent = `${String(app.wind.fromDeg).padStart(3, '0')}°`; $('#outWkt').textContent = `${app.wind.kt} kt`;
     const ru = inUse(); $('#roRwy').textContent = `${ru} · ${ru === '03L' ? 'ลมตะวันออกเฉียงเหนือ' : 'ทิศหลัก'}`;
   }
-  const lightsOnF = () => (sky.state.night > 0.22 || app.visIdx === 0 ? 1 : 0);
+  const lightsOnF = () => (sky.state.night > 0.22 || VIS[app.visIdx] <= LIGHTS_DAY_VIS_M ? 1 : 0);
 
   // ── camera handling ──
   const tween = { on: false };
@@ -646,7 +647,7 @@ async function main() {
     const onAF = lightsOnF();
     const pxScale = (renderer.domElement.height / 2) / Math.tan(camera.fov * DEG / 2);
     for (const m of [lights.mat, ac3.lightMat]) {
-      const u = m.uniforms; u.uTime.value = T; u.uDay.value = sky.state.day; u.uPx.value = pxScale; u.uVis.value = VIS[app.visIdx];
+      const u = m.uniforms; u.uTime.value = T; u.uDay.value = sky.state.day; u.uPx.value = pxScale;
       u.uOnAF.value = lerp(u.uOnAF.value, onAF, 1 - Math.exp(-dt * 3)); u.uNightF.value = night; u.uOnAC.value = 1; u.uGlow.value = night;
     }
     field.mats.window.emissiveIntensity = 0.09 * night; field.mats.interior.emissiveIntensity = 0.16 * night; field.mats.glass.emissiveIntensity = 0.06 * night;
