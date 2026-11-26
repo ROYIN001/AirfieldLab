@@ -42,10 +42,11 @@ export const CASES = {
 };
 export const limits = (name) => ({ ...CASES[name].tol, ...CASES[name].extra });
 // New numeric AC fields the fixture may lack because Aircraft.deriv and Aircraft.step do not read them (the test and
-// run_cases.py --check accept them as added fields). None is listed today: the fixture holds every numeric AC field,
-// Vref, Vapp and Vs0 included (deriv and step do not read those three), so ORACLE_AC_FROZEN checks them too. A
-// renamed or removed field always needs a new fixture.
-export const AC_NOT_IN_DERIV = [];
+// run_cases.py --check accept them as added fields). The fixture holds every numeric AC field it was made with, Vref,
+// Vapp and Vs0 included (deriv and step do not read those three), so ORACLE_AC_FROZEN checks them too. The stall
+// warning (plan A5) came after it: only the Evaluator reads its four fields. A renamed or removed field always needs
+// a new fixture.
+export const AC_NOT_IN_DERIV = ['aWarn', 'aWarnFlap', 'aWarnHyst', 'aWarnMinOn'];
 
 // The numeric AC parameters (what tools/jsbsim/make_model.py turns into the JSBSim model)
 export function acParams() {
