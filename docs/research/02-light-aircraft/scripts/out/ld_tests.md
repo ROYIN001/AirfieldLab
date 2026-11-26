@@ -15,12 +15,12 @@
 | T-LD-13 | ซิม: autoland da40ng 1,310 kg (MLW จริง 1,280), ลมสงบ, 15 °C, แฟลป LDG, VREF 77 KIAS = 76 KCAS (speeds.approach_table แถว 1,280 kg, ld_tools card), เบรกเต็ม | ระยะจาก 50 ft ถึงหยุด | 650 (±10 % หรือ ±61 m (ค่าเล็ก = ±61 m)) m | [LD4]; Part 60 1.e [R1:V2] | 642 (ผ่าน) |
 | T-LD-14 | เหมือน T-LD-13 | ground roll | 318 (±10 % หรือ ±61 m (ค่าเล็ก = ±32 m)) m | [LD4] | 311 (ผ่าน) |
 | T-LD-15 | วันร้อนที่ดอนเมือง 35 °C SL (ISA+20), da40ng 1,310 kg แฟลป T/O | ground roll = 397 × 1/(σ·σ^⅓) (เครื่อง flat-rated กำลังคงที่) | 434 (±10 % (ค่าประมาณ)) m | σ 0.935; สเกลจาก [LD4]; ค่าประมาณ ไม่มีตาราง AFM บท 5 | 428 (ผ่าน) |
-| T-LD-16 | ซิม linearise da40ng 1,310 kg: approach 76 KCAS แฟลป LDG γ −3° (Cat C) / cruise 110 KCAS 3,000 ft (Cat B) | short period ζ (approach / cruise) | 0.35–1.30 / 0.30–2.00 (ขอบ Level 1)  | MIL-F-8785C Class I [R1:V7, R1:V10] | 0.572 / 0.555 (ผ่าน) |
+| T-LD-16 | ซิม linearise da40ng 1,310 kg: approach 76 KCAS แฟลป LDG γ −3° (Cat C) / cruise 110 KCAS 3,000 ft (Cat B) | short period ζ (approach / cruise) | 0.35–1.30 / 0.30–2.00 (ขอบ Level 1)  | MIL-F-8785C Class I [R1:V7, R1:V10] | 0.572 / 0.556 (ผ่าน) |
 | T-LD-17 | เหมือน T-LD-16 | CAP = ωsp²/(n/α) (approach / cruise) | 0.16–3.6 (Cat C) / 0.085–3.6 (Cat B) (ขอบ Level 1 (ขอบบน 3.6 ยังไม่ยืนยันจากต้นฉบับตามรอบที่ 1)) 1/s² | MIL-F-8785C §3.2.2.1.1 [R1:V7][R1:V9]; ฉบับแรกใช้ 0.15 / 0.28 (0.28 เป็นของ Cat A) | 2.06 / 2.03 (ผ่าน) |
 | T-LD-18 | เหมือน T-LD-16 (cruise) | phugoid ζ / คาบ | ζ ≥ 0.04; คาบ Lanchester π√2·V/g = 26.8 s (ข้อมูลประกอบ) (-) - / s | MIL-F-8785C [R1:V10] | 0.116 / 30.3 (ผ่าน) |
 | T-LD-19 | เหมือน T-LD-16 (approach) | Dutch roll ζ / ζωn / ωn | ζ ≥ 0.08, ζωn ≥ 0.15, ωn ≥ 0.4 (-) - / rad/s | MIL-F-8785C Table 3 Class I Cat C [R1:V10] | 0.206 / 0.308 / 1.5 (ผ่าน) |
-| T-LD-20 | เหมือน T-LD-16 | roll mode τR (approach / cruise) | ≤ 1.0 / ≤ 1.4 (-) s | MIL-F-8785C Table 5 [R1:V10] | 0.252 / 0.181 (ผ่าน) |
-| T-LD-21 | เหมือน T-LD-16 | spiral T₂ (approach / cruise) | ≥ 12 / ≥ 20 (-) s | MIL-F-8785C Table 6 [R1:V10] | 61.1 / 32 (ผ่าน) |
+| T-LD-20 | เหมือน T-LD-16 | roll mode τR (approach / cruise) | ≤ 1.0 / ≤ 1.4 (-) s | MIL-F-8785C Table 5 [R1:V10] | 0.252 / 0.178 (ผ่าน) |
+| T-LD-21 | เหมือน T-LD-16 | spiral T₂ (approach / cruise) | ≥ 12 / ≥ 20 (-) s | MIL-F-8785C Table 6 [R1:V10] | 61.1 / 78.6 (ผ่าน) |
 | T-LD-22 | รุ่นเดิม 1,150 kg: VREF แฟลป UP 73 KIAS [LD8] ถือว่า IAS ≈ CAS ที่ 73 kt และ VREF = 1.3 VS | VS1 (KCAS) = 73/1.3 เทียบตาราง ias_cas ที่ VS1 52 KIAS | 56.2 (±1.5) KCAS | [LD8][LD6 p.5-8]; ld_iascas.mjs (ตรวจอิสระ) | 55.9 (ผ่าน) |
 | T-LD-23 | DA40 NG 1,280 kg แฟลป T/O: V50 72 KIAS, VS(T/O) 61.5 KIAS (ตีความตาราง) | V50 / VS (KCAS) | 1.2 (≥ 1.20 − 0.03 (การอ่านค่า)) - | 14 CFR 23.53 ก่อน Amdt 64 [LD12]; [LD3] | AFM 1.182; ซิม 1.183 (ผ่าน) |
 | T-LD-24 | MTOW 1,310 kg, S 13.244 m² → W/S 20.26 lb/ft² | limit descent velocity 4.4 (W/S)^¼ | 9.33 (±0.02) fps | 14 CFR 23.473(d) ก่อน Amdt 64 [LD12] | ค่าในบัตร 9.33 (ผ่าน) |

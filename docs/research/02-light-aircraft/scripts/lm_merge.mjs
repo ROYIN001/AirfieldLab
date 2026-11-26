@@ -7,7 +7,8 @@
 //                           [--coverage] [--schema <file.md>] [--quiet] [--dry] [--r1 <paths.json>]
 //                           [--strict] [--checks] [--json-checks <file>]
 // 19 Nov 2026: consistency checks (lm_lib.validate: scope D4, est/note, training_mass D3, VAPP >= VREF and 08/09 Vapp
-// = card VAPP D1, detent names D6) are printed as WARN with a per-type summary; --strict turns them into ERRORS
+// = card VAPP D1, detent names D6; since 25 Nov 2026 (R2-08) VX <= VY per speeds.climb_basis and 08/09 climb = card VY)
+// are printed as WARN with a per-type summary; --strict turns them into ERRORS
 // (exit 1), and since 22 Nov 2026 (plan PR B5) the leaf-format warnings as well, so --strict exit 0 = 0 warnings (and, from the B5 review, 0 round-1 per-type paths missing from any card); --checks prints every finding (default: summary + first 60); coverage also covers inheriting ids
 // (resolved card) and _na ["*"] (D5); _inherits may name a resolution base (trainer_r1, see lm_lib.loadBases).
 // A data block is a ```json fence whose object has exactly ONE top-level key: a type id

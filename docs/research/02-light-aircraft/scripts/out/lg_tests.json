@@ -114,10 +114,10 @@
    "id": "T-LG-11",
    "cond": "trim cruise 110 KCAS 3,000 ft ISA มวลฝึก 1,128 kg clean ล้อขึ้น",
    "qty": "α deg",
-   "expected": 1.711,
+   "expected": 1.714,
    "tol": "±0.3",
    "origin": "ฟิสิกส์ α = (CL − CL0 − CLde δe)/CLα",
-   "current": 1.694,
+   "current": 1.697,
    "current_note": "",
    "pass": true
   },
@@ -139,7 +139,7 @@
    "expected": 0.4,
    "tol": "±0.1",
    "origin": "ทดสอบบิน [LG7]",
-   "current": 0.5934,
+   "current": 0.5944,
    "current_note": "",
    "pass": false
   },
@@ -150,7 +150,7 @@
    "expected": 2,
    "tol": "±15 %",
    "origin": "ทดสอบบิน [LG7]",
-   "current": 2.162,
+   "current": 1.989,
    "current_note": "",
    "pass": true
   },
@@ -161,7 +161,7 @@
    "expected": 0.26,
    "tol": "±0.08",
    "origin": "ทดสอบบิน [LG7]",
-   "current": 0.2372,
+   "current": 0.2128,
    "current_note": "",
    "pass": true
   },
@@ -407,7 +407,17 @@
     "tLiftoff_s": 14.9292,
     "V_LOF_kt": 71.5656,
     "dist50ft_m": 482.106,
-    "V50_kt": 71.2826
+    "V50_kt": 71.2826,
+    "mode": "r1",
+    "tVRtoNose_s": 1.64583,
+    "V_nose_kt": 68.9649,
+    "tVRtoLOF_s": 2.64583,
+    "theta_LOF_deg": 3.99452,
+    "alpha_LOF_deg": 3.8719,
+    "q_LOF_dps": 4.62882,
+    "de_LOF_deg": -8.42223,
+    "CL_LOF": 0.963695,
+    "phiGE_LOF": 0.509707
    },
    "landing": {
     "asIs": {
@@ -443,9 +453,9 @@
      "ias_kt": 110,
      "h_m": 914.4,
      "V_kt": 115.003,
-     "alpha_deg": 1.94975,
-     "theta_deg": 1.94975,
-     "de_deg": -3.46875,
+     "alpha_deg": 1.95248,
+     "theta_deg": 1.95248,
+     "de_deg": -3.47006,
      "thr": 0.63373
     },
     "approach": {
@@ -461,28 +471,29 @@
    "modes": {
     "cruise": {
      "sp": {
-      "wn": 3.74227,
-      "zeta": 0.583483,
-      "T": 2.06738
+      "wn": 3.74188,
+      "zeta": 0.584429,
+      "T": 2.06934
      },
      "ph": {
-      "wn": 0.204688,
-      "zeta": 0.109968,
-      "T": 30.8838
+      "wn": 0.204702,
+      "zeta": 0.109976,
+      "T": 30.8817
      },
      "dr": {
-      "wn": 2.11145,
-      "zeta": 0.230249,
-      "T": 3.05793
+      "wn": 1.94553,
+      "zeta": 0.207967,
+      "T": 3.30174
      },
-     "roll_tau": 0.202618,
+     "roll_tau": 0.200311,
      "spiral": {
-      "lam": 0.00819145,
-      "t2": 84.6183,
-      "grows": true
+      "lam": -0.00753177,
+      "t2": 92.0297,
+      "grows": false
      },
      "nAlpha": 10.3873,
-     "CAP": 1.34824
+     "CAP": 1.34795,
+     "derivSet": "cruise"
     },
     "approach": {
      "sp": {
@@ -507,7 +518,8 @@
       "grows": true
      },
      "nAlpha": 4.20626,
-     "CAP": 1.37801
+     "CAP": 1.37801,
+     "derivSet": "approach"
     }
    }
   },
@@ -587,7 +599,17 @@
     "tLiftoff_s": 15.6417,
     "V_LOF_kt": 71.5861,
     "dist50ft_m": 504.12,
-    "V50_kt": 70.9838
+    "V50_kt": 70.9838,
+    "mode": "r1",
+    "tVRtoNose_s": 1.7,
+    "V_nose_kt": 68.8922,
+    "tVRtoLOF_s": 2.79167,
+    "theta_LOF_deg": 4.50951,
+    "alpha_LOF_deg": 4.38924,
+    "q_LOF_dps": 4.68833,
+    "de_LOF_deg": -8.63611,
+    "CL_LOF": 1.00148,
+    "phiGE_LOF": 0.511831
    },
    "landing": {
     "asIs": {
@@ -645,9 +667,9 @@
      "ias_kt": 110,
      "h_m": 914.4,
      "V_kt": 115.003,
-     "alpha_deg": 1.69394,
-     "theta_deg": 1.69394,
-     "de_deg": -3.34571,
+     "alpha_deg": 1.69658,
+     "theta_deg": 1.69658,
+     "de_deg": -3.34698,
      "thr": 0.624149
     },
     "approach": {
@@ -663,28 +685,29 @@
    "modes": {
     "cruise": {
      "sp": {
-      "wn": 3.84747,
-      "zeta": 0.593394,
-      "T": 2.02888
+      "wn": 3.84704,
+      "zeta": 0.594356,
+      "T": 2.0309
      },
      "ph": {
-      "wn": 0.203658,
-      "zeta": 0.115005,
-      "T": 31.0577
+      "wn": 0.203673,
+      "zeta": 0.115012,
+      "T": 31.0555
      },
      "dr": {
-      "wn": 2.16213,
-      "zeta": 0.23722,
-      "T": 2.9914
+      "wn": 1.98888,
+      "zeta": 0.212846,
+      "T": 3.23324
      },
-     "roll_tau": 0.194064,
+     "roll_tau": 0.191512,
      "spiral": {
-      "lam": 0.00752635,
-      "t2": 92.0961,
-      "grows": true
+      "lam": -0.00820908,
+      "t2": 84.4366,
+      "grows": false
      },
      "nAlpha": 10.8662,
-     "CAP": 1.36229
+     "CAP": 1.36199,
+     "derivSet": "cruise"
     },
     "approach": {
      "sp": {
@@ -709,7 +732,8 @@
       "grows": true
      },
      "nAlpha": 4.40028,
-     "CAP": 1.39314
+     "CAP": 1.39314,
+     "derivSet": "approach"
     }
    },
    "takeoff": {
@@ -719,7 +743,17 @@
     "tLiftoff_s": 14.1875,
     "V_LOF_kt": 71.5282,
     "dist50ft_m": 460.249,
-    "V50_kt": 71.6201
+    "V50_kt": 71.6201,
+    "mode": "r1",
+    "tVRtoNose_s": 1.59167,
+    "V_nose_kt": 69.0415,
+    "tVRtoLOF_s": 2.49583,
+    "theta_LOF_deg": 3.48085,
+    "alpha_LOF_deg": 3.35457,
+    "q_LOF_dps": 4.52582,
+    "de_LOF_deg": -8.20025,
+    "CL_LOF": 0.925847,
+    "phiGE_LOF": 0.507644
    },
    "landing": {
     "asIs": {

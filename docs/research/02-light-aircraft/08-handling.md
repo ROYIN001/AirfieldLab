@@ -99,7 +99,7 @@ pitch ของ C152 คำนวณจากบัตร 11 ของตัว�
 |---|---|---|---|---|---|---|---|
 | takeoff roll | 0 → 59 | T/O | MAX PWR คันเร่งเต็มไม่กระชาก 2,680 ± 20 rpm, mixture RICH, fuel pump ON | 100 % ใบพัด ≈ 2,300 rpm | – | – | [LD6 p.4A-25][LD8] |
 | rotation | 59 (30.4 m/s) / 59 | T/O | MAX PWR | 100 % | – | 3.7° / 3.9° | [LD6 p.4A-25][LD8] |
-| initial climb | 62 (31.9 m/s) / 62 (AFM 67 / 66 / 60 / 54 ที่ 1,200 / 1,150 / 1,000 / 850 kg) | T/O | MAX PWR แล้ว 2,400 rpm เมื่อสูงปลอดภัย, mixture RICH, fuel pump OFF | 100 % | 780 (3.96 m/s) / 550 (2.79 m/s) | 9.7° / 7.8° | [LD6 p.4A-26, 4A-27][LD4][LD14] |
+| initial climb | 62 (31.9 m/s) / 62 แก้มวลที่ 1,050 / 1,060 kg (AFM 67 / 66 / 60 / 54 ที่ 1,200 / 1,150 / 1,000 / 850 kg; `speeds.VY_kt` ของบัตร 67 / 66) | T/O | MAX PWR แล้ว 2,400 rpm เมื่อสูงปลอดภัย, mixture RICH, fuel pump OFF | 100 % | 780 (3.96 m/s) / 550 (2.79 m/s) | 9.7° / 7.8° | [LD6 p.4A-26, 4A-27][LD4][LD14] |
 | cruise climb | 70 (36.0 m/s) / 70 (AFM 76 / 73 / 68 / 60 ตามมวลข้างบน) | UP | MAX PWR หรือ 2,400 rpm, mixture RICH (AFM ให้คง RICH) | 100 % หรือ ≥ 80 % | 600 (3.05 m/s) / 450 (2.29 m/s) (ค่าประมาณ) | 11.2° / 10.1° | [LD6 p.4A-28][LD8] |
 | cruise | 110 (56.6 m/s) / 105 (54.0 m/s) (ค่าประมาณ) | UP | ≈ 22–23 inHg / 2,400 rpm ≈ 65 % (MAP ค่าประมาณ), mixture best economy ถึง 75 % หรือ best power 100 °F (56 °C) rich of peak EGT | 55–70 % (70 % ที่ 6,000 ft ได้ 121 KTAS) | 0 | 0.5° / 0.9° | [LD6 p.4A-29, 4A-31, 4A-32][LD8] |
 | descent | 105 (54.0 m/s) / 100 (51.4 m/s) (ค่าประมาณ) | UP | 1,800–2,400 rpm, CHT ลดไม่เกิน 50 °F/min (28 °C/min), mixture ตามต้อง | ≈ 30–40 % (ค่าประมาณ) | −500 (−2.54 m/s) | −1.8° / −1.4° | [LD6 p.4A-33] |
@@ -117,7 +117,7 @@ DA40 180 ต่างจาก DA40 D/NG ที่ต้องคุมสาม
 | ช่วงบิน | KIAS NG / TAE 125 (m/s) | แฟลป / ล้อ | กำลัง NG | กำลัง TAE 125 (load %) | อัตรา fpm (m/s) NG / TAE 125 | pitch NG / TAE 125 (ค่าประมาณ) | ที่มา |
 |---|---|---|---|---|---|---|---|
 | rotation | VR 76 (39.1 m/s) / 70 (36.0 m/s) | UP | MAX ทั้งสอง | 100 % ทั้งสอง (FADEC คันละเครื่อง) | – | 8.4° / 9.0° | บัตร 06 [LT9][LT5] |
-| initial climb | Vy 90 (46.3 m/s) / 77 (39.6 m/s), เก็บล้อเมื่อ positive rate | UP | MAX | 100 % | ≈ 1,100 (5.59 m/s) / 1,060 (5.38 m/s) | 11.6° / 14.5° | บัตร 06, [LH29][LT5][LT16] |
+| initial climb | Vy 90 (46.3 m/s) / 77 (39.6 m/s) แก้มวลที่ 1,600 kg (`speeds.VY_kt` ของบัตร 79 ที่ > 1,700 kg), เก็บล้อเมื่อ positive rate | UP | MAX | 100 % | ≈ 1,100 (5.59 m/s) / 1,060 (5.38 m/s) | 11.6° / 14.5° | บัตร 06, [LH29][LT5][LT16] |
 | cruise climb | 100 (51.4 m/s) / 90 (46.3 m/s) | UP | ≈ 92 % | ≈ 80–100 % | ≈ 900 (4.57 m/s) / 800 (4.06 m/s) (ค่าประมาณ) | 8.1° / 9.0° | [LH29][LT16] |
 | cruise | 140 (72.0 m/s) / 125 (64.3 m/s) (NG 140–160) | UP | 60–75 % | 60 % (138 KTAS ที่ 10,000 ft) | 0 | −0.3° / 0.3° | บัตร 06 cruise_table [LT10][LT16] |
 | descent | 130 (66.9 m/s) / 120 (61.7 m/s) | UP | ลดให้ได้ ≈ 500 fpm | ≈ 30–40 % (ค่าประมาณ) | −500 (−2.54 m/s) | −1.9° / −1.7° | [LH29] |
@@ -3273,7 +3273,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      ],
      "conf": "กลาง",
      "est": true,
-     "note": "ค่าประมาณ (ประมาณเชิงเส้นตามมวล): 67/66/60/54 KIAS ที่ 1,200/1,150/1,000/850 kg (p.4A-26, 4A-27) → 62 KIAS (31.9 m/s) ที่ 1,050 kg; ROC 780 fpm (4.0 m/s) [LD4]; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
+     "note": "ค่าประมาณ แก้มวล (ประมาณเชิงเส้นตามมวล) จาก speeds.VY_kt 67 KIAS ที่ 1,200 kg ของบัตร: 67/66/60/54 KIAS ที่ 1,200/1,150/1,000/850 kg (p.4A-26, 4A-27) → 62 KIAS (31.9 m/s) ที่ 1,050 kg; ROC 780 fpm (4.0 m/s) [LD4]; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
     },
     "cruise_climb": {
      "v": {
@@ -3732,7 +3732,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      ],
      "conf": "ต่ำ",
      "est": true,
-     "note": "ค่าประมาณ: takeoff climb 66 KIAS ที่ 1,150 kg (handout p.5) ประมาณเชิงเส้นด้วยตารางมวลของโครงเดียวกัน (60 ที่ 1,000 kg, AFM p.4A-27) → 62 KIAS ที่ 1,060 kg; ROC ≈ 550 fpm (2.8 m/s) ค่าประมาณของบัตร 05 [LD14]; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
+     "note": "ค่าประมาณ แก้มวล จาก speeds.VY_kt ของบัตร: takeoff climb 66 KIAS ที่ 1,150 kg (handout p.5) ประมาณเชิงเส้นด้วยตารางมวลของโครงเดียวกัน (60 ที่ 1,000 kg, AFM p.4A-27) → 62 KIAS ที่ 1,060 kg; ROC ≈ 550 fpm (2.8 m/s) ค่าประมาณของบัตร 05 [LD14]; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
     },
     "cruise_climb": {
      "v": {
@@ -4188,7 +4188,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      ],
      "conf": "กลาง",
      "est": true,
-     "note": "Vy 90 KIAS (46.3 m/s); เก็บล้อเมื่อ positive rate; ROC 1,180 fpm MTOM; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
+     "note": "Vy 90 KIAS (46.3 m/s) ≤ 1,900 kg [LT9] (da42_vi รับค่านี้ที่มวลฝึก 1,752 kg: แก้มวล จาก VY 92 KIAS แถว >1,900 kg ของบัตร da42_vi); เก็บล้อเมื่อ positive rate; ROC 1,180 fpm MTOM; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
     },
     "cruise_climb": {
      "v": {
@@ -4640,7 +4640,7 @@ $$\text{score}=\min\Big(\text{cap},\ \max\big(0,\ \underbrace{S_{sink}+S_{pos}+S
      ],
      "conf": "กลาง",
      "est": true,
-     "note": "Vy 77 KIAS (39.6 m/s) ≤ 1,700 kg [LT5]; ROC 1,060 fpm (5.4 m/s) [LT16]; เก็บล้อเมื่อ positive rate; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
+     "note": "Vy 77 KIAS (39.6 m/s) ≤ 1,700 kg [LT5] ที่มวลฝึก 1,600 kg (แก้มวล: speeds.VY_kt ของบัตร 79 KIAS เป็นแถว >1,700 kg); ROC 1,060 fpm (5.4 m/s) [LT16]; เก็บล้อเมื่อ positive rate; ค่าประมาณ: pitch = α + γ จาก lh_attitude.mjs ที่มวลฝึก"
     },
     "cruise_climb": {
      "v": {

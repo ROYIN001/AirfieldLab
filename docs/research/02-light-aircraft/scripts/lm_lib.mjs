@@ -328,25 +328,64 @@ export function trainingMass(card) {
 /** kg of training_mass (number or object), else undefined. */
 export const trainingMassKg = card => trainingMass(card)?.kg;
 
-/** IAS -> CAS (kt) for a detent name, from speeds.ias_cas; identity when absent. Returns {f, inv, has}.
- *  (moved from lm_card 19 Nov 2026; lm_card re-exports it). Unknown detent name: the first row, as before. */
-export function iasCas(card, detName) {
+/** Flap angle (deg) of a detent name on a card: aero.flaps.detents[].flap_deg, else a numeric name, else 0 for a clean alias
+ *  (clean, cruise, 0, UP, up, retracted), else the largest detent angle for a landing alias (landing, full, FULL, LDG); null when unknown. */
+export const CLEAN_ALIASES = ['clean', 'cruise', '0', 'UP', 'up', 'retracted'], LANDING_ALIASES = ['landing', 'full', 'FULL', 'LDG'];
+export function detentDeg(card, name) {
+  const s = String(name), d = val(card, 'aero.flaps.detents');
+  const deg = e => (e && e.flap_deg != null && e.flap_deg !== '' && Number.isFinite(+e.flap_deg) ? +e.flap_deg : null);   // null/'' = unknown, not 0
+  if (Array.isArray(d)) { const x = d.find(e => String(e.name) === s); if (x) { const g = deg(x); if (g != null) return g; if (LANDING_ALIASES.includes(s)) return null; } }
+  if (/^-?\d+(\.\d+)?$/.test(s)) return +s;
+  if (CLEAN_ALIASES.includes(s)) return 0;
+  // a landing alias is the largest detent only when every detent's angle is known
+  if (LANDING_ALIASES.includes(s) && Array.isArray(d) && d.length) { const a = d.map(deg); if (a.every(x => x != null)) return Math.max(...a); }
+  return null;
+}
+/** lookups of iasCas that did not find their row by name: {name, rows, how, used, w}; how = interp | nearest | unknown (warned once each) or alias */
+export const IAS_CAS_NOTES = [];
+const _iasWarned = new Set();
+/**
+ * IAS -> CAS (kt) for a detent name, from speeds.ias_cas; identity when absent. Returns {f, inv, has, row, how, w}.
+ * (moved from lm_card 19 Nov 2026; lm_card re-exports it). R2-07 (25 Nov 2026): a name that is not a row of the table is
+ * placed by flap angle (detentDeg): a row with the same angle is used (how 'alias', e.g. '0' for a table that names the
+ * clean row UP); between two rows the CAS is interpolated linearly in flap angle between the neighbouring rows, the
+ * largest row angle below and the smallest above (how 'interp', w = weight of the upper row; c172s flap 20 = ½ row 10 +
+ * ½ row 30); outside the rows' angles the nearest row (how 'nearest'); an unknown angle keeps the first row (how
+ * 'unknown'). interp, nearest and unknown print one warning per table and name (opts.warn false: silent) and are listed
+ * in IAS_CAS_NOTES. Before R2-07 every name that was not a row took the first row.
+ */
+export function iasCas(card, detName, { warn = true } = {}) {
   const t = val(card, 'speeds.ias_cas');
   const lin = (xs, ys, x) => { let i = 0; while (i < xs.length - 2 && x > xs[i + 1]) i++; const t2 = (x - xs[i]) / (xs[i + 1] - xs[i]); return ys[i] + t2 * (ys[i + 1] - ys[i]); };
-  let pairs = null;
+  const rows = {};   // row name -> [[KIAS, KCAS], ...] (both table forms)
   if (isObj(t) && t.axes && Array.isArray(t.data)) {
     const fl = (t.axes.flap || t.axes.flaps || []).map(String), ki = t.axes.KIAS || t.axes.kias || t.axes.ias;
-    let j = fl.indexOf(String(detName)); if (j < 0) j = 0;
-    const row = Array.isArray(t.data[0]) ? t.data[j] : t.data;
-    pairs = ki.map((k, i) => [k, row[i]]);
-  } else if (isObj(t)) {
-    const keys = Object.keys(t); const k = keys.includes(String(detName)) ? String(detName) : keys[0];
-    if (Array.isArray(t[k])) pairs = t[k];
-  }
-  if (!pairs || pairs.length < 2) return { has: false, f: x => x, inv: x => x };
-  pairs = pairs.slice().sort((a, b) => a[0] - b[0]);
-  const xs = pairs.map(p => p[0]), ys = pairs.map(p => p[1]);
-  return { has: true, f: x => lin(xs, ys, x), inv: y => lin(ys, xs, y) };
+    if (Array.isArray(ki)) { if (Array.isArray(t.data[0])) fl.forEach((n, j) => { if (Array.isArray(t.data[j])) rows[n] = ki.map((k, i) => [k, t.data[j][i]]); }); else rows[fl[0] ?? '0'] = ki.map((k, i) => [k, t.data[i]]); }
+  } else if (isObj(t)) for (const k of Object.keys(t)) if (Array.isArray(t[k])) rows[k] = t[k];
+  const names = Object.keys(rows).filter(k => rows[k].length >= 2);
+  if (!names.length) return { has: false, f: x => x, inv: x => x, row: null, how: 'none' };
+  const tab = pairs => { const p = pairs.slice().sort((a, b) => a[0] - b[0]); return { xs: p.map(q => q[0]), ys: p.map(q => q[1]) }; };
+  const make = (pairs, extra) => { const { xs, ys } = tab(pairs); return { has: true, f: x => lin(xs, ys, x), inv: y => lin(ys, xs, y), ...extra }; };
+  const name = String(detName);
+  if (names.includes(name)) return make(rows[name], { row: name, how: 'exact' });
+  const note = (how, used, w = null) => {
+    const n = { name, rows: names, how, used, w }; IAS_CAS_NOTES.push(n);
+    const key = names.join('/') + '|' + name;
+    if (warn && how !== 'alias' && !_iasWarned.has(key)) { _iasWarned.add(key); console.warn(`iasCas: detent "${name}" ไม่มีแถวใน speeds.ias_cas (${names.join(', ')}): ${how === 'interp' ? `interpolate ตามมุมแฟลประหว่าง ${used.join(' กับ ')} (น้ำหนัก ${+w.toFixed(3)} ของแถวบน)` : how === 'nearest' ? `นอกช่วงมุมของตาราง ใช้แถว ${used}` : `ไม่รู้มุมแฟลป ใช้แถวแรก ${used}`}`); }
+  };
+  const d = detentDeg(card, name);
+  const placed = names.map(n => ({ n, deg: detentDeg(card, n) })).filter(x => x.deg != null);
+  if (d == null || !placed.length) { note('unknown', names[0]); return make(rows[names[0]], { row: names[0], how: 'unknown' }); }
+  const same = placed.find(x => x.deg === d);
+  if (same) { note('alias', same.n); return make(rows[same.n], { row: same.n, how: 'alias' }); }
+  const lo = placed.filter(x => x.deg < d).sort((a, b) => b.deg - a.deg)[0], hi = placed.filter(x => x.deg > d).sort((a, b) => a.deg - b.deg)[0];
+  if (!lo || !hi) { const nr = (lo || hi).n; note('nearest', nr); return make(rows[nr], { row: nr, how: 'nearest' }); }
+  const w = (d - lo.deg) / (hi.deg - lo.deg), A = tab(rows[lo.n]), B = tab(rows[hi.n]);
+  // piecewise-linear in KIAS with knots at the union of both rows: exact for the weighted sum, also when extrapolating
+  const knots = [...new Set([...A.xs, ...B.xs])].sort((a, b) => a - b);
+  const pairs = knots.map(x => [x, (1 - w) * lin(A.xs, A.ys, x) + w * lin(B.xs, B.ys, x)]);
+  note('interp', [lo.n, hi.n], w);
+  return make(pairs, { row: [lo.n, hi.n], how: 'interp', w });
 }
 /** Name of the landing (largest) flap detent of a card: aero.flaps.detents, else the last flap row of speeds.ias_cas. */
 export function landingDetent(card) {
@@ -397,6 +436,8 @@ export const CHECK_NAMES = {
   xfile_vapp: 'Vapp ของ 08/09 = speeds.VAPP_kt ของบัตร ±0.5 kt (D1)', detent: 'ชื่อ detent ใน 08/09 = ชื่อในบัตร (D6)',
   src_ref: 'รหัสใน src มีบรรทัดในแหล่งอ้างอิงของไฟล์เจ้าของ หรือเป็น R1: ที่มีจริง (T-LM-23)',
   open_model: 'speeds/performance ไม่คัดจาก validation.openModels (03 §03.5.2)',
+  vx_vy: 'VX ≤ VY ใน KCAS เมื่อ speeds.climb_basis บอกแฟลปเดียวกัน (R2-08)',
+  xfile_vy: 'ความเร็วไต่ของ 08/09 = speeds.VY_kt ของบัตร ±0.5 kt (R2-08)',
 };
 
 // ───────────── open models are for comparison only (03-open-models.md §03.5.2, §03.6; T-LB-17, T-LB-18; R2-05) ─────────────
@@ -498,7 +539,7 @@ export function srcProblem(s, ps, idx) {
 /**
  * Checks on a mergeDir result. Returns [{level: 'warn'|'info', id, check, msg, where}]. 'warn' becomes an ERROR with
  * {strict: true} (lm_merge --strict). Leaf checks (scope, est, est_conf) look at each block as written; card checks
- * (training_mass, speeds, vapp_vref, xfile_vapp, detent) look at the resolved card of every id (variants included),
+ * (training_mass, speeds, vapp_vref, xfile_vapp, vx_vy, xfile_vy, detent) look at the resolved card of every id (variants included),
  * so a value inherited from the parent is checked against the variant's own speeds.
  */
 export function validate(res, { r1 = null, pool = null, bases = {}, only = null, refs = null } = {}) {
@@ -591,6 +632,49 @@ export function validate(res, { r1 = null, pool = null, bases = {}, only = null,
       if (fin && isObj(fin.v)) quote('ops.attitude_power.final.ias_kt', fin.v.ias_kt, /CAS/i.test(String(fin.u).split(',')[0]) ? 'kt CAS' : 'kt IAS', fin.note, 'ops.attitude_power.final');
       const st = leaf(card, 'procedures.stabilised');
       if (st && isObj(st.v)) quote('procedures.stabilised.Vapp', st.v.Vapp, st.u || 'kt IAS', st.note, 'procedures.stabilised');
+    }
+    // R2-08 climb speeds. speeds.climb_basis {VX: {flap, mass_kg}, VY: {flap, mass_kg}} labels the configuration and mass
+    // of VX and VY (mass_kg null = the same at every mass). vx_vy: VX ≤ VY in KCAS when both are for the same flap (VX scaled
+    // with V ∝ √m to the VY mass when both masses are given); different flaps → info (not compared); VX > VY → warn.
+    // xfile_vy: 08 ops.attitude_power.initial_climb.ias_kt and 09 procedures.pattern.climb quote speeds.VY_kt ±0.5 kt
+    // unless the note says แก้มวล (info), as xfile_vapp does for VAPP.
+    {
+      const vx = leaf(card, 'speeds.VX_kt'), vy = leaf(card, 'speeds.VY_kt');
+      const cb = val(card, 'speeds.climb_basis'), bOf = k => (isObj(cb) && isObj(cb[k]) ? cb[k] : null);
+      const flapOf = b => (b && b.flap != null ? String(b.flap) : null), massOf = b => (b && typeof b.mass_kg === 'number' && b.mass_kg > 0 ? b.mass_kg : null);
+      const dd = val(card, 'aero.flaps.detents');
+      const upDet = Array.isArray(dd) && dd.length ? String(dd.slice().sort((a, b) => (+a.flap_deg || 0) - (+b.flap_deg || 0))[0].name) : '0';
+      const bx = bOf('VX'), by = bOf('VY'), fx = flapOf(bx), fy = flapOf(by);
+      if (okNum(vx) && okNum(vy)) {
+        if (fx && fy && fx !== fy) add('info', id, 'vx_vy', `VX ${vx.v} ${vx.u} (แฟลป ${fx}) กับ VY ${vy.v} ${vy.u} (แฟลป ${fy}) คนละโครงแบบ: ไม่เทียบ`, whereOf(id, 'speeds.climb_basis'));
+        else {
+          const X = speedAs(card, vx.v, vx.u, fx ?? fy ?? upDet), Y = speedAs(card, vy.v, vy.u, fy ?? fx ?? upDet);
+          const mx = massOf(bx), my = massOf(by), xc = mx && my ? X.cas * Math.sqrt(my / mx) : X.cas;
+          if (xc > Y.cas + 0.05) add('warn', id, 'vx_vy', `VX ${vx.v} ${vx.u} (${xc.toFixed(1)} KCAS${mx && my && mx !== my ? ` แก้เป็น ${my} kg` : ''}) > VY ${vy.v} ${vy.u} (${Y.cas.toFixed(1)} KCAS)${cb ? '' : '; ถ้าคนละโครงแบบให้ระบุ speeds.climb_basis'}`, whereOf(id, 'speeds.VX_kt') || whereOf(id, 'speeds.VY_kt'));
+        }
+      }
+      if (okNum(vy)) {
+        const Y = speedAs(card, vy.v, vy.u, fy ?? upDet), tmKg = trainingMassKg(card);
+        const quoteVy = (ps, raw, unit, note, lp, det) => {
+          let v = raw, key = '';
+          if (isObj(raw)) {
+            const ks = Object.keys(raw).filter(k => typeof raw[k] === 'number' && !Number.isNaN(+k));
+            if (!ks.length) return;
+            key = typeof tmKg === 'number' ? ks.reduce((a, b) => (Math.abs(+b - tmKg) < Math.abs(+a - tmKg) ? b : a)) : ks[ks.length - 1];
+            v = raw[key];
+          }
+          if (typeof v !== 'number') return;
+          const q = speedAs(card, v, unit, det ?? fy ?? upDet);
+          const diff = /CAS/.test(q.unit) ? q.cas - Y.cas : q.ias - Y.ias;
+          if (Math.abs(diff) <= 0.5) return;
+          const mc = MASS_CORRECTED.test(note || '');
+          add(mc ? 'info' : 'warn', id, 'xfile_vy', `${ps} = ${v} ${unit}${key ? ` (คีย์มวล ${key})` : ''} แต่ speeds.VY_kt = ${vy.v} ${vy.u}: ต่าง ${diff > 0 ? '+' : ''}${diff.toFixed(1)} kt${mc ? ' (note บอกว่าแก้มวล)' : ''}`, whereOf(id, lp));
+        };
+        const ic = leaf(card, 'ops.attitude_power.initial_climb');
+        if (ic && isObj(ic.v)) quoteVy('ops.attitude_power.initial_climb.ias_kt', ic.v.ias_kt, /CAS/i.test(String(ic.u).split(',')[0]) ? 'kt CAS' : 'kt IAS', ic.note, 'ops.attitude_power.initial_climb', ic.v.flap != null ? String(ic.v.flap) : null);
+        const pa = leaf(card, 'procedures.pattern');
+        if (pa && isObj(pa.v)) quoteVy('procedures.pattern.climb', pa.v.climb, pa.u || 'kt IAS', pa.note, 'procedures.pattern');
+      }
     }
     // D6 flap detent names used by 08 and 09
     const dets = val(card, 'aero.flaps.detents');
