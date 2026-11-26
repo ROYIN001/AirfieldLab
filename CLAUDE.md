@@ -23,7 +23,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01), `modes` (trim, linearise and
   MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `keys` (keyboard map and key handling,
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `papi` (PAPI distance from MEHT, colour
-  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `page` (parses the assembled page
+  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `input` (shaping, key ramps, the
+  sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
+  phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
   types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview` command
   line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers every file the
@@ -48,9 +50,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is a loose 50); touchdown
   points and every mode value have regression bands. A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
-  `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode,
-  `test/keys.test.mjs` evaluates `18-keys.js` and `test/siting.test.mjs` evaluates `17-siting.js` the same way, so
-  those five files must stay DOM-free. The siting and lights tests also evaluate `48-data.js` and `60-lights.js`:
+  `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 25-input.js` with
+  `new Function` in strict mode, `test/keys.test.mjs` evaluates `18-keys.js` and `test/siting.test.mjs` evaluates
+  `17-siting.js` the same way, so those six files must stay DOM-free. The siting and lights tests also evaluate `48-data.js` and `60-lights.js`:
   these two may use three.js and the DOM inside their functions, never at the top level. `test/lib/png.mjs` reads the
   land-use PNGs (8-bit greyscale) with `node:zlib`. `build.mjs` exports `assemble()`, `build()`, `dataFiles()`,
   `checkPr()` and `previewHtml()` for the page test.
@@ -75,8 +77,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 10-atmo.js | pure: constants (KT, FT, NM, DEG, RAD, G0), USSA-1976 `atmosphere(h, isaDev)`, NOAA sun position, sky radiance, MOR visibility (`morBeta`, `hazeDepth`, `hazeDepthUp`, `skyHazeBeta`, `sunHazeT`) |
 | 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
 | 17-siting.js | pure: where something tall may stand: obstacle limitation surfaces `olsHeight(e, n)`, approach light lanes `alsLaneOf`, `ALS` (length and spacing per system), `RWY_PAD`, `TWY_W`, `SiteIndex` (clearances from buildings, decks, aprons, taxiways, water; the land-use class under a point), `STATIONS` and `stationSites(af)`, `mappedSite`, `placeTrees`, `siteBuildings` (`buildingProblem`, `groundShare`); also `rwyST`, `rwyEN`, `onAnyRunway`, `pointInPoly`, `nearestOnLine`, `lineLength`, `pointAlong` |
-| 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions; `app.keys`) |
+| 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions + `frame()` with sub-frame taps; `app.keys`) |
 | 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
+| 25-input.js | pure: `INPUT_CFG` (estimates from research §11), calibration and dead-zone helpers, `shapeAxis` / `shapeLever`, `keyRamp` + `KeyAxis`, `readPad` (W3C standard gamepad), `Arbiter` (last-moved source wins) + `InputAxis` (no jump on a switch), `TiltStick` (phone tilt), `PilotInput` (one frame from keys, pad, touch and tilt; `app.pin`) |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()` (fog = MOR haze, `HAZE_GLSL`), `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
 | 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` |
@@ -214,10 +217,39 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   Chrome tab before the page can block it (research round 1 §11.4.5). On macOS, Cmd's keyup also releases held keys
   (the browser sends no keyup for a key released while Cmd is down). C/T/P/R act once per press (key repeat
   ignored); while flying, bound keys do not scroll the page; held keys are released when the window loses focus or
-  the tab is hidden. Keys ramp linearly
-  (`readInputs` in 90-app.js: pitch 2.0/s, roll and rudder 2.5/s, release 5/s); research round 1 §11 finds the
-  ramps too fast (its task list, item 10).
+  the tab is hidden. Keys ramp linearly with frame time and self-centre (`src/25-input.js`, research round 1
+  §11.4.2): pitch 0.5/s up and 2.5/s back, roll 1.0/3.0, rudder 1.0/2.0, faster when the opposite key undoes a
+  deflection; Shift held halves the rate and the travel (fine mode); a key pressed and released between two frames
+  still counts for one frame.
+- Gamepad (W3C Gamepad API, read once per frame in `readInputs`, the lowest-index standard pad; only the "standard"
+  mapping drives the aircraft, other devices wait for a binding page): left stick roll and pitch (scaled radial dead
+  zone 0.08, expo 0.5), triggers rudder (right − left), right stick up/down throttle rate 0.5/s, bumpers brakes,
+  A/✕ take control, B/○ camera (also between flights, like C), Start pause. Browsers list no pad until a button is
+  pressed. A pad lost while it flies the aircraft pauses the flight. D-pad trim, D-pad flaps, Y gear and split brakes
+  are read but wait for the model.
+- Keyboard, pad and touch stick share an axis (`InputAxis` in `src/25-input.js`, research §11.5.4): the source that
+  moved last controls it. A key counts as moving only when it goes down (its ramp and self-centring do not), a finger
+  when it touches or moves the stick, a stick when it leaves the centre or moves by more than 0.02. Switching never
+  makes the value jump: keys continue from the current value, and the output runs to a stick's value at the axis's
+  return rate (pitch 2.5/s, roll 3/s, rudder 2/s) before following it.
 - Touch: virtual stick, throttle rail, brake button.
+- Phone tilt (option "บังคับด้วยการเอียงโทรศัพท์" in the training setup, shown on touch devices in a secure context;
+  `TiltStick` in `src/25-input.js`; not in the research report: geometry from the W3C DeviceOrientation Event spec,
+  numbers are estimates sourced in the file): replaces the touch stick for roll and pitch, as source 3 of `InputAxis`.
+  The pose when a flight starts, when control is taken over, or when the circle (now an indicator) is held still for
+  0.6 s becomes the centre, in the screen frame of that moment; a display rotation later does not change the mapping.
+  Screen angle: `window.orientation` first, then `screen.orientation.angle`, never the viewport's shape (tablets can
+  be landscape-natural); gravity picks the sign, and the other quarter turn only for `screen.orientation` and a phone
+  held up like a wheel across the browser's axis (`window.orientation` is never overruled). Grip from how far the
+  screen is raised (`tiltGrip`, wheelFrom 40°): 40°–140° 'wheel' (turn about the screen's normal is roll; its roll is
+  floored within 20° of flat or face-down, past full pitch travel), near flat 'tray' (tilt about the up axis is roll),
+  screen down overhead 'under' (as the tray; pitch runs on through face-down). The edge that goes down is the bank side; the top edge
+  toward the player is pull. Full deflection at 30° roll / 20° pitch, dead zone 2°, expo 0.3, smoothing 0.06 s.
+  Chrome sends no event while the phone is still, so the last reading is kept (no stale cut-off); a hidden page drops
+  the reading and keeps the centre. A screen wake lock is held while tilt flies. iOS asks permission from the tap
+  (Safari remembers a refusal until it is closed); a frame whose Permissions Policy blocks the sensors, or no reading
+  within 2 s, turns the option off with a Thai message. Whether the claude.ai artifact viewer allows the sensors has
+  not been checked on a phone (it is a cross-origin frame and offers no device-motion capability, so probably not).
 
 ## Research reports (docs/research/)
 - The owner's 5-round research program lives in `docs/research/`: `01-flight-physics.md`, `02-light-aircraft.md`,
