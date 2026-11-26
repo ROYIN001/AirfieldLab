@@ -34,9 +34,14 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01), `modes` (trim, linearise and
   MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `keys` (keyboard map and key handling,
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `papi` (PAPI distance from MEHT, colour
-  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `input` (shaping, key ramps, the
-  sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
-  phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `aip`
+  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5; the three PAPI sitings, research
+  T-D-01, T-D-02, T-D-07, T-D-26: tc distances and the 2°48′ seen from MEHT, the eye height above the path each
+  siting needs and the trainer's `eyeAboveBeam`, the ils siting on the eye path, the Transport Canada AC 302-009
+  example and a 737-800W leaving the on-slope on the 21R ILS through `papiSeen`, what the eye sees on a calm autoland
+  with each siting, and that `src/90-app.js` applies the siting), `input` (shaping, key
+  ramps, the sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12
+  and T-C-14, phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through
+  it), `aip`
   (`RWY_DATA`, the derived geometry and the AIP facts in the Thai UI text against `test/fixtures/aip_vtbd_current.json`,
   research round 5 T-A01…T-A19, T-A21, T-A22, T-A24, T-A25), `licenses` (footer credits and links, the cited AIRAC
   cycle, forbidden sources and file types, `source`/`license` of data files, `data/LICENSE-DATA.md`, README and the MIT
@@ -62,7 +67,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   table of every steady light; every taxiway edge light tried with separate geometry code, every place without one
   held to a cause, every free corner of a junction lit, no bare edge dark over 54 m, and the same places with every
   line drawn the other way round; the stands of
-  `alsStands` against the real pavements; every flash seen at 20, 30 and 60 frames a second). Autoland
+  `alsStands` against the real pavements; every flash seen at 20, 30 and 60 frames a second; with each PAPI siting
+  the housings of every end (built at the threshold, moved by `papiOffset`) and the PAPI lights (`papiPlace`, then
+  `placePapi`) stand together, each light 0.55 m before its housing, and no other light moves). Autoland
   score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is a loose 50); touchdown
   points and every mode value have regression bands. A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
@@ -91,17 +98,17 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 |---|---|
 | 00-head.js | three.js imports (OrbitControls, BufferGeometryUtils) |
 | 10-atmo.js | pure: constants (KT, FT, NM, DEG, RAD, G0), USSA-1976 `atmosphere(h, isaDev)`, NOAA sun position, sky radiance, MOR visibility (`morBeta`, `hazeDepth`, `hazeDepthUp`, `skyHazeBeta`, `sunHazeT`) |
-| 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
+| 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `PAPI_GEOM`, `papiFromMEHT` and `PAPI_MEHT_ANG`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
 | 17-siting.js | pure: where something tall may stand: obstacle limitation surfaces `olsHeight(e, n)`, approach light lanes `alsLaneOf`, `ALS` (length and spacing per system), `RWY_PAD`, `TWY_W`, `SiteIndex` (clearances from buildings, decks, aprons, taxiways, water; the land-use class under a point), `STATIONS` and `stationSites(af)`, `mappedSite`, `placeTrees`, `siteBuildings` (`buildingProblem`, `groundShare`); also `rwyST`, `rwyEN`, `onAnyRunway`, `pointInPoly`, `nearestOnLine`, `lineLength`, `pointAlong` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions + `frame()` with sub-frame taps; `app.keys`) |
-| 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
+| 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `PAPI` and `papiSeen`, `Wind` (shear + Dryden), `AC`, `eyeAboveBeam`, `PAPI_SITINGS` + `setPapiSiting(mode)`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
 | 25-input.js | pure: `INPUT_CFG` (estimates from research §11), calibration and dead-zone helpers, `shapeAxis` / `shapeLever`, `keyRamp` + `KeyAxis`, `readPad` (W3C standard gamepad), `Arbiter` (last-moved source wins) + `InputAxis` (no jump on a switch), `TiltStick` (phone tilt), `PilotInput` (one frame from keys, pad, touch and tilt; `app.pin`) |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()` (fog = MOR haze, `HAZE_GLSL`), `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
 | 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` |
-| 50-airfield.js | land-use bake on the GPU + ground shader, runway marking shader (per runway), taxiways, aprons, hold lines, terminal, towers, navaids, approach light stands, windsocks, masts |
+| 50-airfield.js | land-use bake on the GPU + ground shader, runway marking shader (per runway), taxiways, aprons, hold lines, terminal, towers, navaids, PAPI housings (one group per end, moved by `placePapi`), approach light stands, windsocks, masts |
 | 55-city.js | instanced city buildings (those that pass `siteBuildings`), OSM footprints, tollway / SRT viaduct / BTS (`VIADUCT` deck sizes) + stations from `stationSites`, trees from `placeTrees`, parked airliners |
-| 60-lights.js | point-sprite lights with directional colour (`LightSet`); `airfieldLights(field, data)` is the whole lighting layout as data, `alsStands(E)` the approach light stands, `taxiEdgeLights(af)` the places of the taxiway edge lights, `buildAirfieldLights` draws the lights |
+| 60-lights.js | point-sprite lights with directional colour (`LightSet`); `airfieldLights(field, data)` is the whole lighting layout as data, `alsStands(E)` the approach light stands, `taxiEdgeLights(af)` the places of the taxiway edge lights, `papiOffset(E)` and `papiPlace(pp)` where an end's PAPI housings stand, `papiLightAt(pp)` where a PAPI light stands, `buildAirfieldLights` draws the lights (its `placePapi` moves the PAPI lights) |
 | 70-aircraft.js | trainer model, control-surface and gear animation |
 | 80-hud.js | conformal HUD, ILS/PAPI widget, debrief charts |
 | 85-shot.js | pure: `SHOT_CREDIT` and `stampCredit(g, w, h)`, the credit drawn into the PNG snapshot (ODbL 4.3 and 4.6) |
@@ -112,12 +119,15 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   quaternion body→NED, SI units internally.
 - Render: x = east, y = up, z = −north. Data JSON coordinates are `[e, n]` metres from the ARP.
 - `RWY_END[id]`: `thr` [n,e], `u` landing direction, `r` right normal, `lda`, `aim` (GP origin = RDH / tan 3°),
-  `papi` (estimated distance solved from the AIP MEHT in the drawn geometry: `PAPI_GEOM` light height 0.64 m,
-  2°50′ unit 33 m outside the edge), `locDist`, `appr.kind` ILS or RNP (03R is RNP with a synthetic 3° path).
+  `papi` (the PAPI distance in use, an estimate: one of `papiSites` { aip, tc, ils }, the three sitings, see "PAPI
+  siting" below; `aip` is solved from the AIP MEHT in the drawn geometry: `PAPI_GEOM` light height 0.64 m, 2°50′ unit
+  33 m outside the edge), `locDist`, `appr.kind` ILS or RNP (03R is RNP with a synthetic 3° path).
 - Body points (FRD from the CG, estimates): `AC.eye` (cockpit camera, PAPI colours) and `AC.gsAnt` (ILS receiver).
   ILS deviations and the autopilot use the antenna, PAPI uses the eye. LOC 1 dot = atan(105 m / locDist) / 2
-  per runway (0.75° on 21R/03L, 0.89° on 21L), G/S 1 dot 0.36°. On the ILS the trainer sees the PAPI read low in
-  the last ~0.7 km because DMK's MEHT is 3.3–5.1 m above the beam over the threshold (real, AIP-derived).
+  per runway (0.75° on 21R/03L, 0.89° on 21L), G/S 1 dot 0.36°. With the `aip` siting the trainer on the ILS sees
+  the PAPI read low in the last 0.7 km (21R/21L) to 1.3 km (03L) because DMK's MEHT is 3.3–5.1 m above the beam over
+  the threshold (real, AIP-derived); earlier with `tc`; not with `ils`, which puts the PAPI's 3° line on the
+  trainer's eye path.
 
 ## Flight model (current state)
 - Generic two-seat turboprop trainer (fictional): m 2250 kg, S 16.3 m², b 10.2 m, P 700 kW, static thrust 11.5 kN.
@@ -225,6 +235,33 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   apron and the 7.5 m under which two taxiway edge lights count as one. Estimates in the siting: every taxiway is
   taken 23 m wide (AIP AD 2.8 gives 23 to 50 m), and the positions of the three stations carry no recorded source
   (research round 5, `5c-city.md`, has the Red Line station 656 m from the one drawn: to be checked).
+
+## PAPI siting (current)
+- AIP AD 2.14 gives MEHT but no PAPI distance, so where the PAPI stand is a trainee's choice in the training setup
+  ("ตำแหน่งไฟ PAPI", stored as `afl-papi`; research round 3, `03-airliners/05-airport-geometry.md` §3.5.8, conflicts
+  2 and 3, task R3-7). `setPapiSiting(mode)` in `20-flight.js` sets `FIELD.papiSiting`, every `RWY_END[id].papi` and
+  `PAPI.s`; the page then calls `field.placePapi()` (each end's housings are a group of their own, built at the
+  threshold) and `lights.placePapi()` (rewrites the PAPI entries of the light positions), with no reload.
+  - `aip` (default, "ตาม AIP"): the eye at MEHT over the threshold sees the 2°50′ unit at 2°50′ (`PAPI_MEHT_ANG.aip`;
+    STAC uses θ − 10′ = 2°50′ too): 424.9 / 384.8 / 373.1 / 376.0 m (03L/21R/03R/21L).
+  - `tc` ("มุม 2°48′"): the same solve at M = B − 2′ = 2°48′ (Transport Canada AC 302-009, whose worked example
+    reproduces only with 2°48′): 430.1 / 389.6 / 377.7 / 380.6 m. This is the research's conflict 2 (which angle sets
+    the distance from MEHT). Research T-D-07 is a separate check (`papi` P-11): the distance fixed at 405 m and the
+    lower edge of the on-slope moved from 2°50′ to 2°48′, a 737-800W on the 21R ILS leaves it 738 and 548 m out.
+  - `ils` ("ตรงกับ ILS"): D = aim + (H2 − 0.64 m) / tan 3°, H2 = `eyeAboveBeam(AC, 0)` = 1.2135 m, the eye's height
+    above the path at its own place when the antenna is on it: 330.8 / 325.0 / 301.7 / 319.2 m, 10.9 to 11.0 m beyond
+    the glide-path origin; recomputed at every call. This is the eye-to-antenna harmonisation of Transport Canada
+    AC 302-009; FAA JO 6850.2B ¶502 puts the PAPI at the distance of the GS virtual source ±30 ft (±10 m), adding
+    300 ft only for height group 4, so this siting stands about 11 m beyond FAA's placement. Not the published
+    configuration (the UI says so); on 03R it matches the synthetic RNP path. It is solved in the vertical plane along
+    the track, so over the threshold an eye on its path sees the 2°50′ unit 6.7′ to 7.3′ above its setting and the
+    3°10′ unit 11.9′ to 12.4′ below (21R: 6.7′ and 12.4′; 10′ and 10′ far out), still 2 white.
+- Measured on calm autolands, seed 5 (2026-11-26): fewer than 2 white from 710 / 663 / 1,273 / 917 m out
+  (21R/21L/03L/03R) with `aip`, from 788 / 735 / 1,361 / 994 m with `tc`, and with `ils` 2 white to 111–132 m out,
+  where the autopilot, slowing from Vapp to Vref, is 1.06–1.09 m under the beam (an eye on its path sees 2 white to the
+  threshold). `papi` P-06 pins for `ils` only 2 white from 2 NM to 200 m out and, whenever fewer show, the antenna more
+  than 0.9 m under the beam, not how the autopilot flies the last 200 m. The live hint
+  "บน ILS ช่วงท้าย PAPI แสดงต่ำได้ ให้ยึด ILS" shows only when the siting is not `ils`.
 
 ## Controls (current)
 - Keyboard (physical keys, `KeyboardEvent.code`, so a Thai layout works; map in `src/18-keys.js`): W/S or ↑/↓

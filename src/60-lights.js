@@ -201,6 +201,20 @@ function alsStands(E) {
   return out;
 }
 
+// Where the PAPI of an end stands: RWY_END[id].papi metres past its threshold, the siting in use (setPapiSiting in
+// 20-flight.js). buildAirfield builds each end's housings at the threshold (s = 0) into a group of their own, and
+// papiOffset(E) is where that group goes, in render coordinates (x = e, y up, z = −n). papiPlace(pp) puts an entry of
+// buildAirfield's papiPos (id of the end, t metres right of the centre line) at the same place: e, n of its housing.
+function papiOffset(E) { return [E.u[1] * E.papi, 0, -E.u[0] * E.papi]; }
+function papiPlace(pp) {
+  const E = RWY_END[pp.id];
+  pp.e = E.thr[1] + E.u[1] * E.papi + E.r[1] * pp.t; pp.n = E.thr[0] + E.u[0] * E.papi + E.r[0] * pp.t;
+  return pp;
+}
+// The light of a PAPI unit (an entry of papiPos: e, n of the housing, u the landing direction as [e, n]): 0.55 m before
+// the housing toward the approach, PAPI_GEOM.h above the ground, in render coordinates.
+function papiLightAt(pp) { return [pp.e - pp.u[0] * 0.55, PAPI_GEOM.h, -(pp.n - pp.u[1] * 0.55)]; }
+
 // Every light on and around the airfield, as a LightSet (positions and colours only, nothing drawn here).
 // Layout: AIP Thailand AD 2.14 (which systems, their lengths, spacings and colours) and ICAO Annex 14 Vol I, 5.3
 // (how each system is laid out). Where neither gives a number the choice is an estimate and says so.
@@ -280,8 +294,9 @@ function airfieldLights(field, data) {
       if ((cat2 && s > 300) || (cat1 && alsStandH(E, s) > 0)) S.add(at(-s - 0.3, 0, y + 0.35), { kind: 4, a: [1, 1, 1], axis: ax, I: 4.0, param: (len - s) / 30 * 0.03, day: 1.2 });
     }
   }
-  // ── PAPI (always on, high daytime intensity) ──
-  for (const pp of field.papiPos) S.add(P3(pp.e - pp.u[0] * 0.55, pp.n - pp.u[1] * 0.55, PAPI_GEOM.h), { kind: 3, axis: [pp.u[0], -pp.u[1]], I: 0.5, param: pp.ang, cat: 1, day: 8 });
+  // ── PAPI (always on, high daytime intensity); S.papi keeps where each went, for placePapi ──
+  S.papi = [];
+  for (const pp of field.papiPos) { S.papi.push({ i: S.L.length, pp }); S.add(papiLightAt(pp), { kind: 3, axis: [pp.u[0], -pp.u[1]], I: 0.5, param: pp.ang, cat: 1, day: 8 }); }
   // ── taxiway edge lights (blue) ──
   for (const [e, n] of taxiEdgeLights(data.af)) S.add(P3(e, n, 0.3), { kind: 0, a: LC.blue, I: 0.13, day: 0.4 });
   // ── obstruction lights, aerodrome beacon, mast lamps, windsocks ──
@@ -320,5 +335,11 @@ function buildAirfieldLights(scene, field, city, data) {
   const mat = makeLightMaterial();
   const pts = S.build(mat);
   scene.add(pts);
-  return { pts, mat, count: S.L.length };
+  // after field.placePapi() (a new PAPI siting) the PAPI lights move with their housings; no other light moves
+  const placePapi = () => {
+    const pos = pts.geometry.attributes.position;
+    for (const { i, pp } of S.papi) { const p = papiLightAt(pp); S.L[i].p = p; pos.array.set(p, i * 3); }
+    pos.needsUpdate = true;
+  };
+  return { pts, mat, count: S.L.length, placePapi };
 }
