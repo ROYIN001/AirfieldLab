@@ -149,6 +149,9 @@ canvas.chart { width: 100%; height: 230px; display: block; background: var(--ink
 .stick::before, .stick::after { content: ""; position: absolute; background: var(--line-2); }
 .stick::before { left: 50%; top: 14px; bottom: 14px; width: 1px; } .stick::after { top: 50%; left: 14px; right: 14px; height: 1px; }
 .stick i { position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; margin: -24px 0 0 -24px; border-radius: 50%; background: rgba(232, 238, 245, 0.85); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4); }
+.stick small { display: none; position: absolute; left: 50%; top: -24px; transform: translateX(-50%); white-space: nowrap; font-family: var(--f-body); font-size: 11px; color: var(--text); background: rgba(5, 8, 12, 0.7); padding: 1px 6px; border-radius: 4px; }
+.stick.tilt { border-style: dashed; border-color: var(--cyan); } .stick.tilt small { display: block; } .stick.tilt i { width: 30px; height: 30px; margin: -15px 0 0 -15px; background: var(--cyan); }
+@media (orientation: landscape) and (max-height: 480px) { .stick small { top: 50%; left: calc(100% + 8px); transform: translateY(-50%); } }
 .thr { right: 16px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .thr .rail { position: relative; width: 54px; height: 150px; border-radius: 12px; background: rgba(9, 14, 21, 0.45); border: 1px solid var(--line-2); touch-action: none; }
 .thr .rail i { position: absolute; left: 4px; right: 4px; height: 26px; border-radius: 8px; background: rgba(232, 238, 245, 0.85); }
@@ -230,7 +233,7 @@ canvas.chart { width: 100%; height: 230px; display: block; background: var(--ink
         <div><small>ลม</small><b id="iWind">—</b></div>
       </div>
       <div class="ov card" id="card" hidden><button class="x" id="cardX" aria-label="ปิด">×</button><h3 id="cardT"></h3><p id="cardP"></p><div class="facts" id="cardF"></div></div>
-      <div class="ov ctl stick" id="stick" aria-label="คันบังคับ"><i id="stickKnob"></i></div>
+      <div class="ov ctl stick" id="stick" aria-label="คันบังคับ"><i id="stickKnob"></i><small>กดค้างเพื่อตั้งศูนย์</small></div>
       <div class="ov ctl thr" id="thr"><div class="rail" id="thrRail" aria-label="คันเร่ง"><i id="thrKnob"></i></div><small id="thrTxt">THR 25%</small></div>
       <div class="ov ctl brk" id="brk"><button id="btnBrake" type="button">เบรก</button></div>
       <nav class="ov dock" id="dock" aria-label="มุมกล้อง"></nav>
@@ -275,11 +278,15 @@ canvas.chart { width: 100%; height: 230px; display: block; background: var(--ink
             <div class="seg" id="segPilot"><button type="button" data-p="ap">ออโต้ไพลอตบินให้ดู</button><button type="button" data-p="man">บินเอง</button></div>
             <label class="toggle"><input type="checkbox" id="chkAssist" checked>ระบบช่วยบังคับ (คันบังคับสั่งมุมเอียงและมุมเงย)</label>
             <label class="toggle"><input type="checkbox" id="chkAt" checked>คันเร่งอัตโนมัติ (ถือความเร็ว Vapp)</label>
+            <label class="toggle" id="tiltRow" hidden><input type="checkbox" id="chkTilt">บังคับด้วยการเอียงโทรศัพท์ แทนจอยบนจอ</label>
+            <p class="hint" id="tiltTxt" hidden>ถือโทรศัพท์แนวนอนในท่าที่สบาย ตอนเริ่มบินท่านั้นจะเป็นจุดกลาง ถ้าถือตั้งขึ้น (ยกจอขึ้นจากแนวราบ 40° ขึ้นไป) ให้หมุนโทรศัพท์แบบหมุนพวงมาลัยเพื่อเอียงเครื่อง ถ้าถือเกือบราบ ให้กดขอบซ้ายหรือขวาลงแทน เอียงขอบบนเข้าหาตัวเพื่อเงยหัว ออกจากตัวเพื่อกดหัว กดค้างที่วงกลมบนจอเพื่อตั้งศูนย์ใหม่ ถ้าจอหมุนเองระหว่างบิน ทิศการบังคับยังเหมือนเดิม จัดท่าถือให้สบายแล้วกดค้างที่วงกลมเพื่อตั้งศูนย์ใหม่</p>
           </div>
           <div class="brief" id="brief"></div>
           <button class="primary" id="btnStart" type="button">เริ่มบิน</button>
           <p class="foot">ฟิสิกส์: บรรยากาศมาตรฐาน US 1976 ที่ยกมาจาก Orbitlab · พลศาสตร์ 6 องศาอิสระ อินทิเกรต RK4 ที่ 240 Hz · ลมเฉือนตามความสูงและความปั่นป่วนแบบ Dryden · ผลของพื้นต่อแรงยก (ground effect) · ล้อและโช้คแบบสปริง-แดมเปอร์</p>
-          <p class="hint">คีย์บอร์ด: <kbd>↑</kbd><kbd>↓</kbd> ก้ม/เงย · <kbd>←</kbd><kbd>→</kbd> เอียง · <kbd>Q</kbd><kbd>E</kbd> หางเสือ · <kbd>=</kbd>/<kbd>-</kbd> หรือ <kbd>PgUp</kbd>/<kbd>PgDn</kbd> คันเร่ง · <kbd>B</kbd> เบรก · <kbd>C</kbd> เปลี่ยนกล้อง · <kbd>T</kbd> สลับออโต้ไพลอต · <kbd>P</kbd> หยุด</p>
+          <p class="hint">คีย์บอร์ด: <kbd>↑</kbd><kbd>↓</kbd> ก้ม/เงย · <kbd>←</kbd><kbd>→</kbd> เอียง · <kbd>Q</kbd><kbd>E</kbd> หางเสือ · <kbd>=</kbd>/<kbd>-</kbd> หรือ <kbd>PgUp</kbd>/<kbd>PgDn</kbd> คันเร่ง · <kbd>B</kbd> เบรก · <kbd>C</kbd> เปลี่ยนกล้อง · <kbd>T</kbd> สลับออโต้ไพลอต · <kbd>P</kbd> หยุด · ยิ่งกดค้างนานคันยิ่งโยกมาก ปล่อยแล้วคันกลับกลางเอง กด <kbd>Shift</kbd> ค้างไว้เพื่อบังคับทีละน้อย</p>
+          <p class="hint">จอยเกม: ก้านซ้าย เอียง/ก้มเงย · ไกซ้าย/ขวา หางเสือ · ก้านขวาดันขึ้น/ดึงลง คันเร่ง · ปุ่มไหล่ เบรก · <kbd>A</kbd>/<kbd>✕</kbd> สลับออโต้ไพลอต · <kbd>B</kbd>/<kbd>○</kbd> เปลี่ยนกล้อง · <kbd>Start</kbd> หยุด</p>
+          <p class="hint" id="padTxt">จอยเกม: ต่อจอยแล้วกดปุ่มใดก็ได้บนจอยเพื่อเริ่มใช้</p>
         </div>
         <div id="trLive" class="pane" style="padding:0" hidden>
           <header class="ph"><p class="eyebrow" id="liveEyebrow">กำลังบิน</p><h1 id="liveTitle">ร่อนเข้าหาทางวิ่ง</h1><p class="lede" id="liveLede"></p></header>
