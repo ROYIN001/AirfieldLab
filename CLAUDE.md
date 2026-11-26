@@ -10,6 +10,17 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   aerodrome, OpenStreetMap for layout (keep the "© OpenStreetMap contributors (ODbL)" credit in the footer).
 - Military content: public sources only, generic depiction. No unit names, emblems or academy names.
 - Estimated values (building and tower heights, parked aircraft) must be labelled as estimates.
+- Licences (research round 5 §11, round 1 §12): the OSM-derived files in `data/` are ODbL and listed in
+  `data/LICENSE-DATA.md`. A new data file gets a row there, and a new JSON file in `data/` `source` and `license`
+  fields (top level, or in `_meta` where a parameter card keeps its metadata). Its credit joins the footer of both
+  panes (explore and train) when its data arrives, not before; the PNG snapshot stamps `SHOT_CREDIT`
+  (`src/85-shot.js`), the ODbL notice and the link to the data that a screenshot needs. Never commit a source from §11 table 11.3 (GlobalBuildingAtlas, FABDEM, TanDEM-X, IVAO sector
+  files, X-Plane CIFP, BMA BDCTL_POLYGON), an AIP chart or PDF, or GPL/LGPL text or a JSBSim file.
+  `test/licenses.test.mjs` fails on the names in `forbidden_sources` (any case, in `data/`, `src/`, `tools/`, `test/`),
+  on .tif/.tiff/.jp2/.pdf files and on GPL/LGPL or JSBSim text. Review keeps out the rest: an AIP chart in another
+  format, and the two table 11.3 rows that are not on the list (3D-GloBFP, licence not checked; MERIT DEM, only
+  under its ODbL option). Only the owner adds a file or pattern to `gpl_guard_allowlist` in
+  `test/fixtures/license_policy.json`.
 
 ## Commands
 - Build: `node build.mjs` → `dist/index.html`, and copies `data/` (sub-folders included) into `dist/`.
@@ -57,7 +68,15 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   checked again after it, the gust state set aside, and `newtonSolve` stopping without NaN on a singular Jacobian or
   no descent), `input` (shaping, key ramps, the
   sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
-  phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `page` (parses the assembled page
+  phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `aip` (`RWY_DATA`, the derived
+  geometry and the AIP facts in the Thai UI text against `test/fixtures/aip_vtbd_current.json`, research round 5
+  T-A01…T-A19, T-A21, T-A22, T-A24, T-A25), `licenses` (footer credits and links, the cited AIRAC cycle, forbidden
+  sources and file types, `source`/`license` of data files, `data/LICENSE-DATA.md`, README and the MIT `LICENSE`, and
+  no GPL/LGPL text or JSBSim model outside the owner's allowlist: research round 5 §11 T-K01…T-K05 and §12 P3-9, round 1
+  §12 T-S-11, policy in `test/fixtures/license_policy.json`), `oracle` (our model against JSBSim 1.3.3 flying the same
+  elevator, aileron and rudder doublets from the trimmed approach with a model built from our own `AC` numbers,
+  research round 1 §12.8 T-S-01…T-S-03 and T-S-05, fixture `test/fixtures/jsbsim_trainer_doublet.json`),
+  `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
   types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview` command
   line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers every file the
@@ -84,9 +103,19 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   value have regression bands.
   A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
+  The oracle flies from the state, `AC` numbers and field elevation recorded in its fixture, so tuning `AC` or
+  retrimming `setApproach` does not touch it; a change to the terms of `Aircraft.deriv`, or a new or renamed numeric
+  `AC` field, needs the same change in `tools/jsbsim/make_model.py` and a fixture regenerated from a committed tree
+  (`python tools/jsbsim/run_cases.py`, offline, Python ≥ 3.10, `pip install jsbsim==1.3.3`; `tools/jsbsim/README.md`).
+  `step` and `atmosphere` are not mirrored: JSBSim flies its own US 1976 atmosphere, so an atmosphere change that
+  moves the density at 230–310 m (humid air) must leave the oracle on the dry ISA. It does not cover ground effect,
+  the stall blend or the gear. T-S-03 mostly checks the α̇ estimate in `updateAir`, which `make_model.py` does not
+  mirror, so a change to that estimate alone (research task item 17) needs no new fixture. A self-convergence test (240 Hz against 960 Hz) checks that `step` stays RK4.
+  When `AC` moves to `data/aircraft/` (research task item 8), run it with `ORACLE_AC_FROZEN=1` before and after. Its
+  JavaScript side is `test/lib/oracle.mjs`.
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 25-input.js` with
-  `new Function` in strict mode, `test/keys.test.mjs` evaluates `18-keys.js` and `test/siting.test.mjs` evaluates
-  `17-siting.js` the same way, so those six files must stay DOM-free. The siting and lights tests also evaluate `48-data.js` and `60-lights.js`:
+  `new Function` in strict mode, `test/keys.test.mjs` evaluates `18-keys.js`, `test/siting.test.mjs` `17-siting.js` and
+  `test/licenses.test.mjs` `85-shot.js` the same way, so those seven files must stay DOM-free. The siting and lights tests also evaluate `48-data.js` and `60-lights.js`:
   these two may use three.js and the DOM inside their functions, never at the top level. `test/lib/png.mjs` reads the
   land-use PNGs (8-bit greyscale) with `node:zlib`. `build.mjs` exports `assemble()`, `build()`, `dataFiles()`,
   `checkPr()` and `previewHtml()` for the page test. `M` from `test/harness.mjs` also includes `Evaluator`, `aWarnAt`,
@@ -124,6 +153,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 60-lights.js | point-sprite lights with directional colour (`LightSet`); `airfieldLights(field, data)` is the whole lighting layout as data, `alsStands(E)` the approach light stands, `taxiEdgeLights(af)` the places of the taxiway edge lights, `buildAirfieldLights` draws the lights |
 | 70-aircraft.js | trainer model, control-surface and gear animation |
 | 80-hud.js | conformal HUD, ILS/PAPI widget, debrief charts |
+| 85-shot.js | pure: `SHOT_CREDIT` and `stampCredit(g, w, h)`, the credit drawn into the PNG snapshot (ODbL 4.3 and 4.6) |
 | 90-app.js | UI, camera presets and hotspots (Thai), input, training flow, stall-warning horn (Web Audio), frame loop |
 
 ## Frames and units
@@ -420,11 +450,23 @@ Suggested order, each with a Node test before tuning by feel in the browser:
    landing distances, and linearised modes (short period, phugoid, Dutch roll, spiral) frequency and damping.
 
 ## Data provenance (data/)
-- Runways, lights, navaids: AIP Thailand AD 2 VTBD, AIRAC 14 MAY 2026 (https://aip.caat.or.th).
-- Taxiways, aprons, buildings, water, golf course, land use: OpenStreetMap map renders captured and vectorised
-  by the scripts in `tools/` (the source captures are not included; regenerate only if the layout must change).
+- Runways, lights, navaids: AIP Thailand AD 2 VTBD, AIRAC 29 OCT 2026 (AMDT 11/26, https://aip.caat.or.th). The values
+  are unchanged since AIRAC 14 MAY 2026 and in the 26 NOV and 24 DEC 2026 cycles (research round 5 §1 and 5D); check
+  again before AIRAC 21 JAN 2027. `test/fixtures/aip_vtbd_current.json` holds the published values (numbers only,
+  © CAAT): `test/aip.test.mjs` checks `RWY_DATA` against it, and `test/licenses.test.mjs` (T-K05) checks that the
+  footer, the source comment of `src/15-geo.js` and this line cite its cycle. For a new cycle, update the fixture first.
+- Taxiways, aprons, buildings, water, golf course, land use: OpenStreetMap map renders captured and vectorised,
+  mostly by the scripts in `tools/` (the source captures and a few steps are not included, see the "made by" column
+  of `data/LICENSE-DATA.md`; regenerate only if the layout must change).
 - `city.json`: base64 records, generated buildings (9 bytes each) and street lights (5 bytes each); the artifact
   host refuses `.bin`, so binary data travels inside JSON.
+- Licences: `vtbd_af.json`, `land_in.png`, `land_out.png` and `city.json` are derived from OpenStreetMap and
+  available under the ODbL 1.0 (`data/LICENSE-DATA.md`, which `node build.mjs` copies into `dist/` with them).
+  `vtbd_af.json` and `city.json` predate the `source`/`license` field rule (`legacy_data_without_fields` in the
+  policy); a regenerated file gets the fields and leaves that list. The code (every script, those in `docs/research/`
+  included) and the repo's own text are under MIT (`LICENSE`, the owner's choice on 2026-11-25); the files in `data/`
+  follow `data/LICENSE-DATA.md`, data files and quoted material in `docs/research/` that state their own licence
+  (ODbL, CC BY 4.0, Copernicus) keep it, and AIP values are used as numbers with CAAT cited.
 
 ## Working in the cloud (Claude Code on the web)
 - The owner works from the cloud so their computer can stay off. The GitHub Pages site shows `main`; a pull request
@@ -448,8 +490,9 @@ Pages deploys only `main`, so the owner tries a pull request on a private claude
    the same artifact (same file path in the same conversation, or its URL as `url` in a later one).
 
 ## Publishing
-- Live as a claude.ai artifact (multi-file: index.html + the four data files), title "Airfield Lab ดอนเมือง VTBD",
-  slug f3207a70-5bd7-43d8-a606-a2b9b946413a, `downloads` capability declared for the PNG snapshot button.
+- Live as a claude.ai artifact (multi-file: index.html + every file in `data/`, now the four data files and
+  `LICENSE-DATA.md`), title "Airfield Lab ดอนเมือง VTBD", slug f3207a70-5bd7-43d8-a606-a2b9b946413a, `downloads`
+  capability declared for the PNG snapshot button.
 - The earlier fictional-airfield prototype is a separate artifact (827d3f8b-1c74-4a51-b9e5-6ef7ea33b59c).
 - Pull request previews are separate private artifacts titled "พรีวิว PR #n · Airfield Lab ดอนเมือง VTBD". The live
   artifact is always republished from a plain `node build.mjs` (`dist/`), never from `dist-preview/`.

@@ -1,0 +1,32 @@
+{
+ "license_policy": {
+  "src": "docs/research/05-airport-city.md §11 (round 5, plan item A4); gpl_guard from docs/research/01-flight-physics/12-other-sims.md T-S-11 (round 1, R1-4)",
+  "conf": "กลาง",
+  "note": "test/licenses.test.mjs reads this file. The keys follow the §11 JSON block, except aip_cycle_current: T-K05 takes the cycle from test/fixtures/aip_vtbd_current.json. Every change to this file needs the owner's approval in the pull request, above all one that weakens a check: removing an entry from forbidden_sources, forbidden_sources_dirs, forbidden_extensions_in_repo, required_footer_terms, conditional_footer_terms or odbl_derived_files, adding one to forbidden_sources_skip, gpl_guard_allowlist or legacy_data_without_fields, or changing code_license. test/licenses.test.mjs also pins the §11 minimum of most of these lists.",
+  "code_license": {"spdx": "MIT", "file": "LICENSE", "copyright": "Copyright (c) 2026 ROYIN001", "decided": "the owner, on a decision card, 2026-11-25 (research round 5 §12 P3-9)", "scope": "the code (src/, test/, tools/, build.mjs and every script, those in docs/research included) and the repository's own text (README, CLAUDE.md, the research reports); the files in data/ follow data/LICENSE-DATA.md (ODbL 1.0 for the OpenStreetMap-derived ones), data files and quoted material in docs/research that state their own licence (ODbL, CC BY 4.0, Copernicus data) keep it, and AIP values are used as numbers with CAAT cited"},
+  "required_footer_terms": ["OpenStreetMap", "ODbL", "AIP Thailand", "ใช้เพื่อการฝึกในเกมเท่านั้น"],
+  "required_footer_terms_note": "§11 footer_proposed_th. Each pane of the page (explore and train) carries them, since a pane hides the other while it is open.",
+  "conditional_footer_terms": {
+   "data/city_v2.json": ["Overture Maps Foundation", "Google Open Buildings"],
+   "data/landmarks.json": ["Overture Maps Foundation"],
+   "src/16-palette.js": ["Contains modified Copernicus Sentinel data"],
+   "data/vtbd_procs.json": ["AIP Thailand"],
+   "data/vtbd_stands.json": ["AIP Thailand"]
+  },
+  "forbidden_sources": ["GlobalBuildingAtlas", "FABDEM", "TanDEM-X", "ivaoth/sector-file", "CIFP", "BDCTL_POLYGON"],
+  "forbidden_sources_note": "Matched without regard to case. §11 table 11.3 forbids X-Plane 12 CIFP (navigation data), which CIFP covers; the §11 JSON's bare X-Plane is left out, so that citing an X-Plane manual as a design reference (round 1 §11, input research) stays allowed.",
+  "forbidden_sources_dirs": ["data", "src", "tools", "test"],
+  "forbidden_sources_skip": ["test/fixtures/license_policy.json"],
+  "forbidden_extensions_in_repo": [".tif", ".tiff", ".pdf", ".jp2"],
+  "odbl_derived_files": ["data/vtbd_af.json", "data/city.json", "data/land_in.png", "data/land_out.png", "data/city_v2.json", "data/vtbd_stands.json", "data/vtbd_buildings.json"],
+  "odbl_derived_files_note": "§11 lists the JSON files; data/land_in.png and data/land_out.png are added here because tools/landclass.py classifies them from OpenStreetMap renders (src/48-data.js credits them to OpenStreetMap contributors). A data JSON file whose source names OpenStreetMap or OSM, or whose license names ODbL, must be on this list, so that README and data/LICENSE-DATA.md list it too.",
+  "legacy_data_without_fields": ["data/vtbd_af.json", "data/city.json"],
+  "legacy_data_without_fields_note": "§11 item 3 asks for top-level source and license fields in every new JSON file under data/ (or in _meta, where a parameter card whose leaves follow {v, u, scope, ...} keeps its metadata). These two predate the rule and are documented in data/LICENSE-DATA.md and README.md instead; a regenerated file gets the fields and leaves this list.",
+  "gpl_guard_allowlist": {
+   "docs/research/01-flight-physics/11-input.md": {"why": "research text: quotes the FlightGear licence names", "patterns": ["gpl", "spdx"]},
+   "docs/research/01-flight-physics/12-other-sims.md": {"why": "research text: defines T-S-11 and quotes its patterns", "patterns": ["jsbsim_model", "license_name", "gpl", "lgpl"]},
+   "docs/research/01-flight-physics/scripts/s12/s12_oracle_jsb.py": {"why": "research prototype: writes our own JSBSim model to a temp folder, outside the repo", "patterns": ["jsbsim_model"]},
+   "docs/research/03-airliners/07-flight-controls.md": {"why": "research text: quotes the licence lines of two GPL airliner add-ons", "patterns": ["gpl"]}
+  }
+ }
+}
