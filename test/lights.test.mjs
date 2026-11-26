@@ -242,6 +242,10 @@ test('taxiway edge lights on a made-up field: a junction, an apron with a hole, 
   assert.equal(got.length, 5 + 9, 'five lights along A, nine along B, and no other');
   // with the hole filled in, the light at 90 m north goes too
   assert.equal(M.taxiEdgeLights({ ...af, apron: af.apron.map((a) => ({ o: a.o })) }).length, got.length - 1);
+  // and with the edge of the hole 2.1 m from that light: in the hole still, but under the 3 m beside the apron
+  const tight = [af.apron[0], { o: af.apron[1].o, h: [P([[70, 10], [110, 10], [110, 60], [70, 60]])] }];
+  const gotTight = M.taxiEdgeLights({ ...af, apron: tight }).map(([e, n]) => [r6(e - e0), r6(n - n0)]);
+  assert.ok(gotTight.length === got.length - 1 && !gotTight.some((g) => g[0] === 90 && g[1] === 12.1), 'the 3 m count from the edge of a hole too');
   // A jog of 2 m in a straight line (the vector lines have them): the lights at the jog still stand square to the
   // run of the taxiway, 12.1 m from the line, one on each side. Square to the 2.8 m piece under the station they
   // would stand 8.6 m from it, on the pavement.
