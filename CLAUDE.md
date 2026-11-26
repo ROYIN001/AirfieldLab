@@ -29,13 +29,30 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   page imports; both three.js cache folders sit inside the CI cache; the harness fails fast on an unpinned file,
   fetches through the proxy and seeds each flight), `visibility` (MOR helpers in `10-atmo.js`, research VIS-1…VIS-3,
   the haze mixed before the sRGB encode as one exact block, `SkySystem.applySunHaze` run on a stub sky, the dome's
-  shader text, and that the sky, the fog, the lights, the sunlight and the visibility choices use them). Autoland
+  shader text, and that the sky, the fog, the lights, the sunlight and the visibility choices use them), `siting`
+  (the Annex 14 and AIP numbers in `17-siting.js`, surface heights worked by hand, the approach light lanes,
+  `SiteIndex`; then the trees and generated buildings of the real data in both quality settings, every one tried
+  again with separate geometry code and against the page's own counts: the trees that stay are the same trees as
+  before the rules, drawn from the random stream as the page leaves it after the footprint colours; the kept
+  buildings that a road cuts in two are pinned, one in the balanced quality and one more in the high one, and the
+  map mirrored east-west or north-south gives every building the same answer; about 17 s),
+  `lights` (`airfieldLights` in `60-lights.js`: every runway and approach light read back by its place and by the
+  colour a pilot sees from the approach, from the runway and from beyond the end; the brightness of each system
+  (regression pins) and the slots `LightSet.build` fills for the shader, on a stand-in for three.js; the whole layout
+  run on the real taxiways, roads and street-light records, with PAPI, beacon and obstruction lights and a pinned
+  table of every steady light; every taxiway edge light tried with separate geometry code, every place without one
+  held to a cause, every free corner of a junction lit, no bare edge dark over 54 m, and the same places with every
+  line drawn the other way round; the stands of
+  `alsStands` against the real pavements; every flash seen at 20, 30 and 60 frames a second). Autoland
   score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is a loose 50); touchdown
   points and every mode value have regression bands. A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
-  `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, and
-  `test/keys.test.mjs` evaluates `18-keys.js` the same way, so those four files must stay DOM-free. `build.mjs`
-  exports `assemble()`, `build()`, `dataFiles()`, `checkPr()` and `previewHtml()` for the page test.
+  `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode,
+  `test/keys.test.mjs` evaluates `18-keys.js` and `test/siting.test.mjs` evaluates `17-siting.js` the same way, so
+  those five files must stay DOM-free. The siting and lights tests also evaluate `48-data.js` and `60-lights.js`:
+  these two may use three.js and the DOM inside their functions, never at the top level. `test/lib/png.mjs` reads the
+  land-use PNGs (8-bit greyscale) with `node:zlib`. `build.mjs` exports `assemble()`, `build()`, `dataFiles()`,
+  `checkPr()` and `previewHtml()` for the page test.
 - Screenshots: `node test/shots.mjs <set> [--dist <built page>] [--out <dir>] [--pin <three-pin.mjs>]` (Playwright +
   Chrome, SwiftShader; sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `vis`, `all`). It builds the
   working tree into `.cache/shots-dist` unless `--dist` is given, writes PNGs to `shots/`, and serves three.js from
@@ -56,14 +73,15 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 00-head.js | three.js imports (OrbitControls, BufferGeometryUtils) |
 | 10-atmo.js | pure: constants (KT, FT, NM, DEG, RAD, G0), USSA-1976 `atmosphere(h, isaDev)`, NOAA sun position, sky radiance, MOR visibility (`morBeta`, `hazeDepth`, `hazeDepthUp`, `skyHazeBeta`, `sunHazeT`) |
 | 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
+| 17-siting.js | pure: where something tall may stand: obstacle limitation surfaces `olsHeight(e, n)`, approach light lanes `alsLaneOf`, `ALS` (length and spacing per system), `RWY_PAD`, `TWY_W`, `SiteIndex` (clearances from buildings, decks, aprons, taxiways, water; the land-use class under a point), `STATIONS` and `stationSites(af)`, `mappedSite`, `placeTrees`, `siteBuildings` (`buildingProblem`, `groundShare`); also `rwyST`, `rwyEN`, `onAnyRunway`, `pointInPoly`, `nearestOnLine`, `lineLength`, `pointAlong` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions; `app.keys`) |
 | 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()` (fog = MOR haze, `HAZE_GLSL`), `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
 | 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` |
-| 50-airfield.js | land-use bake on the GPU + ground shader, runway marking shader (per runway), taxiways, aprons, hold lines, terminal, towers, navaids, windsocks, masts |
-| 55-city.js | instanced city buildings, OSM footprints, tollway / SRT viaduct / BTS + stations, trees, parked airliners |
-| 60-lights.js | point-sprite lights with directional colour (`LightSet`) and the AIP lighting layout |
+| 50-airfield.js | land-use bake on the GPU + ground shader, runway marking shader (per runway), taxiways, aprons, hold lines, terminal, towers, navaids, approach light stands, windsocks, masts |
+| 55-city.js | instanced city buildings (those that pass `siteBuildings`), OSM footprints, tollway / SRT viaduct / BTS (`VIADUCT` deck sizes) + stations from `stationSites`, trees from `placeTrees`, parked airliners |
+| 60-lights.js | point-sprite lights with directional colour (`LightSet`); `airfieldLights(field, data)` is the whole lighting layout as data, `alsStands(E)` the approach light stands, `taxiEdgeLights(af)` the places of the taxiway edge lights, `buildAirfieldLights` draws the lights |
 | 70-aircraft.js | trainer model, control-surface and gear animation |
 | 80-hud.js | conformal HUD, ILS/PAPI widget, debrief charts |
 | 90-app.js | UI, camera presets and hotspots (Thai), input, training flow, frame loop |
@@ -107,6 +125,80 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Airfield lights are on at night and by day at 5 statute miles or less: the FAA rule for approach lights by day
   (JO 7110.65BB para 3-4-5), used for all airfield lights because no Thai or ICAO day threshold was found in a public
   source.
+
+## Siting and airfield lights (current)
+- Trees (from land-use classes) and generated city buildings know nothing about the airport, so `17-siting.js` drops
+  the ones that cannot stand where they fall. The trees that stay are the same trees as before (the random stream is
+  used the same way); mapped buildings (OSM footprints) are never dropped. The rules:
+  - Obstacle limitation surfaces of ICAO Annex 14 Vol I, Chapter 4 (Tables 4-1 and 4-2, code 4 instrument runway;
+    Thailand files no difference, AIP GEN 1.7): approach 2 % then 2.5 % from 60 m before each threshold (the displaced
+    THR 21L included), take-off climb 2 % from the end of the 150 m clearway (AIP AD 2.12), transitional 14.3 %, inner
+    horizontal 45 m, conical 5 %. The ground is flat, and the strip is taken as wide as the approach inner edge
+    (280 m; the declared strips are narrower). Annex 14 has a new Chapter 4 that applies from 21 Nov 2030.
+  - Approach light lanes: nothing within 60 m of the centre line along each system (Annex 14, 5.3.4; lengths from
+    AIP AD 2.14: 03L 420 m, 21R 900 m, 03R 300 m, 21L 900 m).
+  - Clearances: 43.5 m from a taxiway centre line and 40 m from a stand taxilane (Annex 14 Table 3-1, code letter
+    E), 7.5 m from an apron (3.13.6), and our own choices: half a crown from a building, a whole crown from a viaduct
+    deck or station, one map cell (2.5 m) plus the crown from water. A generated building also goes when its centre
+    is in water or on a bank line, when a fifth of its footprint (`WET_MAX`) is on water, when a third of its
+    footprint (`ROAD_MAX`) is on a road or railway of the land-use map, or when any of nine points of its outline is
+    on a mapped building, under a deck or a station roof, or in a lane. `groundShare` samples the footprint; a sample
+    on a cell border (within a micrometre of it) counts half for each side (`SiteIndex.eachClassAt`), so a house gets the
+    same answer on either side of a road or a canal. A building beside a road stays, and for roads the centre is
+    not asked: the city data puts no centre inside a road cell, only on a cell border.
+  - The index (`mappedSite`) holds the stations and the footbridge before anything is placed; `buildCity` does not
+    keep it (with every building in it, it is 35 to 55 MB).
+  - Measured on 2026-11-26 (balanced quality): 7,393 of 9,911 trees and 54,773 of 57,895 generated buildings stay
+    (2,334 buildings stood on a road or railway, nearly all shophouses, four in five of them standing alone and no
+    group larger than five; 684 in water, 101 under a deck or a station; high quality: 16,631 of 24,029 trees and
+    89,852 of 94,612 buildings). `test/siting.test.mjs` pins these counts. One kept building of the balanced
+    quality has a twentieth or more of its footprint beyond a road (6 %, beyond a lane that turns under it), and one
+    more of the high quality (a quarter, where two lanes meet corner to corner under it); with a half instead of a
+    third it would be 10 and 23. Ground that hangs on by a neck under half a metre wide counts as beyond, and by one
+    up to 0.9 m it may, by the slant of the neck (the test reads the ground at points a quarter of a metre apart).
+    The wood before THR 03R (OpenStreetMap) stays from about 700 m before the threshold, where it is under the 2 %
+    surfaces; single trees on farm land stay from about 490 m.
+- Runway and approach lights follow AIP AD 2.14 for what each end has and Annex 14, 5.3 for the layout: threshold
+  lights 3 m apart, green toward the approach only (THR 21L is displaced: a one-way green row with wing bars at the
+  threshold, red end lights at the pavement end); edge lights 60 m, red before THR 21L, yellow over the last 600 m;
+  centre line lights on 03L/21R; touchdown zone lights on 21R with 18 m between the rows; CAT II red side rows in
+  line with them and a 150 m crossbar; flashing lights on 21R beyond 300 m and on 21L beyond the pavement.
+  Approach lights over pavement are inset: before THR 21L, and over the 60 m pad the runway mesh draws beyond every
+  paved end (`RWY_PAD`; the picture's own, the AIP declares no stopway). Beyond it they stand on `alsStands`: one
+  cross-arm per group of lights (`alsArms`), 0.9 m high at the end of the pad and rising 1.2 % outward (up to 11 m
+  at 900 m before THR 21R, 6.8 m before THR 21L). A flashing light stays lit 40 ms (`SFL_FLASH`) so that no flash
+  falls between two frames.
+- Taxiway edge lights: AIP AD 2.15 (AIRAC 29 OCT 2026; research round 5, `5a-aip.md`: table B4 has edge lights on
+  every taxiway, the JSON block of that section gives them as blue), so `taxiEdgeLights(af)` walks every taxiway
+  polyline of `vtbd_af.json`, whatever its tag (before, only the 28 % tagged `twy` had lights, and TWY C beside the
+  main runway had four, on one 72 m piece): a light on each side every 45 m, the stations centred on each line (a
+  short connector has a pair in its middle, and the layout is the same whichever way a line was drawn), 0.6 m outside
+  the edge of the 23 m `TWY_W` (Annex 14, 5.3.18), square to the run of the line over 25 m (the vector lines have
+  jogs). An edge light never stands on pavement: none within `TWY_W / 2` of any taxiway centre line (junctions), on an
+  apron or within 3 m of an apron outline (`APRON_EDGE`), so the side of a taxiway that runs along an apron is dark. A
+  place that falls on the pavement of one joining taxiway moves to the corner where the two edges meet, if that corner
+  is within 3 m of the line's own edge (`TWY_EDGE.out`, the 3 m of 5.3.18; 22 lights stand at such corners, and
+  without them the inside of a corner where three taxiways meet was dark over 86 to 92 m along the edge, 72 m straight
+  across, and two acute corners over 70 and 65 m). No two lights stand within 7.5 m of each other (`TWY_EDGE.gap`:
+  where two lines set a light for the same corner under 7.5 m apart, one stands; with 15 m a light across a junction
+  stood in for the light of another edge, and three straight edges were dark over 62 to 67 m); 417 lights, at 424 of
+  the 942 places, and no bare edge is dark over more than 51 m measured straight across (`test/lights.test.mjs`
+  follows every edge a quarter of a metre at a time).
+  Round a patch of grass between taxiways the edge has no light over about 100 m at three junctions (no straight
+  part of it over 35 m; left as it is).
+  One of them stands inside a mapped water outline beside a taxiway (a data overlap, as before). Not drawn: the
+  taxiway centre line lights of TWY D, E, F, J, O, R, S and C (south) (the vector lines carry no names; research
+  round 5 has them in `tw_names.json`, not yet in the page data) and the intermediate holding position lights along
+  TWY C.
+- Estimates in the lighting: the 30 m spacing of the 420 m simple system on 03L (60 m is also allowed), stand
+  heights and their rise, the wing bars at 21L (the AIP column was not read), that the 900 m of the 21L system are
+  measured from the displaced threshold (so its first 350 m are inset in the runway), the number of lights in a
+  barrette, the 1.5 m between the lights of the 300 m crossbar and the places of the 150 m crossbar lights, the 60 m
+  between touchdown zone barrettes, the 0.6 m of edge lights outside the edge (`EDGE_OUT`), the length of a flash
+  and the 15 ms between one flashing light and the next, the 45 m between taxiway edge lights, the 3 m kept from an
+  apron and the 7.5 m under which two taxiway edge lights count as one. Estimates in the siting: every taxiway is
+  taken 23 m wide (AIP AD 2.8 gives 23 to 50 m), and the positions of the three stations carry no recorded source
+  (research round 5, `5c-city.md`, has the Red Line station 656 m from the one drawn: to be checked).
 
 ## Controls (current)
 - Keyboard (physical keys, `KeyboardEvent.code`, so a Thai layout works; map in `src/18-keys.js`): W/S or ↑/↓

@@ -297,21 +297,6 @@ function plSample(P, step, fn) {      // calls fn(point, unitDir, distance) ever
     acc += l;
   }
 }
-function pointInPoly(p, poly) {
-  let inside = false;
-  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    const [xi, yi] = poly[i], [xj, yj] = poly[j];
-    if ((yi > p[1]) !== (yj > p[1]) && p[0] < ((xj - xi) * (p[1] - yi)) / (yj - yi) + xi) inside = !inside;
-  }
-  return inside;
-}
-// runway-local coordinates for every runway (s along the low→high direction from the paved start, t to the right)
-function rwyST(R, e, n) { const dn = n - R.p0[0], de = e - R.p0[1]; return [dn * R.u[0] + de * R.u[1], dn * R.r[0] + de * R.r[1]]; }
-function rwyEN(R, s, t) { return [R.p0[1] + R.u[1] * s + R.r[1] * t, R.p0[0] + R.u[0] * s + R.r[0] * t]; }   // → [e, n]
-function onAnyRunway(e, n, margin = 0) {
-  for (const R of RUNWAYS) { const [s, t] = rwyST(R, e, n); if (s > -margin && s < R.len + margin && Math.abs(t) < R.w / 2 + margin) return R; }
-  return null;
-}
 
 function buildAirfield(scene, renderer, data, quality) {
   const root = new THREE.Group(); root.name = 'airfield'; scene.add(root);
@@ -335,11 +320,11 @@ function buildAirfield(scene, renderer, data, quality) {
   addLayer(mergeFlat(af.golf.map((p) => polyGeo(p.o, p.h))), golfMat, -19);
   addLayer(mergeFlat(af.water.map((p) => polyGeo(p.o, p.h))), waterMat, -18);
 
-  // ── taxiways (concrete, 23 m) with asphalt shoulders, aprons ──
+  // ── taxiways (concrete, TWY_W = 23 m) with asphalt shoulders, aprons ──
   const twyMat = procMat('twy', PAVE_FRAG('twy')), shMat = procMat('shoulder', PAVE_FRAG('shoulder')), apMat = procMat('apron', PAVE_FRAG('apron'));
   const twys = af.tw.filter((t) => t.k === 'twy'), lanes = af.tw.filter((t) => t.k === 'lane');
   addLayer(mergeFlat(twys.map((t) => ribbonGeo(t.p, 44))), shMat, -17);
-  addLayer(mergeFlat([...twys.map((t) => ribbonGeo(t.p, 23)), ...lanes.map((t) => ribbonGeo(t.p, 23))]), twyMat, -16);
+  addLayer(mergeFlat([...twys.map((t) => ribbonGeo(t.p, TWY_W)), ...lanes.map((t) => ribbonGeo(t.p, TWY_W))]), twyMat, -16);
   addLayer(mergeFlat(af.apron.map((p) => polyGeo(p.o, p.h))), apMat, -15);
 
   // ── runways ──
@@ -354,7 +339,7 @@ function buildAirfield(scene, renderer, data, quality) {
       uThr: { value: new THREE.Vector2(R.sThr[0], R.sThr[1]) }, uGlyA: { value: gl(A) }, uGlyB: { value: gl(B) }, uConc: { value: new THREE.Vector2(R.conc[0], R.conc[1]) },
       uNS: { value: R.w >= 60 ? 8 : 6 }, uDigits: { value: digits },
     }, 'uniform vec2 uO, uU, uR, uThr, uConc; uniform float uLen, uW, uNS; uniform vec3 uGlyA, uGlyB; uniform sampler2D uDigits;');
-    const c0 = rwyEN(R, -60, 0), c1 = rwyEN(R, R.len + 60, 0);
+    const c0 = rwyEN(R, -RWY_PAD, 0), c1 = rwyEN(R, R.len + RWY_PAD, 0);   // with a pad of pavement beyond each end
     const geo = ribbonGeo([c0, c1], R.w + 15, { caps: false });
     const m = addLayer(geo, mat, -12);
     out.runways.push(m);
@@ -384,8 +369,9 @@ function buildAirfield(scene, renderer, data, quality) {
           const pe = -d[1], pn = d[0];
           for (const [off, dashed] of [[-0.45, false], [-0.15, false], [0.15, true], [0.45, true]]) {
             const c = [p[0] + d[0] * off * tw, p[1] + d[1] * off * tw];
-            if (!dashed) ym.push(ribbonGeo([[c[0] - pe * 11.5, c[1] - pn * 11.5], [c[0] + pe * 11.5, c[1] + pn * 11.5]], 0.15, { caps: false }));
-            else for (let k = -11.5; k < 11.5; k += 1.8) { const k2 = Math.min(k + 0.9, 11.5); ym.push(ribbonGeo([[c[0] + pe * k, c[1] + pn * k], [c[0] + pe * k2, c[1] + pn * k2]], 0.15, { caps: false })); }
+            const hw = TWY_W / 2;   // across the whole taxiway
+            if (!dashed) ym.push(ribbonGeo([[c[0] - pe * hw, c[1] - pn * hw], [c[0] + pe * hw, c[1] + pn * hw]], 0.15, { caps: false }));
+            else for (let k = -hw; k < hw; k += 1.8) { const k2 = Math.min(k + 0.9, hw); ym.push(ribbonGeo([[c[0] + pe * k, c[1] + pn * k], [c[0] + pe * k2, c[1] + pn * k2]], 0.15, { caps: false })); }
           }
         }
         prev = inS ? v : null;
@@ -506,14 +492,11 @@ function buildAirfield(scene, renderer, data, quality) {
       put(M.grey, boxGeo(1.4, 0.15, 1.1, 0, 0.08, 0), E.papi, t);
       out.papiPos.push({ e: at(E.papi, t)[0], n: at(E.papi, t)[1], u: [ue, un], ang });
     }
-    // approach-light stands beyond the paved end
-    const alsLen = { CAT2: 900, CAT1: 900, SALS420: 420, SALS300: 300 }[E.als];
-    const paved = E.disp;   // inset lights over the displaced pavement, stands beyond
-    for (let s = 30; s <= alsLen; s += 30) {
-      if (s <= paved + 5) continue;
-      const hgt = 0.9 + s * 0.012;
-      put(M.grey, cylGeo(0.08, 0.1, hgt, 6, 0, hgt / 2, 0), -s, 0);
-      put(M.grey, boxGeo(0.12, 0.12, 4.6, 0, hgt, 0), -s, 0);
+    // approach-light stands beyond the pavement (alsStands in 60-lights.js; lights over pavement are inset): for
+    // each group of lights a cross-arm as wide as the group on a pole, with two more poles under a crossbar
+    for (const { s, hgt, arms } of alsStands(E)) for (const { tc, half, poles } of arms) {
+      for (const t of poles) put(M.grey, cylGeo(0.08, 0.1, hgt, 6, 0, hgt / 2, 0), -s, t);
+      put(M.grey, boxGeo(0.12, 0.12, 2 * half + 0.6, 0, hgt, 0), -s, tc);
     }
   }
   // windsocks (AIP AD 2.15): WDI 1 375 m from THR 21R and 179 m from its centre line between the runways; WDI 2 left of THR 21L
