@@ -95,13 +95,38 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   T-LS-11 (ก)(ข)(ค), T-LM-13; `typeInfo` and `modelSpec` of `src/22-types.js` (the Thai card, lede and notes of each
   type, the model fit); `loadCards` with a stub fetch (Thai errors, never rejects); the owner's rule that no military
   user is named, not even generically (cards, `22-types.js`, the selector lines of `90-app.js`); the page wiring by
-  regex), `types` (plan C1: research round 2 tests flown through the cards at the research's masses and tolerances,
-  C172S T-LC-04, 06–08, 12–14, 20–24, 31, C172R T-LE-05–07, 11–13, 19–23, DA40 T-LD-27, 28, 31; four known gaps held
-  by regression bands with the research value in `t.diagnostic`: T-LE-09 Vx 57.4 ± 1.5 KCAS (research 62 ± 3, its
-  60 was the first point of its 2-kt sweep, not a maximum; the test checks that the largest γ of its 1-kt sweep is
-  not an end point; task item 20), T-LD-29 50 ft 507.2 m ± 3 % (research 450 ± 45), T-LD-30 vmax 114.2 ± 1 KTAS
-  (142 ± 3), T-LD-32 50 ft 574.4 m ± 3 % (640 ± 64; the research flew the trainer's thrust line), the last three task
-  item 13; then the six-type autoland smoke test of "Verified"), `input` (shaping, key ramps, the
+  regex), `types` (plan C1 and C2, the per-type regression lock; about 23 s: research round 2 tests flown through the cards at the
+  research's masses and tolerances. C1: C172S T-LC-04, 06–08, 12–14, 20–24, 31, C172R T-LE-05–07, 11–13, 19–23, DA40
+  T-LD-27, 28, 31, with four known gaps held by regression bands and the research value in `t.diagnostic`: T-LE-09 Vx
+  57.4 ± 1.5 KCAS (research 62 ± 3, its 60 was the first point of its 2-kt sweep, not a maximum; the test checks that the
+  largest γ of its 1-kt sweep is not an end point; task item 20), T-LD-29 50 ft 507.2 m ± 3 % (research 450 ± 45), T-LD-30
+  vmax 114.2 ± 1 KTAS (142 ± 3), T-LD-32 50 ft 574.4 m ± 3 % (640 ± 64; the research flew the trainer's thrust line), the
+  last three task item 13. C2: the trainer through lm_card, T-LM-02…07 (V_SR 71.9/79.6 KEAS, Vy 128 kt, ROC 3,225 fpm,
+  L/D 16.5/21.7, approach modes, takeoff 590 m and landing 714 m, round 1's numbers on today's sim); T-LM-31 (the leaf
+  `lateral_mode_tolerance`, its class ranges applied to R / sim on the P2006T's flight-test Dutch roll, and the spiral
+  rule T2 ≥ 12 s on every card); the C152 at 757.5 kg, T-LF-01…06, 08, 10–12, 14, 18, 20, 21, 26–28 (research item 11's
+  list), and the P2006T at 1,180/1,230 kg and its training mass, T-LG-01…12, 14–17, 19, both through a card made in memory
+  by `test/lib/rcard.mjs` (the way `build_cards.mjs` makes the six, nothing written, the page does not offer them); the
+  DA42 NG and TAE 125, T-LT-01…05, 07–09, 11–16, which the plan's list leaves out but "every card" asks for. Stall rows
+  use the project's definition (R2-04, plan B5), C1's too (T-LC-06–08, T-LE-05–07, T-LD-27, 31): the sim's V_SR at 1 g
+  against the POH's VS (KCAS) / √0.95 at the research tolerance (DA40 flaps UP ± 5, OD-DA40-CLMAX), the research's Vmin in
+  `t.diagnostic`. Then the stall-recovery robot pilot
+  (`test/lib/stall_recovery.mjs`, a test pilot, not a page feature, research task item 23): entry as `lm_card.stallTest`
+  (1 kt/s, idle, 3,000 ft, flaps UP), at the break (CL 1 % under its peak) α down until the stall warning stops (α_warn −
+  `aWarnHyst`), full power, wings level, height lost to zero sink rate. T-LD-41 (da40ng, da40_180, da40d), T-LT-33
+  (da42ng), T-LP-62…65 (pc9m, pc7mk2, t6a, t6c at MTOW), T-LG-26 (p2006t 1,180 kg) are all known gaps: the sim loses
+  47–131 ft against the research's class values 180–470 ft (h = c·VS1²), pinned ± 3 %; plans F6 and G4 re-baseline them.
+  The robot recovers when CL is 1 % under its peak (α 2.7–2.9° under `AC.aStall`, stall blend fraction about 0.11), so the
+  pins cover the lift peak and the first part of the break only: the post-stall drag and pitch terms are not exercised and
+  nothing pins them. The test asserts that each entry reached the peak (α and CL against `simCLmax`) and the break.
+  Then `LOCK`: every card at its training mass pinned (V_SR per detent, Vy/ROC/Vx, best glide, takeoff, trim and the
+  linear modes at cruise and approach, recovery; 1.5 % bands, floor 0.02° on the trim α and 0.002 elsewhere), `AUTOLAND` (score and touchdown of the four calm
+  landings and of `xl` on 21R, with the stall-horn height: ± 7 points and 4 m, ± 5 points, 8 m and 20 ft) and `DEFERRED`
+  (the ids of C2's list that nothing asserts, and the unreachable ids of the same topics, each with the reason and the
+  research item or plan item that enables it; the last test checks the list against the test titles).
+  `TYPES_LOCK_PRINT=1 node --test test/types.test.mjs` prints the numbers of `LOCK`, `AUTOLAND` and the recovery pins as
+  the current model gives them, for a physics PR that moves them on purpose; then the six-type autoland smoke test of
+  "Verified"), `input` (shaping, key ramps, the
   sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
   phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `aip` (`RWY_DATA`, the derived
   geometry and the AIP facts in the Thai UI text against `test/fixtures/aip_vtbd_current.json`, research round 5
@@ -138,6 +163,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   value have regression bands.
   A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
+  `test/lib/rcard.mjs` `researchCard(id)` makes a simulator card in memory for a round 2 type with no file in
+  `data/aircraft/` (C152, P2006T, the turboprops, DA40 NG) and `test/lib/stall_recovery.mjs` `stallRecovery(M, opts)` is
+  the stall-recovery robot pilot (plan C2); both are for tests only.
   The oracle flies from the state, `AC` numbers and field elevation recorded in its fixture, so tuning `AC` (the
   card) or retrimming `setApproach` does not touch it; a change to the terms of `Aircraft.deriv`, a new or renamed
   numeric `AC` field, or `AC.engines` other than one engine along body +x through the CG (the oracle checks it), needs
@@ -353,7 +381,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   about 2.5–3.2° of α between the trimmed approach and the 7 kt warning angle (`setApproach` 5,500 m out: α −0.13°
   against 2.42° on da40_180, −0.32° against 2.84° on da40d; 5.5–6.8° on the other four), with the autopilot flying
   Vref with no gust additive (the owner's open choice above matters most for them). Plan C2 turns these into
-  regression bands for every type.
+  regression bands for every type (`AUTOLAND` in `test/types.test.mjs`).
 
 ## Visibility (current)
 - The visibility choice (500 m to 40 km, default 20 km) is MOR (WMO-No. 8; research round 4 §6.8): extinction
@@ -511,8 +539,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   shared with round 3. `params-light.json` is merged by `scripts/lm_merge.mjs`; `scripts/lm_lib.mjs` `loadType(id)`
   resolves a card, and `scripts/lm_card.mjs` `buildAC(card)` / `applyAC(M, ac)` load it into the current sim for tests.
   The card owns `speeds.VREF_kt` / `VAPP_kt`; handling (08) and procedures (09) quote it. Task item 10 (the type
-  selector, cards from `params-light.json`) is done by plan C1; C2 (regression lock over all types), C3 (KIAS on the
-  HUD) and C4 (airliner cards through the same reader) follow. After editing any JSON block,
+  selector, cards from `params-light.json`) is done by plan C1 and item 11 (the regression lock over all types, `test/types.test.mjs`)
+  with item 23 (the stall-recovery robot) by plan C2; C3 (KIAS on the HUD) and C4 (airliner cards through the same
+  reader) follow. After editing any JSON block,
   `node docs/research/02-light-aircraft/scripts/lm_merge.mjs --coverage --dry --strict` must report 0 warnings
   (`--strict` exits 1 on any warning, and on a card with round-1 per-type paths neither filled nor in `_na`); then run
   it without `--dry` to rewrite `params-light.json` and commit it (CI checks that the file is up to date).
