@@ -1,6 +1,7 @@
 name: Deploy to GitHub Pages
 
-# Pull requests into main run the tests and the build without deploying; pushes to main also deploy.
+# Pull requests into main run the tests and the build without deploying and keep the build as an Actions artifact;
+# pushes to main also deploy.
 on:
   push:
     branches: [main]
@@ -30,6 +31,17 @@ jobs:
         run: node --test --test-timeout=300000 "test/**/*.test.mjs"
       - name: Build
         run: node build.mjs
+      # a pull request keeps this build (the PR merged into main, as checked out for pull_request events) as an Actions
+      # artifact; the Pages source stays as it is. The page to try is the private claude.ai preview linked from the PR
+      # body (CLAUDE.md, "Preview each pull request")
+      - name: Keep the pull request's build
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-pr-${{ github.event.pull_request.number }}
+          path: dist
+          retention-days: 14
+          if-no-files-found: error
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
         with:

@@ -9,12 +9,14 @@
 // the simulator they run on; T-LM-33 (R2-04) the stall comparison (V_SR, nz at Vmin); T-LM-34 (R2-06, in lm_legacy_fit.tests)
 // legacy fit without speeds.VY_kt, --T0 and the vy-mode bounds; T-LM-23 extended (R2-03) src codes resolve to a reference
 // line (src_ref); T-LM-35 (R2-05) the open_model check; T-LM-36 (R2-01) schema-ext.md documents the methods leaves and the
-// piston.altitude.model values. Exit code 1 on any failure.
+// piston.altitude.model values; T-LM-37…39 (R2-07) per-point derivative sets in runCard, strict clean lookups (pickCfg) and
+// iasCas placement of a detent with no row; T-LM-40 (R2-08) the vx_vy and xfile_vy checks; T-LM-41 (R2-19) the take-off
+// lift-off state (mode r1 and the opt-in rate mode). Exit code 1 on any failure.
 // node scripts/lm_selftest.mjs [--json]
 import fs from 'node:fs';
 import path from 'node:path';
 import { HERE, loadType } from './lm_lib.mjs';
-import { buildAC, applyAC, cardInfo, runCard, loadSim, AC_FIELDS, AC_R1 } from './lm_card.mjs';
+import { buildAC, applyAC, cardInfo, runCard, loadSim, takeoffTest, AC_FIELDS, AC_R1 } from './lm_card.mjs';
 
 const rows = [];
 const check = (id, what, got, exp, tol) => { const ok = Number.isFinite(got) && Math.abs(got - exp) <= tol; rows.push({ id, what, got: +(+got).toPrecision(5), exp, tol, ok }); };
@@ -39,6 +41,8 @@ check('T-LM-06', 'approach DR zeta', r.modes.approach.dr.zeta, 0.139, 0.003);
 check('T-LM-06', 'approach roll tau s', r.modes.approach.roll_tau, 0.218, 0.005);
 check('T-LM-07', 'takeoff 50 ft m (VR 82, flaps 0)', r.takeoff.dist50ft_m, 590, 10);
 check('T-LM-07', 'landing 50 ft max brake m', r.landing.maxBrake.total_m, 714, 15);
+// T-LM-41 inputs (R2-19), flown here while M.AC is still the trainer_r1 fixture; checked at the end
+const to41 = { r1: r.takeoff, r1theta14: takeoffTest(M, { f: 0, VR: r.takeoff.VR, theta: 14 }), rate5: takeoffTest(M, { f: 0, VR: r.takeoff.VR, theta: 10, mode: 'rate', rate: 5 }) };
 // optional method modules
 for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], ['lm_derivs.mjs', 'tests'], ['lm_engine.mjs', 'tests'], ['lm_prop.mjs', 'tests'], ['lm_legacy_fit.mjs', 'tests']]) {
   if (!fs.existsSync(path.join(HERE, f))) continue;
@@ -288,6 +292,104 @@ for (const [f, fn] of [['lm_polar.mjs', 'tests'], ['lm_inertia.mjs', 'tests'], [
   check('T-LM-36', 'schema-ext lists piston.altitude.model = the 4 values', doc.includes(ENUM.map(x => '`"' + x + '"`').join(' | ')) ? 1 : 0, 1, 0);
   const used = Object.keys(res.merged).map(id => L.leaf(res.merged[id], 'piston.altitude')?.v?.model).filter(Boolean);
   check('T-LM-36', `cards with piston.altitude.model outside the 4 values (of ${used.length})`, used.filter(m => !ENUM.includes(m)).length, 0, 0);
+}
+// T-LM-37 (R2-07): runCard linearises the cruise point with the card's "cruise" derivatives and the approach point with
+// "approach" (derivSets + withDerivs); c172s keys 9 lateral/rate derivatives by config and none of the fields the stall
+// solve uses, so its cruise modes must equal a run of the AC built with buildAC({config: 'cruise'})
+{
+  const L = await import('./lm_card.mjs');
+  const c = loadType('c172s'), sets = L.derivSets(c);
+  check('T-LM-37', 'derivSets(c172s): cruise keys taken from "cruise" (count of 9)', Object.values(sets.keys.cruise).filter(k => k === 'cruise').length, 9, 0);
+  const a = L.buildAC(c, {}), rs = L.applyAC(M, a);
+  const rc = L.runCard(M, a, L.cardInfo(c, a), { noGround: true });
+  rs();
+  const aC = L.buildAC(c, { config: 'cruise' }), rs2 = L.applyAC(M, aC);
+  const ci = L.cardInfo(c, aC);
+  const ref = L.modes(M, { ias: ci.cruise.ias, h: ci.cruise.h, flaps: 0, gear: ci.retract ? 0 : 1, gammaDeg: 0 }, { adot: true });
+  rs2();
+  check('T-LM-37', 'c172s runCard cruise DR wn − buildAC(config cruise) DR wn', rc.modes.cruise.dr.wn - ref.dr.wn, 0, 1e-9);
+  check('T-LM-37', 'c172s runCard cruise roll tau − buildAC(config cruise)', rc.modes.cruise.roll_tau - ref.roll.tau, 0, 1e-9);
+  check('T-LM-37', 'c172s runCard modes: derivSet cruise / approach recorded (count)', (rc.modes.cruise.derivSet === 'cruise') + (rc.modes.approach.derivSet === 'approach'), 2, 0);
+  // the approach point keeps the approach set even when runCard is handed an AC built with the cruise set
+  const rs3 = L.applyAC(M, aC);
+  const rcC = L.runCard(M, aC, ci, { noGround: true });
+  rs3();
+  const aA = L.buildAC(c, { config: 'approach' }), rs4 = L.applyAC(M, aA), ca = L.cardInfo(c, aA);
+  const refA = L.modes(M, { ias: ca.approach.ias, h: ca.approach.h, flaps: 1, gear: 1, gammaDeg: ca.approach.gammaDeg }, { adot: true });
+  rs4();
+  check('T-LM-37', 'c172s runCard(AC config cruise) approach DR wn − buildAC(config approach) DR wn', rcC.modes.approach.dr.wn - refA.dr.wn, 0, 1e-9);
+  check('T-LM-37', 'c172s runCard(AC config cruise) approach roll tau − buildAC(config approach)', rcC.modes.approach.roll_tau - refA.roll.tau, 0, 1e-9);
+}
+// T-LM-38 (R2-07): a clean lookup never falls back to a flap-down key (p68c has CLmax_target only for flap 35)
+{
+  const L = await import('./lm_card.mjs');
+  check('T-LM-38', 'pickCfg({35: 1.996}, clean keys, strict) is null', L.pickCfg({ 35: 1.996 }, ['clean', 'cruise', '0', 'UP'], { strict: true }) === null ? 1 : 0, 1, 0);
+  check('T-LM-38', 'pickCfg not strict marks the first-key fallback', L.pickCfg({ 35: 1.996 }, ['clean'])?.fallback ? 1 : 0, 1, 0);
+  const c = loadType('p68c'), tr = [], a = L.buildAC(c, { trace: tr }), rs = L.applyAC(M, a);
+  const st = L.runCard(M, a, L.cardInfo(c, a), { quick: true }).stall; rs();
+  check('T-LM-38', 'p68c aStall from AC_R1, flagged R1 (not the flap-35 CLmax)', tr.find(t => t.field === 'aStall')?.flag === 'R1' ? 1 : 0, 1, 0);
+  const names = Object.keys(st);
+  check('T-LM-38', `p68c V_SR ${names[0]} − ${names.at(-1)} KEAS (clean stalls faster, > 1)`, st[names[0]].VSR_eas - st[names.at(-1)].VSR_eas > 1 ? 1 : 0, 1, 0);
+}
+// T-LM-39 (R2-07): iasCas places a detent with no row by flap angle: c172s flap 20 between rows 10 and 30 (w 0.5), the
+// clean row of a table that names it UP for '0' (alias), an unknown name keeps the first row (unknown)
+{
+  const Lb = await import('./lm_lib.mjs');
+  const c = loadType('c172s'), t20 = Lb.iasCas(c, '20', { warn: false }), t10 = Lb.iasCas(c, '10'), t30 = Lb.iasCas(c, '30');
+  check('T-LM-39', `c172s flap 20: how interp (${t20.how}), w`, t20.how === 'interp' ? t20.w : NaN, 0.5, 1e-12);
+  check('T-LM-39', 'c172s flap 20: CAS(60 KIAS) − mean of rows 10 and 30', t20.f(60) - 0.5 * (t10.f(60) + t30.f(60)), 0, 1e-9);
+  check('T-LM-39', 'c172s flap 20: inv(f(60)) = 60', t20.inv(t20.f(60)), 60, 1e-9);
+  const d = loadType('da40ng');
+  check('T-LM-39', `da40ng "0" → its clean row by alias (${Lb.iasCas(d, '0', { warn: false }).row})`, Lb.iasCas(d, '0', { warn: false }).how === 'alias' ? 1 : 0, 1, 0);
+  check('T-LM-39', 'unknown detent name → how unknown (first row)', Lb.iasCas(c, 'nonsense', { warn: false }).how === 'unknown' ? 1 : 0, 1, 0);
+  // asymmetric weight: without row 10, flap 20 lies 2/3 of the way from row 0 to row 30
+  const c2 = structuredClone(c); delete Lb.leaf(c2, 'speeds.ias_cas').v['10'];
+  const u20 = Lb.iasCas(c2, '20', { warn: false }), u0 = Lb.iasCas(c2, '0'), u30 = Lb.iasCas(c2, '30');
+  check('T-LM-39', `c172s without row 10, flap 20: how interp (${u20.how}), w`, u20.how === 'interp' ? u20.w : NaN, 2 / 3, 1e-12);
+  check('T-LM-39', 'c172s without row 10: CAS(60 KIAS) − (⅓ row 0 + ⅔ row 30)', u20.f(60) - (u0.f(60) / 3 + 2 * u30.f(60) / 3), 0, 1e-9);
+  // a detent whose flap_deg is null is unknown (before: 0), and a landing alias over such detents has no angle
+  const c3 = structuredClone(d), dl = Lb.leaf(c3, 'aero.flaps.detents').v.map(e => ({ ...e, flap_deg: null }));
+  Lb.leaf(c3, 'aero.flaps.detents').v = dl;
+  const nn = String(dl.find(e => !/^-?\d+(\.\d+)?$/.test(String(e.name)) && !Lb.CLEAN_ALIASES.includes(String(e.name)))?.name);
+  check('T-LM-39', `detentDeg(da40ng with flap_deg null, "${nn}") and ("landing") are null (count)`, (Lb.detentDeg(c3, nn) === null) + (Lb.detentDeg(c3, 'landing') === null), 2, 0);
+  // only LDG unknown: "LDG", "full" and "landing" stay unknown instead of taking the T/O angle
+  const c4 = structuredClone(d); Lb.leaf(c4, 'aero.flaps.detents').v = Lb.leaf(c4, 'aero.flaps.detents').v.map(e => (e.name === 'LDG' ? { ...e, flap_deg: null } : e));
+  check('T-LM-39', 'da40ng with LDG flap_deg null: detentDeg LDG / full / landing null (count)', ['LDG', 'full', 'landing'].filter(n => Lb.detentDeg(c4, n) === null).length, 3, 0);
+}
+// T-LM-40 (R2-08): vx_vy and xfile_vy on synthetic cards (speeds.climb_basis labels the flap and mass of VX and VY)
+{
+  const L = await import('./lm_lib.mjs');
+  const lf = (v, u = '-', o = {}) => ({ v, u, scope: o.scope ?? 'aircraft', src: o.src ?? ['LM0'], conf: o.conf ?? 'กลาง', est: o.est ?? false, note: o.note ?? '' });
+  const base = { airframe: { weights: { training_mass: lf(1000, 'kg') } }, aero: { flaps: { detents: lf([{ name: 'UP', flap_deg: 0 }, { name: 'T/O', flap_deg: 20 }, { name: 'LDG', flap_deg: 40 }]) } } };
+  const sp = (vx, vy, more = {}) => ({ VREF_kt: lf(60, 'kt IAS'), VAPP_kt: lf(65, 'kt IAS'), VX_kt: lf(vx, 'kt IAS'), VY_kt: lf(vy, 'kt IAS'), ...more });
+  const merged = {
+    ya: { ...base, speeds: sp(78, 72) },                                                                                         // VX > VY, no basis → warn
+    yb: { ...base, speeds: sp(78, 72, { climb_basis: lf({ VX: { flap: 'UP', mass_kg: 1310 }, VY: { flap: 'T/O', mass_kg: null } }, '-, kg') }) },   // flaps differ → info
+    yc: { ...base, speeds: sp(80, 79, { climb_basis: lf({ VX: { flap: 'UP', mass_kg: 1200 }, VY: { flap: 'UP', mass_kg: 1000 } }, '-, kg') }) },   // 80·√(1000/1200) = 73.0 ≤ 79 → ok
+    yd: { ...base, speeds: sp(70, 79),
+      ops: { attitude_power: { initial_climb: lf({ ias_kt: 77, flap: 'UP' }, 'kt IAS, deg, -, -, fpm') } },                   // 77 vs 79, no แก้มวล → warn
+      procedures: { pattern: lf({ climb: 77, final: 65 }, 'kt IAS', { note: 'climb แก้มวล ที่มวลฝึก' }) } },                     // 77 vs 79, แก้มวล → info
+    ye: { _inherits: lf('yd'), speeds: { VY_kt: lf(77, 'kt IAS') } },                                                          // inherited 08/09 = own VY → 0
+  };
+  const C = L.validate({ merged, origin: {} }, {});
+  const n = (id, ck, lvl = 'warn') => C.filter(c => c.id === id && c.check === ck && c.level === lvl).length;
+  check('T-LM-40', 'vx_vy: ya no basis 78 > 72 → warn; yb flaps UP/T/O → info; yc √m-scaled 73.0 ≤ 79 → 0', n('ya', 'vx_vy') * 100 + n('yb', 'vx_vy', 'info') * 10 + n('yc', 'vx_vy') + n('yc', 'vx_vy', 'info'), 110, 0);
+  check('T-LM-40', 'xfile_vy: yd 08 77 vs 79 → warn, 09 แก้มวล → info; ye inherits 77 = own VY → 0', n('yd', 'xfile_vy') * 100 + n('yd', 'xfile_vy', 'info') * 10 + n('ye', 'xfile_vy') + n('ye', 'xfile_vy', 'info'), 110, 0);
+  const real = L.validate(L.mergeDir(path.join(HERE, '..'), { checks: false }), {});
+  check('T-LM-40', 'vx_vy + xfile_vy WARN on the folder', real.filter(c => (c.check === 'vx_vy' || c.check === 'xfile_vy') && c.level === 'warn').length, 0, 0);
+}
+// T-LM-41 (R2-19): the lift-off state that explains V_LOF > VR. Mode r1 (round-1 law, the default) lifts the nose 1.35 s
+// after VR and the mains during the 3 deg/s attitude ramp at θ 7.2°, CL 0.85, so V_LOF does not move with the target θ;
+// the opt-in pitch-rate mode (5 deg/s, an estimate) lifts off earlier. Values measured on the pinned sim, 25 Nov 2026.
+{
+  const { r1, r1theta14: t14, rate5 } = to41;
+  check('T-LM-41', 'r1: V_LOF kt (VR 82)', r1.V_LOF_kt, 99.2, 0.3);
+  check('T-LM-41', 'r1: θ at lift-off deg', r1.theta_LOF_deg, 7.2, 0.3);
+  check('T-LM-41', 'r1: CL at lift-off', r1.CL_LOF, 0.85, 0.03);
+  check('T-LM-41', 'r1: VR → nose-wheel lift s', r1.tVRtoNose_s, 1.35, 0.1);
+  check('T-LM-41', 'r1: V_LOF(θ 14) − V_LOF(θ 10) kt', t14.V_LOF_kt - r1.V_LOF_kt, 0, 0.1);
+  check('T-LM-41', 'rate 5°/s: V_LOF kt', rate5.V_LOF_kt, 92.8, 0.5);
+  check('T-LM-41', 'rate 5°/s: 50 ft distance m', rate5.dist50ft_m, 549, 10);
 }
 if (process.argv.includes('--json')) console.log(JSON.stringify(rows, null, 1));
 else for (const x of rows) console.log(`${x.ok ? 'PASS' : 'FAIL'} ${x.id.padEnd(8)} ${x.what.padEnd(48)} got ${String(x.got).padEnd(9)} exp ${x.exp} ± ${x.tol}`);

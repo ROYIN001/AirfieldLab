@@ -1104,7 +1104,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final); climb 90 KIAS = speeds.VY_kt ของบัตร (≤1,900 kg); da42_vi รับค่านี้ที่มวลฝึก 1,752 kg: แก้มวล จาก VY 92 KIAS แถว >1,900 kg ของบัตร da42_vi [LT9]"
    },
    "stabilised": {
     "v": {
@@ -1303,7 +1303,7 @@
   "procedures": {
    "pattern": {
     "v": {
-     "climb": 67,
+     "climb": 62,
      "downwind": 95,
      "abeam": 80,
      "base": 75,
@@ -1324,7 +1324,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final); climb แก้มวล: speeds.VY_kt 67 KIAS ของบัตรเป็นแฟลป T/O ที่ 1,200 kg; ตาราง AFM 67/66/60/54 KIAS ที่ 1,200/1,150/1,000/850 kg [LD6] → 62 KIAS ที่มวลฝึก 1,050 kg เท่าหัวข้อ 08"
    },
    "stabilised": {
     "v": {
@@ -1398,7 +1398,7 @@
    },
    "go_around": {
     "v": {
-     "speed": 67,
+     "speed": 62,
      "flapsSeq": [
       "T/O",
       "UP"
@@ -1406,7 +1406,7 @@
      "steps": [
       "full power, mixture rich, prop high rpm",
       "flaps T/O",
-      "pitch 67 KIAS",
+      "pitch 62 KIAS",
       "flaps UP ที่ความสูงปลอดภัย"
      ]
     },
@@ -1421,7 +1421,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 67 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 62 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6); ความเร็ว go-around แก้มวลที่มวลฝึก เท่า procedures.pattern.climb"
    },
    "checklist_summary": {
     "v": {
@@ -1520,7 +1520,7 @@
   "procedures": {
    "pattern": {
     "v": {
-     "climb": 66,
+     "climb": 62,
      "downwind": 90,
      "abeam": 78,
      "base": 76,
@@ -1539,7 +1539,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final); climb แก้มวล: speeds.VY_kt 66 KIAS ของบัตรเป็นแฟลป T/O ที่ 1,150 kg [LD8]; ตารางมวลของโครงเดียวกัน [LD6] → 62 KIAS ที่มวลฝึก 1,060 kg เท่าหัวข้อ 08"
    },
    "stabilised": {
     "v": {
@@ -1607,7 +1607,7 @@
    },
    "go_around": {
     "v": {
-     "speed": 66,
+     "speed": 62,
      "flapsSeq": [
       "T/O",
       "UP"
@@ -1615,7 +1615,7 @@
      "steps": [
       "power 100 %",
       "flaps T/O",
-      "pitch 66 KIAS",
+      "pitch 62 KIAS",
       "flaps UP ที่ความสูงปลอดภัย"
      ]
     },
@@ -1628,7 +1628,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 66 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 62 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6); ความเร็ว go-around แก้มวลที่มวลฝึก เท่า procedures.pattern.climb"
    },
    "checklist_summary": {
     "v": {
@@ -1716,7 +1716,7 @@
   "procedures": {
    "pattern": {
     "v": {
-     "climb": 79,
+     "climb": 77,
      "downwind": 105,
      "abeam": 95,
      "base": 90,
@@ -1736,7 +1736,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final)"
+    "note": "ค่าประมาณบางขา: final = speeds.VAPP_kt ของบัตร (D1) และ climb = speeds.VY_kt ของบัตรเมื่อมี; ค่าที่มีแหล่งตาม §09.1.3 ส่วนขาที่ไม่มีแหล่งประมาณตาม §09.1.5 (base = final + 5–10; abeam = base + 5–10 ≤ VFE; downwind = 1.35–1.5 × final); climb แก้มวล: speeds.VY_kt 79 KIAS ของบัตรเป็นแถว >1,700 kg; แถว ≤1,700 kg = 77 KIAS ที่มวลฝึก 1,600 kg [LT5] เท่าหัวข้อ 08"
    },
    "stabilised": {
     "v": {
@@ -1774,7 +1774,7 @@
      "takeoff": {
       "flaps": "UP",
       "VR": 72,
-      "Vy": 79
+      "Vy": 77
      },
      "landing": {
       "flaps": "LDG",
@@ -1812,7 +1812,7 @@
    },
    "go_around": {
     "v": {
-     "speed": 79,
+     "speed": 77,
      "flapsSeq": [
       "APP",
       "UP"
@@ -1835,7 +1835,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 79 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6)"
+    "note": "ค่าประมาณ: ลำดับทั่วไปของ AFH [LO4 p9-11, 9-12] (กำลังเต็ม → ท่าไต่ → แฟลปทีละขั้น → ล้อขึ้นเมื่อไต่ได้แน่นอน); ความเร็ว 77 KIAS จาก Vy/VY ของบัตรหรือแหล่งของแบบนั้น; ชื่อแฟลปตาม aero.flaps.detents ของบัตร (D6); ความเร็ว go-around แก้มวลที่มวลฝึก เท่า procedures.pattern.climb"
    },
    "checklist_summary": {
     "v": {
@@ -2430,7 +2430,7 @@
       "vfr_circuit"
      ]
     },
-    "u": "kt IAS",
+    "u": "kt CAS",
     "scope": "aircraft",
     "src": [
      "LO28",
@@ -2443,7 +2443,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "Vapp = speeds.VAPP_kt ของบัตร p2002jf (ไฟล์ 13) 52 kt CAS ที่ airframe.weights.training_mass 573.2 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร p2002jf (ไฟล์ 13) 52 kt CAS ที่ airframe.weights.training_mass 573.2 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)"
    },
    "short_field": {
     "v": {
@@ -2645,7 +2645,7 @@
       "vfr_circuit"
      ]
     },
-    "u": "kt IAS",
+    "u": "kt CAS",
     "scope": "aircraft",
     "src": [
      "LO31",
@@ -2659,7 +2659,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "Vapp = speeds.VAPP_kt ของบัตร p68c (ไฟล์ 13) 74 kt CAS ที่ airframe.weights.training_mass 1796 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร p68c (ไฟล์ 13) 74 kt CAS ที่ airframe.weights.training_mass 1796 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)"
    },
    "short_field": {
     "v": {
@@ -3076,7 +3076,7 @@
       "vfr_circuit"
      ]
     },
-    "u": "kt IAS",
+    "u": "kt CAS",
     "scope": "aircraft",
     "src": [
      "LO34",
@@ -3087,7 +3087,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "Vapp = speeds.VAPP_kt ของบัตร ct4 (ไฟล์ 13) 60 kt CAS ที่ airframe.weights.training_mass 1038 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร ct4 (ไฟล์ 13) 60 kt CAS ที่ airframe.weights.training_mass 1038 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)"
    },
    "short_field": {
     "v": {
@@ -3276,7 +3276,7 @@
       "vfr_circuit"
      ]
     },
-    "u": "kt IAS",
+    "u": "kt CAS",
     "scope": "aircraft",
     "src": [
      "LP1",
@@ -3287,7 +3287,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "Vapp = speeds.VAPP_kt ของบัตร pc7mk2 (ไฟล์ 07) 89 kt CAS ที่ airframe.weights.training_mass 2068.8 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และ speeds.ias_cas ของบัตรเป็นตาราง identity (ค่าประมาณ ไม่มีข้อมูล PEC สาธารณะ) จึงใช้เป็น KIAS ≈ KCAS; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร pc7mk2 (ไฟล์ 07) 89 kt CAS ที่ airframe.weights.training_mass 2068.8 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และ speeds.ias_cas ของบัตรเป็นตาราง identity (ค่าประมาณ ไม่มีข้อมูล PEC สาธารณะ) จึงใช้เป็น KIAS ≈ KCAS; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)"
    },
    "short_field": {
     "v": {
@@ -3484,7 +3484,7 @@
       "vfr_circuit"
      ]
     },
-    "u": "kt IAS",
+    "u": "kt CAS",
     "scope": "aircraft",
     "src": [
      "LP2",
@@ -3495,7 +3495,7 @@
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "Vapp = speeds.VAPP_kt ของบัตร pc9m (ไฟล์ 07) 90 kt CAS ที่ airframe.weights.training_mass 2123.8 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และ speeds.ias_cas ของบัตรเป็นตาราง identity (ค่าประมาณ ไม่มีข้อมูล PEC สาธารณะ) จึงใช้เป็น KIAS ≈ KCAS; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร pc9m (ไฟล์ 07) 90 kt CAS ที่ airframe.weights.training_mass 2123.8 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และ speeds.ias_cas ของบัตรเป็นตาราง identity (ค่าประมาณ ไม่มีข้อมูล PEC สาธารณะ) จึงใช้เป็น KIAS ≈ KCAS; รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)"
    },
    "short_field": {
     "v": {
@@ -3691,7 +3691,7 @@
       "vfr_circuit"
      ]
     },
-    "u": "kt IAS",
+    "u": "kt CAS",
     "scope": "aircraft",
     "src": [
      "LP27",
@@ -3702,7 +3702,7 @@
     ],
     "conf": "กลาง",
     "est": true,
-    "note": "Vapp = speeds.VAPP_kt ของบัตร trainer_r2 (ไฟล์ 07) 95 kt CAS ที่ airframe.weights.training_mass 2250 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates"
+    "note": "Vapp = speeds.VAPP_kt ของบัตร trainer_r2 (ไฟล์ 07) 95 kt CAS ที่ airframe.weights.training_mass 2250 kg ตามข้อตัดสิน D1 (ค่าประมาณของบัตร วิธีอยู่ใน note ของบัตร); บัตรให้ kt CAS และไม่มีตาราง ias_cas จึงใช้เป็น KIAS ≈ KCAS (ประมาณ); รายการแฟลปลงจอดที่ยอมรับใช้ชื่อตาม aero.flaps.detents ของบัตร (D6) และเป็นข้อเสนอของหัวข้อนี้; ช่อง −5/+10 kt รอบ Vapp + ½ gust ใช้กับ common_light.procedures.stabilised_gates; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)"
    },
    "short_field": {
     "v": {

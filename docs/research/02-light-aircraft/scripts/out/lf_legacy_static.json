@@ -115,7 +115,17 @@
    "tLiftoff_s": 14.358,
    "V_LOF_kt": 61.308,
    "dist50ft_m": 418.52,
-   "V50_kt": 62.354
+   "V50_kt": 62.354,
+   "mode": "r1",
+   "tVRtoNose_s": 2.0667,
+   "V_nose_kt": 58.365,
+   "tVRtoLOF_s": 3.175,
+   "theta_LOF_deg": 5.7438,
+   "alpha_LOF_deg": 5.6173,
+   "q_LOF_dps": 5.162,
+   "de_LOF_deg": -10.524,
+   "CL_LOF": 0.82227,
+   "phiGE_LOF": 0.60228
   }
  }
 }

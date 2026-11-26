@@ -37,12 +37,12 @@ const P = {
     efato: { VMCA: 76, VYSE: 85, sequence: 'AFH: control, VYSE, power, clean up, identify, verify, feather, secure' } },
   // review 2026-11-19: Thai-school sub-variants (cards in 05-da40.md and 06-da42.md)
   da40_180: { src: ['LD6', 'LD8', 'LD1', 'LD4'], conf: 'กลาง', est: true, sf: null, soft: null, landingVapp: 65,
-    ga: { speed: 67, flapsSeq: ['T/O', 'UP'], steps: ['full power, mixture rich, prop high rpm', 'flaps T/O', 'pitch 67 KIAS', 'flaps UP ที่ความสูงปลอดภัย'] },
+    ga: { speed: 62, flapsSeq: ['T/O', 'UP'], steps: ['full power, mixture rich, prop high rpm', 'flaps T/O', 'pitch 62 KIAS', 'flaps UP ที่ความสูงปลอดภัย'] },
     efato: { glide: { '1200': 76, '1150': 73, '1000': 68, '850': 60 } }, xwind: 20 },
   da40d: { src: ['LD8', 'LD6'], conf: 'กลาง', est: true, sf: null, soft: null, landingVapp: 66,
-    ga: { speed: 66, flapsSeq: ['T/O', 'UP'], steps: ['power 100 %', 'flaps T/O', 'pitch 66 KIAS', 'flaps UP ที่ความสูงปลอดภัย'] }, efato: { glide: 73 } },
-  da42_tae125: { src: ['LT3', 'LT5', 'LO7'], conf: 'ต่ำ', est: true, sf: { takeoff: { flaps: 'UP', VR: 72, Vy: 79 }, landing: { flaps: 'LDG', Vapp: 82 } }, soft: null,
-    ga: { speed: 79, flapsSeq: ['APP', 'UP'], steps: ['power 100 % ทั้งสอง', 'flaps APP', 'pitch Vy', 'positive rate: gear up', 'flaps UP'] },
+    ga: { speed: 62, flapsSeq: ['T/O', 'UP'], steps: ['power 100 %', 'flaps T/O', 'pitch 62 KIAS', 'flaps UP ที่ความสูงปลอดภัย'] }, efato: { glide: 73 } },
+  da42_tae125: { src: ['LT3', 'LT5', 'LO7'], conf: 'ต่ำ', est: true, sf: { takeoff: { flaps: 'UP', VR: 72, Vy: 77 }, landing: { flaps: 'LDG', Vapp: 82 } }, soft: null,
+    ga: { speed: 77, flapsSeq: ['APP', 'UP'], steps: ['power 100 % ทั้งสอง', 'flaps APP', 'pitch Vy', 'positive rate: gear up', 'flaps UP'] },
     efato: { VMCA: 68, VYSE: 82, sequence: 'AFH: control, VYSE, power, clean up, identify, verify, feather, secure' } },
   be76: { src: ['LO23', 'LO24', 'LN5'], conf: 'ต่ำ', est: false,
     sf: { takeoff: { VR: 71, Vx: 71, Vy: 85 }, landing: { flaps: '35', Vapp: 76 } }, soft: null,
@@ -77,6 +77,13 @@ const P = {
 // Per-leaf estimate flags (review 2026-11-19): the first draft reused one per-type flag, so sourced POH values were marked
 // est and flashcard values were described as POH. gaEst: the go-around leaf is an estimate (generic AFH sequence) unless listed false.
 const GA_SOURCED = { c172s: 'POH (balked landing) และ SOP โรงเรียน [LC1][LO17]', c172r: 'POH balked landing [LO20 Sec 4]', c152: 'POH balked landing [LO19 p4-3, 4-9]', pa28_161: 'checklist โรงเรียน [LO22] (บท 4 ของ POH ในสำเนาที่เปิดได้ขาด)', da40ng: 'ความเร็ว go-around ต่ำสุดแฟลป T/O จาก checklist ของ Diamond [LD3]', be76: 'flashcard ของโรงเรียน [LO24] (ตติยภูมิ)' };
+// R2-08: climb (and go-around) speed at the training mass where the card's VY is for a heavier mass (lm_merge xfile_vy)
+const CLIMB_MASS_NOTE = {
+  da40_180: 'climb แก้มวล: speeds.VY_kt 67 KIAS ของบัตรเป็นแฟลป T/O ที่ 1,200 kg; ตาราง AFM 67/66/60/54 KIAS ที่ 1,200/1,150/1,000/850 kg [LD6] → 62 KIAS ที่มวลฝึก 1,050 kg เท่าหัวข้อ 08',
+  da40d: 'climb แก้มวล: speeds.VY_kt 66 KIAS ของบัตรเป็นแฟลป T/O ที่ 1,150 kg [LD8]; ตารางมวลของโครงเดียวกัน [LD6] → 62 KIAS ที่มวลฝึก 1,060 kg เท่าหัวข้อ 08',
+  da42_tae125: 'climb แก้มวล: speeds.VY_kt 79 KIAS ของบัตรเป็นแถว >1,700 kg; แถว ≤1,700 kg = 77 KIAS ที่มวลฝึก 1,600 kg [LT5] เท่าหัวข้อ 08',
+  da42ng: 'climb 90 KIAS = speeds.VY_kt ของบัตร (≤1,900 kg); da42_vi รับค่านี้ที่มวลฝึก 1,752 kg: แก้มวล จาก VY 92 KIAS แถว >1,900 kg ของบัตร da42_vi [LT9]',
+};
 const PATTERN_NOTE = {
   c172s: 'ความเร็ว แฟลป และกำลังแต่ละขาจาก SOP ของโรงเรียน [LO17][LO18] และ Vy/Vapp จาก POH [LC1] (§09.1.3); final = speeds.VAPP_kt ของบัตร 04 (D1)',
   be76: 'ความเร็ว แฟลป และกำลังแต่ละขาจาก flashcard ของโรงเรียน [LO24] (ตติยภูมิ ไม่ใช่ POH) ความเชื่อมั่นต่ำ; final 80 = speeds.VAPP_kt ของบัตร 13 [LN5] (D1)',
@@ -122,6 +129,10 @@ for (const [id, t] of Object.entries(TYPES)) {
     checklist_summary: leaf({ features: t.features, items: Object.fromEntries(Object.entries(cl).map(([k, v]) => [k, v.map((i) => i.id)])), emergency: p.efato, ...(p.xwind ? { demoCrosswind_kt: p.xwind } : {}) }, '- / kt IAS', uniq([...src, 'LO0']), 'กลาง', true,
       'ค่าประมาณ (การเรียบเรียง): รายการหัวข้อด้วยถ้อยคำของเรา (ข้อความไทยใน lo_lib.mjs) กรองด้วยคุณลักษณะของแบบ ไม่ใช่ checklist ของผู้ผลิต; ความเร็วฉุกเฉินและลมขวางสาธิตตามแหล่งของแบบใน §09.4.2'),
   };
+  // R2-08: mass-corrected climb notes; procedures.stabilised.u follows the card's VAPP unit (kt CAS cards)
+  if (CLIMB_MASS_NOTE[id]) pr.pattern.note += '; ' + CLIMB_MASS_NOTE[id];
+  if (CLIMB_MASS_NOTE[id] && id !== 'da42ng' && pr.go_around) pr.go_around.note += '; ความเร็ว go-around แก้มวลที่มวลฝึก เท่า procedures.pattern.climb';
+  if (c && c.cas) { pr.stabilised.u = 'kt CAS'; pr.stabilised.note += '; u = kt CAS ตาม speeds.VAPP_kt ของบัตร (R2-08)'; }
   // t6c (and any type with inheritsOnly): write only the leaves that differ; the rest comes through the card's _inherits
   const keep = p.inheritsOnly ?? Object.keys(pr);
   blocks.push({ [id]: { procedures: Object.fromEntries(keep.map((k) => [k, pr[k]])) } });

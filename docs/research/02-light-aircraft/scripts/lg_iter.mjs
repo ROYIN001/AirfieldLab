@@ -10,7 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadType, isMainModule, trainingMassKg } from './lm_lib.mjs';
 import { geoFromCard, estimate } from './lm_derivs.mjs';
-import { buildAC, applyAC, loadSim, modes, cardInfo } from './lm_card.mjs';
+import { buildAC, applyAC, loadSim, modes, cardInfo, derivSets, withDerivs } from './lm_card.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const KT = 0.514444, G0 = 9.80665;
@@ -41,7 +41,7 @@ export async function run({ withModes = true } = {}) {
   if (withModes) {
     const M = await loadSim(), ac = buildAC(card, {});
     applyAC(M, ac);
-    const cr = modes(M, { ias: 110, h: 3000 * 0.3048, flaps: 0, gear: 0, gammaDeg: 0 }, { adot: true });
+    const cr = withDerivs(M, derivSets(card).cruise, () => modes(M, { ias: 110, h: 3000 * 0.3048, flaps: 0, gear: 0, gammaDeg: 0 }, { adot: true }));   // R2-07: cruise set
     const pick = o => (o && o.wn ? { wn: r(o.wn), zeta: r(o.zeta), T: o.T ? r(o.T) : undefined } : null);
     out.modes_110kt = { sp: pick(cr.sp), ph: pick(cr.ph), dr: pick(cr.dr), roll_tau: cr.roll?.tau ? r(cr.roll.tau) : null, spiral_t2: cr.spiral?.t2 ? r(cr.spiral.t2) : null, CAP: cr.CAP ? r(cr.CAP) : null,
       Iyy: r(ac.Iyy), Izz: r(ac.Izz), Ixx: r(ac.Ixx), m: ac.m };
