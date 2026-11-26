@@ -172,17 +172,18 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   every taxiway, the JSON block of that section gives them as blue), so `taxiEdgeLights(af)` walks every taxiway
   polyline of `vtbd_af.json`, whatever its tag (before, only the 28 % tagged `twy` had lights, and TWY C beside the
   main runway had four, on one 72 m piece): a light on each side every 45 m, the stations centred on each line (a
-  short connector has a pair in its middle, and the layout is the same whichever way a line was drawn), 0.6 m
-  outside the edge of the 23 m `TWY_W` (Annex 14, 5.3.18), square to the run of the line over 25 m (the vector
-  lines have jogs). An edge light never stands on pavement: none within `TWY_W / 2` of any taxiway centre line
-  (junctions), on an apron or within 3 m of an apron outline (`APRON_EDGE`), so the side of a taxiway that runs
-  along an apron is dark. A place that falls on the pavement of one joining taxiway moves to the corner where the
-  two edges meet, if that corner is within 3 m of the line's own edge (`TWY_EDGE.out`, the 3 m of 5.3.18; 22 lights
-  stand at such corners, and without them the inside of a corner where three taxiways meet was dark over 82 m of
-  edge). No two lights stand within 7.5 m of each other (`TWY_EDGE.gap`: where two lines set a light for the same
-  corner under 7.5 m apart, one stands; with 15 m a light across a junction stood in for the light of another edge,
-  and three straight edges were dark over 62 to 67 m); 417 lights, at 424 of the 942 places, and no bare edge is
-  dark over more than 51 m measured straight across (`test/lights.test.mjs` follows every edge a metre at a time).
+  short connector has a pair in its middle, and the layout is the same whichever way a line was drawn), 0.6 m outside
+  the edge of the 23 m `TWY_W` (Annex 14, 5.3.18), square to the run of the line over 25 m (the vector lines have
+  jogs). An edge light never stands on pavement: none within `TWY_W / 2` of any taxiway centre line (junctions), on an
+  apron or within 3 m of an apron outline (`APRON_EDGE`), so the side of a taxiway that runs along an apron is dark. A
+  place that falls on the pavement of one joining taxiway moves to the corner where the two edges meet, if that corner
+  is within 3 m of the line's own edge (`TWY_EDGE.out`, the 3 m of 5.3.18; 22 lights stand at such corners, and
+  without them the inside of a corner where three taxiways meet was dark over 86 to 92 m along the edge, 72 m straight
+  across, and two acute corners over 70 and 65 m). No two lights stand within 7.5 m of each other (`TWY_EDGE.gap`:
+  where two lines set a light for the same corner under 7.5 m apart, one stands; with 15 m a light across a junction
+  stood in for the light of another edge, and three straight edges were dark over 62 to 67 m); 417 lights, at 424 of
+  the 942 places, and no bare edge is dark over more than 51 m measured straight across (`test/lights.test.mjs`
+  follows every edge a quarter of a metre at a time).
   Round a patch of grass between taxiways the edge has no light over about 100 m at three junctions (no straight
   part of it over 35 m; left as it is).
   One of them stands inside a mapped water outline beside a taxiway (a data overlap, as before). Not drawn: the
