@@ -1,4 +1,5 @@
 dist/
+dist-preview/
 shots/
 node_modules/
 .DS_Store

@@ -84,6 +84,26 @@
     "SM_free": 0.227,
     "free_elevator_factor": 0.82
    },
+   "band": {
+    "controller": "centre_stick",
+    "nL": 3.8,
+    "W_lb": 2888,
+    "nAlpha_cruise_g_per_rad": 11.02,
+    "mil_L1_centre_stick_lbf_per_g": {
+     "min": 7.5,
+     "max": 21.78
+    },
+    "part23_155_force_lbf": 20.6,
+    "part23_155_min_lbf_per_g": 7.37,
+    "fs_per_g_lbf": {
+     "min": 7.5,
+     "max": 21.78
+    },
+    "fs_per_g_N": {
+     "min": 33.4,
+     "max": 96.9
+    }
+   },
    "cfr23_155": {
     "W_lb": 2888,
     "nL": 3.8,
@@ -176,6 +196,26 @@
     "SM_free": 0.226,
     "free_elevator_factor": 0.82
    },
+   "band": {
+    "controller": "centre_stick",
+    "nL": 3.8,
+    "W_lb": 2646,
+    "nAlpha_cruise_g_per_rad": 10.16,
+    "mil_L1_centre_stick_lbf_per_g": {
+     "min": 7.5,
+     "max": 23.61
+    },
+    "part23_155_force_lbf": 18.9,
+    "part23_155_min_lbf_per_g": 6.75,
+    "fs_per_g_lbf": {
+     "min": 7.5,
+     "max": 23.61
+    },
+    "fs_per_g_N": {
+     "min": 33.4,
+     "max": 105
+    }
+   },
    "cfr23_155": {
     "W_lb": 2646,
     "nL": 3.8,
@@ -267,6 +307,26 @@
     "SM_fixed": 0.294,
     "SM_free": 0.226,
     "free_elevator_factor": 0.82
+   },
+   "band": {
+    "controller": "centre_stick",
+    "nL": 3.8,
+    "W_lb": 2535,
+    "nAlpha_cruise_g_per_rad": 10.61,
+    "mil_L1_centre_stick_lbf_per_g": {
+     "min": 7.5,
+     "max": 22.63
+    },
+    "part23_155_force_lbf": 18.1,
+    "part23_155_min_lbf_per_g": 6.47,
+    "fs_per_g_lbf": {
+     "min": 7.5,
+     "max": 22.63
+    },
+    "fs_per_g_N": {
+     "min": 33.4,
+     "max": 100.7
+    }
    },
    "cfr23_155": {
     "W_lb": 2535,

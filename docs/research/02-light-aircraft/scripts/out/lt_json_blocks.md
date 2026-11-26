@@ -6269,7 +6269,27 @@
     ],
     "conf": "กลาง",
     "est": false,
-    "note": ">1,700 kg (77 ≤1,700) [LT5]; AOPA VY 79 [LT16]"
+    "note": "แฟลป UP >1,700 kg (77 ≤1,700) [LT5]; AOPA VY 79 [LT16]"
+   },
+   "climb_basis": {
+    "v": {
+     "VX": {
+      "flap": "UP",
+      "mass_kg": 1785
+     },
+     "VY": {
+      "flap": "UP",
+      "mass_kg": 1785
+     }
+    },
+    "u": "-, kg",
+    "scope": "aircraft",
+    "src": [
+     "LT5"
+    ],
+    "conf": "ต่ำ",
+    "est": false,
+    "note": "โครงแบบและมวลของ speeds.VX_kt และ VY_kt (R2-08): ทั้งคู่แฟลป UP แถว >1,700 kg ถึง MTOM 1,785 kg ของ AFM 4A.2 [LT5] (การจับแถวตารางเป็นการอนุมาน); ที่มวลฝึก 1,600 kg ใช้แถว ≤1,700 kg = 77 KIAS ในหัวข้อ 08 และ 09 (แก้มวล)"
    },
    "VR_kt": {
     "v": 72,

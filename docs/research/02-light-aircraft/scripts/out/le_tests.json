@@ -217,7 +217,7 @@
    "tol": "ζ: ช่วงปิด ส่วนเผื่อ 0; ωn: ±10 %",
    "unit": "- / rad/s",
    "origin": "MIL-F-8785C Level 1 Class I [R1:V7, R1:V10]; บัตร c172s §04.9 [LC0]",
-   "current": "0.708 / 5.69",
+   "current": "0.709 / 5.69",
    "pass": true
   },
   {
@@ -239,7 +239,7 @@
    "tol": "ขีดล่างเดียวทั้งสามค่า ส่วนเผื่อ 0; cruise แสดงอย่างเดียว",
    "unit": "rad/s / - / rad/s",
    "origin": "MIL-F-8785C Level 1 Class I Cat C [R1:V10]",
-   "current": "approach 1.77 / 0.317 / 0.56; cruise 2.83 / 0.299",
+   "current": "approach 1.77 / 0.317 / 0.56; cruise 2.38 / 0.259",
    "pass": true
   },
   {
@@ -250,7 +250,7 @@
    "tol": "ขีดบนเดียว ส่วนเผื่อ 0",
    "unit": "s",
    "origin": "MIL-F-8785C Table 5 [R1:V7, R1:V10]",
-   "current": "0.217 / 0.133",
+   "current": "0.217 / 0.125",
    "pass": true
   },
   {
@@ -261,7 +261,7 @@
    "tol": "ขีดล่างเดียว ส่วนเผื่อ 0; spiral ที่ลู่เข้าผ่านเสมอ",
    "unit": "s",
    "origin": "MIL-F-8785C Table 6 [R1:V7, R1:V10]",
-   "current": "38.6 / 73.5",
+   "current": "38.6 / เสถียร",
    "pass": true
   },
   {
@@ -462,8 +462,8 @@
     "t_Vmin": 17.846,
     "de_end_deg": -23.849,
     "ias0": 64,
-    "VSR_kias": 38.692,
-    "Vmin_kias": 36.907
+    "VSR_kias": 42.025,
+    "Vmin_kias": 40.24
    },
    "30": {
     "f": 1,
@@ -557,28 +557,29 @@
   "modes": {
    "cruise": {
     "sp": {
-     "wn": 5.6927,
-     "zeta": 0.70812,
-     "T": 1.5631
+     "wn": 5.6921,
+     "zeta": 0.70927,
+     "T": 1.5659
     },
     "ph": {
-     "wn": 0.1931,
-     "zeta": 0.19979,
-     "T": 33.209
+     "wn": 0.19311,
+     "zeta": 0.1998,
+     "T": 33.207
     },
     "dr": {
-     "wn": 2.8286,
-     "zeta": 0.29856,
-     "T": 2.3275
+     "wn": 2.3835,
+     "zeta": 0.25897,
+     "T": 2.7292
     },
-    "roll_tau": 0.13254,
+    "roll_tau": 0.1253,
     "spiral": {
-     "lam": 0.0094263,
-     "t2": 73.533,
-     "grows": true
+     "lam": -0.021891,
+     "t2": 31.663,
+     "grows": false
     },
     "nAlpha": 15.041,
-    "CAP": 2.1546
+    "CAP": 2.1541,
+    "derivSet": "cruise"
    },
    "approach": {
     "sp": {
@@ -603,7 +604,8 @@
      "grows": true
     },
     "nAlpha": 5.4147,
-    "CAP": 2.2059
+    "CAP": 2.2059,
+    "derivSet": "approach"
    }
   },
   "takeoff": {
@@ -613,7 +615,17 @@
    "tLiftoff_s": 16.237,
    "V_LOF_kt": 62.395,
    "dist50ft_m": 486.46,
-   "V50_kt": 65.696
+   "V50_kt": 65.696,
+   "mode": "r1",
+   "tVRtoNose_s": 3.0875,
+   "V_nose_kt": 58.764,
+   "tVRtoLOF_s": 4.4333,
+   "theta_LOF_deg": 8.1101,
+   "alpha_LOF_deg": 7.9995,
+   "q_LOF_dps": 5.0731,
+   "de_LOF_deg": -10.884,
+   "CL_LOF": 1.0522,
+   "phiGE_LOF": 0.67694
   },
   "landing": {
    "asIs": {
@@ -642,7 +654,17 @@
     "tLiftoff_s": 16.725,
     "V_LOF_kt": 61.948,
     "dist50ft_m": 510.95,
-    "V50_kt": 65.254
+    "V50_kt": 65.254,
+    "mode": "r1",
+    "tVRtoNose_s": 3.1042,
+    "V_nose_kt": 58.407,
+    "tVRtoLOF_s": 4.475,
+    "theta_LOF_deg": 8.2726,
+    "alpha_LOF_deg": 8.1671,
+    "q_LOF_dps": 5.0429,
+    "de_LOF_deg": -10.942,
+    "CL_LOF": 1.0669,
+    "phiGE_LOF": 0.67723
    },
    "climb8k": {
     "Vy_kt": 66.721,
