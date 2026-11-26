@@ -29,3 +29,11 @@ ceilings, density altitude) from the IEM METAR archive. Node ≥ 18, no dependen
     node tools/climo/metar-climo.mjs --from 2016 --to 2025 --out docs/research/data/vtbd-metar-climo.json
 
 Commit only the derived summary, not the raw METAR downloads.
+
+## AIRAC, SUP/AIC and aircraft register watch (`watch/`)
+
+`watch/watch.mjs` (plan A10) tells when AIP Thailand AD 2 VTBD, the AIP supplements and circulars, or the CAAT aircraft
+register change. It needs the network, so it is not run in CI. See `watch/README.md` (Thai).
+
+    node tools/watch/watch.mjs aip        # eAIP editions newer than test/fixtures/aip_vtbd_current.json, SUP/AIC
+    node tools/watch/watch.mjs due        # next AIRAC dates and recheck dates, no network

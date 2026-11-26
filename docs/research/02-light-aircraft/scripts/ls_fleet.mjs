@@ -6,12 +6,31 @@
 //   out/ls_fleet_summary.json   (numbers quoted in 02-thai-schools.md and the expected values of T-LS-xx)
 //   out/ls_thai_fleet_block.json (the common_light.thai_fleet JSON block of 02-thai-schools.md §02.6)
 // Node >= 18, no dependencies. Run from anywhere: node scripts/ls_fleet.mjs [--check]
-// --check compares the block embedded in ../02-thai-schools.md with the generated one and exits 1 on mismatch.
+// --register <file>, --out <dir>: see below. --check compares the block embedded in ../02-thai-schools.md with the generated one and exits 1 on mismatch.
+// --register <file> (added for tools/watch): read another register rows file (same format) instead of the committed
+// 2026-07-09 one; AS_OF comes from its name (ls_register_<date>.json) or from the "as at" date in _meta.source.
+// --out <dir> (or $LM_OUT_DIR) is where the two json files are written; --register without either writes to
+// <tmp>/ls_fleet-out, never into scripts/out/; with none of these options the script writes scripts/out/ exactly as before.
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const HERE = new URL('.', import.meta.url);
-const REG = JSON.parse(fs.readFileSync(new URL('./out/ls_register_2026-07-09.json', HERE), 'utf8'));
-const AS_OF = '2026-07-09';
+const optVal = n => { const i = process.argv.indexOf(n); return i >= 0 ? process.argv[i + 1] : null; };
+const REG_PATH = optVal('--register') ? path.resolve(optVal('--register')) : fileURLToPath(new URL('./out/ls_register_2026-07-09.json', HERE));
+const REG = JSON.parse(fs.readFileSync(REG_PATH, 'utf8'));
+const OUT_DIR = path.resolve(optVal('--out') || process.env.LM_OUT_DIR || (optVal('--register') ? path.join(os.tmpdir(), 'ls_fleet-out') : fileURLToPath(new URL('./out/', HERE))));
+const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+const AS_OF = (() => {
+  if (!optVal('--register')) return '2026-07-09';
+  const f = path.basename(REG_PATH).match(/(\d{4}-\d{2}-\d{2})/);
+  if (f) return f[1];
+  const m = String(REG._meta?.source || '').match(/as at (\d{1,2})(?:st|nd|rd|th)? ([A-Za-z]+) (\d{4})/i);
+  const mi = m ? MONTHS.indexOf(m[2].toLowerCase()) : -1;
+  if (mi < 0) throw new Error('--register: no date in the file name (ls_register_YYYY-MM-DD.json) or in _meta.source');
+  return `${m[3]}-${String(mi + 1).padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+})();
 
 // ---- model string (as printed in the register) -> type id, family, engines, notes -------------------------
 // Variant decoding follows the EASA TCDS serial conventions [LS17][LS18] and the CATC slide [LS3].
@@ -169,8 +188,9 @@ const summary = {
   crossChecks, ranking,
 };
 
-fs.writeFileSync(new URL('./out/ls_fleet_summary.json', HERE), JSON.stringify(summary, null, 1) + '\n');
-fs.writeFileSync(new URL('./out/ls_thai_fleet_block.json', HERE), JSON.stringify(block, null, 1) + '\n');
+fs.mkdirSync(OUT_DIR, { recursive: true });
+fs.writeFileSync(path.join(OUT_DIR, 'ls_fleet_summary.json'), JSON.stringify(summary, null, 1) + '\n');
+fs.writeFileSync(path.join(OUT_DIR, 'ls_thai_fleet_block.json'), JSON.stringify(block, null, 1) + '\n');
 
 // --write (added 19 Nov 2026): replace the thai_fleet json block of ../02-thai-schools.md with the generated one
 // (one leaf per line, the layout §02.6 has always used), so the file is regenerated, never hand-edited
