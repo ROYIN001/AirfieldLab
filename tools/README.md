@@ -14,10 +14,13 @@ OpenStreetMap renders at zoom 15–17), which are not included; `shots_meta.json
 ## Weather climatology (`climo/`)
 
 `climo/metar-climo.mjs` builds a VTBD surface climatology (wind rose by runway, visibility, present weather,
-ceilings, density altitude) from the IEM METAR archive. Node ≥ 18, no dependencies; downloads are cached in
+ceilings, density altitude) from the IEM METAR archive. It decodes the reports with the page's own decoder,
+`src/21-metar.js` (loaded with `new Function`, as the tests do), through a small view that keeps the statistics of
+the old tool-local parser (whole-knot speeds, dropped `///` layers, VV/// = ceiling 0), so the committed numbers
+stay valid. Node ≥ 22, no dependencies; downloads are cached in
 `.cache/climo/` (git-ignored). Used by `docs/research/04-weather.md`.
 
-    node tools/climo/metar-climo.mjs --test                  # parser self-test, no network
+    node tools/climo/metar-climo.mjs --test                  # decoder self-test (10 checks), no network
     node tools/climo/metar-climo.mjs --from 2016 --to 2025 --out docs/research/data/vtbd-metar-climo.json
 
 Commit only the derived summary, not the raw METAR downloads.
