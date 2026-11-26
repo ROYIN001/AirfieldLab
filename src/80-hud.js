@@ -60,9 +60,9 @@ function drawHUD(ctx, w, h, dpr, cam, fl, guide) {
   }
   // speed and altitude boxes
   const box = (x, y, txt, align) => { ctx.strokeRect(x - 38 * dpr, y - 12 * dpr, 76 * dpr, 24 * dpr); ctx.textAlign = 'center'; ctx.fillText(txt, x, y); };
-  const ias = a.ias / KT;
+  const ias = fl.ac.kias();   // KIAS from the card's IAS–CAS table (plan C3); the trainer has none, KIAS = KCAS
   box(w * 0.24, h * 0.5, fmt(ias));
-  ctx.textAlign = 'center'; ctx.fillText(`Vref ${fmt(AC.Vref)}`, w * 0.24, h * 0.5 + 26 * dpr);
+  ctx.textAlign = 'center'; ctx.fillText(`Vref ${fmt(speedsKias().Vref)}`, w * 0.24, h * 0.5 + 26 * dpr);
   const trend = clamp((ias - (fl._iasPrev || ias)) * 10, -30, 30); fl._iasPrev = lerp(fl._iasPrev || ias, ias, 0.1);
   line([w * 0.24 + 44 * dpr, h * 0.5], [w * 0.24 + 44 * dpr, h * 0.5 - trend * 2 * dpr]);
   box(w * 0.76, h * 0.5, fmt(a.h / FT));

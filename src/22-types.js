@@ -37,13 +37,15 @@ const landingDetent = (card) => card.aero.flaps.detents.v.reduce((a, d) => (d.fl
 
 // The Thai text of a type: { name, em, span, lede, notes, links: [{ text, href }], real }. card is the parsed
 // data/aircraft/<id>.json and ac what acFromCard made of it; without them (a card that failed to load) only the name.
-// em and the brief show kt CAS, the sim's speeds, rounded for display; the card's KIAS are in note 4 until plan C3 (they
-// are not all manual figures: the da42ng ones come from a school's deck, the C172 Vapp is the middle of the POH range).
+// em and the brief show Vref and Vapp in KIAS as the HUD does (plan C3: ac.kias, the card's own figures or its kt CAS read
+// back through speeds.ias_cas), rounded for display; note 4 says what the HUD reads and what the sim flies. They are not
+// all manual figures: the da42ng ones come from a school's deck, the C172 Vapp is the middle of the POH range.
 function typeInfo(id, card, ac) {
   const T = TYPE_TEXT[id] || { name: String(id) }, real = id !== 'trainer';
   const out = { name: T.name, em: '', span: '', lede: '', notes: [], links: [], real };
   if (!card || !ac) return out;
-  out.em = `Vref ${Math.round(ac.Vref)} · Vapp ${Math.round(ac.Vapp)} kt`;
+  const V = ac.kias || ac;
+  out.em = `Vref ${Math.round(V.Vref)} · Vapp ${Math.round(V.Vapp)} KIAS`;
   if (!real) {
     out.span = 'แบบสมมติ ค่าทุกตัวเป็นค่าประมาณ'; out.lede = TRAINER_LEDE; out.notes = [...TRAINER_NOTES];
     return out;
@@ -62,8 +64,7 @@ function typeInfo(id, card, ac) {
     out.notes.push(`จำนวนจากทะเบียนอากาศยานของ กพท. ณ ${thaiDate(tf.as_of)} นับเครื่องที่จดทะเบียน ไม่ใช่เครื่องที่บินได้วันนี้`);
   }
   if (T.note) out.notes.push(T.note);
-  const sp = (l) => `${l.v} ${l.u === 'kt IAS' ? 'KIAS' : 'KCAS'}`, S = card.speeds;
-  if (S.VREF_kt.u === 'kt IAS' || S.VAPP_kt.u === 'kt IAS') out.notes.push(`ความเร็วในซิมเป็น kt CAS แปลงจากค่าในบัตร Vref ${sp(S.VREF_kt)} และ Vapp ${sp(S.VAPP_kt)}`);
+  if (ac.kias) out.notes.push(`HUD แสดง KIAS ตามตาราง IAS–CAS ของบัตรที่แฟลปขณะนั้น ซิมบินด้วย KCAS (ลงจอดแฟลปเต็ม Vref ${Math.round(ac.kias.Vref)} KIAS = ${Math.round(ac.Vref)} KCAS, Vapp ${Math.round(ac.kias.Vapp)} KIAS = ${Math.round(ac.Vapp)} KCAS) และคะแนนวัดเป็น KIAS`);
   out.notes.push(`ตัวเลขการบินในซิมเป็นค่าประมาณจากเอกสารสาธารณะของผู้ผลิตและหน่วยงาน ดูที่มาทุกค่าใน aircraft/${id}.json`);
   out.notes.push(SCENARIO_NOTE, MODEL_NOTE);
   const reg = card._meta && card._meta.sources && card._meta.sources.LS1;

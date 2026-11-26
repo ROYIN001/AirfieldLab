@@ -151,6 +151,43 @@ export function prepare(id) {
   return card;
 }
 
+// ───────────────────────── the stall end of speeds.ias_cas (plan C3, research R2-12) ─────────────────────────
+// The POH's calibration table (Fig 5-1 of the Cessna POHs) is for level flight and starts at 40 or 50 KIAS, above the
+// stall; the stall table (Fig 5-3, speeds.stall_table, cells [KIAS, KCAS] of the power-off stall at 0 / 30 / 45 / 60° of
+// bank) gives the pair at the stall itself, where the position error is larger (C152 flaps 30: 35 KIAS = 43 KCAS, the
+// calibration table has 40 KIAS = 43 KCAS). The simulator's KIAS display needs the pair, or the stall would read 40
+// KIAS instead of 35 (T-LF-07, research item 12: "extend speeds.ias_cas below 40 KIAS with pairs from speeds.stall_table").
+// anchorStallRows(ias, stall): a copy of the ias_cas leaf whose rows start at the stall pair, for each row whose name is
+// a flap row of the stall table (the forward-CG block, bank 0: the lowest speed of the type, at its maximum mass). The
+// pair becomes the row's first point when its KIAS is not above the row's first KIAS (the stall is the start of the
+// table, not a point inside it); the row's points that it contradicts (KIAS not above it, or KCAS not above it, which
+// would make the table non-monotone: the stall table is a different calibration, power off) are dropped, the rest stay.
+// A row whose first point is already below the stall pair, a row with no stall pair, and a type whose stall table has no
+// [KIAS, KCAS] cells (the DA40 and DA42: KIAS only) stay as they are. The POH marks the KIAS of Fig 5-3 as approximate, so
+// the row between the stall pair and the next Fig 5-1 point is an interpolation, not a POH figure (ค่าประมาณ).
+export function anchorStallRows(ias, stall) {
+  const out = structuredClone(ias), cg = stall && isObj(stall.v) ? stall.v.cg_fwd : null, notes = [];
+  if (!isObj(cg) || !isObj(out.v) || out.v.axes) return { leaf: out, notes };
+  for (const [name, row] of Object.entries(out.v)) {
+    const cell = cg[name] && cg[name][0];
+    if (!Array.isArray(row) || !Array.isArray(cell) || cell.length !== 2 || !cell.every((x) => typeof x === 'number')) continue;
+    const [ka, ca] = cell;
+    if (!(ka <= row[0][0])) continue;
+    const kept = row.filter((q) => q[0] > ka && q[1] > ca);
+    out.v[name] = [[ka, ca], ...kept];
+    notes.push(`แถว ${name}: เริ่มที่คู่ stall ${ka} KIAS = ${ca} KCAS${kept.length === row.length ? '' : ` แทนจุด ${row.filter((q) => !kept.includes(q)).map((q) => `${q[0]} → ${q[1]}`).join(', ')} ของ Fig 5-1`}`);
+  }
+  if (notes.length) {
+    out.est = true;   // the stall end is an interpolation between the Fig 5-3 pair and Fig 5-1, so the leaf holds estimates
+    out.src = uniq([...out.src, ...stall.src, 'AL:C3']);
+    out.note = `${String(out.note).trim().replace(/[;.]$/, '')}. ช่วง stall (${EST}): ${notes.join('; ')}; คู่ KIAS/KCAS จาก speeds.stall_table (Fig 5-3, CG หน้า, ปีกระดับ, power off`
+      + ` ซึ่ง POH บอกว่า KIAS เป็นค่าโดยประมาณ) เพราะ Fig 5-1 เริ่มที่ 40 หรือ 50 KIAS สูงกว่า stall จึงต้องต่อจุดล่างด้วยคู่นี้เพื่อให้ HUD อ่าน stall ใกล้ขอบล่างของ white arc;`
+      + ` ระหว่างคู่ stall กับจุดถัดไปของ Fig 5-1 เป็นเส้นตรง (ไม่ใช่ตัวเลขของ POH); ซิมอ่านต่ำกว่าจุดแรกของแถวตามสัดส่วนถึงศูนย์ และสูงกว่าจุดสุดท้ายด้วยส่วนต่างคงที่`
+      + ` (src/20-flight.js iasToCas, ${EST}) [AL:C3]`;
+  }
+  return { leaf: out, notes };
+}
+
 // ───────────────────────── note rules ─────────────────────────
 // Every written leaf: an empty note says which source the value comes from; an estimate says ค่าประมาณ; every code its
 // note cites ([LT9], (LS1), …) is in its src, so a note never cites a code that _meta.sources lacks.
@@ -307,6 +344,7 @@ function warnInto(card, legacy, w) {
 const FIXED_SOURCES = {
   'R1:A22': { what: '14 CFR Part 23 (1 Jan 2016, before Amdt 23-64) §23.207(c): stall warning at least 5 kt above the stall (reference [A22] of the round 1 aero topic)', link: 'docs/research/01-flight-physics/01-aero.md' },
   'AL:A5': { what: 'AirfieldLab plan A5 design choice, no outside source: the stall warning goes off only 0.5° below its angle and after at least 0.5 s on, so a gust spike sounds as a short chirp; test/stall.test.mjs checks the behaviour', link: 'test/stall.test.mjs' },
+  'AL:C3': { what: "AirfieldLab plan C3, this generator's own rule: the first point of a speeds.ias_cas row is the stall pair of speeds.stall_table where that pair lies at or below the row's first KIAS (no outside source beyond the POH tables it reads)", link: SELF },
   'AL:C1': { what: "AirfieldLab plan C1, this generator's own derivations: the stall-warning angles solved on the simulator's lift curve, the gear struts through round 2's buildAC, the glide-slope antenna at the eye, the DA40 eye point from the seat station and the DA40 wheel stations from the wheelbase, the Thai fleet rows and, for a card without inertia, inertia from class radii", link: SELF },
 };
 // The description of a reference row with its Markdown, links and empty brackets taken out
@@ -344,7 +382,7 @@ function meta(id, doc) {
       + ' (แก้ params-light.json หรือสคริปต์แล้วสร้างใหม่) ตัวเลขการบินเป็นค่าของเอกสารสาธารณะที่อ้างไว้หรือเป็นค่าประมาณ (est true, ค่าประมาณ ใน note)'
       + ' ใช้เพื่อการฝึกในเกมนี้เท่านั้น ไม่ใช้เพื่อการบินจริง; รูปแบบ leaf {v, u, scope, src, conf, est, note} ตาม docs/research/01-flight-physics/schema.md'
       + ' และ docs/research/02-light-aircraft/schema-ext.md; ความเร็วอ้างอิงเขียนในหน่วยที่แหล่งให้ (ส่วนมาก kt IAS) ซิมแปลง kt IAS เป็น kt CAS'
-      + ' ด้วย speeds.ias_cas แถวแฟลปลงจอด;'
+      + ' ด้วย speeds.ias_cas แถวแฟลปลงจอด และ HUD แสดง KIAS จากตารางเดียวกันตามตำแหน่งแฟลป (plan C3);'
       + ' รหัส AL:A5 และ AL:C1 ไม่ใช่รูปแบบรหัสของรอบที่ 2 (lm_lib.validate ของรอบที่ 2 เตือนโดยตั้งใจ เช่นเดียวกับบัตรเครื่องฝึก)'
       + ' บัตรใน data/aircraft อ่านรหัสทุกตัวผ่าน _meta.sources',
     sources: Object.fromEntries([...used].sort().map((c) => [c, sourceOf(c)])),
@@ -360,8 +398,9 @@ export function buildCard(id) {
   // copied leaves, in the research card's key order
   for (const p of leafPaths(card)) {
     if (!COPY.has(p)) continue;
-    const l = structuredClone(leaf(card, p));
+    let l = structuredClone(leaf(card, p));
     if (LEGACY_U[p]) l.u = LEGACY_U[p];
+    if (p === 'speeds.ias_cas') l = anchorStallRows(l, leaf(card, 'speeds.stall_table')).leaf;
     put(doc, p, noteRules(p, l));
   }
   if (!['Ixx', 'Iyy', 'Izz'].every((k) => typeof val(card, 'airframe.inertia.' + k) === 'number')) {

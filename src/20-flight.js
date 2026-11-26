@@ -165,6 +165,61 @@ function table2(R, C, D, r, c) {
   const f = (r - R[i - 1]) / (R[i] - R[i - 1]); return row(i - 1) + f * (row(i) - row(i - 1));
 }
 
+// ── KIAS from the card's IAS–CAS table (plan C3, research round 2 task item 12) ──
+// The sim flies and tests in CAS (its `air.ias` is EAS, equal to CAS to within 0.1 % below 3,000 ft and 200 kt, the
+// round 2 reading of the POH's "KCAS"); a real airspeed indicator reads KIAS, which differs by the position error that
+// each type's calibration table speeds.ias_cas gives per flap detent (POH Fig 5-1 for the Cessnas, the AFM for the
+// DA40 and DA42). A card with the table has AC.kias = { Vref, Vapp, Vs0 (KIAS), rows: [{ f, kias[], kcas[] }] }, one
+// row per detent of the table at its flap position f (the lift increment over the landing detent's, flapMap of the
+// research's lm_card.mjs; the deflection ratio when the detents carry no dCL0). AC.kias is null on a card with no
+// table (the fictional trainer): KIAS = KCAS there, and every function below returns its argument unchanged.
+// Inside a row the table is read linearly. Outside it, estimates (ค่าประมาณ, no source): below the first point KIAS
+// and KCAS stay in proportion to the origin (a stopped aircraft reads zero), above the last the difference stays that of
+// the last point (slope 1); the POH gives the table only between its points. Between two rows (flaps moving) the
+// CAS of the two rows is mixed linearly in f, the same rule as the research's iasCas (R2-07), which mixes in flap angle.
+// Rows are read for any f, clamped to the first and last row.
+function rowCas(R, x) {
+  const K = R.kias, C = R.kcas, n = K.length;
+  if (x <= K[0]) return C[0] * x / K[0];
+  if (x >= K[n - 1]) return C[n - 1] + (x - K[n - 1]);
+  return table1(K, C, x);
+}
+function rowIas(R, y) {   // the inverse of rowCas (KCAS ascending, equal values allowed: the first KIAS that reads y)
+  const K = R.kias, C = R.kcas, n = K.length;
+  if (y <= C[0]) return K[0] * y / C[0];
+  if (y >= C[n - 1]) return K[n - 1] + (y - C[n - 1]);
+  let i = 1; while (C[i] < y) i++;   // C[i - 1] < y <= C[i], so C[i] > C[i - 1]
+  return K[i - 1] + (y - C[i - 1]) / (C[i] - C[i - 1]) * (K[i] - K[i - 1]);
+}
+// the two rows around flap position f and the weight of the upper one, or the one row when f is at one (or past an end)
+function rowsAt(T, f) {
+  const R = T.rows, n = R.length;
+  if (f <= R[0].f) return [R[0], R[0], 0];
+  if (f >= R[n - 1].f) return [R[n - 1], R[n - 1], 0];
+  let i = 1; while (R[i].f < f) i++;
+  const w = (f - R[i - 1].f) / (R[i].f - R[i - 1].f);
+  return w < 1e-9 ? [R[i - 1], R[i - 1], 0] : w > 1 - 1e-9 ? [R[i], R[i], 0] : [R[i - 1], R[i], w];
+}
+// T is AC.kias; kt in, kt out
+function iasToCas(T, f, kias) {
+  if (!T) return kias;
+  const [A, B, w] = rowsAt(T, f);
+  return w === 0 ? rowCas(A, kias) : (1 - w) * rowCas(A, kias) + w * rowCas(B, kias);
+}
+function casToIas(T, f, kcas) {
+  if (!T) return kcas;
+  const [A, B, w] = rowsAt(T, f);
+  if (w === 0) return rowIas(A, kcas);
+  let lo = 0, hi = 2 * kcas + 20;   // a mix of two rows: bisection on the (increasing) forward function, only while the flaps move
+  for (let k = 0; k < 60; k++) { const mid = 0.5 * (lo + hi); if ((1 - w) * rowCas(A, mid) + w * rowCas(B, mid) < kcas) lo = mid; else hi = mid; }
+  return 0.5 * (lo + hi);
+}
+// Vref, Vapp and Vs0 in the unit of the HUD: KIAS from the card's table, or the card's own kt (CAS = IAS) with no table
+const speedsKias = () => AC.kias || AC;
+// The KIAS of an aircraft state: anything with `flaps` and `air.ias` (EAS, m/s), so the research scripts' stand-ins for
+// an Aircraft work too (Aircraft.kias, the Evaluator and the Recorder all call it)
+const kiasOf = (ac) => casToIas(AC.kias, ac.flaps, ac.air.ias / KT);
+
 // Inverse of the inertia tensor [[Ixx, 0, −Ixz], [0, Iyy, 0], [−Ixz, 0, Izz]] (FRD, Ixz product), as deriv uses it
 function inertiaInverse({ Ixx, Iyy, Izz, Ixz }) {
   const G = Ixx * Izz - Ixz * Ixz;
@@ -188,7 +243,8 @@ function inertiaInverse({ Ixx, Iyy, Izz, Ixz }) {
 //    extrapolated): VS0, VREF and VAPP are all landing-configuration speeds, and the landing detent is the entry of
 //    aero.flaps.detents with the largest flap_deg. speeds.ias_cas is { <detent name>: [[KIAS, KCAS], …] } or round 2
 //    lm_lib's { axes: { flap: [names], KIAS: [kt] }, data: [[KCAS per KIAS] per flap] }; the row needs 2 pairs or more
-//    with KIAS strictly ascending. Any other unit throws.
+//    with KIAS strictly ascending (plan C3: every row is checked, positive, KCAS not descending, named after a detent).
+//    Any other unit throws. The card's KIAS figures and the whole table also go to AC.kias (see iasToCas).
 //  - Derivatives: aero.derivatives.<name> is a number or an object of numbers per configuration; the first numeric
 //    entry of [opts.config, 'approach', 'landing', 'cruise', 'clean'], else the first numeric key, is taken (with no
 //    opts, the same pick as buildAC's).
@@ -229,26 +285,43 @@ function acFromCard(card, opts = {}) {
     if (!Array.isArray(v) || !v.length) throw fail(path, `is not a list (${JSON.stringify(v)})`);
     return v;
   };
-  let iasRow = null;   // the landing detent's [KIAS[], KCAS[]] of speeds.ias_cas, read at the first kt IAS speed
-  const landingRow = () => {
-    const tab = get('speeds.ias_cas');
+  // speeds.ias_cas: every row as [[KIAS, KCAS], …] by detent name, checked once at the first need. A row needs 2 pairs or
+  // more, positive, with KIAS strictly ascending and KCAS not descending (plan C3: the inverse needs it).
+  let iasRows = null;
+  const tableRows = () => {
+    if (iasRows) return iasRows;
+    const tab = get('speeds.ias_cas'), rows = {};
+    if (isObj(tab) && isObj(tab.axes) && Array.isArray(tab.data)) {   // lm_lib's { axes: { flap, KIAS }, data } form
+      const fl = tab.axes.flap || tab.axes.flaps, ki = tab.axes.KIAS || tab.axes.kias || tab.axes.ias;
+      if (Array.isArray(fl) && Array.isArray(ki)) fl.forEach((nm, j) => {
+        const row = Array.isArray(tab.data[0]) ? tab.data[j] : fl.length === 1 ? tab.data : undefined;
+        if (Array.isArray(row) && row.length === ki.length) rows[String(nm)] = ki.map((k, i) => [k, row[i]]);
+      });
+    } else if (isObj(tab)) for (const k of Object.keys(tab)) if (Array.isArray(tab[k])) rows[k] = tab[k];
+    for (const [name, pairs] of Object.entries(rows)) {
+      const ok = pairs.length >= 2 && pairs.every((q, i) => Array.isArray(q) && q.length === 2 && q.every((x) => typeof x === 'number' && Number.isFinite(x) && x > 0)
+        && (i === 0 || (q[0] > pairs[i - 1][0] && q[1] >= pairs[i - 1][1])));
+      if (!ok) throw fail(`speeds.ias_cas.${name}`, `is not a row of 2 or more [KIAS, KCAS] pairs, above 0, with KIAS strictly ascending and KCAS not descending (${JSON.stringify(pairs)})`);
+    }
+    return (iasRows = rows);
+  };
+  // the detents with their flap position f (lift increment over the landing detent's, as the research's flapMap), the
+  // landing detent (the largest flap_deg) first
+  const detentsF = () => {
     const dets = get('aero.flaps.detents');
     if (!Array.isArray(dets) || !dets.length || !dets.every((d) => isObj(d) && typeof d.flap_deg === 'number' && Number.isFinite(d.flap_deg))) {
       throw fail('aero.flaps.detents', `has no list of detents with flap_deg (${JSON.stringify(dets)})`);
     }
-    const name = String(dets.reduce((a, d) => (d.flap_deg > a.flap_deg ? d : a)).name), p = `speeds.ias_cas.${name}`;
-    let pairs;
-    if (isObj(tab) && isObj(tab.axes) && Array.isArray(tab.data)) {   // lm_lib's { axes: { flap, KIAS }, data } form
-      const fl = tab.axes.flap || tab.axes.flaps, ki = tab.axes.KIAS || tab.axes.kias || tab.axes.ias;
-      const j = Array.isArray(fl) ? fl.map(String).indexOf(name) : -1;
-      const row = j < 0 ? undefined : Array.isArray(tab.data[0]) ? tab.data[j] : fl.length === 1 ? tab.data : undefined;
-      pairs = Array.isArray(ki) && Array.isArray(row) && row.length === ki.length ? ki.map((k, i) => [k, row[i]]) : undefined;
-    } else if (isObj(tab)) pairs = Object.hasOwn(tab, name) ? tab[name] : undefined;
-    if (!Array.isArray(pairs)) throw fail(p, 'is missing (the landing detent\'s row of KIAS → KCAS)');
-    const ok = pairs.length >= 2 && pairs.every((q, i) => Array.isArray(q) && q.length === 2 && q.every((x) => typeof x === 'number' && Number.isFinite(x)) && (i === 0 || q[0] > pairs[i - 1][0]));
-    if (!ok) throw fail(p, `is not a row of 2 or more [KIAS, KCAS] pairs with KIAS strictly ascending (${JSON.stringify(pairs)})`);
+    const full = dets.reduce((a, d) => (d.flap_deg > a.flap_deg ? d : a));
+    const lift = dets.every((d) => typeof d.dCL0 === 'number' && Number.isFinite(d.dCL0)) && full.dCL0 > 0;
+    return { full, f: (d) => (lift ? d.dCL0 / full.dCL0 : full.flap_deg > 0 ? d.flap_deg / full.flap_deg : 0), dets };
+  };
+  const landingRow = () => {
+    const name = String(detentsF().full.name), pairs = tableRows()[name];
+    if (!pairs) throw fail(`speeds.ias_cas.${name}`, 'is missing (the landing detent\'s row of KIAS → KCAS)');
     return [pairs.map((q) => q[0]), pairs.map((q) => q[1])];
   };
+  let iasRow = null;   // the landing detent's [KIAS[], KCAS[]], read at the first kt IAS speed
   const kcas = (path) => {   // the sim's IAS is EAS ≈ CAS below 200 kt: a speed in any other unit would be misread
     const { v, leaf } = walk(path);
     if (leaf.u === 'kt CAS') return num(path, v);
@@ -298,6 +371,21 @@ function acFromCard(card, opts = {}) {
     if (!(n > 0)) throw fail(`propulsion.layout.${i}.axis`, 'has no direction');
     return { pos, dir: [ax[0] / n, ax[1] / n, ax[2] / n] };
   });
+  // Plan C3: the card's table as AC.kias (see iasToCas), with Vref, Vapp and Vs0 as the HUD shows them, in KIAS: the
+  // card's figure when it is a kt IAS one, else its kt CAS read back through the landing row. A property that
+  // Object.keys, JSON and the spread of AC do not list (setAircraft keeps it, null without a table).
+  let kias = null;
+  if (get('speeds.ias_cas', false) !== undefined) {
+    const { full, f, dets } = detentsF(), rows = tableRows(), land = landingRow(), landR = { kias: land[0], kcas: land[1] };
+    const list = Object.entries(rows).map(([name, pairs]) => {
+      const d = dets.find((x) => String(x.name) === name);
+      if (!d) throw fail(`speeds.ias_cas.${name}`, `names no detent of aero.flaps.detents (${dets.map((x) => x.name).join(', ')})`);
+      return { f: d === full ? 1 : f(d), kias: pairs.map((q) => q[0]), kcas: pairs.map((q) => q[1]) };
+    }).sort((a, b) => a.f - b.f);
+    const speed = (path) => { const { v, leaf } = walk(path); return leaf.u === 'kt IAS' ? num(path, v) : rowIas(landR, num(path, v)); };
+    kias = { Vref: speed('speeds.VREF_kt'), Vapp: speed('speeds.VAPP_kt'), Vs0: speed('speeds.VS0_kt'), rows: list };
+  }
+  Object.defineProperty(ac, 'kias', { value: kias, writable: true, enumerable: false, configurable: true });
   return ac;
 }
 
@@ -316,6 +404,9 @@ function setAircraft(card, opts = {}) {
     if (Object.hasOwn(AC, k)) AC[k] = next[k];
     else Object.defineProperty(AC, k, { value: next[k], writable: true, enumerable: true, configurable: true });
   }
+  // AC.kias (plan C3) is not enumerable: it stays through the delete loop above, and AC's field list and JSON stay as before
+  if (Object.hasOwn(AC, 'kias')) AC.kias = next.kias;
+  else Object.defineProperty(AC, 'kias', { value: next.kias, writable: true, enumerable: false, configurable: true });
   return AC;
 }
 
@@ -570,6 +661,8 @@ class Aircraft {
   }
 
   // Trimmed, wings-level state on the extended centre line of runway 03
+  // The speed the pilot reads (plan C3): KIAS from the card's table at the flap position now, else the CAS (KIAS = KCAS)
+  kias() { return kiasOf(this); }
   setApproach({ dist = 5500, ias = AC.Vapp, dh = 0, dt = 0, gearDown = true, flaps = 1 }) {
     const s = -dist, h = Math.max(30, gpHeight(s) + dh);
     const [n, e] = rwyToNED(s, dt);
@@ -825,6 +918,13 @@ class PilotLaws {
 const aWarnAt = (f) => (AC.aWarn + AC.aWarnFlap * f) * DEG;
 
 // ── Landing evaluation: stabilized-approach gates, touchdown, rollout ──
+// Speeds (plan C3): the gates, the touchdown record `td.ias` and the speed score read the KIAS of the HUD (Aircraft.kias,
+// the card's table at the flap position of that moment) against the card's Vref in KIAS (speedsKias, the POH figure the
+// HUD prints beside the speed): the pilot sees one scale, and the 61 KIAS of the C172S is compared as 61 KIAS, not as its
+// 63.9 KCAS. The band widths (−5/+20 kt at the gates, −8/+5 kt in the score) are the same knots on that scale. The
+// autopilot and the autothrottle (PilotLaws) still fly CAS against AC.Vref and AC.Vapp (plan C5 moves them), the stall
+// horn and the stall event keep their 40 kt CAS cut-off, and the Recorder's `ias` is the KIAS shown. With no table
+// (the trainer) KIAS = KCAS and every value is the same as before.
 class Evaluator {
   constructor() {
     this.gates = {}; this.td = null; this.events = []; this.maxT = 0; this.stopS = null; this.callouts = []; this.done = false;
@@ -833,10 +933,10 @@ class Evaluator {
   }
   gateCheck(ac, name) {
     const a = ac.air;
-    const ias = a.ias / KT, vsFpm = a.vs / FT * 60;
+    const ias = kiasOf(ac), vsFpm = a.vs / FT * 60, V = speedsKias();
     const items = {
       loc: Math.abs(a.locDots) <= 1, gs: Math.abs(a.gsDots) <= 1,
-      spd: ias >= AC.Vref - 5 && ias <= AC.Vref + 20, vs: vsFpm >= -1000,
+      spd: ias >= V.Vref - 5 && ias <= V.Vref + 20, vs: vsFpm >= -1000,
       cfg: ac.gearPos > 0.98 && ac.flaps > 0.95,
     };
     this.gates[name] = { ok: Object.values(items).every(Boolean), items, ias, vsFpm, loc: a.locDots, gs: a.gsDots };
@@ -863,7 +963,7 @@ class Evaluator {
       const crs = FIELD.rwyHdg * DEG;
       const vLat = -a.wind[0] * 0 + (ac.x[3] * RWY_R[0] + ac.x[4] * RWY_R[1]);
       this.td = {
-        t: ac.t, s: a.s, tl: a.t, vsFpm: a.vs / FT * 60, ias: a.ias / KT, gs: a.gs / KT,
+        t: ac.t, s: a.s, tl: a.t, vsFpm: a.vs / FT * 60, ias: kiasOf(ac), gs: a.gs / KT,
         bank: a.phi * RAD, pitch: a.theta * RAD, crab: wrapPi(a.psi - crs) * RAD, drift: vLat,
         noseFirst: a.wow[0] && !(a.wow[1] || a.wow[2]),
         onRunway: a.s >= 0 && a.s <= FIELD.rwyLen && Math.abs(a.t) <= FIELD.rwyWid / 2,
@@ -884,7 +984,7 @@ class Evaluator {
     parts.push({ k: 'pos', pts: pPos, max: 25 });
     const cl = Math.abs(td.tl);
     parts.push({ k: 'cl', pts: cl <= 2 ? 15 : cl <= 5 ? 12 : cl <= 10 ? 6 : 0, max: 15 });
-    const dv = td.ias - AC.Vref;
+    const dv = td.ias - speedsKias().Vref;
     parts.push({ k: 'spd', pts: dv >= -8 && dv <= 5 ? 10 : dv >= -12 && dv <= 12 ? 6 : 2, max: 10 });
     const att = (Math.abs(td.bank) <= 3 ? 4 : Math.abs(td.bank) <= 6 ? 2 : 0) + (Math.abs(td.crab) <= 3 ? 3 : Math.abs(td.crab) <= 6 ? 1.5 : 0) + (Math.abs(td.drift) <= 0.8 ? 3 : Math.abs(td.drift) <= 1.6 ? 1.5 : 0);
     parts.push({ k: 'att', pts: att - (td.noseFirst ? 5 : 0), max: 10 });
@@ -915,7 +1015,7 @@ class Recorder {
     const x = ac.x, a = ac.air;
     this.f.push({
       t: ac.t, n: x[0], e: x[1], d: x[2], q: [x[6], x[7], x[8], x[9]], de: ac.de, da: ac.da, dr: ac.dr, fl: ac.flaps, gr: ac.gearPos,
-      thr: ac.thr, ias: a.ias / KT, vs: a.vs / FT * 60, s: a.s, tl: a.t, h: a.h, hw: a.hWheel, gsd: a.gsDots, locd: a.locDots, brake: ac.brake, ...extra,
+      thr: ac.thr, ias: kiasOf(ac), vs: a.vs / FT * 60, s: a.s, tl: a.t, h: a.h, hw: a.hWheel, gsd: a.gsDots, locd: a.locDots, brake: ac.brake, ...extra,
     });
   }
   at(t) {

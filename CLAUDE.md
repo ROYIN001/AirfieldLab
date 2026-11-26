@@ -96,7 +96,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   type, the model fit); `loadCards` with a stub fetch (Thai errors, never rejects); the owner's rule that no military
   user is named, not even generically (cards, `22-types.js`, the selector lines of `90-app.js`); the page wiring by
   regex), `types` (plan C1 and C2, the per-type regression lock; about 23 s: research round 2 tests flown through the cards at the
-  research's masses and tolerances. C1: C172S T-LC-04, 06–08, 12–14, 20–24, 31, C172R T-LE-05–07, 11–13, 19–23, DA40
+  research's masses and tolerances (plan C3 adds the KIAS rows T-LC-03, T-LC-05, T-LE-04 and T-LF-07, which left
+  `DEFERRED`). C1: C172S T-LC-04, 06–08, 12–14, 20–24, 31, C172R T-LE-05–07, 11–13, 19–23, DA40
   T-LD-27, 28, 31, with four known gaps held by regression bands and the research value in `t.diagnostic`: T-LE-09 Vx
   57.4 ± 1.5 KCAS (research 62 ± 3, its 60 was the first point of its 2-kt sweep, not a maximum; the test checks that the
   largest γ of its 1-kt sweep is not an end point; task item 20), T-LD-29 50 ft 507.2 m ± 3 % (research 450 ± 45), T-LD-30
@@ -136,8 +137,11 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   §12 T-S-11, policy in `test/fixtures/license_policy.json`), `oracle` (our model against JSBSim 1.3.3 flying the same
   elevator, aileron and rudder doublets from the trimmed approach with a model built from our own `AC` numbers,
   research round 1 §12.8 T-S-01…T-S-03 and T-S-05, fixture `test/fixtures/jsbsim_trainer_doublet.json`),
-  `page` (parses the assembled page
-  module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
+  `kias` (plan C3; the research rows T-LC-03, T-LC-05, T-LE-04 and T-LF-07 are in `types`: `iasToCas`/`casToIas` monotone,
+  inverse of each other, equal to the table at its points, flap mixing and clamping; `AC.kias` hidden from keys and
+  JSON; the reader's row checks; `anchorStallRows` and the stall pairs the cards hold; the Evaluator's gates, touchdown
+  speed and speed score in KIAS on three types, and the trainer's values unchanged to the bit), `page` (parses the
+  assembled page module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
   types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview` command
   line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers every file the
   page imports; both three.js cache folders sit inside the CI cache; the harness fails fast on an unpinned file,
@@ -190,7 +194,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `checkPr()` and `previewHtml()` for the page test. `M` from `test/harness.mjs` also includes `Evaluator`, `aWarnAt`,
   `Recorder`, `qNlerp`, `WX_DEFAULT`, `Wind`, `logLaw`, `WIND_PROFILE`, `W20_PER_KT_LEGACY`, `windW20`,
   `GUST_FACTOR_3S`, `newtonSolve`, `qMul`, `setAircraft`, `acFromCard`, `table1`, `table2`, `inertiaInverse`,
-  `engineLoads` and the humid-air functions of `10-atmo.js`.
+  `engineLoads`, `iasToCas`, `casToIas`, `speedsKias` and the humid-air functions of `10-atmo.js`.
   Since plan B3 `AC` is empty until `setAircraft` runs, so a script that evaluates `src/*.js` itself with
   `new Function` instead of importing `test/harness.mjs` (several in `docs/research/01-flight-physics/scripts/`, e.g.
   `e4_autoland.mjs`) stops in `Aircraft.deriv` on `AC.engines`: have it return `setAircraft` too and call
@@ -252,7 +256,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   It is the default and the only aircraft of the explore mode. The training pane also offers (plan C1, research
   round 2 task item 10, owner decision OD-TYPES) the six light aircraft Thai civil schools fly: `c172s`, `c172r`,
   `da42ng`, `da42_tae125`, `da40d`, `da40_180` (no DA40 NG: no Thai civil school has one, T-LS-11). The selector
-  (`#typeList`, `src/22-types.js`) shows each type's speeds (kt CAS, whole knots) and its Thai civil schools, counts and
+  (`#typeList`, `src/22-types.js`) shows each type's Vref and Vapp (KIAS, whole knots; plan C3) and its Thai civil schools, counts and
   bases from the card's `thai_fleet` (CAAT register of 9 Jul 2026 [LS1]), labels every real type สถานการณ์สมมติ
   (T-LS-11 (ค)) and saves the choice per viewer (`afl-type`). One global `AC`: `useType(id)` in 90-app.js is the only
   switch after start (`setAircraft` + `ac3.fit(modelSpec(...))`), `setMode` puts the trainer back for explore and the
@@ -279,9 +283,31 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `thr·thrustAvail(V)` equally among them and adds each one's force and moment `pos × F` through `engineLoads`
   (sums start at −0, so the trainer's one engine along +x gives exactly T on x and no moment: bit for bit as before).
   `table1`/`table2` (clamped, T-S-07): `table1` converts kt IAS (plan C1); `table2` waits for the tables of plan C4.
+- KIAS (plan C3, research round 2 task item 12, R2-12): the sim flies CAS (`air.ias` is EAS, equal to CAS to 0.1 % below
+  3,000 ft and 200 kt); the HUD, the instrument strip, the brief, the debrief, the Recorder and the Evaluator use the
+  KIAS a real indicator reads. `AC.kias` (a property that is not enumerable, so `Object.keys(AC)`, JSON and `{...AC}` are
+  as before; `setAircraft` keeps it, null without a table) holds `{ Vref, Vapp, Vs0 (KIAS), rows: [{ f, kias[], kcas[] }] }`,
+  one row per detent of the card's `speeds.ias_cas` at its flap position f (lift increment over the landing detent's,
+  research `flapMap`); `iasToCas(T, f, kias)` and `casToIas(T, f, kcas)` read it (T = `AC.kias`): linear inside a row;
+  between two rows the CAS of both mixed by f; outside a row's points an estimate (ค่าประมาณ): in proportion to the
+  origin below the first point, a constant difference above the last. `Aircraft.kias()` is the KIAS now (at `this.flaps`),
+  `speedsKias()` the card's Vref, Vapp, Vs0 in KIAS (`AC.kias` or, with no table, `AC` itself). The trainer has no table:
+  KIAS = KCAS, bit for bit, and its hashes did not move. Decision on the Evaluator (the task said to decide): the gates
+  (Vref −5/+20), the touchdown speed `td.ias` and the speed score (−8/+5 full marks) compare the KIAS of the HUD with the
+  card's Vref in KIAS, the POH figure the HUD prints (the C172S's 61 KIAS, not its 63.9 KCAS): one scale for the pilot;
+  the band widths are the same knots. The Autopilot and PilotLaws still fly CAS against `AC.Vref` / `AC.Vapp` (plan C5
+  moves them), and the stall horn and `'stall'` event keep their 40 kt CAS cut-off. The stall end of the table: the POH's
+  Fig 5-1 starts at 40 or 50 KIAS, above the stall, so `tools/aircraft/build_cards.mjs` `anchorStallRows` makes the stall
+  pair of `speeds.stall_table` (forward CG, 0° bank, [KIAS, KCAS]) the first point of a row when it is at or below the
+  row's first KIAS, dropping the Fig 5-1 points it contradicts (C152 flaps 30: 35 KIAS = 43 KCAS, so T-LF-07 reads 35.4
+  KIAS, was 40.3; C172R white arc 33 KIAS; the DA cards have no pair cells, unchanged). A leaf that gains a point has `est: true`
+  (the line from the stall pair to the next Fig 5-1 point is an interpolation, not a POH figure). Known gap: the stall table's
+  banked cells (45°, 60°) are a power-off calibration; the sim reads them 4 to 8 KIAS above the POH's (C172S 61 / 76
+  against 57 / 68 KIAS), diagnostic in `test/types.test.mjs` T-LC-03. Reader rules added: every row of the table is
+  checked (positive, KIAS strictly ascending, KCAS not descending) and must name a detent.
   The trainer-era constants in the code still apply to every type (plan C1 R4; per-type values are later work):
   `setParked` d −1.30 m, the wingtip strike at 15.5° bank, the flare at 4.5–9 m, the 300–600 m touchdown window, the
-  debrief TDZ 350–600 m, the gates at 500/200 ft and the speed band Vref −5/+20.
+  debrief TDZ 350–600 m, the gates at 500/200 ft and the speed band Vref −5/+20 (in KIAS since plan C3).
 - Linear stability derivatives in `AC`, stall by Beard–McLain blending (M = 55, α_stall 17°, −2.5° with flaps),
   ground effect, spring-damper gear with tanh tyre friction, RK4 at 240 Hz.
 - Trim (plan B2, research round 1 task list item 11, `12-other-sims.md` §12.14 task 6): `Aircraft.trim({ h, n, e, tas,
@@ -540,8 +566,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   resolves a card, and `scripts/lm_card.mjs` `buildAC(card)` / `applyAC(M, ac)` load it into the current sim for tests.
   The card owns `speeds.VREF_kt` / `VAPP_kt`; handling (08) and procedures (09) quote it. Task item 10 (the type
   selector, cards from `params-light.json`) is done by plan C1 and item 11 (the regression lock over all types, `test/types.test.mjs`)
-  with item 23 (the stall-recovery robot) by plan C2; C3 (KIAS on the HUD) and C4 (airliner cards through the same
-  reader) follow. After editing any JSON block,
+  with item 23 (the stall-recovery robot) by plan C2; item 12 (KIAS on the HUD and in the Evaluator) by plan C3; C4
+  (airliner cards through the same reader) follows. After editing any JSON block,
   `node docs/research/02-light-aircraft/scripts/lm_merge.mjs --coverage --dry --strict` must report 0 warnings
   (`--strict` exits 1 on any warning, and on a card with round-1 per-type paths neither filled nor in `_na`); then run
   it without `--dry` to rewrite `params-light.json` and commit it (CI checks that the file is up to date).

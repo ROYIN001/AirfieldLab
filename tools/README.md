@@ -48,7 +48,9 @@ each `_meta.sources` entry its text and link; and the simulator itself through `
 angles are solved on the sim's trimmed lift curve, 7 kt above the 1-g stall. Each card keeps 45 copied leaves with
 their sources (what `acFromCard` reads, the speed table `speeds.ias_cas`, the flap detents, and the identity, MTOW,
 length and gear layout), the generated leaves and the Thai `thai_fleet` leaf of the civil schools and clubs that fly
-the type; `_meta.sources` links every source code. The output is deterministic (no dates beyond the register's
+the type; `_meta.sources` links every source code. Plan C3: the leaf `speeds.ias_cas` is the research's, with the stall
+pair of `speeds.stall_table` as the first point of a row where that pair is at or below the row's first KIAS
+(`anchorStallRows`, source code `AL:C3`, an estimate: the HUD then reads the stall near the POH's white arc). The output is deterministic (no dates beyond the register's
 `as_of`).
 
 Regenerate, and commit the cards in the same pull request, after a change to `params-light.json`, to a reference row

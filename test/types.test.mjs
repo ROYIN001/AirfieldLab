@@ -7,7 +7,10 @@
 // (T-LF) and P2006T (T-LG); the DA42 (T-LT-01…16, which the plan's list leaves out but "every card passes V_SR, ROC,
 // glide, takeoff" asks for); the stall-recovery robot pilot (test/lib/stall_recovery.mjs) for T-LD-41, T-LT-33,
 // T-LP-62…65 and T-LG-26; a regression table of every card at its training mass (LOCK); the autoland bands; and the list
-// of the ids that wait for a later plan item (DEFERRED), checked against the ids the tests name.
+// of the ids that wait for a later plan item (DEFERRED), checked against the ids the tests name. Plan C3 (research task
+// item 12) adds the KIAS rows: T-LC-03 and T-LC-05 (C172S), T-LE-04 (C172R) and T-LF-07 (C152), read through the card's
+// speeds.ias_cas by iasToCas and casToIas of src/20-flight.js, the functions the HUD and the Evaluator use (test/kias.test.mjs
+// holds the properties of those functions and the Evaluator's use of them).
 // Each case sets a copy of the generated card at the test mass (acFromCard scales the inertia by m/ref_mass, as
 // round 2's buildAC does) and runs the calls of the research scripts from lm_card.mjs; runCard reads AC only for idle.
 // The C152, P2006T, PC-9M, PC-7 MkII, T-6A, T-6C and DA40 NG have no file in data/aircraft: test/lib/rcard.mjs makes their
@@ -70,6 +73,20 @@ test('C172S at 1,156.66 kg: research round 2 T-LC tests through the card', async
   const kg = 1156.66;
   try {
     const { I, R } = fly('c172s', kg), st = R.stall;
+    await S(t, 'T-LC-03: the POH stall table (Fig 5-3, forward CG, flaps 0, power off): VS0° 53 KCAS and VS(φ) = VS0/√cosφ = 63 / 75 ± 1 KCAS at 45° / 60°, every cell within 0.5 kt; the sim reads the 0° cell as 48 KIAS', (tt) => {
+      const row = val(researchOf('c172s'), 'speeds.stall_table').cg_fwd['0'], bank = [0, 30, 45, 60], vs0 = row[0][1];
+      assert.equal(vs0, 53);
+      near(row[2][1], 63, 1, '45°'); near(row[3][1], 75, 1, '60°');
+      bank.forEach((b, i) => near(row[i][1], vs0 / Math.sqrt(Math.cos(b * Math.PI / 180)), 0.5, `bank ${b}°`));
+      // the 0° pair is the first point of the card's flaps 0 row (plan C3): the sim's KIAS of 53 KCAS is the POH's 48 KIAS
+      near(M.casToIas(M.AC.kias, 0, 53), 48, 0.01, 'KIAS of 53 KCAS');
+      tt.diagnostic(`KIAS of the 30 / 45 / 60° cells (POH 52 / 57 / 68, a power-off calibration the level-flight row does not give): ${[1, 2, 3].map((i) => r(M.casToIas(M.AC.kias, 0, row[i][1]), 1)).join(' / ')}`);
+    });
+    await S(t, 'T-LC-05: Fig 5-1 read linearly through the card: Vy 74 KIAS flaps 0 / Vref 61 KIAS flaps 30 / Vx 62 KIAS flaps 0 = 73.2 / 63.9 / 63.6 ± 0.1 KCAS', () => {
+      const cas = (kias, f) => M.iasToCas(M.AC.kias, f, kias);
+      near(cas(74, 0), 73.2, 0.1, 'Vy'); near(cas(61, 1), 63.9, 0.1, 'Vref'); near(cas(62, 0), 63.6, 0.1, 'Vx');
+      near(M.AC.Vref, 63.9, 0.1, 'AC.Vref (the same conversion at card load)'); near(M.AC.kias.Vref, 61, 1e-9, 'AC.kias.Vref');
+    });
     await t.test('T-LC-04: CLmax at 1 g, 1 kt/s, flaps 0 / 30 is 1.464 / 1.785 ± 0.03', () => {
       near(st['0'].CLmax, 1.464, 0.03, 'flaps 0'); near(st['30'].CLmax, 1.785, 0.03, 'flaps 30');
     });
@@ -119,6 +136,11 @@ test('C172R at 1,111.3 kg: research round 2 T-LE tests through the card', async 
     await t.test('T-LE-05/06/07: V_SR flaps 0 / 10 / 30 = VS 52 / 50 / 47 KCAS / √0.95 ± 3', (tt) => {
       tt.diagnostic(`Vmin ${r(st['0'].Vmin_eas)} / ${r(st['10'].Vmin_eas)} / ${r(st['30'].Vmin_eas)} KCAS (the research's Vmin rule: 52 / 50 / 47 ± 3)`);
       for (const [d, vs] of [['0', 52], ['10', 50], ['30', 47]]) near(st[d].VSR_cas, vsrTarget(vs), 3, `flaps ${d}`);
+    });
+    await S(t, 'T-LE-04: Fig 5-1 of the 172R read linearly through the card: Vy 79 KIAS / Vx 60 KIAS / VG 65 KIAS (flaps 0), Vref 62 KIAS (flaps 30) = 78.1 / 62.0 / 66.0 / 62.8 ± 0.1 KCAS', () => {
+      const cas = (kias, f) => M.iasToCas(M.AC.kias, f, kias);
+      near(cas(79, 0), 78.1, 0.1, 'Vy'); near(cas(60, 0), 62.0, 0.1, 'Vx'); near(cas(65, 0), 66.0, 0.1, 'VG'); near(cas(62, 1), 62.8, 0.1, 'Vref');
+      near(M.AC.kias.Vref, 62, 1e-9, 'AC.kias.Vref'); near(M.AC.kias.Vs0, 33, 0.01, 'the 47 KCAS VS0 reads 33 KIAS, the POH white arc (Fig 5-3)');
     });
     // Known gap (design §4.3): research expects Vx 62 ± 3 KCAS, but its 60 is the first point of a 2-kt sweep, not a
     // maximum of γ. A 1-kt sweep from ceil(1.02·VSR) finds the true maximum near 57–58 kt on the flat γ(V) of the
@@ -289,6 +311,13 @@ test('C152 at 757.5 kg: research round 2 T-LF tests through a card made in memor
     await S(t, 'T-LF-04/05/06: V_SR at 3,000 ft idle 1 kt/s, flaps 0 / 10 / 30 = VS 48 / 46 / 43 KCAS / √0.95 ± 1.5', (tt) => {
       tt.diagnostic(`Vmin ${r(st['0'].Vmin_eas)} / ${r(st['10'].Vmin_eas)} / ${r(st['30'].Vmin_eas)} KCAS (the research's Vmin rule: 48 / 46 / 43 ± 1.5)`);
       for (const [d, vs] of [['0', 48], ['10', 46], ['30', 43]]) near(st[d].VSR_cas, vsrTarget(vs), 1.5, `flaps ${d}`);
+    });
+    // The calibration table of Fig 5-1 starts at 40 KIAS; the research's 40.3 KIAS was above the POH's 35 (Fig 5-3, flaps 30:
+    // 35 KIAS = 43 KCAS). Plan C3 starts each row of the card's table at the stall pair (build_cards.mjs anchorStallRows).
+    await S(t, 'T-LF-07: flaps 30, MTOW, idle, 1 kt/s: the minimum speed Vmin reads 35 ± 3 KIAS through the card table', (tt) => {
+      const vmin = st['30'].Vmin_eas, kias = M.casToIas(M.AC.kias, 1, vmin);
+      tt.diagnostic(`Vmin ${r(vmin)} KCAS reads ${r(kias, 1)} KIAS (research expects 35 ± 3; without the stall pair in the row 40.3)`);
+      near(kias, 35, 3, 'Vmin in KIAS');
     });
     await S(t, 'T-LF-08/10: SL full throttle clean: ROC 715 ± 40 fpm, Vx 56.5 ± 3 KCAS (55 KIAS through the card table)', () => {
       near(R.climb.ROCmax_fpm, 715, 40, 'ROC'); near(R.climb.Vx_kt, iasCas(rc, '0').f(55), 3, 'Vx');
@@ -609,7 +638,6 @@ for (const id of TYPE_IDS) {
 // leaves the list in the same commit. Passing ids of the research list that item 11 leaves out (T-LF-13, 15, 19) stay here
 // too: item 11 keeps the rows that do not depend on the POH's takeoff and landing technique or on estimated ranges.
 const DEFERRED = {
-  'T-LF-07': ['the HUD and the debrief show KIAS from speeds.ias_cas, the Fig 5-1 table starts at 40 KIAS and cannot place the stall of flaps 30 (35 KIAS)', 'plan C3 (research item 12)'],
   'T-LF-09': ['Vy 59.7 KCAS against 66.3 ± 3: the sim has one polar from the glide, with the windmilling-propeller drag in it (01-methods.md §01.8.3)', 'research items 13 and 20'],
   'T-LF-13': ['ground roll 255 m against the POH short-field 221 ± 20 %: passes today, but the POH technique lifts off sooner than the sim robot (V_LOF 61.3 kt); left out by item 11', 'research item 19'],
   'T-LF-15': ['landing ground roll 167 m against 145 ± 20 %: passes today, depends on the autoland and braking technique; left out by item 11', 'research item 18'],
@@ -644,6 +672,10 @@ test('plan C2: every id of its list is tested above or waits for a named item', 
   assert.deepEqual(PLAN.filter((id) => !NAMED.has(id) && !(id in DEFERRED)), [], 'an id of the plan list that nothing tests and nothing defers');
   assert.deepEqual(Object.keys(DEFERRED).filter((id) => NAMED.has(id)), [], 'an id both tested and deferred: take it off the list');
   for (const [id, [why, item]] of Object.entries(DEFERRED)) assert.ok(why.length > 20 && item.length > 5, `${id}: a reason and an item`);
+});
+
+test('plan C3: every id of its list is tested above (T-LF-07 left the list of ids that wait)', () => {
+  assert.deepEqual(['T-LC-03', 'T-LC-05', 'T-LE-04', 'T-LF-07'].filter((id) => !NAMED.has(id) || id in DEFERRED), []);
 });
 
 after(() => { if (printed.length) console.log(printed.join('\n')); });
