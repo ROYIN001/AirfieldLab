@@ -30,6 +30,35 @@ ceilings, density altitude) from the IEM METAR archive. Node ≥ 18, no dependen
 
 Commit only the derived summary, not the raw METAR downloads.
 
+## Aircraft cards (`aircraft/`)
+
+`aircraft/build_cards.mjs` writes the six light-aircraft cards `data/aircraft/{c172s,c172r,da42ng,da42_tae125,da40d,
+da40_180}.json` of the training pane's type selector (plan C1, research round 2 task item 10). Node ≥ 22, no
+dependencies, no network.
+
+    node tools/aircraft/build_cards.mjs                 # writes the six cards
+    node tools/aircraft/build_cards.mjs --only c172s    # writes one card
+    node tools/aircraft/build_cards.mjs --check         # writes nothing; exit 1 lists each differing id and its first
+                                                        # 10 differing leaf paths (a missing file differs)
+
+Inputs: the round 2 cards in `docs/research/02-light-aircraft/params-light.json` (resolved with that folder's
+`scripts/lm_lib.mjs`, gear and inertia rules from `lm_card.mjs` and `lm_inertia.mjs`); the reference rows of the
+research topic files (`docs/research/02-light-aircraft/0x-*.md`, `docs/research/01-flight-physics/*.md`), which give
+each `_meta.sources` entry its text and link; and the simulator itself through `test/harness.mjs`: the stall-warning
+angles are solved on the sim's trimmed lift curve, 7 kt above the 1-g stall. Each card keeps 45 copied leaves with
+their sources (what `acFromCard` reads, the speed table `speeds.ias_cas`, the flap detents, and the identity, MTOW,
+length and gear layout), the generated leaves and the Thai `thai_fleet` leaf of the civil schools and clubs that fly
+the type; `_meta.sources` links every source code. The output is deterministic (no dates beyond the register's
+`as_of`).
+
+Regenerate, and commit the cards in the same pull request, after a change to `params-light.json`, to a reference row
+of a research topic file, to `lm_lib.mjs`, `lm_card.mjs` or `lm_inertia.mjs`, to this script, or to physics that moves
+the lift or pitch lines (the warning solve) or the gear formula. `test/cards.test.mjs` runs `--check`, so the page
+workflow (`pages.yml`, every pull request into `main`) fails on a stale card, also for a research-only pull request
+(`research.yml` does not run `--check`). The script never writes `data/aircraft/trainer.json` and the cards do not
+depend on it, but it reads it through `test/harness.mjs` at import, so a broken trainer card stops the script too. The
+cards are never edited by hand.
+
 ## JSBSim oracle (`jsbsim/`)
 
 `jsbsim/run_cases.py` regenerates `test/fixtures/jsbsim_trainer_doublet.json`, which `test/oracle.test.mjs` checks

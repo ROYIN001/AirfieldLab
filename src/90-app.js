@@ -62,7 +62,7 @@ const app = {
   mode: 'explore', q: store.get('afl-quality', isTouch ? 'balanced' : 'high'),
   view: 'overview', trainCam: 'chase', spot: null,
   wind: { fromDeg: 40, kt: 9 }, visIdx: 5, cloudIdx: 1,
-  train: { state: 'setup', scn: 'xr', dist: 5556, pilot: 'ap', assist: true, autoThr: true, warp: 1, rwy: '03L' },
+  train: { state: 'setup', scn: 'xr', dist: 5556, pilot: 'ap', assist: true, autoThr: true, warp: 1, rwy: '03L', type: 'trainer' },
   wx: { ...WX_DEFAULT },   // OAT, QNH, dew point of the flights and the briefing (B10 WeatherState will set them)
   input: { x: 0, y: 0, rud: 0, thr: 0.25, brake: 0 }, keys: new KeyState(), pin: new PilotInput(), padIndex: null,
 };
@@ -89,6 +89,9 @@ async function main() {
   const sky = new SkySystem(renderer, scene);
   sky.sun.shadow.mapSize.set(Q.shadow, Q.shadow);
   const setMsg = (t) => { const m = $('#loadMsg'); if (m) m.textContent = t; };
+  // the other aircraft types of the training pane (plan C1), fetched beside the scene data and checked at once; this
+  // promise never rejects (a failed card disables its entry), and it is awaited after the trainer is set below
+  const cardsP = loadCards(AIRCRAFT_TYPES.filter((id) => id !== 'trainer'), acFromCard);
   const data = await loadData((f) => setMsg(`กำลังโหลดข้อมูลสนามบินดอนเมือง… ${Math.round(f * 100)}%`));
   // the aircraft flown (plan B3): AC is empty until this runs, and no Flight or Aircraft exists before it
   // (acFromCard's English message goes to the console; the page names only the card path in error.path)
@@ -96,12 +99,22 @@ async function main() {
     console.error(e);
     throw new Error(`ข้อมูลเครื่องบินใน aircraft/trainer.json ใช้ไม่ได้${e.path ? ` (ค่าที่ขาดหรือผิดรูปแบบ: ${e.path})` : ''}`);
   }
+  // every type's card and what acFromCard made of it ({ error } for a card that failed); the saved choice (per viewer)
+  // comes back when its card is good, else the trainer
+  const TYPES = { trainer: { card: data.aircraft, ac: acFromCard(data.aircraft) }, ...(await cardsP) };
+  const typeOk = (id) => Object.hasOwn(TYPES, id) && !!TYPES[id].card;
+  app.train.type = store.get('afl-type', 'trainer');
+  if (!typeOk(app.train.type)) app.train.type = 'trainer';
   setMsg('กำลังสร้างสนามบินและเมืองรอบสนาม…');
   await new Promise((r) => requestAnimationFrame(r));
   const field = buildAirfield(scene, renderer, data, app.q);
   const city = buildCity(scene, data, field, app.q);
   const lights = buildAirfieldLights(scene, field, city, data);
   const ac3 = buildAircraft(); scene.add(ac3.group);
+  // The one place that switches the aircraft after start (one global AC, 20-flight.js): the card's numbers and the
+  // generic model fitted to it (22-types.js modelSpec). A Flight advances only under the type it was built with:
+  // setMode puts the trainer back for explore and the chosen type for training, and builds a new Flight for it.
+  function useType(id) { const T = TYPES[id]; setAircraft(T.card); ac3.fit(modelSpec(id, T.card, AC)); }
   // points of interest from the scene data
   {
     const hv = data.af.hall.flatMap((h) => h.o); PTS.term = [hv.reduce((s, p) => s + p[0], 0) / hv.length, hv.reduce((s, p) => s + p[1], 0) / hv.length];
@@ -167,9 +180,11 @@ async function main() {
       dock.appendChild(b);
     }
   }
-  const TRAIN_CAM_NAMES = { chase: 'กล้องไล่หลัง', cockpit: 'ห้องนักบินหน้า · HUD', tower: 'มองจากหอบังคับการบิน', side: 'ข้างทางวิ่ง ใกล้จุดแตะพื้น', free: 'หมุนรอบเครื่อง' };
+  const TRAIN_CAM_NAMES = { chase: 'กล้องไล่หลัง', cockpit: 'ห้องนักบิน · HUD', tower: 'มองจากหอบังคับการบิน', side: 'ข้างทางวิ่ง ใกล้จุดแตะพื้น', free: 'หมุนรอบเครื่อง' };
+  // the fictional trainer seats two in tandem and its camera sits in the front seat; the plan C1 types seat side by side
+  const trainCamName = (id) => (id === 'cockpit' && app.train.type === 'trainer' ? 'ห้องนักบินหน้า · HUD' : TRAIN_CAM_NAMES[id]);
   function setTrainCam(id) {
-    app.trainCam = id; $('#viewName').textContent = TRAIN_CAM_NAMES[id]; renderDock();
+    app.trainCam = id; $('#viewName').textContent = trainCamName(id); renderDock();
     controls.enabled = id === 'free';
     if (id === 'free') { controls.target.copy(ac3.group.position); camera.position.copy(ac3.group.position).add(tmpV.set(-18, 7, 14)); }
     chase.init = false;
@@ -238,6 +253,37 @@ async function main() {
   })();
 
   // ── panels: training ──
+  // Aircraft type (plan C1, research round 2 task item 10): the trainer and the six light aircraft of data/aircraft/ in
+  // the order of AIRCRAFT_TYPES (22-types.js). typeInfo writes the Thai text; school names come from the card, so they
+  // are set as text, never as HTML. A card that failed to load shows its Thai error and cannot be chosen.
+  const typeInfoOf = (id) => { const T = TYPES[id] || {}; return typeInfo(id, T.card, T.ac); };
+  for (const id of AIRCRAFT_TYPES) {
+    const T = TYPES[id] || { error: `โหลด aircraft/${id}.json ไม่ได้` }, info = typeInfoOf(id);
+    const b = document.createElement('button'); b.type = 'button'; b.dataset.type = id; b.setAttribute('aria-pressed', 'false');
+    const nm = document.createElement('b'), em = document.createElement('em'), sp = document.createElement('span');
+    nm.textContent = info.name; em.textContent = info.em; sp.textContent = T.card ? info.span : T.error;
+    b.append(nm, em, sp); b.disabled = !T.card;
+    b.onclick = () => selectType(id);
+    $('#typeList').appendChild(b);
+  }
+  // A type is chosen only before a flight (the setup pane); in explore, which always flies the trainer, the choice is
+  // only remembered for the next training flight (window.__app.setType of test/shots.mjs may call it there).
+  function selectType(id) {
+    if (!typeOk(id) || (app.mode === 'train' && app.train.state !== 'setup')) return false;
+    app.train.type = id; store.set('afl-type', id);
+    if (app.mode === 'train') { useType(id); refreshSetup(); previewFlight(); $('#viewName').textContent = trainCamName(app.trainCam); }
+    return true;
+  }
+  // the type's notes as lines of text, then its links (DOM nodes, not HTML built from card data)
+  function writeTypeNote(info) {
+    const el = $('#typeNote'); el.replaceChildren();
+    info.notes.forEach((t, i) => { if (i) el.append(document.createElement('br')); el.append(t); });
+    info.links.forEach((l, i) => {
+      el.append(i ? ' · ' : document.createElement('br'));
+      const a = document.createElement('a'); a.href = l.href; a.target = '_blank'; a.rel = 'noopener'; a.textContent = l.text; el.append(a);
+    });
+    el.hidden = !info.notes.length && !info.links.length;
+  }
   const RWY_INFO = {
     '21R': ['ILS CAT II · IBKK 109.3', '3,700 × 60 ม. · ไฟกึ่งกลางและ TDZ'],
     '21L': ['ILS CAT I · IDMG 110.3', 'หัวทางวิ่งเลื่อน 350 ม. · ระยะลงจอด 3,150 ม.'],
@@ -278,6 +324,9 @@ async function main() {
     $('#segTrTime').appendChild(b);
   }
   function refreshSetup() {
+    const info = typeInfoOf(app.train.type);
+    for (const b of $('#typeList').children) b.setAttribute('aria-pressed', String(b.dataset.type === app.train.type));
+    $('#trLede').textContent = info.lede; writeTypeNote(info);
     for (const b of $('#scnList').children) b.setAttribute('aria-pressed', String(b.dataset.k === app.train.scn));
     for (const b of $('#rwyList').children) b.setAttribute('aria-pressed', String(b.dataset.r === app.train.rwy));
     $('#trEyebrow').textContent = `ฝึกร่อนลงจอด · ${FIELD.appr} ทางวิ่ง ${FIELD.rwy} ดอนเมือง`;
@@ -291,8 +340,9 @@ async function main() {
     // humid air at the field from QNH (research round 4, 04-weather.md §6.1, ATM-5); the old dry rule read ~420 ft low.
     // QNH is shown as a METAR gives it, rounded down to a whole hPa (ICAO Annex 3 App. 3)
     const da = densityAltitudeFt(airDensity(fieldPressure(qnh, FIELD.elev), wx.oatC, wx.dewC));
-    $('#brief').innerHTML = [['Vref', `${AC.Vref} kt`], ['Vapp', `${AC.Vapp} kt`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${fmt(wx.oatC)}°C`], ['จุดน้ำค้าง', wx.dewC == null ? '—' : `${fmt(wx.dewC)}°C`], ['QNH', `${Math.floor(qnh)} hPa`], ['ความชื้นสัมพัทธ์', wx.dewC == null ? '—' : `${fmt(relHumidity(wx.oatC, wx.dewC))}%`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
-      .map(([k, v]) => `<div><small>${k}</small><b>${v}</b></div>`).join('') + '<div style="grid-column: 1 / -1"><small>ค่าประมาณของวันทั่วไป: QNH เฉลี่ยทั้งปีและจุดน้ำค้างเฉลี่ยเวลา 11:00 น. จากสถิติ METAR ดอนเมือง 2016–2025 (Iowa Environmental Mesonet) · อุณหภูมิเป็นค่าเริ่มต้นของโปรแกรม</small></div>';
+    // the card's speeds are kt CAS as acFromCard gives them, not rounded (plan B3): shown to the whole knot
+    $('#brief').innerHTML = [['แบบ', info.name, 2], ['มวล (ค่าประมาณ)', `${fmt(AC.m)} kg`], ['Vref', `${fmt(AC.Vref)} kt`], ['Vapp', `${fmt(AC.Vapp)} kt`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${fmt(wx.oatC)}°C`], ['จุดน้ำค้าง', wx.dewC == null ? '—' : `${fmt(wx.dewC)}°C`], ['QNH', `${Math.floor(qnh)} hPa`], ['ความชื้นสัมพัทธ์', wx.dewC == null ? '—' : `${fmt(relHumidity(wx.oatC, wx.dewC))}%`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
+      .map(([k, v, span]) => `<div${span ? ` style="grid-column: span ${span}"` : ''}><small>${k}</small><b>${v}</b></div>`).join('') + '<div style="grid-column: 1 / -1"><small>ค่าประมาณของวันทั่วไป: QNH เฉลี่ยทั้งปีและจุดน้ำค้างเฉลี่ยเวลา 11:00 น. จากสถิติ METAR ดอนเมือง 2016–2025 (Iowa Environmental Mesonet) · อุณหภูมิเป็นค่าเริ่มต้นของโปรแกรม</small></div>';
   }
   function refreshLive() { for (const b of $('#segWarp').children) b.setAttribute('aria-pressed', String(+b.dataset.w === app.train.warp)); $('#btnTake').textContent = app.flight && app.flight.pilot === 'ap' ? 'รับช่วงบังคับเอง' : 'ให้ออโต้ไพลอตบิน'; }
   function showTrainPane(which) { $('#trSetup').hidden = which !== 'setup'; $('#trLive').hidden = which !== 'fly'; $('#trResult').hidden = which !== 'result'; }
@@ -313,7 +363,9 @@ async function main() {
     Object.assign(app.input, { x: 0, y: 0, rud: 0, thr: app.flight.ac.thr, brake: 0 }); app.pin.reset(); centreTilt(false);
     app.train.state = 'fly'; app.train.warp = 1; app.resultShown = false;
     showTrainPane('fly'); refreshLive(); chase.init = false;
-    $('#liveEyebrow').textContent = app.flight.pilot === 'ap' ? 'ออโต้ไพลอตกำลังบิน' : (app.flight.opts.assist ? 'บินเอง · มีระบบช่วย' : 'บินเอง · ควบคุมตรง');
+    // the type flown, and for a real type the T-LS-11 (ค) label: a light aircraft at Don Mueang is a made-up scene
+    const info = typeInfoOf(app.train.type);
+    $('#liveEyebrow').textContent = (app.flight.pilot === 'ap' ? 'ออโต้ไพลอตกำลังบิน' : (app.flight.opts.assist ? 'บินเอง · มีระบบช่วย' : 'บินเอง · ควบคุมตรง')) + ` · ${info.name}${info.real ? ' · สถานการณ์สมมติ' : ''}`;
     if (app.trainCam === 'free') setTrainCam('chase');
     updateCtlVisibility();
   }
@@ -341,8 +393,8 @@ async function main() {
     $('#paneExplore').hidden = m !== 'explore'; $('#paneTrain').hidden = m !== 'train';
     $('#pins').hidden = m !== 'explore'; $('#card').hidden = m !== 'explore' || !app.spot;
     $('#fma').hidden = m !== 'train'; $('#instr').hidden = m !== 'train';
-    if (m === 'explore') { controls.enabled = true; ac3.helmets[0].visible = true; setView(app.view === 'overview' || PRESETS[app.view] ? app.view : 'overview'); }
-    else { setActiveRunway(app.train.rwy); buildScnCards(); showTrainPane('setup'); refreshSetup(); previewFlight(); setTrainCam(app.trainCam === 'free' ? 'chase' : app.trainCam); }
+    if (m === 'explore') { useType('trainer'); controls.enabled = true; ac3.helmets[0].visible = true; setView(app.view === 'overview' || PRESETS[app.view] ? app.view : 'overview'); }
+    else { useType(app.train.type); setActiveRunway(app.train.rwy); buildScnCards(); showTrainPane('setup'); refreshSetup(); previewFlight(); setTrainCam(app.trainCam === 'free' ? 'chase' : app.trainCam); }
     renderDock(); updateCtlVisibility();
   }
   $('#tabExplore').onclick = () => setMode('explore');
@@ -634,7 +686,7 @@ async function main() {
     } else {
       $('#scTotal').textContent = sc.total; $('#scTotal').style.color = sc.total >= 75 ? 'var(--good)' : sc.total >= 60 ? 'var(--warn)' : 'var(--bad)';
       $('#scGrade').textContent = f.crashed ? 'เครื่องบินเสียหาย' : sc.grade;
-      $('#scSub').textContent = `จาก 100 คะแนน · ${f.pilot === 'ap' && !f._everMan ? 'ออโต้ไพลอต' : 'บินเอง'} · ${SCENARIOS[app.train.scn].label}`;
+      $('#scSub').textContent = `จาก 100 คะแนน · ${f.pilot === 'ap' && !f._everMan ? 'ออโต้ไพลอต' : 'บินเอง'} · ${SCENARIOS[app.train.scn].label} · ${typeInfoOf(app.train.type).name}`;
       const P = Object.fromEntries(sc.parts.map((p) => [p.k, p]));
       const stop = f.ev.stopS != null ? f.ev.stopS - td.s : null;
       const rows = [
@@ -713,7 +765,7 @@ async function main() {
     const acPos = ac3.group.position;
     // camera
     camera.near = 0.5;
-    ac3.helmets[0].visible = true;
+    ac3.inCockpit(false);
     ac3.discMat.uniforms.uA.value = app.mode === 'train' && app.trainCam === 'cockpit' ? 0.12 : 1;
     if (app.mode === 'explore' || (app.mode === 'train' && app.trainCam === 'free')) {
       if (tween.on) {
@@ -737,7 +789,7 @@ async function main() {
         camera.near = 0.15;
         camera.position.set(AC.eye[0], -AC.eye[2], AC.eye[1]).applyMatrix4(ac3.group.matrixWorld);   // pilot's eye (FRD → model x fwd, y up, z right)
         camera.quaternion.copy(ac3.group.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -Math.PI / 2, 0))).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(-3 * DEG, 0, 0)));
-        camera.fov = 58; ac3.helmets[0].visible = false;
+        camera.fov = 58; ac3.inCockpit(true);   // the trainer hides its front helmet, a fitted type its whole model
       } else if (cam === 'tower') {
         const p = field.towerCab.clone(); p.y += 1.4; const dir = tmpV.copy(acPos).sub(p); const dist = dir.length(); p.addScaledVector(dir.normalize(), 6.5);
         camera.position.copy(p); camera.lookAt(acPos); camera.fov = clamp(2 * Math.atan(16 / Math.max(dist, 1)) * RAD, 2.2, 50);
@@ -814,15 +866,16 @@ async function main() {
       $('#iWind').textContent = wkt < 0.5 ? 'สงบ' : `${String(Math.round(wdir / 10) * 10 % 360).padStart(3, '0')}/${fmt(wkt)}`;
       const ph = fl.phase();
       const fma = fl.pilot === 'ap'
-        ? [['A/P', ''], ph === 'APP' ? ['LOC', ''] : ['', ''], ph === 'APP' ? ['G/S', ''] : ph === 'FLARE' ? ['FLARE', ''] : ['ROLLOUT', ''], ['SPD ' + AC.Vapp, 'c']]
-        : [['MAN', 'w'], [fl.opts.assist ? 'ASSIST' : 'DIRECT', 'a'], [fl.opts.autoThr ? 'A/THR SPD ' + AC.Vapp : `THR ${Math.round(fl.ac.thr * 100)}%`, fl.opts.autoThr ? 'c' : 'w'], ['FD', 'c']];
+        ? [['A/P', ''], ph === 'APP' ? ['LOC', ''] : ['', ''], ph === 'APP' ? ['G/S', ''] : ph === 'FLARE' ? ['FLARE', ''] : ['ROLLOUT', ''], ['SPD ' + fmt(AC.Vapp), 'c']]
+        : [['MAN', 'w'], [fl.opts.assist ? 'ASSIST' : 'DIRECT', 'a'], [fl.opts.autoThr ? 'A/THR SPD ' + fmt(AC.Vapp) : `THR ${Math.round(fl.ac.thr * 100)}%`, fl.opts.autoThr ? 'c' : 'w'], ['FD', 'c']];
       $('#fma').innerHTML = fma.filter(([t]) => t).map(([t, c]) => `<span class="${c}">${t}</span>`).join('');
       if (app.train.state === 'fly') {
         gateRows($('#gates'), fl, true);
         const e = a.eye, pw = papiSeen(e[0], e[1], e[2]);
         const nW = pw.filter((v) => v > 0.5).length;
         // On the ILS the PAPI of Don Mueang reads low near the threshold: its MEHT (AIP AD 2.14) is 3.3 to 5.1 m above the ILS beam over the threshold, while
-        // the trainer's eye is 1.3 m above its glide-slope antenna (research round 3, topic 3.5).
+        // the trainer's eye is 1.3 m above its glide-slope antenna (research round 3, topic 3.5) and the light aircraft of
+        // plan C1 have the antenna at the eye (no source gives its place), so they read lower still.
         const onIls = FIELD.appr === 'ILS' && Math.abs(a.gsDots) < 0.5 && Math.abs(a.locDots) < 1 && nW < 2 && a.s > -1500;
         $('#papiTxt').textContent = pw[0] < 0 ? 'ผ่านตำแหน่ง PAPI แล้ว' : `ขาว ${nW} แดง ${4 - nW} · ${['ต่ำมาก', 'ต่ำเล็กน้อย', 'อยู่บนแนวร่อน', 'สูงเล็กน้อย', 'สูงมาก'][nW]}` + (onIls ? ' · บน ILS ช่วงท้าย PAPI แสดงต่ำได้ ให้ยึด ILS' : '');
         $('#liveTitle').textContent = { APP: `ร่อนเข้าหาทางวิ่ง ${FIELD.rwy}`, FLARE: 'ถอนคันบังคับก่อนแตะพื้น', ROLLOUT: 'วิ่งบนทางวิ่งและเบรก', DONE: 'หยุดเรียบร้อย', STOP: 'หยุดเรียบร้อย', CRASH: 'เครื่องบินกระแทกพื้น' }[ph] || 'กำลังบิน';
@@ -833,7 +886,7 @@ async function main() {
     frames++;
   }
   requestAnimationFrame(frame);
-  window.__app = { app, scene, camera, renderer, sky, field, city, setMode, setView, setTrainCam, startFlight, selectSpot, applyTime, applyWeather, makeDate, localParts, lights, ac3 };
+  window.__app = { app, scene, camera, renderer, sky, field, city, setMode, setView, setTrainCam, startFlight, selectSpot, applyTime, applyWeather, makeDate, localParts, lights, ac3, setType: selectType, TYPES };
 }
 
 main().catch((e) => { console.error(e); const m = $('#loadMsg'); if (m) { m.className = 'err'; m.textContent = `เปิดฉาก 3 มิติไม่ได้: ${e.message || e}`; } });

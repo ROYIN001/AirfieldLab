@@ -176,18 +176,29 @@ function inertiaInverse({ Ixx, Iyy, Izz, Ixz }) {
 // aero.legacy (CL0, CLa, CLflap, CD0, K, CDflap, CDgear, Cm0, Cma, Cmflap, aStall, aStallFlap, aWarn, aWarnFlap,
 // aWarnHyst, aWarnMinOn), aero.derivatives.*, propulsion.legacy (P, eta, T0, idle),
 // controls.surfaces.<elevator|aileron|rudder>.travel_deg (deUp = up, deDn = down, daMax = ½(up + down),
-// drMax = min(left, right), deg → rad), gear.legacy (3 struts), speeds.VS0_kt/VREF_kt/VAPP_kt (kt CAS, taken as
-// written), airframe.geometry.eye_pos_FRD and gsAntenna_pos_FRD, and propulsion.layout (each engine's pos and axis, the
-// axis made a unit vector dir). A path runs through the card's branches to a leaf (an object with v) and on into its
-// value: 'aero.legacy.CL0' is CL0 in the v of the leaf aero.legacy. A missing or non-numeric value throws an Error that
-// names its path (also as error.path); every other leaf is ignored (the round 2–3 cards carry many more, plans C1/C4
-// extend this reader).
-// Against round 2's lm_card.mjs buildAC: the same numbers on the paths it reads directly (its 'ตรง' rule), so the
-// trainer card gives the same fields there, but not its other rules. buildAC rounds the speeds to whole knots and
-// converts a kt IAS speed to CAS with speeds.ias_cas; acFromCard does neither, and throws on a speed whose u is not
-// 'kt CAS' (most round 2 cards give kt IAS; C1 adds the conversion). buildAC takes a missing Ixz as 0; here it is
-// required.
-function acFromCard(card) {
+// drMax = min(left, right), deg → rad), gear.legacy (3 struts), speeds.VS0_kt/VREF_kt/VAPP_kt (kt CAS, see below),
+// airframe.geometry.eye_pos_FRD and gsAntenna_pos_FRD, and propulsion.layout (each engine's pos and axis, the axis made
+// a unit vector dir). A path runs through the card's branches to a leaf (an object with v) and on into its value:
+// 'aero.legacy.CL0' is CL0 in the v of the leaf aero.legacy. A missing or non-numeric value throws an Error that names
+// its path (also as error.path); every other leaf is ignored (the round 2–3 cards carry many more; plan C4 extends this
+// reader for the airliners).
+// Plan C1 (research round 2 task item 10) reads the light-aircraft cards as the research writes them:
+//  - Speeds: a 'kt CAS' speed is taken as written (no rounding). A 'kt IAS' speed (the POH figure) goes to kt CAS
+//    through the landing detent's row of speeds.ias_cas with table1 (linear, clamped at the row's ends, never
+//    extrapolated): VS0, VREF and VAPP are all landing-configuration speeds, and the landing detent is the entry of
+//    aero.flaps.detents with the largest flap_deg. speeds.ias_cas is { <detent name>: [[KIAS, KCAS], …] } or round 2
+//    lm_lib's { axes: { flap: [names], KIAS: [kt] }, data: [[KCAS per KIAS] per flap] }; the row needs 2 pairs or more
+//    with KIAS strictly ascending. Any other unit throws.
+//  - Derivatives: aero.derivatives.<name> is a number or an object of numbers per configuration; the first numeric
+//    entry of [opts.config, 'approach', 'landing', 'cruise', 'clean'], else the first numeric key, is taken (with no
+//    opts, the same pick as buildAC's).
+// Against round 2's lm_card.mjs buildAC: the same numbers on the paths it reads directly (its 'ตรง' rule), so every
+// card in data/aircraft gives the same fields as buildAC(prepare(id)), its research card after the generator's
+// provenance fixes (tools/aircraft/build_cards.mjs; they move the DA40 eye and wheels), but not buildAC's other
+// rules. buildAC rounds the speeds to whole knots and converts kt IAS with lm_lib.iasCas, which extrapolates past a
+// row's ends and falls back to the first row for an unknown detent; acFromCard does neither. buildAC takes a missing
+// Ixz as 0; here it is required.
+function acFromCard(card, opts = {}) {
   const isObj = (o) => o !== null && typeof o === 'object' && !Array.isArray(o);
   const NONE = {};
   const fail = (path, what) => Object.assign(new Error(`aircraft card: ${path} ${what}`), { path });
@@ -218,10 +229,42 @@ function acFromCard(card) {
     if (!Array.isArray(v) || !v.length) throw fail(path, `is not a list (${JSON.stringify(v)})`);
     return v;
   };
+  let iasRow = null;   // the landing detent's [KIAS[], KCAS[]] of speeds.ias_cas, read at the first kt IAS speed
+  const landingRow = () => {
+    const tab = get('speeds.ias_cas');
+    const dets = get('aero.flaps.detents');
+    if (!Array.isArray(dets) || !dets.length || !dets.every((d) => isObj(d) && typeof d.flap_deg === 'number' && Number.isFinite(d.flap_deg))) {
+      throw fail('aero.flaps.detents', `has no list of detents with flap_deg (${JSON.stringify(dets)})`);
+    }
+    const name = String(dets.reduce((a, d) => (d.flap_deg > a.flap_deg ? d : a)).name), p = `speeds.ias_cas.${name}`;
+    let pairs;
+    if (isObj(tab) && isObj(tab.axes) && Array.isArray(tab.data)) {   // lm_lib's { axes: { flap, KIAS }, data } form
+      const fl = tab.axes.flap || tab.axes.flaps, ki = tab.axes.KIAS || tab.axes.kias || tab.axes.ias;
+      const j = Array.isArray(fl) ? fl.map(String).indexOf(name) : -1;
+      const row = j < 0 ? undefined : Array.isArray(tab.data[0]) ? tab.data[j] : fl.length === 1 ? tab.data : undefined;
+      pairs = Array.isArray(ki) && Array.isArray(row) && row.length === ki.length ? ki.map((k, i) => [k, row[i]]) : undefined;
+    } else if (isObj(tab)) pairs = Object.hasOwn(tab, name) ? tab[name] : undefined;
+    if (!Array.isArray(pairs)) throw fail(p, 'is missing (the landing detent\'s row of KIAS → KCAS)');
+    const ok = pairs.length >= 2 && pairs.every((q, i) => Array.isArray(q) && q.length === 2 && q.every((x) => typeof x === 'number' && Number.isFinite(x)) && (i === 0 || q[0] > pairs[i - 1][0]));
+    if (!ok) throw fail(p, `is not a row of 2 or more [KIAS, KCAS] pairs with KIAS strictly ascending (${JSON.stringify(pairs)})`);
+    return [pairs.map((q) => q[0]), pairs.map((q) => q[1])];
+  };
   const kcas = (path) => {   // the sim's IAS is EAS ≈ CAS below 200 kt: a speed in any other unit would be misread
     const { v, leaf } = walk(path);
-    if (leaf.u !== 'kt CAS') throw fail(path, `is in ${JSON.stringify(leaf.u)}, not kt CAS (a kt IAS speed needs speeds.ias_cas, plan C1)`);
-    return num(path, v);
+    if (leaf.u === 'kt CAS') return num(path, v);
+    if (leaf.u !== 'kt IAS') throw fail(path, `is in ${JSON.stringify(leaf.u)}, not kt CAS or kt IAS`);
+    const kias = num(path, v);
+    iasRow = iasRow || landingRow();
+    return table1(iasRow[0], iasRow[1], kias);
+  };
+  const CFG = [opts.config, 'approach', 'landing', 'cruise', 'clean'];
+  const deriv = (path) => {   // a number, or one number per configuration (the first of CFG, else the first numeric key)
+    const v = get(path);
+    if (!isObj(v)) return num(path, v);
+    const isNum = (x) => typeof x === 'number' && Number.isFinite(x);
+    const k = CFG.find((c) => c != null && Object.hasOwn(v, c) && isNum(v[c])) ?? Object.keys(v).find((c) => isNum(v[c]));
+    if (k === undefined) throw fail(path, `has no numeric configuration (${JSON.stringify(v)})`);
+    return v[k];
   };
   const travel = (s, a, b) => {   // deg; a plain number is a symmetric travel (schema-ext D2)
     const p = `controls.surfaces.${s}.travel_deg`, t = get(p);
@@ -236,7 +279,7 @@ function acFromCard(card) {
   const LEG = ['CL0', 'CLa', 'CLflap', 'CD0', 'K', 'CDflap', 'CDgear', 'Cm0', 'Cma', 'Cmflap', 'aStall', 'aStallFlap', 'aWarn', 'aWarnFlap', 'aWarnHyst', 'aWarnMinOn'];
   const DER = ['CLq', 'CLadot', 'CLde', 'CYb', 'CYdr', 'CYr', 'Clb', 'Clp', 'Clr', 'Clda', 'Cldr', 'Cmq', 'Cmadot', 'Cmde', 'Cnb', 'Cnp', 'Cnr', 'Cnda', 'Cndr'];
   for (const k of LEG) ac[k] = num('aero.legacy.' + k);
-  for (const k of DER) ac[k] = num('aero.derivatives.' + k);
+  for (const k of DER) ac[k] = deriv('aero.derivatives.' + k);
   for (const k of ['P', 'eta', 'T0', 'idle']) ac[k] = num('propulsion.legacy.' + k);
   const [eUp, eDn] = travel('elevator', 'up', 'down'), [aUp, aDn] = travel('aileron', 'up', 'down'), [rL, rR] = travel('rudder', 'left', 'right');
   ac.deUp = eUp * DEG; ac.deDn = eDn * DEG; ac.daMax = 0.5 * (aUp + aDn) * DEG; ac.drMax = Math.min(rL, rR) * DEG;
@@ -263,9 +306,10 @@ function acFromCard(card) {
 // state but flies the new numbers from its next step. A field the card does not give is deleted, one AC has is
 // overwritten and a new one defined: V8 turns an object with more than a few fields added by computed key
 // (Object.assign, obj[k] = v) into a slow dictionary, and a deleted field does the same, which made Aircraft.step
-// about 40 % slower; defined this way AC keeps fast properties, as the object literal it was before plan B3 did.
-function setAircraft(card) {
-  const next = acFromCard(card);
+// about 40 % slower; defined this way AC keeps fast properties, as the object literal it was before plan B3 did. opts
+// goes to acFromCard (opts.config picks the derivatives' configuration; the page passes none).
+function setAircraft(card, opts = {}) {
+  const next = acFromCard(card, opts);
   next.Iinv = inertiaInverse(next);
   for (const k of Object.keys(AC)) if (!Object.hasOwn(next, k)) delete AC[k];
   for (const k of Object.keys(next)) {

@@ -5,6 +5,8 @@
 // city.json      base64 records: generated city buildings (9 bytes each) and street lights (5 bytes each)
 // aircraft/trainer.json  the aircraft card of the fictional trainer (plan B3): the app hands it to setAircraft
 //                (src/20-flight.js) before any Flight exists
+// aircraft/<id>.json  the cards of the other types of the training pane (plan C1, AIRCRAFT_TYPES of 22-types.js),
+//                loaded by loadCards beside loadData
 const LAND = {
   in: { e0: -3600, n1: 5000, res: 2.5, w: 3200, h: 4000 },
   out: { e0: -10000, n1: 12000, res: 8, w: 2500, h: 3000 },
@@ -37,6 +39,33 @@ async function loadData(onProgress = () => {}) {
   ]);
   const b64 = (s) => { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; };
   return { af, landIn, landOut, bld: b64(city.bld), lights: b64(city.lights), aircraft };
+}
+
+// The cards of the training pane's other aircraft types (plan C1): aircraft/<id>.json for each id, fetched in parallel
+// with loadData and checked at once with check(card) (the page passes acFromCard). Resolves to { [id]: { card, ac } }
+// for a good card and { [id]: { error } } for one that fails, error a Thai message that names the file and, for a card
+// the reader refuses, the card path (error.path; the reader's English message goes to the console, as for the trainer).
+// It never rejects: a bad card only disables its entry in the selector, while the trainer card (loadData) still stops
+// the page.
+async function loadCards(ids, check) {
+  const one = async (id) => {
+    const name = `aircraft/${id}.json`;
+    let r = null, card;
+    try {
+      r = await fetch(name);
+      if (!r.ok) return { error: `โหลด ${name} ไม่ได้ (${r.status})` };
+      card = await r.json();
+    } catch (e) {
+      console.error(e);
+      return { error: `โหลด ${name} ไม่ได้ (${r ? 'อ่านข้อมูลในไฟล์ไม่ได้' : 'เชื่อมต่อไม่ได้'})` };
+    }
+    try { return { card, ac: check(card) }; } catch (e) {
+      console.error(e);
+      return { error: `ข้อมูลเครื่องบินใน ${name} ใช้ไม่ได้${e && e.path ? ` (ค่าที่ขาดหรือผิดรูปแบบ: ${e.path})` : ''}` };
+    }
+  };
+  const got = await Promise.all(ids.map((id) => one(id).catch((e) => { console.error(e); return { error: `โหลด aircraft/${id}.json ไม่ได้` }; })));
+  return Object.fromEntries(ids.map((id, i) => [id, got[i]]));
 }
 
 function classTexture(bitmap) {

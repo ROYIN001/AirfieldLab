@@ -131,8 +131,9 @@ test('acFromCard: a missing or non-numeric value throws an Error that names its 
   throwsAt((c) => { c.aero.derivatives = { v: {}, u: '-' }; }, /aero\.derivatives\.CLq is missing/);
   // a branch where a leaf should be
   throwsAt((c) => { c.speeds.VREF_kt = { kt: 88 }; }, /speeds\.VREF_kt is not a leaf/);
-  // a speed in any unit but kt CAS (most round 2 cards give kt IAS, which buildAC converts with speeds.ias_cas; C1)
-  throwsAt((c) => { c.speeds.VAPP_kt.u = 'kt IAS'; }, /speeds\.VAPP_kt is in "kt IAS", not kt CAS/);
+  // a kt IAS speed goes to kt CAS through speeds.ias_cas (plan C1), which the trainer card does not have; any unit but
+  // kt CAS or kt IAS throws (the conversion itself is tested in test/cards.test.mjs)
+  throwsAt((c) => { c.speeds.VAPP_kt.u = 'kt IAS'; }, /speeds\.ias_cas is missing/);
   throwsAt((c) => { delete c.speeds.VS0_kt.u; }, /speeds\.VS0_kt is in undefined, not kt CAS/);
   const c = card(); delete c.aero.ref.b;
   assert.throws(() => acFromCard(c), (e) => e.path === 'aero.ref.b');

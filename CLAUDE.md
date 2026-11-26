@@ -26,6 +26,14 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Build: `node build.mjs` → `dist/index.html`, and copies `data/` (sub-folders included) into `dist/`.
   `node build.mjs --preview <PR number>` builds a pull request's preview page into `dist-preview/pr-<n>/` and prints
   the Artifact `files` map (see "Preview each pull request").
+- Aircraft cards (plan C1): `node tools/aircraft/build_cards.mjs [--check | --only <id>]` writes the six light-aircraft
+  cards `data/aircraft/<id>.json` from `docs/research/02-light-aircraft/params-light.json`; `--check` writes nothing and
+  exits 1 naming each card that differs (`test/cards.test.mjs` runs it). Never edit those six by hand: a change to
+  `params-light.json`, to a reference row of a round 1 or round 2 topic file (it gives each `_meta.sources` entry its
+  text and link), to round 2's `lm_lib.mjs`, `lm_card.mjs` or `lm_inertia.mjs` (type resolution, gear, inertia), to the
+  generator, or to physics that moves the CL/Cm lines (the stall-warning solve flies the sim) regenerates them in the
+  same PR, also when the PR is research-only (see Research CI). It never writes `trainer.json` and the cards do not
+  depend on it, but it reads it through `test/harness.mjs`, so a broken trainer card stops it too (`tools/README.md`).
 - Run: `python3 -m http.server 8080 -d dist`, open http://localhost:8080 (needs HTTP: the page fetches its data).
 - Tests (Node ≥ 22, no dependencies, `node:test` + `node:assert/strict`): `node --test "test/**/*.test.mjs"`
   (quote the glob: a bare `node --test` would also run `test/shots.mjs`, `test/harness.mjs`, `test/lib/*.mjs` and
@@ -70,13 +78,30 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   bit for bit as `s12_table_expected.mjs`; T-S-12 every `data/aircraft/*.json`: leaves `{v, u, scope, src, conf, est,
   note}`, ค่าประมาณ in the note of every estimate, each `src` code listed in `_meta.sources` with a link that exists,
   `_meta.source` and `license`; `acFromCard` against `AC`, `{kg}` mass, inertia × m/ref_mass, travel, unit engine axes,
-  speeds only in kt CAS and not rounded, errors that name the path (also in `error.path`); `setAircraft` keeps the
+  speeds not rounded (kt CAS as written; kt IAS without `speeds.ias_cas` throws there), errors that name the path
+  (also in `error.path`); `setAircraft` keeps the
   object, drops stale fields, rebuilds `Iinv`, leaves `AC` as it was on a bad card, and a Flight after it flies the
   new mass; T-S-10 `Aircraft.step` ≤ 20 µs at 240 Hz (it runs first,
   before the tests that change `AC`); T-F-15 engine-out yaw moment and Vmc through `engineLoads` (05-turbofan.md §5.8);
   `AC.engines` in `Aircraft.deriv` (a thrust line 0.5 m below the CG pitches by T·0.5/Iyy, nothing else moves); the
   page loads the card and calls `setAircraft` before any Flight, and a bad card's Thai message names only the path;
-  `loadData` of `src/48-data.js` with a stub fetch: progress stops at the first failed file, whose Thai error names it), `input` (shaping, key ramps, the
+  `loadData` of `src/48-data.js` with a stub fetch: progress stops at the first failed file, whose Thai error names it),
+  `cards` (plan C1, the six light-aircraft cards and the selector: the generator's `--check`, the file set and
+  `AIRCRAFT_TYPES` in the OD-TYPES order; the reader: kt IAS → kt CAS on the landing detent's row of `speeds.ias_cas`
+  (both table forms, held at the row's ends, errors with `error.path`), derivatives per configuration; `acFromCard`
+  against round 2's `buildAC(prepare(id))` on its 51 fields (speeds within 0.5 kt, as `buildAC` rounds); the exact leaf
+  set of a card, no LB19 or FlightGear, LM8 only on the DA40 inertia, the licence traps; per type the stall warning
+  7 ± 0.25 kt above the 1-g stall at every detent and below α_CLmax − 2°, and the trim at Vapp 5,500 m out; T-LS-03,
+  T-LS-11 (ก)(ข)(ค), T-LM-13; `typeInfo` and `modelSpec` of `src/22-types.js` (the Thai card, lede and notes of each
+  type, the model fit); `loadCards` with a stub fetch (Thai errors, never rejects); the owner's rule that no military
+  user is named, not even generically (cards, `22-types.js`, the selector lines of `90-app.js`); the page wiring by
+  regex), `types` (plan C1: research round 2 tests flown through the cards at the research's masses and tolerances,
+  C172S T-LC-04, 06–08, 12–14, 20–24, 31, C172R T-LE-05–07, 11–13, 19–23, DA40 T-LD-27, 28, 31; four known gaps held
+  by regression bands with the research value in `t.diagnostic`: T-LE-09 Vx 57.4 ± 1.5 KCAS (research 62 ± 3, its
+  60 was the first point of its 2-kt sweep, not a maximum; the test checks that the largest γ of its 1-kt sweep is
+  not an end point; task item 20), T-LD-29 50 ft 507.2 m ± 3 % (research 450 ± 45), T-LD-30 vmax 114.2 ± 1 KTAS
+  (142 ± 3), T-LD-32 50 ft 574.4 m ± 3 % (640 ± 64; the research flew the trainer's thrust line), the last three task
+  item 13; then the six-type autoland smoke test of "Verified"), `input` (shaping, key ramps, the
   sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
   phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `aip` (`RWY_DATA`, the derived
   geometry and the AIP facts in the Thai UI text against `test/fixtures/aip_vtbd_current.json`, research round 5
@@ -129,8 +154,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `inertiaInverse`.
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 25-input.js` with
   `new Function` in strict mode, reads `data/aircraft/trainer.json` from disk (`AIRCRAFT_CARD`) and calls
-  `setAircraft` with it before any test runs, `test/keys.test.mjs` evaluates `18-keys.js`, `test/siting.test.mjs` `17-siting.js` and
-  `test/licenses.test.mjs` `85-shot.js` the same way, so those seven files must stay DOM-free. The siting and lights tests also evaluate `48-data.js` and `60-lights.js`:
+  `setAircraft` with it before any test runs, `test/keys.test.mjs` evaluates `18-keys.js`, `test/siting.test.mjs` `17-siting.js`,
+  `test/licenses.test.mjs` `85-shot.js` and `test/cards.test.mjs` `22-types.js` the same way, so those eight files must
+  stay DOM-free. The siting and lights tests also evaluate `48-data.js` and `60-lights.js`:
   these two may use three.js and the DOM inside their functions, never at the top level. `test/lib/png.mjs` reads the
   land-use PNGs (8-bit greyscale) with `node:zlib`. `build.mjs` exports `assemble()`, `build()`, `dataFiles()`,
   `checkPr()` and `previewHtml()` for the page test. `M` from `test/harness.mjs` also includes `Evaluator`, `aWarnAt`,
@@ -165,17 +191,18 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 17-siting.js | pure: where something tall may stand: obstacle limitation surfaces `olsHeight(e, n)`, approach light lanes `alsLaneOf`, `ALS` (length and spacing per system), `RWY_PAD`, `TWY_W`, `SiteIndex` (clearances from buildings, decks, aprons, taxiways, water; the land-use class under a point), `STATIONS` and `stationSites(af)`, `mappedSite`, `placeTrees`, `siteBuildings` (`buildingProblem`, `groundShare`); also `rwyST`, `rwyEN`, `onAnyRunway`, `pointInPoly`, `nearestOnLine`, `lineLength`, `pointAlong` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions + `frame()` with sub-frame taps; `app.keys`) |
 | 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC` (empty until `setAircraft(card)` fills it from an aircraft card; `acFromCard`, `inertiaInverse`), `table1`/`table2` (clamped tables), `engineLoads`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
+| 22-types.js | pure: `AIRCRAFT_TYPES` (selector order), `typeInfo` (Thai card, lede, notes from the card's `thai_fleet`), `modelSpec` (generic model fit) |
 | 25-input.js | pure: `INPUT_CFG` (estimates from research §11), calibration and dead-zone helpers, `shapeAxis` / `shapeLever`, `keyRamp` + `KeyAxis`, `readPad` (W3C standard gamepad), `Arbiter` (last-moved source wins) + `InputAxis` (no jump on a switch), `TiltStick` (phone tilt), `PilotInput` (one frame from keys, pad, touch and tilt; `app.pin`) |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()` (fog = MOR haze, `HAZE_GLSL`), `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
-| 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` and the aircraft card `aircraft/trainer.json` (90-app.js hands it to `setAircraft`); progress stops at the first failed file, whose Thai error names it |
+| 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` and the aircraft card `aircraft/trainer.json` (90-app.js hands it to `setAircraft`); progress stops at the first failed file, whose Thai error names it; `loadCards` (the other types' cards, beside `loadData`; never rejects, a failed card disables its entry) |
 | 50-airfield.js | land-use bake on the GPU + ground shader, runway marking shader (per runway), taxiways, aprons, hold lines, terminal, towers, navaids, approach light stands, windsocks, masts |
 | 55-city.js | instanced city buildings (those that pass `siteBuildings`), OSM footprints, tollway / SRT viaduct / BTS (`VIADUCT` deck sizes) + stations from `stationSites`, trees from `placeTrees`, parked airliners |
 | 60-lights.js | point-sprite lights with directional colour (`LightSet`); `airfieldLights(field, data)` is the whole lighting layout as data, `alsStands(E)` the approach light stands, `taxiEdgeLights(af)` the places of the taxiway edge lights, `buildAirfieldLights` draws the lights |
-| 70-aircraft.js | trainer model, control-surface and gear animation |
+| 70-aircraft.js | trainer model, control-surface and gear animation; `fit(spec)` fits it to another type (raised to the card's wheels, flap angle, fixed gear, twin nacelles), `inCockpit` |
 | 80-hud.js | conformal HUD, ILS/PAPI widget, debrief charts |
 | 85-shot.js | pure: `SHOT_CREDIT` and `stampCredit(g, w, h)`, the credit drawn into the PNG snapshot (ODbL 4.3 and 4.6) |
-| 90-app.js | UI, camera presets and hotspots (Thai), input, training flow, stall-warning horn (Web Audio), frame loop |
+| 90-app.js | UI, camera presets and hotspots (Thai), input, training flow, aircraft type selector (AC is switched only by `useType`; explore always flies the trainer), stall-warning horn (Web Audio), frame loop |
 
 ## Frames and units
 - Physics: NED metres, origin at the ARP (13°54′51.74″N 100°36′20.49″E), d down, ground at d = 0. Body FRD,
@@ -188,24 +215,45 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `AC.gsAnt` (ILS receiver).
   ILS deviations and the autopilot use the antenna, PAPI uses the eye. LOC 1 dot = atan(105 m / locDist) / 2
   per runway (0.75° on 21R/03L, 0.89° on 21L), G/S 1 dot 0.36°. On the ILS the trainer sees the PAPI read low in
-  the last ~0.7 km because DMK's MEHT is 3.3–5.1 m above the beam over the threshold (real, AIP-derived).
+  the last ~0.7 km because DMK's MEHT is 3.3–5.1 m above the beam over the threshold (real, AIP-derived). The trainer's
+  eye is 1.3 m above its antenna; the plan C1 cards put the antenna at the eye (no source gives its place), so their
+  PAPI reads lower still.
 
 ## Flight model (current state)
 - Generic two-seat turboprop trainer (fictional): m 2250 kg, S 16.3 m², b 10.2 m, P 700 kW, static thrust 11.5 kN.
+  It is the default and the only aircraft of the explore mode. The training pane also offers (plan C1, research
+  round 2 task item 10, owner decision OD-TYPES) the six light aircraft Thai civil schools fly: `c172s`, `c172r`,
+  `da42ng`, `da42_tae125`, `da40d`, `da40_180` (no DA40 NG: no Thai civil school has one, T-LS-11). The selector
+  (`#typeList`, `src/22-types.js`) shows each type's speeds (kt CAS, whole knots) and its Thai civil schools, counts and
+  bases from the card's `thai_fleet` (CAAT register of 9 Jul 2026 [LS1]), labels every real type สถานการณ์สมมติ
+  (T-LS-11 (ค)) and saves the choice per viewer (`afl-type`). One global `AC`: `useType(id)` in 90-app.js is the only
+  switch after start (`setAircraft` + `ac3.fit(modelSpec(...))`), `setMode` puts the trainer back for explore and the
+  chosen type for training, and a type changes only in the setup pane, so a Flight only advances under its own type.
+  The 3D model stays the trainer's, fitted (raised to the card's wheels, its landing flap angle, fixed gear, two
+  nacelles on the DA42s) and hidden in the cockpit view of a real type; a Thai note says the picture is generic.
 - Aircraft data (plan B3, research round 1 task list item 8, `12-other-sims.md` §12.14 task 3, `05-turbofan.md`
-  task 1): the numbers live in `data/aircraft/trainer.json`, one leaf `{v, u, scope, src, conf, est, note}` per value
+  task 1): the numbers live in seven cards in `data/aircraft/`, `trainer.json` and the six of plan C1 (generated by
+  `tools/aircraft/build_cards.mjs`, never edited by hand), one leaf `{v, u, scope, src, conf, est, note}` per value
   (`schema.md`, round 2 `schema-ext.md` paths; `_meta.sources` lists every `src` code with its link). `const AC = {}`
-  until `setAircraft(card)` fills it (`acFromCard` reads the card's direct paths; on the trainer card it gives the
-  same numbers as round 2's `lm_card.mjs` `buildAC`, but unlike `buildAC` it takes speeds as written (no rounding to
-  whole knots), only in kt CAS (it throws on kt IAS, which `buildAC` converts with `speeds.ias_cas`; plan C1), and
-  needs `Ixz` (`buildAC` takes 0); `Iinv` from `inertiaInverse`). `setAircraft` keeps the one `AC` object, overwrites
+  until `setAircraft(card, opts)` fills it (`acFromCard(card, opts)` reads the card's direct paths; on every card it
+  gives the same numbers as round 2's `lm_card.mjs` `buildAC` on its 51 fields, but unlike `buildAC` it takes speeds
+  unrounded and needs `Ixz` (`buildAC` takes 0); `Iinv` from `inertiaInverse`). Reader rules of plan C1: a `kt CAS`
+  speed is taken as written; a `kt IAS` speed (the POH figure; most of the six) goes to kt CAS through the landing
+  detent's row (largest `flap_deg`) of `speeds.ias_cas` with `table1`, clamped at the row's ends, never extrapolated
+  (keyed `{ <detent>: [[KIAS, KCAS], …] }` or lm_lib's `{ axes: { flap, KIAS }, data }`); any other unit throws. A
+  derivative is a number or an object per configuration: the first numeric of [`opts.config`, approach, landing,
+  cruise, clean], else the first numeric key (the page passes no `opts`; tests pass `{ config: 'cruise' }`). The UI
+  rounds the speeds for display (`fmt`). `setAircraft` keeps the one `AC` object, overwrites
   its fields and adds new ones with `Object.defineProperty`: assigning many new keys or deleting one sends V8 to
   dictionary mode, about 40 % slower per step. The page calls it after `loadData` (a bad card stops the start with a
   Thai message that names only the card path, `error.path`; the English message goes to the console), the harness at
   load. `AC.engines` (`[{ pos, dir }]`, FRD, from `propulsion.layout`): `deriv` shares
   `thr·thrustAvail(V)` equally among them and adds each one's force and moment `pos × F` through `engineLoads`
   (sums start at −0, so the trainer's one engine along +x gives exactly T on x and no moment: bit for bit as before).
-  `table1`/`table2` (clamped, T-S-07) are ready for the tables of plans C1/C4; nothing reads them yet.
+  `table1`/`table2` (clamped, T-S-07): `table1` converts kt IAS (plan C1); `table2` waits for the tables of plan C4.
+  The trainer-era constants in the code still apply to every type (plan C1 R4; per-type values are later work):
+  `setParked` d −1.30 m, the wingtip strike at 15.5° bank, the flare at 4.5–9 m, the 300–600 m touchdown window, the
+  debrief TDZ 350–600 m, the gates at 500/200 ft and the speed band Vref −5/+20.
 - Linear stability derivatives in `AC`, stall by Beard–McLain blending (M = 55, α_stall 17°, −2.5° with flaps),
   ground effect, spring-damper gear with tanh tyre friction, RK4 at 240 Hz.
 - Trim (plan B2, research round 1 task list item 11, `12-other-sims.md` §12.14 task 6): `Aircraft.trim({ h, n, e, tas,
@@ -227,7 +275,10 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   attitude at α = acc/dt; the aircraft and cameras draw it (at most 1/240 s behind), the HUD reads the latest state. `qNlerp` is shared with `Recorder.at`. The other
   tests step with `tick()`; only `numerics` goes through `advance`.
 - Stall warning by α (`AC.aWarn` 10.71°, `aWarnFlap` −3.84°/flap, so 6.87° with landing flaps; estimates from research
-  T-A-07): about 7 kt above the stall, 14 CFR 23.207. `Evaluator.stallHorn` comes on at once, goes off 0.5° below after
+  T-A-07): about 7 kt above the stall, 14 CFR 23.207. The generator solves each light aircraft's angles the same way on
+  the sim's blended lift curve (trimmed, 1-g EAS at the training mass, 7.00 kt above the 1-g stall at flaps 0 and 1,
+  6.99–7.02 kt at every detent): c172s 10.50°/−0.92 (9.58° landing), c172r 10.48°/−0.92 (9.56°), da42ng 9.16°/−3.22
+  (5.94°), da42_tae125 9.59°/−3.21 (6.38°), da40d 10.02°/−7.18 (2.84°), da40_180 10.17°/−7.75 (2.42°). `Evaluator.stallHorn` comes on at once, goes off 0.5° below after
   at least 0.5 s, and is off on the ground; it drives the horn and the HUD STALL word.
 - Load factor `air.nz` / `air.ny` (g, body axes) from the specific force (aero + thrust + gear, no gravity), set in
   `updateAir()` (research round 1 task 5, T-C-01): cos θ cos φ in unaccelerated flight (≈ 1 near
@@ -292,6 +343,17 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   39–44 ft on all four runway ends (A8 38–43 ft, dry ISA 45–50 ft), APP onsets span 23–44 ft (A8 25–43 ft), and only
   03R adds a FLARE onset, at 11 ft (round 2's `stall_warning` check counts anything above 20 ft). Open for the owner:
   flap α_warn 7.77° (about 5 kt) or a Vref gust additive.
+- Verified per type (plan C1, `test/types.test.mjs`, seed 5, A8 default weather, A9 wind, each card at its training
+  mass), autoland scores 21R/21L/03L/03R in calm and in the gusty crosswind `xl`: c172s 100/93/100/93 and 79/79/86/77,
+  c172r 100/93/100/93 and 72/76/76/75, da42ng 100/100/100/100 and 96/94/96/89, da42_tae125 100/93/100/93 and
+  81/81/80/77, da40d 100/100/100/93 and 93/91/94/83, da40_180 100/100/100/93 and 88/93/92/86; no crash, no near-stall
+  event. The test asserts calm on all four ends (no crash, ≥ 90, no near-stall event, horn never on) and `xl` on 21R
+  (no crash, ≥ 70; c172r's 72 is 2 points over), and logs the `xl` horn only: none on the DA42s, up to 32–37 ft on the
+  c172s and 63–68 ft on the c172r, and from about 930 ft on both DA40s (10–13 s in all), whose landing flaps leave only
+  about 2.5–3.2° of α between the trimmed approach and the 7 kt warning angle (`setApproach` 5,500 m out: α −0.13°
+  against 2.42° on da40_180, −0.32° against 2.84° on da40d; 5.5–6.8° on the other four), with the autopilot flying
+  Vref with no gust additive (the owner's open choice above matters most for them). Plan C2 turns these into
+  regression bands for every type.
 
 ## Visibility (current)
 - The visibility choice (500 m to 40 km, default 20 km) is MOR (WMO-No. 8; research round 4 §6.8): extinction
@@ -448,7 +510,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   per-type cards keyed by type id (`c172s`, `da40ng`, `da42ng`, `pc9m`, `t6a`, ...) with `_inherits` for variants,
   shared with round 3. `params-light.json` is merged by `scripts/lm_merge.mjs`; `scripts/lm_lib.mjs` `loadType(id)`
   resolves a card, and `scripts/lm_card.mjs` `buildAC(card)` / `applyAC(M, ac)` load it into the current sim for tests.
-  The card owns `speeds.VREF_kt` / `VAPP_kt`; handling (08) and procedures (09) quote it. After editing any JSON block,
+  The card owns `speeds.VREF_kt` / `VAPP_kt`; handling (08) and procedures (09) quote it. Task item 10 (the type
+  selector, cards from `params-light.json`) is done by plan C1; C2 (regression lock over all types), C3 (KIAS on the
+  HUD) and C4 (airliner cards through the same reader) follow. After editing any JSON block,
   `node docs/research/02-light-aircraft/scripts/lm_merge.mjs --coverage --dry --strict` must report 0 warnings
   (`--strict` exits 1 on any warning, and on a card with round-1 per-type paths neither filled nor in `_na`); then run
   it without `--dry` to rewrite `params-light.json` and commit it (CI checks that the file is up to date).
@@ -460,7 +524,10 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `AIRFIELDLAB_ROOT`; from plan B3 on the harness needs the card beside it), so a physics PR does not move them;
   results go to `$LM_OUT_DIR`, never into the repo. `lm_ci.mjs --root .` runs the same checks on the working tree.
   After a physics change, re-pin the commit and move the expected values in one PR (`lm_selftest` T-LM-32 checks
-  that the scripts' copies of `stallBlend` and `Evaluator.score` still match the pinned sim).
+  that the scripts' copies of `stallBlend` and `Evaluator.score` still match the pinned sim). The plan C1 cards are not
+  pinned: a research PR that changes `params-light.json`, a reference row of a topic file or `lm_lib.mjs`,
+  `lm_card.mjs` or `lm_inertia.mjs` also runs `node tools/aircraft/build_cards.mjs` and commits the cards it rewrites;
+  `research.yml` does not run `--check`, but `pages.yml` runs `test/cards.test.mjs` on every pull request into `main`.
 - Round 3 (airliners: ATR 72-600, 737-800, A320/A321 ceo and neo, A330-300) follows the same split:
   `03-airliners.md` holds the summary, conflicts and the task list; `03-airliners/` holds 10 topic files, one
   merged parameter file per type (`params-<type>.json`, plus `params-common-airliner.json`), the per-type
@@ -505,6 +572,23 @@ Suggested order, each with a Node test before tuning by feel in the browser:
   codes through `_meta.sources`, not through round 2's `lm_lib.validate`, which warns four times on the trainer by
   design (the `_meta.note` says so): `training_mass` stays the fixture's plain number, not D3's
   `{kg, empty_kg, crew_kg, fuel_kg}` (no source to split it), and `R3:D3` and `AL:A5` are not R2-03 code forms.
+- `aircraft/<id>.json` for `c172s`, `c172r`, `da42ng`, `da42_tae125`, `da40d`, `da40_180` (plan C1): generated by
+  `tools/aircraft/build_cards.mjs` from the round 2 cards in `docs/research/02-light-aircraft/params-light.json` (45
+  copied paths: what `acFromCard` reads, the speed table `speeds.ias_cas`, the flap detents, and the identity, MTOW,
+  length and gear layout, which the selector text and round 2's helpers use; then the generated stall-warning angles,
+  `gear.legacy` where the research card has none, the antenna at the eye, and the Thai `thai_fleet` leaf of civil
+  schools and clubs). Each value names its sources and confidence; estimates say ค่าประมาณ. The repository's own
+  compilation under MIT, manufacturer, authority and register figures used as cited numbers only; no OpenStreetMap
+  data, so no footer credit. On the two C172 cards the eye point, gear stations, track and spring rates and the flap
+  drag and pitch increments (`aero.flaps.detents` dCD0/dCm0, which `aero.legacy` carries as CDflap/Cmflap) are numbers
+  read from the JSBSim `c172r` model (LB3, cited, no file or text copied; plan C1 R1). No FlightGear number and no
+  LB19 code reaches a card. The DA40 wheel stations: the research leaves give the main station 2.80 m DAT next to
+  FlightGear's 2.81 m [LB19]; its topic file (§05.2) calls 2.80 / 1.12 m its own estimates from pictures, checked
+  against that model. The card instead splits the AFM wheelbase 1.68 m [LD2] by the research's nose-load share of about
+  20 % [LD0], which the research itself got (19.6 %) from those stations at CG 2.47 m, so the split gives them back
+  rounded: x main −0.336 m, nose +1.344 m (research −0.33 / +1.35). The DA40 eye x is +0.07 m, from the seat station
+  2.30 m DAT [LD8] with the eye 0.1 m aft, against the card's CG reference 2.47 m DAT; the research leaf held −0.07 m,
+  cited only to LB19, which its own note's derivation does not give.
 - Licences: `vtbd_af.json`, `land_in.png`, `land_out.png` and `city.json` are derived from OpenStreetMap and
   available under the ODbL 1.0 (`data/LICENSE-DATA.md`, which `node build.mjs` copies into `dist/` with them).
   `vtbd_af.json` and `city.json` predate the `source`/`license` field rule (`legacy_data_without_fields` in the
@@ -535,8 +619,10 @@ Pages deploys only `main`, so the owner tries a pull request on a private claude
    the same artifact (same file path in the same conversation, or its URL as `url` in a later one).
 
 ## Publishing
-- Live as a claude.ai artifact (multi-file: index.html + every file in `data/` at its path, now the four OSM data
-  files, `aircraft/trainer.json` (plan B3: the page does not start without it) and `LICENSE-DATA.md`), title "Airfield Lab ดอนเมือง VTBD", slug f3207a70-5bd7-43d8-a606-a2b9b946413a, `downloads`
+- Live as a claude.ai artifact (multi-file: index.html + every file in `data/` at its path, now 13 files: the four
+  OSM data files `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json`, `aircraft/trainer.json` (plan B3: the page
+  does not start without it), the six plan C1 cards `aircraft/c172s.json`, `c172r.json`, `da42ng.json`,
+  `da42_tae125.json`, `da40d.json`, `da40_180.json` (a missing one only disables its entry), and `LICENSE-DATA.md`), title "Airfield Lab ดอนเมือง VTBD", slug f3207a70-5bd7-43d8-a606-a2b9b946413a, `downloads`
   capability declared for the PNG snapshot button.
 - The earlier fictional-airfield prototype is a separate artifact (827d3f8b-1c74-4a51-b9e5-6ef7ea33b59c).
 - Pull request previews are separate private artifacts titled "พรีวิว PR #n · Airfield Lab ดอนเมือง VTBD". The live
