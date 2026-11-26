@@ -34,9 +34,9 @@ A picture rendered from them (a Produced Work, such as a screenshot of the page)
 needs a notice that it uses OpenStreetMap data and that the data is available under the ODbL, for example
 "© OpenStreetMap contributors, data available under the ODbL" with a link to https://www.openstreetmap.org/copyright
 (ODbL 4.3). Whoever publishes such a picture must also offer its recipients the data it was made from (ODbL 4.6):
-for these files, changed or not, a link to `data/` in https://github.com/ROYIN001/AirfieldLab is enough, and the
-page's PNG snapshot carries that link with the notice; for a changed copy, offer that copy, a file of the changes or
-the method that made them. The page itself hands these files to the browser, so they travel with this notice (ODbL 4.2), and its footer carries the
+for these files as published here, a link to `data/` in https://github.com/ROYIN001/AirfieldLab is enough, and the
+page's PNG snapshot names that repository, whose `data/` folder holds them, beside the notice; for a changed copy,
+offer that copy, a file of the changes or the method that made them. The page itself hands these files to the browser, so they travel with this notice (ODbL 4.2), and its footer carries the
 credit and the links.
 
 ## Other sources in the page (not files in this folder)
@@ -60,13 +60,15 @@ credit and the links.
 
 ไฟล์ทั้งสี่ในโฟลเดอร์นี้สร้างจากแผนที่ OpenStreetMap จึงเป็นฐานข้อมูลอนุพันธ์ภายใต้ ODbL 1.0 ผู้ที่นำไปใช้ต่อต้องให้เครดิต
 "© ผู้ร่วมพัฒนา OpenStreetMap" และถ้าแจกจ่ายไฟล์ไม่ว่าจะดัดแปลงหรือไม่ ต้องแจกภายใต้ ODbL พร้อมข้อความนี้ เงื่อนไข
-share-alike ใช้กับไฟล์ข้อมูลเท่านั้น ไม่ใช้กับโค้ด ซึ่งใช้สัญญาอนุญาต MIT ในไฟล์ `LICENSE` ความสูงอาคารในไฟล์เหล่านี้เป็นค่าประมาณ
+share-alike ใช้กับไฟล์ข้อมูลเท่านั้น โค้ดทั้งหมด (รวมสคริปต์ใน `docs/research/`) และข้อความของ repo เอง
+ใช้สัญญาอนุญาต MIT ในไฟล์ `LICENSE` ยกเว้นไฟล์ข้อมูลและข้อความที่ยกมาใน `docs/research/` ที่ระบุสัญญาอนุญาตของตัวเอง (ODbL, CC BY 4.0,
+ข้อมูล Copernicus) และค่าจาก AIP ใช้เป็นตัวเลขพร้อมอ้าง กพท. ความสูงอาคารในไฟล์เหล่านี้เป็นค่าประมาณ
 
 ภาพที่เรนเดอร์จากข้อมูลนี้ (Produced Work) เช่น ภาพหน้าจอ ไม่ต้องใช้ ODbL กับตัวภาพ แต่ต้องบอกว่าใช้ข้อมูลจาก
 OpenStreetMap และข้อมูลอยู่ภายใต้ ODbL เช่น "© ผู้ร่วมพัฒนา OpenStreetMap ข้อมูลภายใต้ ODbL" พร้อมลิงก์ไปที่
 https://www.openstreetmap.org/copyright และผู้ที่เผยแพร่ภาพต้องเปิดให้ผู้รับได้ข้อมูลที่ใช้สร้างภาพด้วย (ODbL 4.6) สำหรับไฟล์ชุดนี้
-ไม่ว่าจะดัดแปลงหรือไม่ ลิงก์ไปที่โฟลเดอร์ `data/` ใน https://github.com/ROYIN001/AirfieldLab ก็พอ และภาพ PNG ที่บันทึกจากหน้าเว็บ
-มีลิงก์นี้พร้อมเครดิตอยู่แล้ว ถ้าดัดแปลงไฟล์ ต้องเปิดไฟล์ที่ดัดแปลง รายการที่แก้ หรือวิธีที่ใช้แก้
+ตามที่เผยแพร่ใน repo ลิงก์ไปที่โฟลเดอร์ `data/` ใน https://github.com/ROYIN001/AirfieldLab ก็พอ และภาพ PNG ที่บันทึกจากหน้าเว็บ
+มีชื่อ repo นี้ (ซึ่งเก็บไฟล์ไว้ในโฟลเดอร์ `data/`) พร้อมเครดิตอยู่แล้ว ถ้าดัดแปลงไฟล์ ต้องเปิดไฟล์ที่ดัดแปลง รายการที่แก้ หรือวิธีที่ใช้แก้
 
 ค่าทางวิ่ง ไฟ และเครื่องช่วยเดินอากาศมาจาก AIP Thailand ซึ่งเป็นลิขสิทธิ์ของ กพท. repo ใช้เฉพาะตัวเลขและอ้างรอบ AIRAC
 ข้อมูลในเกมใช้เพื่อการฝึกเท่านั้น ไม่ใช้เพื่อการเดินอากาศจริง

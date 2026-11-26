@@ -65,12 +65,18 @@ test('license policy fixture: the files it names live where the tests look', () 
   for (const f of [...POL.odbl_derived_files, ...POL.legacy_data_without_fields]) assert.match(f, /^data\//, f);
   for (const f of POL.legacy_data_without_fields) assert.ok(POL.odbl_derived_files.includes(f), `${f}: a legacy data file must be in odbl_derived_files`);
   assert.deepEqual(POL.forbidden_sources_dirs, ['data', 'src', 'tools', 'test']);
-  // the lists that a smaller policy would weaken keep at least what §11 asks (a change here is visible in the test too)
-  const has = (list, need, what) => { for (const x of need) assert.ok(list.includes(x), `${what} lacks ${x}`); };
-  has(POL.forbidden_extensions_in_repo, ['.tif', '.tiff', '.pdf', '.jp2'], 'forbidden_extensions_in_repo');
-  has(POL.required_footer_terms, ['OpenStreetMap', 'ODbL', 'AIP Thailand', 'ใช้เพื่อการฝึกในเกมเท่านั้น'], 'required_footer_terms');
-  has(Object.keys(POL.conditional_footer_terms), ['data/city_v2.json', 'data/landmarks.json', 'src/16-palette.js'], 'conditional_footer_terms');
-  has(POL.odbl_derived_files, ['data/vtbd_af.json', 'data/city.json', 'data/land_in.png', 'data/land_out.png'], 'odbl_derived_files');
+  // the lists that a smaller policy would weaken keep at least what the §11 JSON block of the research asks, read from
+  // the report itself; the one name dropped from forbidden_sources is listed here with its reason (owner's approval)
+  const S11 = [...read('docs/research/05-airport-city.md').matchAll(/```json\n([\s\S]*?)\n```/g)].map((m) => { try { return JSON.parse(m[1]); } catch (e) { return null; } })
+    .map((j) => j && Object.values(j).find((v) => v && v.forbidden_sources)).find(Boolean);
+  assert.ok(S11, 'docs/research/05-airport-city.md: the §11 JSON block');
+  const DROPPED = { 'X-Plane': 'see forbidden_sources_note: citing an X-Plane manual as a design reference stays allowed, its navigation data does not' };
+  const has = (list, need, what) => { for (const x of need) assert.ok(list.includes(x), `${what} lacks ${x} (§11)`); };
+  has(POL.forbidden_sources, S11.forbidden_sources.filter((n) => !(n in DROPPED)), 'forbidden_sources');
+  has(POL.forbidden_extensions_in_repo, S11.forbidden_extensions_in_repo, 'forbidden_extensions_in_repo');
+  has(POL.required_footer_terms, [...S11.required_footer_terms, 'ใช้เพื่อการฝึกในเกมเท่านั้น'], 'required_footer_terms');
+  for (const [f, terms] of Object.entries(S11.conditional_footer_terms)) has(POL.conditional_footer_terms[f] || [], terms, `conditional_footer_terms["${f}"]`);
+  has(POL.odbl_derived_files, [...S11.odbl_derived_files, 'data/land_in.png', 'data/land_out.png'], 'odbl_derived_files');
   for (const f of POL.forbidden_sources_skip) assert.ok(REPO_FILES.includes(f), `forbidden_sources_skip: ${f} is not a repo file`);
 });
 
@@ -79,10 +85,17 @@ test(`T-K05 the footer cites the fixture's cycle (${cycleTH}) and no other one`,
   const cited = [...FOOT.text.matchAll(/AIRAC\s+\d{1,2}\s+\S+\s+\d{4}/g)].map((m) => m[0].replace(/\s+/g, ' '));
   assert.ok(cited.length >= 1 && cited.every((c) => c === cycleTH), `cycles in the footer: ${cited.join(', ')}`);
   assert.equal([...FOOT.text.matchAll(/AIRAC/g)].length, cited.length, 'every AIRAC in the footer names a cycle');
-  // any date in the footer, with or without the word AIRAC, is the fixture's (research round 5 T-K05: no 14 พ.ค. 2026)
-  const MON = [...TH, ...EN].map((m) => m.replace(/\./g, '\\.')).join('|');
-  const dates = [...FOOT.text.matchAll(new RegExp(`\\d{1,2}\\s+(?:${MON})\\s+\\d{4}`, 'gi'))].map((m) => m[0].replace(/\s+/g, ' '));
-  assert.ok(dates.length >= 1 && dates.every((d) => `AIRAC ${d}` === cycleTH), `dates in the footer: ${dates.join(', ')}`);
+  // the footer carries no date but the cycle's (research round 5 T-K05: no 14 พ.ค. 2026): every date in it, with or
+  // without the word AIRAC, Thai or English month, short or full, year AD or BE in 2 or 4 digits, or ISO, is D MO Y
+  const TH_FULL = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+  const EN_FULL = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+  const lists = [TH_FULL, TH, EN_FULL, EN], key = (m) => m.toUpperCase().replace(/\s+/g, '');
+  const monthOf = (m) => { for (const l of lists) { const i = l.findIndex((x) => key(x) === key(m)); if (i >= 0) return i + 1; } return 0; };
+  const yearOf = (y) => { let n = +y; if (y.length === 2) n = n >= 60 ? 2500 + n - 543 : 2000 + n; return n > 2400 ? n - 543 : n; };
+  const names = lists.flat().sort((a, b) => b.length - a.length).map((m) => m.replace(/\./g, '\\.')).join('|');
+  const dateRe = new RegExp(`(\\d{1,2})\\s*(${names})\\s*(\\d{4}|\\d{2})(?!\\d)|(\\d{4})-(\\d{2})-(\\d{2})`, 'gi');
+  const dates = [...FOOT.text.matchAll(dateRe)].map((m) => ({ s: m[0], d: m[4] ? [+m[6], +m[5], +m[4]] : [+m[1], monthOf(m[2]), yearOf(m[3])] }));
+  assert.ok(dates.length >= 1 && dates.every(({ d }) => d[0] === D && d[1] === MO && d[2] === Y), `dates in the footer: ${dates.map((x) => x.s).join(', ')}`);
   assert.ok(!FOOT.text.includes('14 พ.ค. 2026'), 'the 14 พ.ค. 2026 cycle is gone');
 });
 
@@ -103,7 +116,8 @@ test('T-K01 each pane of the built page has every required credit, with the OSM,
   assert.ok(FOOT.panes.paneExplore.html.includes('/data/LICENSE-DATA.md"'), 'footer link to data/LICENSE-DATA.md');
   // the credit paragraph is the pane's own last child, so it shows whatever state the pane is in (the train pane
   // shows one of trSetup, trLive and trResult at a time), and nothing hides it: it holds every credit and link
-  // itself, and every element opened before it in the pane is closed again (an unclosed <div> would take it in)
+  // itself, every element opened before it in the pane is closed again (an unclosed <div> would take it in), and
+  // nothing inside it is hidden or styled
   for (const [pane, f] of Object.entries(FOOT.panes)) {
     const at = f.src.lastIndexOf('<p class="foot">'), end = f.src.indexOf('</p>', at) + 4, last = footOf(f.src.slice(at, end));
     assert.ok(at > 0, `${pane}: a foot paragraph`);
@@ -111,23 +125,37 @@ test('T-K01 each pane of the built page has every required credit, with the OSM,
     for (const href of ['https://www.openstreetmap.org/copyright', 'https://opendatacommons.org/licenses/odbl/1-0/', 'https://aip.caat.or.th'])
       assert.ok(last.html.includes(`href="${href}"`), `${pane}: the last foot paragraph lacks the link ${href}`);
     assert.match(f.src.slice(end), /^\s*<\/section>/, `${pane}: the credits sit directly in the pane, after its sub-panes`);
-    const before = f.src.slice(0, at);
-    for (const tag of ['section', 'div', 'template', 'details', 'dialog', 'span', 'form', 'fieldset', 'ul', 'ol', 'li', 'p']) {
-      const open = (before.match(new RegExp(`<${tag}[\\s>]`, 'g')) || []).length - (tag === 'section' ? 1 : 0);
-      const close = (before.match(new RegExp(`</${tag}>`, 'g')) || []).length;
-      assert.equal(open, close, `${pane}: <${tag}> opened ${open} times and closed ${close} times before the credits`);
+    assert.doesNotMatch(f.src.slice(at + '<p class="foot">'.length, end), /<[^>]*\s(?:hidden|style|class|id)\b/i, `${pane}: an element inside the credits is hidden, styled or classed`);
+    const VOID = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']), count = {};
+    for (const m of f.src.slice(0, at).matchAll(/<(\/?)([a-z][\w-]*)(?=[\s/>])/gi)) {
+      const n = m[2].toLowerCase();
+      if (!VOID.has(n)) count[n] = (count[n] || 0) + (m[1] ? -1 : 1);
     }
+    count.section -= 1;   // the pane's own <section>
+    for (const [n, c] of Object.entries(count)) assert.equal(c, 0, `${pane}: <${n}> opened ${c > 0 ? c + ' more' : -c + ' fewer'} times than closed before the credits`);
   }
-  // the PNG snapshot (a Produced Work, ODbL 4.3 and 4.6) carries the notice too: src/85-shot.js draws it whole and
-  // inside the picture at any size, and src/90-app.js stamps the copy it saves (code only, comments removed)
+  // the PNG snapshot (a Produced Work, ODbL 4.3 and 4.6) carries the notice too: src/85-shot.js draws it whole, in
+  // white on a dark box, inside any picture at least 270 px wide (the renderer canvas is wider on any real screen),
+  // and src/90-app.js stamps the copy it saves (code only, comments removed)
   const { SHOT_CREDIT, stampCredit } = new Function(`'use strict';\n${read('src/85-shot.js')}\nreturn { SHOT_CREDIT, stampCredit };`)();
   for (const t of ['OpenStreetMap', 'ODbL', 'openstreetmap.org/copyright', 'github.com/ROYIN001/AirfieldLab', 'AIP Thailand']) assert.ok(SHOT_CREDIT.includes(t), `snapshot credit lacks "${t}"`);
-  for (const [w, h] of [[1920, 1080], [1000, 396], [600, 900], [320, 568], [300, 500]]) {
-    const drawn = [], g = { font: '', measureText: (s) => ({ width: s.length * parseFloat(g.font) * 0.5 }), fillRect() {}, fillText: (s, x, y) => drawn.push({ s, x, y, px: parseFloat(g.font) }) };
+  for (const [w, h] of [[1920, 1080], [1000, 396], [600, 900], [320, 568], [300, 500], [270, 400]]) {
+    const drawn = [], boxes = [], g = {
+      font: '', fillStyle: '', textAlign: 'start', textBaseline: 'alphabetic',
+      measureText: (s) => ({ width: s.length * parseFloat(g.font) * 0.5 }),
+      fillRect: (x, y, bw, bh) => boxes.push({ x, y, w: bw, h: bh, style: g.fillStyle }),
+      fillText: (s, x, y) => drawn.push({ s, x, y, px: parseFloat(g.font), width: s.length * parseFloat(g.font) * 0.5, align: g.textAlign, base: g.textBaseline, style: g.fillStyle }),
+    };
     stampCredit(g, w, h);
     assert.equal(drawn.map((d) => d.s).join(' · '), SHOT_CREDIT, `${w}×${h}: the whole credit is drawn`);
-    for (const d of drawn) assert.ok(d.px >= 7 && d.x >= 0 && d.y <= h && d.y > d.px, `${w}×${h}: "${d.s.slice(0, 20)}…" at ${d.x}, ${d.y}, ${d.px} px`);
-    for (const d of drawn) assert.ok(d.x + d.s.length * d.px * 0.5 <= w, `${w}×${h}: "${d.s.slice(0, 20)}…" runs off the right edge`);
+    const box = boxes.at(-1);
+    assert.ok(box && /^rgba\(0, 0, 0, 0\.[5-9]\d*\)$/.test(box.style), `${w}×${h}: a dark box under the credit`);
+    for (const d of drawn) {
+      const at = `${w}×${h}: "${d.s.slice(0, 20)}…" at ${d.x}, ${d.y}, ${d.px} px`;
+      assert.ok(d.style === '#fff' && d.align === 'left' && d.base === 'bottom' && d.px >= 7, at);
+      assert.ok(d.x >= 0 && d.x + d.width <= w && d.y <= h && d.y - d.px >= 0, `${at}: inside the picture`);
+      assert.ok(d.x >= box.x && d.x + d.width <= box.x + box.w && d.y - d.px >= box.y && d.y <= box.y + box.h, `${at}: on the box`);
+    }
   }
   const app = read('src/90-app.js').replace(/\/\*[\s\S]*?\*\//g, '').split('\n').map((l) => l.replace(/(^|[\s;])\/\/.*$/, '$1')).join('\n');
   assert.match(app, /g\.drawImage\(src, 0, 0\);\s*stampCredit\(g, shot\.width, shot\.height\);\s*shot\.toBlob\(/, 'the snapshot stamps the credit on the copy it saves');
