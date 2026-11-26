@@ -9,6 +9,11 @@ const LIGHT_KIND = { steady: 0, twoWay: 1, oneWay: 2, papi: 3, sfl: 4, beacon: 5
 // atpubs/atc_html/chap3_section_4.html). No Thai or ICAO day-time threshold was found in a public source, so the page
 // uses the FAA one for all airfield lights; it turns them on for the same choices as before (5 km and below).
 const LIGHTS_DAY_VIS_M = 5 * 1609.344;
+// A sequenced flashing light is at full strength for the first 0.08 of its half-second cycle (40 ms) and out by 0.13
+// (65 ms). A real discharge lamp flashes for a few milliseconds, but uTime moves once a frame, so a flash shorter than
+// a frame is missed: with the 10 ms flash the page had, 6 of the 20 lights of 21R never lit at 30 frames a second.
+// The 40 ms is our choice (ค่าประมาณ): longer than a frame at 30 frames a second, short enough to read as one flash.
+const SFL_FLASH = [0.08, 0.13];
 
 function makeLightMaterial() {
   return new THREE.ShaderMaterial({
@@ -33,7 +38,7 @@ function makeLightMaterial() {
           col = mix(vec3(1.0, 0.04, 0.02), vec3(1.0, 0.96, 0.9), smoothstep(aP.y - 0.025, aP.y + 0.025, el));
           I *= smoothstep(0.80, 0.92, -s);
         }
-        else if (kind == 4) { float ph = fract(uTime * 2.0 - aP.y); I *= smoothstep(0.05, 0.45, -s) * exp(-ph * ph * 1500.0); }
+        else if (kind == 4) { float ph = fract(uTime * 2.0 - aP.y); I *= smoothstep(0.05, 0.45, -s) * (1.0 - smoothstep(${SFL_FLASH[0].toFixed(3)}, ${SFL_FLASH[1].toFixed(3)}, ph)); }
         else if (kind == 5) {
           float az = atan(h.x, -h.y), beam = uTime * 6.2832 * 0.2 + aP.y;
           float d1 = abs(mod(az - beam + 3.14159, 6.28318) - 3.14159), d2 = abs(mod(az - beam, 6.28318) - 3.14159);
@@ -92,7 +97,93 @@ class LightSet {
 
 const LC = { white: [1, 0.95, 0.85], yellow: [1, 0.72, 0.12], green: [0.1, 1, 0.35], red: [1, 0.06, 0.03], blue: [0.12, 0.3, 1], sodium: [1, 0.55, 0.18], warm: [1, 0.78, 0.5], led: [0.95, 0.95, 1] };
 
-function buildAirfieldLights(scene, field, city, data) {
+// Lateral places of the three lights of a touchdown zone barrette: 18 m between the innermost lights of a pair, the
+// lights 1.5 m apart (Annex 14, 5.3.13). The red side rows of the CAT II approach lights use the same places (5.3.4).
+const TDZ_T = [9, 10.5, 12];
+// Runway edge lights stand this far outside the runway edge (Annex 14, 5.3.9: not more than 3 m; the 0.6 m is an
+// estimate, ค่าประมาณ).
+const EDGE_OUT = 0.6;
+// Taxiway edge lights. AIP AD 2.15 (AIRAC 29 OCT 2026; research round 5, table B4): blue edge lights on every
+// taxiway, and centre line lights on TWY D, E, F, J, O, R, S and C (south), which are not drawn (the vector lines
+// carry no names). The lights stand `step` metres apart (ค่าประมาณ; Annex 14, 5.3.18: not more than 60 m on a
+// straight) and EDGE_OUT outside the edge of a taxiway TWY_W wide (5.3.18: not more than 3 m; AIP AD 2.8 gives 23 to
+// 50 m, all are drawn 23 m), square to the run of the line over `chord` metres: the vector lines have jogs of a few
+// metres that point up to 48° off it. Two lights of lines that meet end to end are not set closer than `gap`.
+const TWY_EDGE = { step: 45, chord: 25, gap: 15 };
+// An edge light marks the edge of the pavement and never stands on it: none where the place is on a taxiway or
+// taxilane ribbon (where taxiways join or cross) or on an apron. An apron counts APRON_EDGE wider than its outline
+// (our choice, ค่าประมาณ: the outline runs within a metre of the edge of the taxiways beside it, so a row along it
+// would be lit and dark by centimetres), and the side of a taxiway that runs along an apron is dark.
+const APRON_EDGE = 3;
+function taxiPavement(af) {
+  const box = (P, m) => [Math.min(...P.map((p) => p[0])) - m, Math.min(...P.map((p) => p[1])) - m, Math.max(...P.map((p) => p[0])) + m, Math.max(...P.map((p) => p[1])) + m];
+  return {
+    lines: af.tw.filter((t) => t.p.length > 1).map((t) => ({ p: t.p, box: box(t.p, TWY_W / 2) })),
+    aprons: (af.apron || []).map((a) => ({ o: a.o, holes: a.h || [], rings: [a.o, ...(a.h || [])].map((r) => [...r, r[0]]), box: box(a.o, APRON_EDGE) })),
+  };
+}
+function onTaxiPavement(pave, e, n) {
+  const x = [e, n], inBox = (b) => e >= b[0] && e <= b[2] && n >= b[1] && n <= b[3];
+  return pave.lines.some((l) => inBox(l.box) && nearestOnLine(l.p, x).d < TWY_W / 2)
+    || pave.aprons.some((a) => inBox(a.box) && ((pointInPoly(x, a.o) && !a.holes.some((h) => pointInPoly(x, h))) || a.rings.some((r) => nearestOnLine(r, x).d < APRON_EDGE)));
+}
+// The places [e, n] of the taxiway edge lights of the airfield vectors `af`.
+function taxiEdgeLights(af) {
+  const pave = taxiPavement(af), out = [], off = TWY_W / 2 + EDGE_OUT;
+  for (const t of af.tw) {
+    if (t.p.length < 2) continue;
+    for (let s = 0, len = lineLength(t.p); s <= len; s += TWY_EDGE.step) {
+      const p = pointAlong(t.p, s);
+      if (onAnyRunway(p[0], p[1], 40)) continue;
+      const a = pointAlong(t.p, s - TWY_EDGE.chord / 2), b = pointAlong(t.p, s + TWY_EDGE.chord / 2), l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (l < 1e-6) continue;
+      for (const sd of [-1, 1]) {
+        let x = [p[0] + (b[1] - a[1]) / l * sd * off, p[1] - (b[0] - a[0]) / l * sd * off];
+        // on the inside of a bend the line is nearer than that: out to the edge, straight away from its nearest point
+        const q = nearestOnLine(t.p, x);
+        if (q.d < off && q.d > 1e-6) x = [q.p[0] + (x[0] - q.p[0]) * off / q.d, q.p[1] + (x[1] - q.p[1]) * off / q.d];
+        if (!onTaxiPavement(pave, x[0], x[1]) && !out.some((o) => Math.hypot(o[0] - x[0], o[1] - x[1]) < TWY_EDGE.gap)) out.push(x);
+      }
+    }
+  }
+  return out;
+}
+
+// The groups of approach lights that stand together s metres from the threshold of a system, as [centre, half-width]
+// across the approach: the 30 m crossbar at 300 m; on CAT II the 150 m crossbar (one row from side row to side row)
+// and, over the first 270 m, the centre line barrette with a red barrette each side; else the centre line barrette.
+// The stands (alsStands) have one cross-arm per group.
+const alsArms = (als, s) => {
+  const bar = [0, als === 'SALS420' ? 1.5 : 2], side = (TDZ_T[2] - TDZ_T[0]) / 2;
+  if (s === 300) return [[0, 15]];
+  if (als !== 'CAT2' || s > 270) return [bar];
+  return s === 150 ? [[0, TDZ_T[2]]] : [bar, [-TDZ_T[1], side], [TDZ_T[1], side]];
+};
+// Height of the stand under the approach lights s metres before the threshold of end E, or 0 where the lights are
+// inset in pavement: before a displaced threshold, and over the pad that the runway mesh draws beyond each paved end
+// (RWY_PAD). Annex 14, 5.3.4 wants the lights as near as practicable to the horizontal plane through the threshold;
+// stands of 0.9 m that rise 1.2 % outward from the end of the pad are an estimate (ค่าประมาณ), there is no published
+// figure. The stands are aids that have to be in the strip and the clearway (Annex 14, 9.9: frangible and as low as
+// possible), so the surfaces of 17-siting.js are not applied to them.
+const alsStandH = (E, s) => (s <= E.disp + RWY_PAD ? 0 : 0.9 + (s - E.disp - RWY_PAD) * 0.012);
+// Height of the lights: 0.25 m where they are inset, 0.12 m above the cross-arm of their stand.
+const alsLightY = (E, s) => (alsStandH(E, s) ? alsStandH(E, s) + 0.12 : 0.25);
+// The stands of the approach lights of end E, drawn by 50-airfield.js: at each station beyond the pavement the height
+// and, per group of lights, a cross-arm (centre `tc`, half-width `half`) with the places of its poles across the
+// approach: one, or three under a crossbar.
+function alsStands(E) {
+  const out = [];
+  for (let s = ALS[E.als].step; s <= ALS[E.als].len; s += ALS[E.als].step) {
+    const hgt = alsStandH(E, s);
+    if (hgt) out.push({ s, hgt, arms: alsArms(E.als, s).map(([tc, half]) => ({ tc, half, poles: half > 4 ? [tc - half * 0.7, tc, tc + half * 0.7] : [tc] })) });
+  }
+  return out;
+}
+
+// Every light on and around the airfield, as a LightSet (positions and colours only, nothing drawn here).
+// Layout: AIP Thailand AD 2.14 (which systems, their lengths, spacings and colours) and ICAO Annex 14 Vol I, 5.3
+// (how each system is laid out). Where neither gives a number the choice is an estimate and says so.
+function airfieldLights(field, data) {
   const S = new LightSet();
   const P3 = (e, n, y) => [e, y, -n];
   // ── runways: edge, threshold/end, centre line (03L/21R), touchdown zone (21R) ──
@@ -101,59 +192,77 @@ function buildAirfieldLights(scene, field, city, data) {
     const at = (s, t, y) => { const [e, n] = rwyEN(R, s, t); return P3(e, n, y); };
     const [A, Bk] = R.ends, EA = RWY_END[A], EB = RWY_END[Bk];
     const sA = R.sThr[0], sB = R.sThr[1], W2 = R.w / 2;
-    // colour seen by a pilot landing toward +s (end A) and toward −s (end B)
+    // colour seen by a pilot landing toward +s (end A) and toward −s (end B): red before a displaced threshold,
+    // yellow over the last 600 m (AIP AD 2.14)
     const edgeCol = (s) => {
-      const fromA = s - sA, fromB = sB - s;
       const a = s < sA ? LC.red : (R.len - s < 600 ? LC.yellow : LC.white);
       const b = s > sB ? LC.red : (s < 600 ? LC.yellow : LC.white);
       return [a, b];
     };
-    for (let s = 0; s <= R.len + 0.1; s += 60) for (const t of [-(W2 + 0.6), W2 + 0.6]) {
+    for (let s = 0; s <= R.len + 0.1; s += 60) for (const t of [-(W2 + EDGE_OUT), W2 + EDGE_OUT]) {
       const [a, b] = edgeCol(s);
       S.add(at(s, t, 0.35), { kind: 1, a, b, axis: ax, I: 0.32, day: 0.6 });
     }
-    // landing thresholds: green toward the approach; runway end lights: red toward the rollout
-    for (let t = -W2 + 1.5; t <= W2 - 1.4; t += 3) {
-      S.add(at(sA - 1, t, 0.3), { kind: sA > 1 ? 2 : 1, a: LC.green, b: LC.red, axis: ax, I: 0.38, day: 0.6 });
-      S.add(at(sB + 1, t, 0.3), { kind: R.len - sB > 1 ? 2 : 1, a: LC.red, b: LC.green, axis: sB < R.len - 1 ? [-ax[0], -ax[1]] : ax, I: 0.38, day: 0.6 });
-      if (sA > 1) S.add(at(0.5, t, 0.3), { kind: 2, a: LC.red, axis: [-ax[0], -ax[1]], I: 0.38, day: 0.6 });
-      if (sB < R.len - 1) S.add(at(R.len - 0.5, t, 0.3), { kind: 2, a: LC.red, axis: ax, I: 0.38, day: 0.6 });
+    // Each end: threshold lights 3 m apart, green toward the approach, and runway end lights, red toward the runway
+    // (Annex 14, 5.3.10 and 5.3.11). `land` is the landing direction at this end: a one-way light with that axis
+    // shows to the pilot on the approach. Where the threshold is not displaced one row does both jobs; where it is,
+    // the green row sits at the threshold with a wing bar each side and the red row at the paved end.
+    for (const [E, out] of [[EA, -1], [EB, 1]]) {
+      const sT = out < 0 ? sA : sB, sEnd = out < 0 ? 0 : R.len, land = out < 0 ? ax : [-ax[0], -ax[1]], back = [-land[0], -land[1]];
+      for (let t = -W2 + 1.5; t <= W2 - 1.4; t += 3) {
+        if (!E.disp) { S.add(at(sT + out, t, 0.3), { kind: 1, a: out < 0 ? LC.green : LC.red, b: out < 0 ? LC.red : LC.green, axis: ax, I: 0.38, day: 0.6 }); continue; }
+        S.add(at(sT + out, t, 0.3), { kind: 2, a: LC.green, axis: land, I: 0.38, day: 0.6 });
+        S.add(at(sEnd - out * 0.5, t, 0.3), { kind: 2, a: LC.red, axis: back, I: 0.38, day: 0.6 });
+      }
+      // wing bar: five lights reaching 10 m out from the line of the edge lights, the first one in that line (Annex
+      // 14, 5.3.10). That THR 21L has wing bars is an estimate: the AIP extract of research round 5 does not say.
+      if (E.disp) for (let k = 0; k < 5; k++) for (const sd of [-1, 1]) S.add(at(sT + out, sd * (W2 + EDGE_OUT + k * 2.5), 0.3), { kind: 2, a: LC.green, axis: land, I: 0.38, day: 0.6 });
     }
-    // wing bars at a displaced threshold
-    if (sB < R.len - 1) for (let k = 0; k < 5; k++) for (const sd of [-1, 1]) S.add(at(sB + 1, sd * (W2 + 2 + k * 3), 0.3), { kind: 2, a: LC.green, axis: [-ax[0], -ax[1]], I: 0.38, day: 0.6 });
     if (R.cl) {
       const cc = (d, k) => (d > R.len - 300 ? LC.red : d > R.len - 900 ? (k % 2 ? LC.red : LC.white) : LC.white);
       for (let s = 15, k = 0; s < R.len; s += 30, k++) S.add(at(s, 0.6, 0.12), { kind: 1, a: cc(s, k), b: cc(R.len - s, k), axis: ax, I: 0.22, day: 0.3 });
     }
+    // touchdown zone lights over the first 900 m (AIP AD 2.14); a pair of barrettes every 60 m is an estimate
+    // (ค่าประมาณ): Annex 14, 5.3.13 allows 30 or 60 m and the AIP gives only the length
     for (const E of [EA, EB]) if (E.tdz) {
       const dir = E === EA ? 1 : -1, s0 = E === EA ? sA : sB, axE = dir > 0 ? ax : [-ax[0], -ax[1]];
-      for (let d = 60; d <= 900; d += 60) for (const sd of [-1, 1]) for (let j = 0; j < 3; j++) S.add(at(s0 + dir * d, sd * (9 + j * 1.5), 0.12), { kind: 2, a: LC.white, axis: axE, I: 0.2, day: 0.3 });
+      for (let d = 60; d <= 900; d += 60) for (const sd of [-1, 1]) for (const t of TDZ_T) S.add(at(s0 + dir * d, sd * t, 0.12), { kind: 2, a: LC.white, axis: axE, I: 0.2, day: 0.3 });
     }
   }
-  // ── approach lighting per AIP AD 2.14 ──
+  // ── approach lighting: the system of each end from AIP AD 2.14, laid out as in Annex 14, 5.3.4 ──
+  //   simple (03L 420 m, 03R 300 m with five barrettes): a barrette at least 3 m long every 30 or 60 m and a 30 m
+  //     crossbar 300 m from the threshold
+  //   CAT I (21L) and CAT II (21R), 900 m: a 4 m barrette every 30 m and a crossbar reaching 15 m each side at 300 m;
+  //     CAT II adds red side rows over the first 270 m, in line with the touchdown zone lights, and a crossbar at
+  //     150 m that fills the gaps between them and the centre line (four lights 1.4 m apart each side: an estimate,
+  //     ค่าประมาณ; Annex 14 asks only for gaps of not more than 2.7 m)
+  //   flashing lights (AIP: FLG) run twice a second from the outermost barrette inward: on every CAT I barrette that
+  //     is on a stand (not inset in pavement) and on the CAT II barrettes beyond 300 m. Each flashes 15 ms after the
+  //     one before it (0.03 of the cycle, an estimate, ค่าประมาณ: the run of 20 lights takes 0.3 s of the half second)
+  //   the number of lights in a barrette (five over 4 m, three over 3 m on 03L) and the 1.5 m between the lights of
+  //     the 300 m crossbar are estimates (ค่าประมาณ): the AIP does not give them
+  //   21L: the AIP gives a 900 m CAT I system and a threshold displaced 350 m, and does not say where the 900 m
+  //     start. They are measured from the threshold here, so the first 350 m (and the pad) are lights inset in the
+  //     runway before the threshold: an estimate (ค่าประมาณ)
   for (const E of Object.values(RWY_END)) {
     const ax = [E.u[1], -E.u[0]];
     const at = (s, t, y) => P3(E.thr[1] + E.u[1] * s + E.r[1] * t, E.thr[0] + E.u[0] * s + E.r[0] * t, y);
-    const len = { CAT2: 900, CAT1: 900, SALS420: 420, SALS300: 300 }[E.als];
-    const stepS = E.als === 'SALS300' ? 60 : 30, bar = E.als.startsWith('SALS') && E.als !== 'SALS300' ? [-1, 0, 1] : [-2, -1, 0, 1, 2];
+    const { len, step: stepS } = ALS[E.als], cat2 = E.als === 'CAT2', cat1 = E.als === 'CAT1';
+    const bar = E.als === 'SALS420' ? [-1.5, 0, 1.5] : [-2, -1, 0, 1, 2];
+    const white = (s, t, y) => S.add(at(-s, t, y), { kind: 2, a: LC.white, axis: ax, I: 0.42, day: 1.6 });
     for (let s = stepS; s <= len; s += stepS) {
-      const k = s / 30, y = s <= E.disp ? 0.25 : 0.9 + s * 0.012 + 0.12;
-      for (const t of bar) S.add(at(-s, t * (bar.length === 3 ? 1.2 : 1.0), y), { kind: 2, a: LC.white, axis: ax, I: 0.42, day: 1.6 });
-      if (s === 300 || (E.als === 'CAT2' && s === 150)) for (let t = 4.5; t <= (s === 150 ? 10.6 : 15.01); t += 1.5) for (const sg of [-1, 1]) S.add(at(-s, sg * t, y), { kind: 2, a: LC.white, axis: ax, I: 0.42, day: 1.6 });
-      if (E.als === 'CAT2' && s <= 270) for (const sg of [-1, 1]) for (const t of [11.5, 13, 14.5]) S.add(at(-s, sg * t, y), { kind: 2, a: LC.red, axis: ax, I: 0.36, day: 1.4 });
-      if ((E.als === 'CAT2' || E.als === 'CAT1') && s >= 330) S.add(at(-s - 0.3, 0, y + 0.35), { kind: 4, a: [1, 1, 1], axis: ax, I: 4.0, param: (len - s) / 30 * 0.03, day: 1.2 });
+      const y = alsLightY(E, s);                                 // inset over pavement, on stands beyond it
+      for (const t of bar) white(s, t, y);
+      if (s === 300) for (let t = 4.5; t <= 15.01; t += 1.5) for (const sg of [-1, 1]) white(s, sg * t, y);
+      if (cat2 && s === 150) for (const t of [3.4, 4.8, 6.2, 7.6]) for (const sg of [-1, 1]) white(s, sg * t, y);
+      if (cat2 && s <= 270) for (const sg of [-1, 1]) for (const t of TDZ_T) S.add(at(-s, sg * t, y), { kind: 2, a: LC.red, axis: ax, I: 0.36, day: 1.4 });
+      if ((cat2 && s > 300) || (cat1 && alsStandH(E, s) > 0)) S.add(at(-s - 0.3, 0, y + 0.35), { kind: 4, a: [1, 1, 1], axis: ax, I: 4.0, param: (len - s) / 30 * 0.03, day: 1.2 });
     }
   }
   // ── PAPI (always on, high daytime intensity) ──
   for (const pp of field.papiPos) S.add(P3(pp.e - pp.u[0] * 0.55, pp.n - pp.u[1] * 0.55, 0.64), { kind: 3, axis: [pp.u[0], -pp.u[1]], I: 0.5, param: pp.ang, cat: 1, day: 8 });
-  // ── taxiway edge lights (blue) on taxiways outside the aprons ──
-  for (const t of data.af.tw) {
-    if (t.k !== 'twy') continue;
-    plSample(t.p, 45, (p, d) => {
-      if (onAnyRunway(p[0], p[1], 40)) return;
-      for (const sd of [-1, 1]) S.add(P3(p[0] + d[1] * sd * 12.1, p[1] - d[0] * sd * 12.1, 0.3), { kind: 0, a: LC.blue, I: 0.13, day: 0.4 });
-    });
-  }
+  // ── taxiway edge lights (blue) ──
+  for (const [e, n] of taxiEdgeLights(data.af)) S.add(P3(e, n, 0.3), { kind: 0, a: LC.blue, I: 0.13, day: 0.4 });
   // ── obstruction lights, aerodrome beacon, mast lamps, windsocks ──
   if (field.towerTop) {
     S.add([field.towerTop.x, field.towerTop.y, field.towerTop.z], { kind: 0, a: LC.red, I: 0.25, cat: 1, day: 1.4 });
@@ -182,6 +291,11 @@ function buildAirfieldLights(scene, field, city, data) {
     const cl = rr() < 0.6 ? LC.sodium : LC.warm, x = Math.cos(a) * d, z = Math.sin(a) * d;
     for (let k = 0; k < 2 + Math.floor(rr() * 6); k++) S.add([x + (rr() - 0.5) * 400, 5, z + (rr() - 0.5) * 400], { kind: 0, a: cl, I: 0.12 + rr() * 0.12, cat: 2, day: 0.02 });
   }
+  return S;
+}
+
+function buildAirfieldLights(scene, field, city, data) {
+  const S = airfieldLights(field, data);
   const mat = makeLightMaterial();
   const pts = S.build(mat);
   scene.add(pts);

@@ -36,6 +36,13 @@ const WALLS = [[0.80, 0.76, 0.66], [0.86, 0.86, 0.83], [0.71, 0.71, 0.69], [0.86
 const ROOFS = [[0.55, 0.27, 0.18], [0.50, 0.50, 0.48], [0.28, 0.38, 0.52], [0.78, 0.78, 0.76], [0.30, 0.31, 0.32], [0.55, 0.22, 0.18], [0.30, 0.42, 0.33], [0.62, 0.60, 0.56]];
 const srgbC = (c) => new THREE.Color().setRGB(c[0], c[1], c[2], THREE.SRGBColorSpace);
 
+// elevated decks (generic dimensions): Don Mueang Tollway, the SRT viaduct and the BTS line on Phahonyothin Road
+const VIADUCT = {
+  tollway: { w: 27, top: 15, thick: 2.2, pierEvery: 40, pierW: 2.6, cap: 21 },
+  rail: { w: 25, top: 12.5, thick: 2.0, pierEvery: 34, pierW: 2.2, twin: 8 },
+  phahon: { w: 10, top: 12, thick: 1.8, pierEvery: 30, pierW: 2.0 },
+};
+
 function buildCity(scene, data, field, quality) {
   const root = new THREE.Group(); root.name = 'city'; scene.add(root);
   const out = { root };
@@ -43,8 +50,16 @@ function buildCity(scene, data, field, quality) {
   const mats = { inst: cityMaterial(false), vert: cityMaterial(true) };
   out.mats = mats;
   // ── generated buildings (instanced boxes; houses get a gable roof) ──
+  // `site` (17-siting.js) holds everything a tree or a generated building must keep clear of: what is mapped, the
+  // viaduct decks, the stations and the footbridge, then the buildings kept here. It lives only inside this function:
+  // with every kept building in it, it is some 50 MB.
+  const af = data.af, cls = landClassArray(data.landIn), stations = stationSites(af);
+  const site = mappedSite(af, cls, LAND.in, Object.keys(VIADUCT).map((k) => [af[k], VIADUCT[k].w]), stations);
   let list = decodeBuildings(data.bld);
   if (quality !== 'high') list = list.filter((b, i) => Math.hypot(b.e * 0.9, b.n * 0.55) < 2200 || i % 3 === 0);
+  // generated buildings are not mapped ones: none may stand in water, in the middle of a road or a railway, on a
+  // mapped building, under a viaduct or a station, in an approach light lane or through an obstacle limitation surface
+  ({ kept: list, dropped: out.bldDropped } = siteBuildings(site, list));
   const box = new THREE.BoxGeometry(1, 1, 1); box.translate(0, 0.5, 0);
   const n = list.length;
   const blds = new THREE.InstancedMesh(box, mats.inst, n);
@@ -122,75 +137,38 @@ function buildCity(scene, data, field, quality) {
       if (cap) { const g = new THREE.BoxGeometry(2.0, 1.6, cap); g.translate(0, top - thick - 0.8, 0); g.rotateY(yaw); g.translate(pt[0], 0, -pt[1]); B.add(C.pier, g); }
     });
   };
-  const af = data.af;
-  viaduct(af.tollway, { w: 27, top: 15, thick: 2.2, pierEvery: 40, pierW: 2.6, cap: 21 });
-  viaduct(af.rail, { w: 25, top: 12.5, thick: 2.0, pierEvery: 34, pierW: 2.2, twin: 8 });
+  viaduct(af.tollway, VIADUCT.tollway);
+  viaduct(af.rail, VIADUCT.rail);
   for (let i = 0; i + 1 < af.rail.length; i++) for (const o of [-7.5, -2.5, 2.5, 7.5]) { const E = offsetPl(af.rail, o); segBox(E[i], E[i + 1], 3.0, 0.35, 12.7, C.rail, 0.5); }
-  viaduct(af.phahon, { w: 10, top: 12, thick: 1.8, pierEvery: 30, pierW: 2.0 });
-  // nearest point and direction on a polyline
-  const nearest = (P, x) => {
-    let best = null;
-    for (let i = 0; i + 1 < P.length; i++) {
-      const a = P[i], b = P[i + 1], de = b[0] - a[0], dn = b[1] - a[1], l2 = de * de + dn * dn || 1;
-      const t = clamp(((x[0] - a[0]) * de + (x[1] - a[1]) * dn) / l2, 0, 1), pe = a[0] + de * t, pn = a[1] + dn * t, d = Math.hypot(x[0] - pe, x[1] - pn);
-      if (!best || d < best.d) { const l = Math.sqrt(l2); best = { d, p: [pe, pn], dir: [de / l, dn / l] }; }
-    }
-    return best;
-  };
-  const stationBox = (center, dir, len, wid, y0, h, vault) => {
-    const yaw = Math.atan2(dir[1], dir[0]);
+  viaduct(af.phahon, VIADUCT.phahon);
+  // stations (stationSites in 17-siting.js, where the siting rules already know them): a glass box under a vaulted roof
+  for (const { p: center, yaw, len, wid, y0, h, vault, roof, bridge, walk } of stations) {
     const put = (mat, g) => { g.rotateY(yaw); g.translate(center[0], 0, -center[1]); B.add(mat, g); };
     put(C.glass, boxGeo(len, h, wid, 0, y0 + h / 2, 0));
     put(C.interior, boxGeo(len - 2, h - 1, wid - 2, 0, y0 + h / 2, 0));
-    const r = new THREE.CylinderGeometry(wid / 2 + 1.5, wid / 2 + 1.5, len + 6, 28, 1, false, 0, Math.PI);
+    const r = new THREE.CylinderGeometry(roof[1] / 2, roof[1] / 2, roof[0], 28, 1, false, 0, Math.PI);
     r.rotateZ(Math.PI / 2); r.scale(1, vault, 1); r.translate(0, y0 + h, 0); put(C.roof, r);
-  };
-  {
-    const [sn, se] = llToNE(13.919727, 100.601072);
-    const nr = nearest(af.rail, [se, sn]);
-    stationBox(nr.p, nr.dir, 600, 40, 9.0, 10, 0.55);
-    out.station = nr.p;
-    // skywalk to Terminal 1 (perpendicular, at first-floor level, passing under the tollway deck)
-    const nrm = [nr.dir[1], -nr.dir[0]];
-    let end = null;
-    for (let d = 30; d < 600; d += 2) { const x = [nr.p[0] + nrm[0] * d, nr.p[1] + nrm[1] * d]; if (af.hall.some((h) => pointInPoly(x, h.o))) { end = x; break; } }
-    if (end) {
-      const a = [nr.p[0] + nrm[0] * 24, nr.p[1] + nrm[1] * 24];
-      segBox(a, end, 6, 4.4, 9.2, C.glass); segBox(a, end, 6.6, 0.5, 11.6, C.roof); segBox(a, end, 6.6, 0.5, 6.8, C.deck);
-      plSample([a, end], 36, (pt) => { const g = boxGeo(1.2, 6.6, 1.2, pt[0], 3.3, -pt[1]); B.add(C.pier, g); });
-      out.skywalk = [a, end];
-    }
-  }
-  for (const [la, lo] of [[13.9180, 100.6217], [13.9249, 100.6259]]) {
-    const [sn, se] = llToNE(la, lo); const nr = nearest(af.phahon, [se, sn]);
-    stationBox(nr.p, nr.dir, 150, 24, 13.5, 7, 0.3);
+    if (bridge) out.station = center;
+    if (!walk) continue;
+    // footbridge to Terminal 1 (square to the line, at first-floor level, passing under the tollway deck)
+    const [a, end] = walk;
+    segBox(a, end, 6, 4.4, 9.2, C.glass); segBox(a, end, WALK_W, 0.5, 11.6, C.roof); segBox(a, end, WALK_W, 0.5, 6.8, C.deck);
+    plSample([a, end], 36, (pt) => { const g = boxGeo(1.2, 6.6, 1.2, pt[0], 3.3, -pt[1]); B.add(C.pier, g); });
+    out.skywalk = walk;
   }
   B.build(root);
 
-  // ── trees from land use (parks, temples, yards, canal banks) ──
+  // ── trees from land use (parks, temples, yards, canal banks), where the siting rules let one stand ──
   const geos = makeTreeGeos();
-  const cls = landClassArray(data.landIn);
-  const P = { 8: 0.6, 10: 0.75, 24: 0.3, 26: 0.35, 23: 0.15, 2: 0.05, 1: 0.07, 5: 0.07, 7: 0.04, 11: 0.05, 3: 0.02 };
-  const treesB = [], treesP = [];
-  const step = quality === 'high' ? 13 : 17, rMax = quality === 'high' ? 4200 : 3000;
-  for (let nN = LAND.in.n1 - step / 2; nN > LAND.in.n1 - LAND.in.h * LAND.in.res; nN -= step) {
-    for (let e = LAND.in.e0 + step / 2; e < LAND.in.e0 + LAND.in.w * LAND.in.res; e += step) {
-      const ee = e + (rnd() - 0.5) * step * 0.9, nn = nN + (rnd() - 0.5) * step * 0.9;
-      const x = Math.floor((ee - LAND.in.e0) / LAND.in.res), y = Math.floor((LAND.in.n1 - nn) / LAND.in.res);
-      const c = cls[y * LAND.in.w + x], pr = P[c] || 0;
-      if (!pr || rnd() > pr) continue;
-      if (onAnyRunway(ee, nn, 160)) continue;
-      const d2 = Math.hypot(ee * 0.9, nn * 0.55); if (d2 > rMax) continue;
-      (rnd() < 0.28 ? treesP : treesB).push([ee, nn, 0.75 + rnd() * 0.6, rnd() * Math.PI * 2]);
-    }
-  }
+  const trees = placeTrees(cls, LAND.in, quality, rnd, site);
   const treeMat = stdMat({ vertexColors: true, roughness: 0.92 }, { key: 'tree' });
-  for (const [geo, arr] of [[geos.broad, treesB], [geos.palm, treesP]]) {
+  for (const [geo, arr] of [[geos.broad, trees.broad], [geos.palm, trees.palm]]) {
     const im = new THREE.InstancedMesh(geo, treeMat, arr.length);
-    arr.forEach(([e, nn, s, r], i) => { q.setFromAxisAngle(up, r); sc.set(s, s * (0.9 + 0.2 * ((i * 7919) % 11) / 11), s); p.set(e, 0, -nn); m4.compose(p, q, sc); im.setMatrixAt(i, m4); });
+    arr.forEach(([e, nn, s, r, hk], i) => { q.setFromAxisAngle(up, r); sc.set(s, s * hk, s); p.set(e, 0, -nn); m4.compose(p, q, sc); im.setMatrixAt(i, m4); });
     im.castShadow = true; im.receiveShadow = true; im.frustumCulled = false; root.add(im);
   }
-  out.trees = treesB.length + treesP.length; out.bldCount = n;
+  out.treesDropped = trees.dropped;
+  out.trees = trees.broad.length + trees.palm.length; out.bldCount = n;
 
   // ── parked airliners: contact stands along the piers and rows on the remote aprons ──
   out.parked = buildParkedAirliners(root, af, rnd);
