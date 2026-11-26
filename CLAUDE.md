@@ -23,19 +23,21 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01), `modes` (trim, linearise and
   MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `keys` (keyboard map and key handling,
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `page` (parses the assembled page
-  module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches,
-  in types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview`
-  command line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers every
-  file the page imports; both three.js cache folders sit inside the CI cache; the harness fails fast on an unpinned
-  file, fetches through the proxy and seeds each flight). Autoland score floors sit just under the values measured on
-  2026-11-19 (the assist robot's floor is a loose 50); touchdown points and every mode value have regression bands. A
-  physics change that moves them updates the test in the same PR.
+  module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
+  types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview` command
+  line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers every file the
+  page imports; both three.js cache folders sit inside the CI cache; the harness fails fast on an unpinned file,
+  fetches through the proxy and seeds each flight), `visibility` (MOR helpers in `10-atmo.js`, research VIS-1…VIS-3,
+  the haze mixed before the sRGB encode as one exact block, `SkySystem.applySunHaze` run on a stub sky, the dome's
+  shader text, and that the sky, the fog, the lights, the sunlight and the visibility choices use them). Autoland
+  score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is a loose 50); touchdown
+  points and every mode value have regression bands. A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 20-flight.js` with `new Function` in strict mode, and
   `test/keys.test.mjs` evaluates `18-keys.js` the same way, so those four files must stay DOM-free. `build.mjs`
   exports `assemble()`, `build()`, `dataFiles()`, `checkPr()` and `previewHtml()` for the page test.
 - Screenshots: `node test/shots.mjs <set> [--dist <built page>] [--out <dir>] [--pin <three-pin.mjs>]` (Playwright +
-  Chrome, SwiftShader; sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `all`). It builds the
+  Chrome, SwiftShader; sets `ci`, `explore`, `train`, `layout`, `phone`, `final`, `vtbd`, `vis`, `all`). It builds the
   working tree into `.cache/shots-dist` unless `--dist` is given, writes PNGs to `shots/`, and serves three.js from
   `.cache/three-<version>` (downloaded once by `test/lib/three-pin.mjs`, through `HTTPS_PROXY` when set, and checked
   against pinned SHA-256s; `--pin` adds another build's pin). Math.random is seeded and starts again at each flight
@@ -52,11 +54,11 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | file | role |
 |---|---|
 | 00-head.js | three.js imports (OrbitControls, BufferGeometryUtils) |
-| 10-atmo.js | pure: constants (KT, FT, NM, DEG, RAD, G0), USSA-1976 `atmosphere(h, isaDev)`, NOAA sun position, sky radiance |
+| 10-atmo.js | pure: constants (KT, FT, NM, DEG, RAD, G0), USSA-1976 `atmosphere(h, isaDev)`, NOAA sun position, sky radiance, MOR visibility (`morBeta`, `hazeDepth`, `hazeDepthUp`, `skyHazeBeta`, `sunHazeT`) |
 | 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions; `app.keys`) |
 | 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
-| 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()`, `Batch` |
+| 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()` (fog = MOR haze, `HAZE_GLSL`), `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
 | 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` |
 | 50-airfield.js | land-use bake on the GPU + ground shader, runway marking shader (per runway), taxiways, aprons, hold lines, terminal, towers, navaids, windsocks, masts |
@@ -88,6 +90,23 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   96); 15 kt gusty crosswind on 21R 35–97 (median 85), where 51 flights log a stall warning and 2 (seeds 42 and
   559) bounce and are flagged as a crash about 5 s after touchdown. Seeds 1–10 give 74–94 in the gusty crosswind
   on all four runways. Calm has no turbulence, so its scores do not depend on the seed.
+
+## Visibility (current)
+- The visibility choice (500 m to 40 km, default 20 km) is MOR (WMO-No. 8; research round 4 §6.8): extinction
+  β = ln20 / V at the ground, Beer–Lambert on the distance to the camera, thinning with height as exp(−h / 1,600 m)
+  (`uHazeH`, an estimate with no source yet). The fog, the clouds and the light sprites call `hazeDepth`; the sky dome
+  (on screen also below the horizon line, where the sun's disc can sit) and the direct sunlight (`sunHazeT`) use its
+  limit for an endless path, `hazeDepthUp`. The sky, the clouds and the sunlight take only the haze beyond a 20 km day
+  (estimate), since their own model already shows that much, so 20 and 40 km look as before and thick fog hides the
+  sun and its shadows. The ground of the image-based light (`uGround`, set only in `SkySystem.applySunHaze`) is lit by
+  that sunlight and by the sky seen through the haze (`skyIrradianceUp` with the fog palette), so in fog the
+  undersides of the aircraft see a grey ground, not a sunlit one.
+- three.js applies fog after tone mapping and the sRGB encode, so the haze is put in front of `colorspace_fragment`
+  instead: it mixes in display-linear light (a black object at V keeps 5% contrast on screen) with a tone-mapped fog
+  colour (full fog matches the sky at the horizon).
+- Airfield lights are on at night and by day at 5 statute miles or less: the FAA rule for approach lights by day
+  (JO 7110.65BB para 3-4-5), used for all airfield lights because no Thai or ICAO day threshold was found in a public
+  source.
 
 ## Controls (current)
 - Keyboard (physical keys, `KeyboardEvent.code`, so a Thai layout works; map in `src/18-keys.js`): W/S or ↑/↓

@@ -4,14 +4,19 @@
 //       8 red beacon · 9 forward lamp (aircraft)
 // category (aP.z): 0 airfield lighting · 1 always on · 2 night only · 3 aircraft
 const LIGHT_KIND = { steady: 0, twoWay: 1, oneWay: 2, papi: 3, sfl: 4, beacon: 5, blink: 6, strobe: 7, redBeacon: 8, fwd: 9 };
+// Airfield lighting (category 0) is on at night and by day when the visibility is 5 statute miles (8,047 m) or less:
+// the FAA rule for approach lights by day (FAA JO 7110.65BB, para 3-4-5, https://www.faa.gov/air_traffic/publications/
+// atpubs/atc_html/chap3_section_4.html). No Thai or ICAO day-time threshold was found in a public source, so the page
+// uses the FAA one for all airfield lights; it turns them on for the same choices as before (5 km and below).
+const LIGHTS_DAY_VIS_M = 5 * 1609.344;
 
 function makeLightMaterial() {
   return new THREE.ShaderMaterial({
     name: 'lights', transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false,
-    uniforms: { uTime: { value: 0 }, uDay: { value: 1 }, uPx: { value: 1000 }, uVis: { value: 20000 }, uOnAF: { value: 0 }, uNightF: { value: 0 }, uOnAC: { value: 1 }, uLand: { value: 1 }, uGlow: { value: 0 } },
-    vertexShader: /* glsl */`
+    uniforms: { uTime: { value: 0 }, uDay: { value: 1 }, uPx: { value: 1000 }, uBeta: SU.uBeta, uHazeH: SU.uHazeH, uOnAF: { value: 0 }, uNightF: { value: 0 }, uOnAC: { value: 1 }, uLand: { value: 1 }, uGlow: { value: 0 } },
+    vertexShader: /* glsl */`${HAZE_GLSL}
       attribute vec3 aColA; attribute vec3 aColB; attribute vec2 aAxis; attribute float aKind; attribute vec4 aP;
-      uniform float uTime, uDay, uPx, uVis, uOnAF, uNightF, uOnAC, uLand, uGlow;
+      uniform float uTime, uDay, uPx, uBeta, uOnAF, uNightF, uOnAC, uLand, uGlow;
       varying vec3 vCol; varying float vI; varying float vG;
       void main() {
         vec4 wp = modelMatrix * vec4(position, 1.0);
@@ -43,7 +48,7 @@ function makeLightMaterial() {
         float cat = aP.z;
         float on = cat < 0.5 ? uOnAF : (cat < 1.5 ? 1.0 : (cat < 2.5 ? uNightF : uOnAC));
         I *= on * mix(1.0, aP.w, uDay);
-        I *= exp(-3.0 * dist / uVis);
+        I *= exp(-hazeDepth(uBeta, cameraPosition.y, -toCam));   // the same MOR haze as the fog (30-render.js)
         vCol = col;
         vI = I * 2.2 / (1.0 + pow(dist / 3500.0, 1.4));
         vec4 mv = viewMatrix * wp;
