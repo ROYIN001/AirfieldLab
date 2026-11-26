@@ -3,7 +3,8 @@
 Regenerates `test/fixtures/jsbsim_trainer_doublet.json`, which `test/oracle.test.mjs` reads in CI (research round 1
 §12.8, tests T-S-01, T-S-02, T-S-03 and T-S-05 in `docs/research/01-flight-physics/12-other-sims.md`).
 
-The idea: build a JSBSim model from our own `AC` numbers and fly the same open-loop doublets from the same trimmed
+The idea: build a JSBSim model from our own `AC` numbers (the trainer card `data/aircraft/trainer.json`, which
+`setAircraft` in `src/20-flight.js` loads into `AC`) and fly the same open-loop doublets from the same trimmed
 approach (95 KIAS, flaps 1, gear down, 5,500 m before 21R) in both simulators. With the same aerodynamic numbers on
 both sides, a difference in the α̇-free case (T-S-02) comes from the equations of motion, the axes, the inertia or the
 force summation. In the α̇ case (T-S-03) most of it comes from our α̇ estimate instead (a finite difference with a
@@ -41,7 +42,11 @@ and `make_model.py` still produce from the fixture's own numbers. It reports tun
   `make_model.py`), or until the field is listed in `AC_NOT_IN_DERIV` in `test/lib/oracle.mjs` because `deriv` and
   `step` do not read it. A renamed or removed field always needs a new fixture. Vref, Vapp and Vs0 are not read by
   `deriv` either, but the fixture holds them, so `ORACLE_AC_FROZEN` checks them.
-- `AC.Iinv` as `src/20-flight.js` builds it must invert the inertia tensor and match the oracle's own formula.
+- `AC.Iinv` as `setAircraft` builds it with `inertiaInverse` (`src/20-flight.js`, which the oracle's `withParams`
+  also uses) must invert the inertia tensor, and so must the inverse built from the fixture's numbers.
+- `make_model.py` puts the thrust at the CG along body +x. The test checks that `AC.engines` is still that: one
+  engine whose axis is +x and whose thrust line passes through the CG (y = z = 0). A card with another thrust line
+  or more engines needs `make_model.py` to model them, and a new fixture.
 - The negative controls show it catches an Ixz sign error, thrust 2 % high, a missing Cmadot and a CLadot ten times
   too large. This doublet does not resolve CLadot more finely: zero or twice its value still pass.
 - `Aircraft.step` must still converge as RK4 does: the α̇-free case flown at 240 Hz and at 960 Hz agrees to 1e-6
@@ -53,9 +58,10 @@ and `make_model.py` still produce from the fixture's own numbers. It reports tun
   tolerances need the owner's approval.
 - It does not cover ground effect, the stall blend or the gear: the run stays at 230–305 m and α ≈ 2°, where those
   terms are inactive, so their mirror in `make_model.py` is not checked.
-- Research task item 8 moves `AC` into `data/aircraft/trainer.json` and asks that T-S-01/T-S-02 stay unchanged. Since
-  T-S-02 flies the fixture's numbers, also run `ORACLE_AC_FROZEN=1 node --test test/oracle.test.mjs` before and
-  after such a move: it checks that `AC` still holds the fixture's numbers.
+- Research task item 8 moved `AC` into `data/aircraft/trainer.json` (plan B3) and asked that T-S-01/T-S-02 stay
+  unchanged. Since T-S-02 flies the fixture's numbers, `ORACLE_AC_FROZEN=1 node --test test/oracle.test.mjs` was run
+  before and after the move and passed both times: it checks that `AC` still holds the fixture's numbers. Run it
+  again after a change to the card or to `acFromCard` that should leave the numbers as they are.
 
 When to regenerate:
 

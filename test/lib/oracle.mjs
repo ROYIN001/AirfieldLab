@@ -4,7 +4,7 @@
 // tools/jsbsim/run_cases.py calls tools/jsbsim/js_case.mjs (which uses this file) when it regenerates the fixture.
 // No gear contact (the run stays above 230 m), no wind, ISA. Pure: no DOM, no files.
 import { M } from '../harness.mjs';
-const { AC, Aircraft, DEG, RAD, FIELD, KT, atmosphere, rwyLocal } = M;
+const { AC, Aircraft, DEG, RAD, FIELD, KT, atmosphere, rwyLocal, inertiaInverse } = M;
 
 export const DT = 1 / 240;          // s, our RK4 step and the JSBSim step (Adams–Bashforth 3 there)
 export const T_END = 25;            // s
@@ -56,16 +56,14 @@ export function acParams() {
 }
 
 // The inverse inertia tensor that Aircraft.deriv uses, for the tensor [[Ixx, 0, −Ixz], [0, Iyy, 0], [−Ixz, 0, Izz]]:
-// the same formula as the block after AC in src/20-flight.js. test/oracle.test.mjs checks that src/20-flight.js
-// built this, to rounding, for its own numbers, so a change there cannot hide behind this copy. (Plan B3's setAircraft
-// will rebuild AC and AC.Iinv in src; withParams should then call it instead.)
-export function inertiaInverse({ Ixx, Iyy, Izz, Ixz }) {
-  const G = Ixx * Izz - Ixz * Ixz;
-  return [Izz / G, 0, Ixz / G, 0, 1 / Iyy, 0, Ixz / G, 0, Ixx / G];
-}
+// src/20-flight.js's own inertiaInverse (plan B3: setAircraft builds AC.Iinv with it), so the oracle flies what src
+// builds. test/oracle.test.mjs checks it independently, by multiplying the result by the tensor.
+export { inertiaInverse };
 
-// Runs fn with AC set to the given numbers (AC.Iinv rebuilt for them) and, when given, FIELD.elev set to the elevation
-// the case was flown at; then puts back AC and FIELD.elev exactly as they were (the same Iinv array, no added keys).
+// Runs fn with AC set to the given numbers (AC.Iinv rebuilt for them by src's inertiaInverse) and, when given,
+// FIELD.elev set to the elevation the case was flown at; then puts back AC and FIELD.elev exactly as they were (the same
+// Iinv array, no added keys). AC.engines, not a number, stays the trainer's: one engine along body +x through the CG,
+// the thrust line tools/jsbsim/make_model.py models (test/oracle.test.mjs checks it).
 export function withParams(params, elev, fn) {
   const saved = { ...AC }, elev0 = FIELD.elev;
   try {

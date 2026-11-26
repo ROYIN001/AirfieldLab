@@ -4,9 +4,9 @@ The files in this folder are served beside the page: `node build.mjs` copies the
 Research round 5 §11 (`docs/research/05-airport-city.md`) gives the licence rules; `test/licenses.test.mjs` checks
 this file, the page footer and `README.md` against `test/fixtures/license_policy.json`. The code of the repository
 (every script, those in `docs/research/` included) and its own text are under the MIT licence (`LICENSE`); it does
-not change the licence of the files below, which stay under the ODbL, nor of the data files and quoted material in
-`docs/research/` that state their own licence (ODbL, CC BY 4.0, Copernicus data), and AIP values are used as numbers
-with CAAT cited.
+not change the licence of the OpenStreetMap derived files below, which stay under the ODbL, nor of the data files
+and quoted material in `docs/research/` that state their own licence (ODbL, CC BY 4.0, Copernicus data), and AIP
+values are used as numbers with CAAT cited.
 
 ## OpenStreetMap derived files (ODbL)
 
@@ -39,6 +39,18 @@ page's PNG snapshot names that repository, whose `data/` folder holds them, besi
 offer that copy, a file of the changes or the method that made them. The page itself hands these files to the browser, so they travel with this notice (ODbL 4.2), and its footer carries the
 credit and the links.
 
+## Aircraft parameter cards (MIT)
+
+`aircraft/` holds the parameters of the aircraft the simulator flies, one card per type, read by `setAircraft` in
+`src/20-flight.js` (research round 1 task list item 8, `docs/research/01-flight-physics/12-other-sims.md` §12.14).
+Each parameter is a leaf `{v, u, scope, src, conf, est, note}` (`docs/research/01-flight-physics/schema.md`), and
+`_meta.sources` says where every `src` code comes from. These cards are the repository's own data, under the MIT
+licence like the code (`LICENSE`); they hold no OpenStreetMap data.
+
+| file | content | made by | licence |
+|---|---|---|---|
+| `aircraft/trainer.json` | the fictional two-seat turboprop trainer: mass, inertia, aerodynamic derivatives, engine, control travel, gear, reference speeds, stall-warning angles, eye and glide-slope antenna points. Every value is an estimate of the project, not data of a real type | written from the `AC` numbers that `src/20-flight.js` held before plan B3, in the form of the round 2 trainer card (`docs/research/02-light-aircraft/scripts/lm_fixture_trainer_r1.json`, with the few assumptions that card added: length, flap angle, MTOW, engine position) | MIT (`LICENSE`) |
+
 ## Other sources in the page (not files in this folder)
 
 - Runways, lighting, ILS and navaids in `src/15-geo.js`: AIP Thailand AD 2 VTBD, © CAAT (https://aip.caat.or.th).
@@ -58,7 +70,7 @@ credit and the links.
 
 ## สรุปภาษาไทย
 
-ไฟล์ทั้งสี่ในโฟลเดอร์นี้สร้างจากแผนที่ OpenStreetMap จึงเป็นฐานข้อมูลอนุพันธ์ภายใต้ ODbL 1.0 ผู้ที่นำไปใช้ต่อต้องให้เครดิต
+ไฟล์ทั้งสี่ในตารางแรก (`vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json`) สร้างจากแผนที่ OpenStreetMap จึงเป็นฐานข้อมูลอนุพันธ์ภายใต้ ODbL 1.0 ผู้ที่นำไปใช้ต่อต้องให้เครดิต
 "© ผู้ร่วมพัฒนา OpenStreetMap" และถ้าแจกจ่ายไฟล์ไม่ว่าจะดัดแปลงหรือไม่ ต้องแจกภายใต้ ODbL พร้อมข้อความนี้ เงื่อนไข
 share-alike ใช้กับไฟล์ข้อมูลเท่านั้น โค้ดทั้งหมด (รวมสคริปต์ใน `docs/research/`) และข้อความของ repo เอง
 ใช้สัญญาอนุญาต MIT ในไฟล์ `LICENSE` ยกเว้นไฟล์ข้อมูลและข้อความที่ยกมาใน `docs/research/` ที่ระบุสัญญาอนุญาตของตัวเอง (ODbL, CC BY 4.0,
@@ -72,3 +84,6 @@ https://www.openstreetmap.org/copyright และผู้ที่เผยแ�
 
 ค่าทางวิ่ง ไฟ และเครื่องช่วยเดินอากาศมาจาก AIP Thailand ซึ่งเป็นลิขสิทธิ์ของ กพท. repo ใช้เฉพาะตัวเลขและอ้างรอบ AIRAC
 ข้อมูลในเกมใช้เพื่อการฝึกเท่านั้น ไม่ใช้เพื่อการเดินอากาศจริง
+
+`aircraft/trainer.json` คือพารามิเตอร์ของเครื่องฝึกสมมติที่ซิมบิน (เครื่องบินสมมติ ค่าทุกตัวเป็นค่าประมาณ) เป็นข้อมูลของ repo เอง
+ใช้สัญญาอนุญาต MIT เหมือนโค้ด (`LICENSE`) ไม่มีข้อมูล OpenStreetMap ทุกค่าบอกแหล่งใน `src` และ `_meta.sources`

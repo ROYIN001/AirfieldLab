@@ -90,6 +90,12 @@ async function main() {
   sky.sun.shadow.mapSize.set(Q.shadow, Q.shadow);
   const setMsg = (t) => { const m = $('#loadMsg'); if (m) m.textContent = t; };
   const data = await loadData((f) => setMsg(`กำลังโหลดข้อมูลสนามบินดอนเมือง… ${Math.round(f * 100)}%`));
+  // the aircraft flown (plan B3): AC is empty until this runs, and no Flight or Aircraft exists before it
+  // (acFromCard's English message goes to the console; the page names only the card path in error.path)
+  try { setAircraft(data.aircraft); } catch (e) {
+    console.error(e);
+    throw new Error(`ข้อมูลเครื่องบินใน aircraft/trainer.json ใช้ไม่ได้${e.path ? ` (ค่าที่ขาดหรือผิดรูปแบบ: ${e.path})` : ''}`);
+  }
   setMsg('กำลังสร้างสนามบินและเมืองรอบสนาม…');
   await new Promise((r) => requestAnimationFrame(r));
   const field = buildAirfield(scene, renderer, data, app.q);

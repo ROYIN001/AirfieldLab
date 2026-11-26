@@ -137,45 +137,161 @@ class Wind {
   }
 }
 
-// ── Generic two-seat turboprop trainer. Non-dimensional derivatives follow textbook light-aircraft
-//    data (Nelson, Flight Stability and Automatic Control, App. B, scaled); mass and engine are
-//    typical of the class. A fictional aircraft, not any manufacturer's type. ──
-const AC = {
-  m: 2250, Ixx: 2600, Iyy: 7300, Izz: 9200, Ixz: 120,
-  S: 16.3, b: 10.2, c: 1.65,
-  CL0: 0.25, CLa: 4.8, CLq: 7.5, CLadot: 1.6, CLde: 0.35, CLflap: 0.55,
-  CD0: 0.024, K: 0.062, CDflap: 0.050, CDgear: 0.020,
-  CYb: -0.60, CYdr: 0.15, CYr: 0.20,
-  Clb: -0.085, Clp: -0.47, Clr: 0.11, Clda: 0.16, Cldr: 0.012,
-  Cm0: 0.045, Cma: -0.72, Cmq: -12.5, Cmadot: -4.5, Cmde: -1.15, Cmflap: -0.10,
-  Cnb: 0.075, Cnp: -0.055, Cnr: -0.14, Cnda: -0.010, Cndr: -0.072,
-  aStall: 17.0, aStallFlap: -2.5,   // blend centre; effective CLmax ≈ 3° below it
-  // Stall warning (horn + HUD) set by α, linear in flap like aStall: 10.71° clean, 6.87° landing flaps. Research
-  // round 1 design values (docs/research/01-flight-physics/01-aero.md §1.6 and T-A-07, scripts/expected.mjs), about
-  // 7 kt above the 1-g stall (6.8–7.3 kt trimmed in this model, test/stall.test.mjs). 14 CFR 23.207(c) [A22] asks
-  // for at least 5 kt. Set by α, so V_warn/Vs is the same at any weight and load factor; the knot margin scales
-  // with √(n·W) (below about 0.54 W clean or 0.47 W with flaps it would drop under 5 kt; J1 re-checks per type).
-  // Release only 0.5° below it and after 0.5 s on (A5 design choice, no source), so a gust spike sounds as a short
-  // chirp instead of a click. Onset is immediate, so the margin and the lead time in a fast pull are kept.
-  // Estimates (ค่าประมาณ) for this fictional type; per-type values come in plan item J1, D2 re-checks T-A-07.
-  aWarn: 10.71, aWarnFlap: -3.84, aWarnHyst: 0.5, aWarnMinOn: 0.5,   // deg, deg per unit flap, deg, s
-  P: 700e3, eta: 0.80, T0: 11500, idle: 0.045,
-  deUp: 22 * DEG, deDn: 15 * DEG, daMax: 20 * DEG, drMax: 25 * DEG,
-  gear: [
-    { b: [2.30, 0, 1.36], k: 5.2e4, c: 5.0e3, stroke: 0.22, steer: true },
-    { b: [-0.35, -1.55, 1.38], k: 1.25e5, c: 1.25e4, stroke: 0.25, brake: true },
-    { b: [-0.35, 1.55, 1.38], k: 1.25e5, c: 1.25e4, stroke: 0.25, brake: true },
-  ],
-  Vref: 88, Vapp: 95, Vs0: 71,   // knots IAS, landing flaps
-  // Body points (FRD, m from the CG). The eye matches the cockpit camera; the glide-slope antenna sits in the lower
-  // nose. Both are estimates for this fictional type. ILS deviations use the antenna and PAPI uses the eye
-  // (research round 3, topic 3.5): eye 1.3 m above the antenna, close to the ATR 72 (0.9 m) and 737-800 (1.4 m).
-  eye: [0.95, 0, -1.0], gsAnt: [2.6, 0, 0.3],
-};
-(() => { // inverse inertia tensor (FRD, Ixz product)
-  const { Ixx, Iyy, Izz, Ixz } = AC, G = Ixx * Izz - Ixz * Ixz;
-  AC.Iinv = [Izz / G, 0, Ixz / G, 0, 1 / Iyy, 0, Ixz / G, 0, Ixx / G];
-})();
+// ── The aircraft being flown (plan B3; research round 1 task list item 8, 01-flight-physics/12-other-sims.md §12.14
+//    task 3, 05-turbofan.md task 1; round 3 conflict C8 names the folder). Its numbers are data, not code: one card per
+//    type in data/aircraft/<id>.json, today data/aircraft/trainer.json, the fictional two-seat turboprop trainer (not any
+//    manufacturer's type; every value an estimate, each leaf {v, u, scope, src, conf, est, note} with its sources, as in
+//    01-flight-physics/schema.md and 02-light-aircraft/schema-ext.md). setAircraft(card) fills AC from a card: the page
+//    loads the file with the other data (48-data.js) and calls it before any Aircraft exists, test/harness.mjs reads it
+//    from disk. AC is empty until then and stays the same object for the life of the page (the harness and the oracle
+//    hold it). Fields: m, Ixx…Ixz, S, b, c, the linear aero derivatives (CL0 … Cndr), the stall blend centre aStall +
+//    aStallFlap·f (deg; effective CLmax ≈ 3° below it), the stall warning (aWarn + aWarnFlap·f deg, released aWarnHyst
+//    deg below it after aWarnMinOn s; research T-A-07 and plan A5), P, eta, T0, idle, control travel deUp, deDn, daMax,
+//    drMax (rad), gear (3 struts), Vref, Vapp, Vs0 (kt), the body points eye and gsAnt (FRD, m from the CG), engines
+//    [{ pos, dir }] (FRD) and Iinv. acFromCard says which card path each comes from.
+const AC = {};
+
+// Tables in the manner of JSBSim's FGTable: linear between the points, clamped at the ends, never extrapolated
+// (12-other-sims.md §12.2 [S3], T-S-07; the same functions as scripts/s12/s12_table_expected.mjs). X, R and C ascend;
+// table2 interpolates each row of D (D[i] belongs to R[i], D[i][j] to C[j]) in c, then between the rows in r.
+function table1(X, Y, x) {
+  const n = X.length; if (x <= X[0]) return Y[0]; if (x >= X[n - 1]) return Y[n - 1];
+  let i = 1; while (X[i] < x) i++;
+  const f = (x - X[i - 1]) / (X[i] - X[i - 1]); return Y[i - 1] + f * (Y[i] - Y[i - 1]);
+}
+function table2(R, C, D, r, c) {
+  const row = (i) => table1(C, D[i], c); const n = R.length; if (r <= R[0]) return row(0); if (r >= R[n - 1]) return row(n - 1);
+  let i = 1; while (R[i] < r) i++;
+  const f = (r - R[i - 1]) / (R[i] - R[i - 1]); return row(i - 1) + f * (row(i) - row(i - 1));
+}
+
+// Inverse of the inertia tensor [[Ixx, 0, −Ixz], [0, Iyy, 0], [−Ixz, 0, Izz]] (FRD, Ixz product), as deriv uses it
+function inertiaInverse({ Ixx, Iyy, Izz, Ixz }) {
+  const G = Ixx * Izz - Ixz * Ixz;
+  return [Izz / G, 0, Ixz / G, 0, 1 / Iyy, 0, Ixz / G, 0, Ixx / G];
+}
+
+// Every AC field (Iinv aside) from an aircraft card, read from the card's direct paths: airframe.weights.training_mass
+// (kg, or {kg}), airframe.inertia.Ixx/Iyy/Izz/Ixz (× m/ref_mass when the card gives ref_mass), aero.ref.S/b/c,
+// aero.legacy (CL0, CLa, CLflap, CD0, K, CDflap, CDgear, Cm0, Cma, Cmflap, aStall, aStallFlap, aWarn, aWarnFlap,
+// aWarnHyst, aWarnMinOn), aero.derivatives.*, propulsion.legacy (P, eta, T0, idle),
+// controls.surfaces.<elevator|aileron|rudder>.travel_deg (deUp = up, deDn = down, daMax = ½(up + down),
+// drMax = min(left, right), deg → rad), gear.legacy (3 struts), speeds.VS0_kt/VREF_kt/VAPP_kt (kt CAS, taken as
+// written), airframe.geometry.eye_pos_FRD and gsAntenna_pos_FRD, and propulsion.layout (each engine's pos and axis, the
+// axis made a unit vector dir). A path runs through the card's branches to a leaf (an object with v) and on into its
+// value: 'aero.legacy.CL0' is CL0 in the v of the leaf aero.legacy. A missing or non-numeric value throws an Error that
+// names its path (also as error.path); every other leaf is ignored (the round 2–3 cards carry many more, plans C1/C4
+// extend this reader).
+// Against round 2's lm_card.mjs buildAC: the same numbers on the paths it reads directly (its 'ตรง' rule), so the
+// trainer card gives the same fields there, but not its other rules. buildAC rounds the speeds to whole knots and
+// converts a kt IAS speed to CAS with speeds.ias_cas; acFromCard does neither, and throws on a speed whose u is not
+// 'kt CAS' (most round 2 cards give kt IAS; C1 adds the conversion). buildAC takes a missing Ixz as 0; here it is
+// required.
+function acFromCard(card) {
+  const isObj = (o) => o !== null && typeof o === 'object' && !Array.isArray(o);
+  const NONE = {};
+  const fail = (path, what) => Object.assign(new Error(`aircraft card: ${path} ${what}`), { path });
+  // { v, leaf }: the value at path and the leaf it is in (undefined when absent and not needed)
+  const walk = (path, need = true) => {
+    let o = card, leaf = null;
+    for (const k of path.split('.')) {
+      if (!leaf && isObj(o) && 'v' in o) { leaf = o; o = o.v; }   // a leaf before the path ends: go on in its value
+      o = o !== null && typeof o === 'object' && Object.hasOwn(o, k) ? o[k] : NONE;
+      if (o === NONE) { if (need) throw fail(path, 'is missing'); return undefined; }
+    }
+    if (!leaf && isObj(o) && 'v' in o) { leaf = o; o = o.v; }
+    if (!leaf) throw fail(path, 'is not a leaf {v, u, scope, src, conf, est, note}');
+    return { v: o, leaf };
+  };
+  const get = (path, need = true) => { const r = walk(path, need); return r && r.v; };
+  const num = (path, v = get(path)) => {
+    if (typeof v !== 'number' || !Number.isFinite(v)) throw fail(path, `is not a number (${JSON.stringify(v)})`);
+    return v;
+  };
+  const vec3 = (path) => {
+    const v = get(path);
+    if (!Array.isArray(v) || v.length !== 3) throw fail(path, `is not a vector of 3 numbers (${JSON.stringify(v)})`);
+    return v.map((x, i) => num(`${path}.${i}`, x));
+  };
+  const list = (path) => {
+    const v = get(path);
+    if (!Array.isArray(v) || !v.length) throw fail(path, `is not a list (${JSON.stringify(v)})`);
+    return v;
+  };
+  const kcas = (path) => {   // the sim's IAS is EAS ≈ CAS below 200 kt: a speed in any other unit would be misread
+    const { v, leaf } = walk(path);
+    if (leaf.u !== 'kt CAS') throw fail(path, `is in ${JSON.stringify(leaf.u)}, not kt CAS (a kt IAS speed needs speeds.ias_cas, plan C1)`);
+    return num(path, v);
+  };
+  const travel = (s, a, b) => {   // deg; a plain number is a symmetric travel (schema-ext D2)
+    const p = `controls.surfaces.${s}.travel_deg`, t = get(p);
+    return typeof t === 'number' ? [num(p), num(p)] : [num(`${p}.${a}`), num(`${p}.${b}`)];
+  };
+  const ac = {};
+  ac.m = isObj(get('airframe.weights.training_mass')) ? num('airframe.weights.training_mass.kg') : num('airframe.weights.training_mass');
+  const refMass = get('airframe.inertia.ref_mass', false);
+  const inertia = (k) => (refMass === undefined ? num('airframe.inertia.' + k) : num('airframe.inertia.' + k) * (ac.m / num('airframe.inertia.ref_mass')));
+  for (const k of ['Ixx', 'Iyy', 'Izz', 'Ixz']) ac[k] = inertia(k);
+  for (const k of ['S', 'b', 'c']) ac[k] = num('aero.ref.' + k);
+  const LEG = ['CL0', 'CLa', 'CLflap', 'CD0', 'K', 'CDflap', 'CDgear', 'Cm0', 'Cma', 'Cmflap', 'aStall', 'aStallFlap', 'aWarn', 'aWarnFlap', 'aWarnHyst', 'aWarnMinOn'];
+  const DER = ['CLq', 'CLadot', 'CLde', 'CYb', 'CYdr', 'CYr', 'Clb', 'Clp', 'Clr', 'Clda', 'Cldr', 'Cmq', 'Cmadot', 'Cmde', 'Cnb', 'Cnp', 'Cnr', 'Cnda', 'Cndr'];
+  for (const k of LEG) ac[k] = num('aero.legacy.' + k);
+  for (const k of DER) ac[k] = num('aero.derivatives.' + k);
+  for (const k of ['P', 'eta', 'T0', 'idle']) ac[k] = num('propulsion.legacy.' + k);
+  const [eUp, eDn] = travel('elevator', 'up', 'down'), [aUp, aDn] = travel('aileron', 'up', 'down'), [rL, rR] = travel('rudder', 'left', 'right');
+  ac.deUp = eUp * DEG; ac.deDn = eDn * DEG; ac.daMax = 0.5 * (aUp + aDn) * DEG; ac.drMax = Math.min(rL, rR) * DEG;
+  const struts = list('gear.legacy');
+  if (struts.length !== 3) throw fail('gear.legacy', `has ${struts.length} struts, the gear model needs 3 (nose, left main, right main)`);
+  ac.gear = struts.map((g, i) => {
+    const p = `gear.legacy.${i}`, o = { b: vec3(p + '.b'), k: num(p + '.k'), c: num(p + '.c'), stroke: num(p + '.stroke') };
+    if (g.steer) o.steer = true;
+    if (g.brake) o.brake = true;
+    return o;
+  });
+  ac.Vref = kcas('speeds.VREF_kt'); ac.Vapp = kcas('speeds.VAPP_kt'); ac.Vs0 = kcas('speeds.VS0_kt');
+  ac.eye = vec3('airframe.geometry.eye_pos_FRD'); ac.gsAnt = vec3('airframe.geometry.gsAntenna_pos_FRD');
+  ac.engines = list('propulsion.layout').map((e, i) => {
+    const pos = vec3(`propulsion.layout.${i}.pos`), ax = vec3(`propulsion.layout.${i}.axis`), n = Math.hypot(ax[0], ax[1], ax[2]);
+    if (!(n > 0)) throw fail(`propulsion.layout.${i}.axis`, 'has no direction');
+    return { pos, dir: [ax[0] / n, ax[1] / n, ax[2] / n] };
+  });
+  return ac;
+}
+
+// Makes the card's aircraft the one flown: AC keeps no field of the old one and takes the card's (acFromCard throws
+// before AC changes), with Iinv rebuilt. Returns AC (the same object as before). An Aircraft built before keeps its
+// state but flies the new numbers from its next step. A field the card does not give is deleted, one AC has is
+// overwritten and a new one defined: V8 turns an object with more than a few fields added by computed key
+// (Object.assign, obj[k] = v) into a slow dictionary, and a deleted field does the same, which made Aircraft.step
+// about 40 % slower; defined this way AC keeps fast properties, as the object literal it was before plan B3 did.
+function setAircraft(card) {
+  const next = acFromCard(card);
+  next.Iinv = inertiaInverse(next);
+  for (const k of Object.keys(AC)) if (!Object.hasOwn(next, k)) delete AC[k];
+  for (const k of Object.keys(next)) {
+    if (Object.hasOwn(AC, k)) AC[k] = next[k];
+    else Object.defineProperty(AC, k, { value: next[k], writable: true, enumerable: true, configurable: true });
+  }
+  return AC;
+}
+
+// Force and moment of the engines on the airframe, body axes (FRD) about the CG: F = Σ Tᵢ·dirᵢ, M = Σ posᵢ × (Tᵢ·dirᵢ),
+// thrusts[i] the thrust of engine i in N (0 for an engine out, negative in reverse). With the right engine alone
+// (pos y > 0) the yaw moment N = M[2] is negative, nose left (T-F-15). The sums start at −0, the additive identity of
+// floating point (x + (−0) is x for every x), so one engine along body +x gives F[0] exactly its thrust, F[1] = F[2] = 0
+// and, with its thrust line through the CG (pos y = z = 0), M exactly 0. out is reused when given (deriv runs it 5 times
+// a step).
+function engineLoads(engines, thrusts, out = { F: [0, 0, 0], M: [0, 0, 0] }) {
+  const F = out.F, Mo = out.M;
+  F[0] = F[1] = F[2] = Mo[0] = Mo[1] = Mo[2] = -0;
+  for (let i = 0; i < engines.length; i++) {
+    const p = engines[i].pos, d = engines[i].dir, t = thrusts[i];
+    const fx = t * d[0], fy = t * d[1], fz = t * d[2];
+    F[0] += fx; F[1] += fy; F[2] += fz;
+    Mo[0] += p[1] * fz - p[2] * fy; Mo[1] += p[2] * fx - p[0] * fz; Mo[2] += p[0] * fy - p[1] * fx;
+  }
+  return out;
+}
 
 // ── small vector / quaternion helpers ──
 function qToR(q, R) {
@@ -256,6 +372,7 @@ class Aircraft {
     this.wow = [false, false, false]; this.gearLoad = [0, 0, 0];
     this.isaDev = 0; this.qnh = P0_HPA; this.dewC = null; this.wind = new Wind();   // ISA, dry, until a Flight sets the weather
     this.k = [0, 1, 2, 3].map(() => new Float64Array(13)); this.tmp = new Float64Array(13);
+    this.engT = []; this.engLoads = { F: [0, 0, 0], M: [0, 0, 0] };   // per-engine thrust and engine loads (deriv scratch)
     this.air = {};
   }
 
@@ -295,9 +412,13 @@ class Aircraft {
     const wh = [vab[0] / V, vab[1] / V, vab[2] / V];
     let lv = cross([0, 1, 0], wh); const ll = Math.hypot(lv[0], lv[1], lv[2]) || 1; lv = [lv[0] / ll, lv[1] / ll, lv[2] / ll];
     const L = qbar * AC.S * CL, D = qbar * AC.S * CD, Y = qbar * AC.S * CY;
-    const T = this.thr * thrustAvail(V);
-    const Fb = [L * lv[0] - D * wh[0] + T, L * lv[1] - D * wh[1] + Y, L * lv[2] - D * wh[2]];
-    const Mb = [qbar * AC.S * AC.b * Cl, qbar * AC.S * AC.c * Cm, qbar * AC.S * AC.b * Cn];
+    // thrust: thr·thrustAvail(V) shared equally among AC.engines (per-engine models come with plans F3, I2, K3), each
+    // along its axis from its point (engineLoads); the trainer's one engine adds exactly T to the x force, no moment
+    const T = this.thr * thrustAvail(V), eng = AC.engines, th = this.engT;
+    const ne = eng.length; for (let i = 0; i < ne; i++) th[i] = T / ne;   // th may keep stale entries past ne: unused
+    const E = engineLoads(eng, th, this.engLoads);
+    const Fb = [L * lv[0] - D * wh[0] + E.F[0], L * lv[1] - D * wh[1] + Y + E.F[1], L * lv[2] - D * wh[2] + E.F[2]];
+    const Mb = [qbar * AC.S * AC.b * Cl + E.M[0], qbar * AC.S * AC.c * Cm + E.M[1], qbar * AC.S * AC.b * Cn + E.M[2]];
 
     let Fn = mulR(R, Fb);
     // landing gear: spring-damper struts with rolling, braking and side friction
@@ -650,7 +771,13 @@ class PilotLaws {
 }
 
 // Stall-warning angle of attack (rad) at flap position f (0…1), from AC.aWarn / AC.aWarnFlap. The one definition the
-// Evaluator uses and test/stall.test.mjs checks (T-A-07, 14 CFR 23.207 [A22]).
+// Evaluator uses and test/stall.test.mjs checks (T-A-07, 14 CFR 23.207 [A22]). The trainer's 10.71° clean and 6.87°
+// with landing flaps are the research round 1 design values (01-flight-physics/01-aero.md §1.6, scripts/expected.mjs),
+// about 7 kt above the 1-g stall (6.8–7.3 kt trimmed in this model); §23.207(c) asks for at least 5 kt. Set by α, so
+// V_warn/Vs is the same at any weight and load factor; the knot margin scales with √(n·W) (below about 0.54 W clean or
+// 0.47 W with flaps it would drop under 5 kt; plan J1 re-checks per type). The Evaluator releases it only aWarnHyst
+// below and after aWarnMinOn s on (plan A5 design choice, no source), so a gust spike sounds as a short chirp instead
+// of a click; onset is immediate, so the margin and the lead time in a fast pull are kept.
 const aWarnAt = (f) => (AC.aWarn + AC.aWarnFlap * f) * DEG;
 
 // ── Landing evaluation: stabilized-approach gates, touchdown, rollout ──

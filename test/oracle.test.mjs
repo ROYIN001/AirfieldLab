@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { M } from './harness.mjs';
-import { AC_NOT_IN_DERIV, CASES, COLS, DT, T_END, acParams, approachIC, inertiaInverse, limits, runCase, maxAbsErr, startProblems } from './lib/oracle.mjs';
+import { AC_NOT_IN_DERIV, CASES, COLS, DT, T_END, acParams, approachIC, inertiaInverse, limits, runCase, maxAbsErr, startProblems, withParams } from './lib/oracle.mjs';
 
 // the inverse inertia src/20-flight.js built, taken before any case swaps AC's numbers
 const SRC = { Iinv: [...M.AC.Iinv], params: acParams(), elev: M.FIELD.elev };
@@ -53,16 +53,35 @@ test("the fixture's AC fields are the ones AC has now (a new field needs a new f
   assert.deepEqual(gone, [], 'fixture fields AC no longer has (renamed?): regenerate the fixture');
 });
 
-test('AC.Iinv in src/20-flight.js inverts the inertia tensor, as the oracle builds it for the fixture numbers', () => {
-  const { Ixx, Iyy, Izz, Ixz } = SRC.params, I = [Ixx, 0, -Ixz, 0, Iyy, 0, -Ixz, 0, Izz], A = SRC.Iinv;
-  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
-    const v = A[3 * i] * I[j] + A[3 * i + 1] * I[3 + j] + A[3 * i + 2] * I[6 + j];
-    assert.ok(Math.abs(v - (i === j ? 1 : 0)) < 1e-12, `AC.Iinv × I [${i}][${j}] = ${v}`);
-  }
-  // the copy the oracle flies (withParams) agrees with src to rounding
-  const B = inertiaInverse(SRC.params);
-  assert.equal(A.length, B.length);
-  A.forEach((a, k) => assert.ok(Math.abs(a - B[k]) <= 1e-12 * Math.max(Math.abs(a), Math.abs(B[k])), `test/lib/oracle.mjs inertiaInverse and src/20-flight.js agree: [${k}] ${a} vs ${B[k]}`));
+test('AC.Iinv in src/20-flight.js inverts the inertia tensor, and the oracle rebuilds it with the same function for the fixture numbers', () => {
+  // A × I = 1 for the tensor [[Ixx, 0, −Ixz], [0, Iyy, 0], [−Ixz, 0, Izz]], checked here and not by src's formula
+  const inverts = (A, { Ixx, Iyy, Izz, Ixz }, what) => {
+    const I = [Ixx, 0, -Ixz, 0, Iyy, 0, -Ixz, 0, Izz];
+    assert.equal(A.length, 9, what);
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+      const v = A[3 * i] * I[j] + A[3 * i + 1] * I[3 + j] + A[3 * i + 2] * I[6 + j];
+      assert.ok(Math.abs(v - (i === j ? 1 : 0)) < 1e-12, `${what} × I [${i}][${j}] = ${v}`);
+    }
+  };
+  inverts(SRC.Iinv, SRC.params, 'AC.Iinv (setAircraft)');
+  // the oracle flies src's own inertiaInverse (plan B3), and withParams rebuilds Iinv for the numbers it flies: here the
+  // fixture's, and an Ixz of the other sign (the negative control below)
+  assert.equal(inertiaInverse, M.inertiaInverse, 'test/lib/oracle.mjs uses src/20-flight.js inertiaInverse');
+  for (const params of [FX.cases.noadot.params, { ...FX.cases.noadot.params, Ixz: -FX.cases.noadot.params.Ixz }])
+    inverts(withParams(params, undefined, () => [...M.AC.Iinv]), params, `withParams Iinv (Ixz ${params.Ixz})`);
+  assert.deepEqual(M.AC.Iinv, SRC.Iinv, 'withParams puts Iinv back');
+});
+
+test("the trainer's one engine is the thrust line make_model.py models: along body +x through the CG (y = z = 0)", () => {
+  // tools/jsbsim/make_model.py puts the thrust at the CG as an external force along body +x; Aircraft.deriv sums
+  // AC.engines (engineLoads): one engine with dir [1, 0, 0] and pos y = z = 0 gives that force and no moment
+  const E = M.AC.engines;
+  assert.ok(Array.isArray(E) && E.length === 1, `AC.engines: ${JSON.stringify(E)}`);
+  assert.deepEqual(E[0].dir, [1, 0, 0]);
+  assert.ok(E[0].pos.length === 3 && E[0].pos[1] === 0 && E[0].pos[2] === 0, `engine at ${JSON.stringify(E[0].pos)}`);
+  const L = M.engineLoads(E, [1000]);
+  assert.deepEqual(L.F, [1000, 0, 0]);
+  assert.deepEqual(L.M.map(Math.abs), [0, 0, 0]);
 });
 
 test('T-S-05 the JSBSim install that made the fixture flew its own c172x as the research measured', () => {
