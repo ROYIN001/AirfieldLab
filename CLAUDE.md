@@ -154,7 +154,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
     89,852 of 94,612 buildings). `test/siting.test.mjs` pins these counts. One kept building of the balanced
     quality has a twentieth or more of its footprint beyond a road (6 %, beyond a lane that turns under it), and one
     more of the high quality (a quarter, where two lanes meet corner to corner under it); with a half instead of a
-    third it would be 10 and 23. Ground that hangs on by less than half a metre counts as beyond.
+    third it would be 10 and 23. Ground that hangs on by a neck under half a metre wide counts as beyond, and by one
+    up to 0.9 m it may, by the slant of the neck (the test reads the ground at points a quarter of a metre apart).
     The wood before THR 03R (OpenStreetMap) stays from about 700 m before the threshold, where it is under the 2 %
     surfaces; single trees on farm land stay from about 490 m.
 - Runway and approach lights follow AIP AD 2.14 for what each end has and Annex 14, 5.3 for the layout: threshold
@@ -182,8 +183,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   corner under 7.5 m apart, one stands; with 15 m a light across a junction stood in for the light of another edge,
   and three straight edges were dark over 62 to 67 m); 417 lights, at 424 of the 942 places, and no bare edge is
   dark over more than 51 m measured straight across (`test/lights.test.mjs` follows every edge a metre at a time).
-  Round a patch of grass between taxiways the edge has no light over 90 m at two junctions (three sides of 23 to
-  42 m; left as it is).
+  Round a patch of grass between taxiways the edge has no light over about 100 m at three junctions (no straight
+  part of it over 35 m; left as it is).
   One of them stands inside a mapped water outline beside a taxiway (a data overlap, as before). Not drawn: the
   taxiway centre line lights of TWY D, E, F, J, O, R, S and C (south) (the vector lines carry no names; research
   round 5 has them in `tw_names.json`, not yet in the page data) and the intermediate holding position lights along

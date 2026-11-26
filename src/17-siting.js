@@ -354,9 +354,10 @@ const WET_MAX = 0.2;
 // Measured on 2026-11-26 in the balanced quality: a third drops 2,334 of 57,895 buildings (4 %), nearly all of them
 // shophouses; 1,898 stand alone and no group of them (linked at 25 m) is larger than five, so no row of houses goes.
 // A half would drop 812 and leave houses that a road cuts in two (a twentieth of the footprint or more beyond the
-// road, ground that hangs on by less than half a metre counted as beyond): 10 in the balanced quality and 23 in the
-// high one. At a third it is one in balanced, with 6 % beyond a lane that turns under it, and one more in high, with
-// a quarter beyond two lanes that meet corner to corner (test/siting.test.mjs looks at every kept building).
+// road; ground that hangs on by a neck under half a metre wide counts as beyond, and by one up to 0.9 m it may,
+// by the slant of the neck): 10 in the balanced quality and 23 in the high one. At a third it is one in balanced,
+// with 6 % beyond a lane that turns under it, and one more in high, with a quarter beyond two lanes that meet corner
+// to corner (test/siting.test.mjs looks at every kept building).
 // The centre is not asked: the city data never puts one inside a road cell, only on a cell border, and a house with
 // its centre on the kerb line is not in the road.
 const ROAD_MAX = 1 / 3;

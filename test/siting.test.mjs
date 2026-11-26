@@ -536,13 +536,15 @@ test('what is mapped: buildings, aprons, taxiways, water and the three viaducts 
 // outside the largest part of its ground. A road along one side leaves one part; a road through under the house leaves
 // ground beyond it, in one piece or in several. The ground is read at points of our own a quarter of a metre apart on
 // the axes of the map, none of them on a cell border. A point is solid when it and the eight points around it are all
-// ground of the footprint, and solid points that touch make a part: ground hangs together through a passage three
-// quarters of a metre wide or wider, between two roads or between a road and a wall, and never through one under
-// half a metre (between the two it follows where the points fall). So two pieces of ground that meet only at the
-// corner of a cell, between two road cells that meet at that corner, are two parts, and so are two that a strip a
-// few centimetres wide joins along a wall. The rest of the ground (beside a road or a wall, and in a narrow passage)
-// goes with the part that reaches it first, east-west and north-south a step at a time; ground that no part reaches
-// counts as outside the largest. (This measure first joined the points along the rows and columns of the house: the
+// ground of the footprint, and solid points that touch make a part. A solid point takes half a metre of ground along
+// both axes and a row of them a quarter more: ground hangs together through any passage wider than 0.5 (cos + sin) +
+// 0.25 max(cos, sin) of its slant to the map (0.75 m along an axis, 0.901 m at most), between two roads or between a
+// road and a wall, and on a map of square cells through none under half a metre. Between the two it follows the
+// slant and where the points fall. So two pieces of ground that meet only at the corner of a cell, between two road
+// cells that meet at that corner, are two parts, and so are two that a strip a few centimetres wide joins along a
+// wall. The rest of the ground (beside a road or a wall, and in a narrow passage) goes with the part that reaches it
+// first, east-west and north-south a step at a time; ground that no part reaches counts as outside the largest.
+// (This measure first joined the points along the rows and columns of the house: the
 // points of a turned house step through a corner between two road cells, and it missed a house of the high quality
 // that stands with a quarter of its footprint beyond two lanes that meet corner to corner. Then it joined every
 // point of ground east-west and north-south and took the second largest part: a house along such a lane, with a
@@ -601,7 +603,8 @@ test('the measure of a road cutting a building in two, on made-up roads', () => 
   near(cutByRoad(b(2.5), short(0.5)), 0.38125, 1e-9, 'a strip of half a metre along the wall does not join the two sides');
   near(cutByRoad(b(2.5), gap(0.5)), 0.38125, 1e-9, 'nor does a gap of half a metre in the road');
   assert.deepEqual([cutByRoad(b(2.5), short(1)), cutByRoad(b(2.5), gap(1))], [0, 0], 'a passage of a metre does');
-  // and for a passage that crosses the road at 45°: 0.85 m wide it joins the two sides, 0.42 m wide it does not
+  // and for a passage that crosses the road at 45°: 0.85 m wide it joins the two sides where it lies here (a tenth
+  // of a metre further north it would not; from 0.89 m it joins wherever it lies), 0.42 m wide it never does
   const slit = (h) => (e, n) => (e >= 0 && e < 5 && Math.abs(e - 2.5 - n) >= h ? 13 : 2);
   assert.equal(cutByRoad(b(2.5), slit(0.6)), 0, 'a passage of 0.85 m across the road at 45°');
   near(cutByRoad(b(2.5), slit(0.3)), 0.384, 0.002, 'a passage of 0.42 m at 45°: two parts, and half of the passage');

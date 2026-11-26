@@ -115,7 +115,7 @@ const EDGE_OUT = 0.6;
 // to the corner where the two edges meet, if that corner is within `out` of this line's edge (the 3 m of 5.3.18);
 // in the mouth of a wider junction, or on two pavements at once, there is none. (Without the corner lights the
 // inside of a corner where three taxiways meet was dark over 82 m of edge. Still dark: the edge round a patch of
-// grass between taxiways, over 90 m at two junctions, each of its three sides under 45 m.) No two lights are set
+// grass between taxiways, over about 100 m at three junctions, no straight part of it over 35 m.) No two lights are set
 // closer than `gap`, whichever lines they belong to (our choice, ค่าประมาณ): two lines set their lights for the same
 // corner, and two lights a few metres apart read as one doubled light. The gap must stay small: with 15 m a light
 // on the edge of one taxiway took the place of the light of another, 9 to 11 m away across a junction, and three

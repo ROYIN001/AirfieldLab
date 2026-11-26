@@ -265,8 +265,8 @@ test('taxiway edge lights: on every taxiway (AIP AD 2.15), at the edge, never on
   // lights along a straight edge are more than 60 m apart. (The regressions, by this measure: 64 m with a gap of
   // 15 m, where a light across a junction stood in for the light of another edge, and 72 m without the corner
   // lights, across the inside of the corner where three taxiways meet south of the terminal. It is measured straight
-  // across, not along the edge: round the three sides of a patch of grass between taxiways the edge is dark over
-  // 90 m at two junctions, each side of it 23 to 42 m long.)
+  // across, not along the edge: round a patch of grass between taxiways the edge is dark over about 100 m at three
+  // junctions, no straight part of it over 35 m; this measure follows two of them round, over 90 m.)
   const runs = [];
   for (const t of lines) {
     const len = lineLen(t.p);
