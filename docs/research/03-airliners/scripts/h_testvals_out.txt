@@ -1,0 +1,33 @@
+T-H-01 VS1g FULL 187t kt                     113
+T-H-01b VS1g CONF0 187t kt                   157.6
+T-H-02 VLS FULL 179t kt                      136
+T-H-03 VLS FULL 187t kt                      139
+T-H-03 VAPP FULL 187t kt (VLS+5)             144
+T-H-03 approach cat (VAT=1.23VSR<141 -> C)   "C"
+T-H-04 V2min CONF2 242t kt                   151.9
+T-H-04 V2min CONF1+F 242t kt                 156.9
+T-H-04 TSB V2/VS1g(1+F) @222.7t              1.216
+T-H-05 approach                              {"CL":1.507,"alpha_deg":5.71,"theta_deg":2.71,"L_D":7.99,"T_total_kN":133.3,"sink_fpm":763}
+T-H-06 cruise QF72                           {"rho":0.3483,"TAS_kt":470.3,"q_Pa":10196,"CL":0.493,"CL0_M":0.203,"alpha_deg":2.5,"CD":0.0322,"drag_kN":118.6,"unusedT0":216.65}
+T-H-07 TSB liftoff                           {"CL_req_noThrust":1.602,"CL_model_freeair_13p7":1.642,"ratio":1.025,"CL_lin_at_alphaStar":2.199}
+T-H-08 legacy CLmax/alpha flaps0             [1.26,13.98]
+T-H-08 legacy CLmax/alpha flaps1             [2.45,17.42]
+T-H-08 legacy CLmax flaps0.563 (CONF2)       [1.925,15.86]
+T-H-09 Lanchester approach 144 kt s          33.6
+T-H-09 model phugoid approach s              43.4
+T-H-11 wake                                  {"b0":47.36,"Gamma0":426.7,"w0":1.434,"t_descent_1b0_s":33}
+T-H-12 tyre                                  {"per_tyre_lb":62922,"load_ratio":0.919}
+T-H-13 strut static 187t                     {"main_defl_m":0.429,"nose_defl_m":0.14,"main_fn_Hz":0.761}
+T-H-13 strut static 242t                     {"main_defl_m":0.556,"nose_defl_m":0.181,"main_fn_Hz":0.669}
+T-H-14 Mcrit CL0.5                           0.764
+T-H-14 CDw M0.86 CL0.5                       0.00173
+T-H-14 CDw M0.82 CL0.5                       0.0002
+T-H-15 field                                 {"TOFL_242t_m":2737,"TOFL_ft":8979,"LFL_187t_m":1672,"LFL_ft":5484,"actual_187t_m":1003,"Vtd_kt":136,"roll_at_1p7_m":1440,"roll_at_3p0_m":816}
+T-H-16 OEI gradient %                        {"no_extra_drag":3.22,"with_0p005_windmill":2.93,"CL":1.754}
+T-H-17 inertia 187t                          {"Ixx":15810000,"Iyy":41140000,"Izz":54130000,"json":[15810000,41140000,54130000]}
+T-H-18 VMO m/s                               169.77
+T-H-18 VFE FULL m/s                          92.6
+T-H-18 VAPP < VFE FULL margin kt             36
+T-H-19 hot day                               {"rho":1.1455,"VAPP_TAS_kt":148.9,"GS_noWind_kt":148.9}
+T-H-20 gear damping 187t                     {"zeta_main_FG":0.937,"zeta_nose_FG":3.104,"c_nose_for_zeta0p6":112705,"c_main_for_zeta0p6":504080}
+T-H-21 RECAT-EU B-leader time @140kt s       {"B":77,"C":103,"D":103,"E":129,"F":180}

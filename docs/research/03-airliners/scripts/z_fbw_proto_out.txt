@@ -1,0 +1,49 @@
+# alpha thresholds (deg, model lift curve)
+FULL aCLmax 16.33 aMax 12.38 aProt 9.38 aFloor 9.88
+CONF0 aCLmax 12.86 aMax 11.06 aProt 8.06 aFloor 8.56
+SL 64.5 t FULL: VS1g 105.1 V_amax 112.5 V_afloor 118.1 V_aprot 119.3 VLS=1.23VS1g 129.3
+
+# pure functions
+nz(stick): CONF0 +1 2.5 -1 -1 +0.5 1.75 -0.5 0 | FULL +1 2 -1 0
+nzRef: phi30 1.1547 phi33 1.1924 phi45 1.1924 theta10 0.9848
+flareThetaRef memo 2.5: t0 2.5 t4 0.250 t8 -2 t10 -2 | memo 5 t4 1.500 | memo -3 t4 -2
+bankReturn: 30 0 50 7.500 67 15 | lim45 at 40 8.750 | HSP lim40 at 20 7.500
+rollRateCmd full stick at 0, 50, 67 deg: 15 7.500 0
+abnormal: phi126 true theta51 true alpha41 true ias59 true M0.92 true nominal false
+groundBlend t2.5 0.5 t6 1 | hspAuthority 356/361/366: 1 0.5 0 | hspDnz 366: 0.75
+
+# C* step, CONF0 330 kt SL 64.5 t
+stick 1 target 2.5 nz peak 2.643 nz@4s 2.371 t90 1.10 theta@4.5 21.5 mode AOA
+stick 0.5 target 1.75 nz peak 1.792 nz@4s 1.688 t90 1.07 theta@4.5 11.4 mode CSTAR
+stick -1 target -1 nz peak -1.020 nz@4s 0.156 t90 1.05 theta@4.5 -12.4 mode CSTAR
+stick 1: time above 2.5 g 0.850 s
+
+# pitch attitude protection (full aft held 29 s, 3x thrust): theta max 30.12 nz max 2.719 theta@30 30.12 V@30 215.8 alpha max 7.53
+nose-down protection (full fwd 11 s): theta min -12.75 nz min -1.046 V max 353.3
+
+# approach FULL 64.5 t, 133.5 kt, gamma -3, stick neutral, thrust to 5% at t=5 s
+trim alpha 5.50 ih -0.37 T kN 61.0 | gamma before prot -3.49 .. -2.98 | t_prot 10.0 V at prot 124.9 alpha at prot 9.02
+t 50-70 s: alpha 9.34 .. 9.43 V 118.5 .. 121.4 | alpha max ever 9.56 | aProt 9.38 aMax 12.38
+
+# approach FULL, full aft stick from t=2 s, approach thrust
+alpha max 12.85 alpha 20-40 s 12.17 .. 12.72 V@40 111.6 nz max 1.372 theta max 18.32
+idle variant: alpha max 12.85 alpha 20-40 s 12.18 .. 12.54 V@40 110.3
+
+# bank 30° stick neutral 30 s: dh 0.1 m ( 0 ft ) nz@33 1.148 gamma@33 0.00 V@33 301.5
+
+# bank 45° stick neutral 30 s: dh -417.8 m ( -1371 ft ) nz@33 1.606 gamma@33 -3.85 V@33 351.0
+
+# flare mode, FULL 133.5 kt, start 60 ft, gamma -3
+stick neutral | theta@50ft 1.38 theta@30ft 1.41 t50→td 4.26 theta@td 0.81 thRef@td 0.31 sink@td fpm 729 V@td 133.5
+pilot flare (stick 0→0.6 from 30 to 10 ft) | theta@50ft 1.38 theta@30ft 1.41 t50→td 4.48 theta@td 5.98 thRef@td 6.21 sink@td fpm 413 V@td 132.7
+
+# HSP, CONF0 SL
+stick neutral, +60 kN excess: Vmax 356.0 V@90 355.9 hsp seen true nz max 1.191
+full fwd from VMO, 2x thrust: Vmax 363.2 theta min -0.44 V@60 363.1
+
+# roll law, FULL 133.5 kt
+Lp -0.848 Lu 0.335 gains Kphi 11.92 Kp 7.01 | p@2s 16.47 phi max 66.42 phi@12 66.42 | released: phi@30 33.02 t(phi<=34) after release 8.52
+limit 45 (alpha prot): phi max 45.55 phi@12 45.00
+HSP limit 40: phi max 38.96 phi 20 s after release 0.02
+bank hold after 2 s full stick, Ldist 0.02 rad/s²: phi 6-32 s 28.68 .. 28.74 phiRef 28.74
+half stick 1 s: p@0.8 8.26 phi final 7.35

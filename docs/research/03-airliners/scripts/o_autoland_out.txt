@@ -1,0 +1,58 @@
+== 1. ILS geometry (GP origin, LOC sector from 210 m at THR) ==
+21R: RDH 16.46 m, GP origin 314.1 m, LOC dist 4001.8 m, course width 3.01 deg (AIP 3), 1 dot = 0.751 deg = 75 uA, uA/deg = 99.8; 1/4 dot at THR = 13.1 m
+03L: RDH 16.76 m, GP origin 319.9 m, LOC dist 4014 m, course width 3 deg (AIP 3), 1 dot = 0.749 deg = 75 uA, uA/deg = 100.1; 1/4 dot at THR = 13.1 m
+21L: RDH 16.15 m, GP origin 308.2 m, LOC dist 3382.6 m, course width 3.56 deg (AIP 3.6), 1 dot = 0.889 deg = 75 uA, uA/deg = 84.4; 1/4 dot at THR = 13.1 m
+GS: 1 dot = 0.12*theta = 0.36 deg; full scale 0.72 deg
+
+== 2. 21R: along-runway position s (m from THR, negative = before THR) where wheel height = callout ==
+b737_800: wheel GPI 233.2 m, wheels over THR 12.22 m (40.1 ft)
+   1500:-8491 1000:-5583 800:-4420 700:-3838 500:-2675 400:-2093 350:-1802 200:-930 160:-697 100:-348 80:-232 50:-58 40:1 30:59 27:76 20:117 10:175
+a320ceo: wheel GPI 220.9 m, wheels over THR 11.58 m (38 ft)
+   1500:-8503 1000:-5595 800:-4432 700:-3850 500:-2687 400:-2105 350:-1815 200:-942 160:-710 100:-361 80:-244 50:-70 40:-12 30:46 27:64 20:105 10:163
+a330_300: wheel GPI 150.7 m, wheels over THR 7.9 m (25.9 ft)
+   1500:-8573 1000:-5665 800:-4502 700:-3920 500:-2757 400:-2176 350:-1885 200:-1012 160:-780 100:-431 80:-315 50:-140 40:-82 30:-24 27:-6 20:34 10:93
+atr72_600: wheel GPI 270.2 m, wheels over THR 14.16 m (46.5 ft)
+   1500:-8454 1000:-5546 800:-4383 700:-3801 500:-2638 400:-2056 350:-1765 200:-893 160:-660 100:-311 80:-195 50:-21 40:38 30:96 27:113 20:154 10:212
+
+== 3. Flare law results on 21R (ideal tracking = lag 0; lag 1.0 s = est. path response) ==
+737 L1v(50ft) lag0: flare 50 ft at s=-58 m; TD s=535 m (1754 ft); flare 8.1 s; sink TD 0.74 m/s (146 fpm); RETARD at s=110 m, 2.29 s after flare
+737 L1(K.205) lag0: flare 49.3 ft at s=-54 m; TD s=528 m (1732 ft); flare 7.96 s; sink TD 0.75 m/s (148 fpm)
+A320 L2 lag0: flare 47.3 ft at s=-54 m; TD s=488 m (1600 ft); flare 7.88 s; sink TD 0.76 m/s (150 fpm); RETARD at s=285 m, 4.93 s after flare
+A330 L2 lag0: flare 49.5 ft at s=-137 m; TD s=440 m (1444 ft); flare 8.02 s; sink TD 0.76 m/s (150 fpm); RETARD at s=228 m, 5.08 s after flare
+trainer L3 lag0: flare 15.9 ft at s=202 m; TD s=417 m (1369 ft); flare 5.57 s; sink TD 0.22 m/s (43 fpm)
+737 L1v(50ft) lag1: flare 50 ft at s=-58 m; TD s=408 m (1340 ft); flare 6.37 s; sink TD 1.02 m/s (200 fpm); RETARD at s=89 m, 2 s after flare
+737 L1(K.205) lag1: flare 49.3 ft at s=-54 m; TD s=403 m (1322 ft); flare 6.25 s; sink TD 1.03 m/s (204 fpm)
+A320 L2 lag1: flare 47.3 ft at s=-54 m; TD s=377 m (1237 ft); flare 6.27 s; sink TD 1.03 m/s (203 fpm); RETARD at s=225 m, 4.06 s after flare
+A330 L2 lag1: flare 49.5 ft at s=-137 m; TD s=320 m (1049 ft); flare 6.35 s; sink TD 1.04 m/s (204 fpm); RETARD at s=163 m, 4.16 s after flare
+trainer L3 lag1: flare 15.9 ft at s=202 m; TD s=330 m (1083 ft); flare 3.31 s; sink TD 0.65 m/s (127 fpm)
+
+== 4. Patent 4,354,237 prior-art law check (K=0.205, hB=12 ft, 3 deg) ==
+VG 110 kt: prior-art flare 35.46 ft, TD s=1334 ft; V*tau-const (42 ft) flare 42 ft, TD 1513 ft
+VG 125 kt: prior-art flare 41.93 ft, TD s=1512 ft; V*tau-const (42 ft) flare 42 ft, TD 1513 ft
+VG 140 kt: prior-art flare 48.4 ft, TD s=1704 ft; V*tau-const (42 ft) flare 41.99 ft, TD 1514 ft
+
+== 5. Normal quantiles for certification probabilities (one-sided) ==
+p=0.05: z=1.645
+p=0.025: z=1.96
+p=0.00001: z=4.265
+p=0.000001: z=4.753
+p=1e-7: z=5.199
+p=1e-8: z=5.612
+b737_800: max CG lateral offset so outboard tyre <= 21.3 m: 18.14 m -> sigma_y(1e-6, mean 0) <= 3.82 m
+a320ceo: max CG lateral offset so outboard tyre <= 21.3 m: 17.2 m -> sigma_y(1e-6, mean 0) <= 3.62 m
+a330_300: max CG lateral offset so outboard tyre <= 21.3 m: 15.65 m -> sigma_y(1e-6, mean 0) <= 3.29 m
+atr72_600: max CG lateral offset so outboard tyre <= 21.3 m: 18.95 m -> sigma_y(1e-6, mean 0) <= 3.99 m
+Longitudinal: if mean centred at 441.5 m, sigma_x <= 80.3 m for 1e-6 each side
+AC 20-57A 1500 ft total at 2 sigma -> sigma_x <= 114.3 m; 27 ft at 2 sigma -> sigma_y <= 4.11 m
+Sink limit 10 ft/s = 3.048 m/s; with mean 0.76 m/s -> sigma_sink <= 0.481 m/s
+DIALS 10 landings: mean 2.4 ft/s = 0.732 m/s, SD 0.7 ft/s = 0.213 m/s
+SRVSOP success: 150..750 m, 360 fpm = 1.829 m/s, bank 7 deg, rollout 8 m
+
+== 6. Height conversions (ft -> m) ==
+1500 ft=457.2 m, 1000 ft=304.8 m, 800 ft=243.84 m, 700 ft=213.36 m, 500 ft=152.4 m, 400 ft=121.92 m, 350 ft=106.68 m, 300 ft=91.44 m, 250 ft=76.2 m, 200 ft=60.96 m, 160 ft=48.77 m, 150 ft=45.72 m, 100 ft=30.48 m, 80 ft=24.38 m, 60 ft=18.29 m, 50 ft=15.24 m, 45 ft=13.72 m, 40 ft=12.19 m, 30 ft=9.14 m, 27 ft=8.23 m, 20 ft=6.1 m, 15 ft=4.57 m, 10 ft=3.05 m, 2 ft=0.61 m
+2.5 ft/s = 0.762 m/s; 64 kt = 32.92 m/s; 84 kt=43.21 m/s; 40 kt=20.58 m/s; 30 kt=15.43 m/s
+winds: 10 kt=5.14, 15 kt=7.72, 17 kt=8.75, 20 kt=10.29, 25 kt=12.86, 29 kt=14.92, 30 kt=15.43, 35 kt=18.01 m/s
+
+== 7. Airbus thrust idle at 30 ft inside the flare (21R, lag 0 / lag 1 s) ==
+lag 0: A320 30 ft at s=65 m (1.72 s after flare); A330 30 ft at s=-1 m (1.89 s)
+lag 1: A320 30 ft at s=52 m (1.54 s after flare); A330 30 ft at s=-16 m (1.68 s)

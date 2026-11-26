@@ -1,0 +1,7 @@
+b737: Tmax 234.0 kN, T0 42.8 kN (18.3 %), Kp 0.0317 Tmax/kt, Ki 0.00297 Tmax/(kt s), within 2 kt after 23.7 s, max undershoot -3.60 kt, idle-limited true
+a320: Tmax 240.2 kN, T0 46.0 kN (19.1 %), Kp 0.0332 Tmax/kt, Ki 0.00311 Tmax/(kt s), within 2 kt after 23.2 s, max undershoot -3.51 kt, idle-limited true
+a330: Tmax 632.5 kN, T0 106.6 kN (16.9 %), Kp 0.0361 Tmax/kt, Ki 0.00339 Tmax/(kt s), within 2 kt after 28.3 s, max undershoot -4.10 kt, idle-limited true
+95 % of first-order step: 4.49 s
+anti-windup b737: within 2 kt after 7.9 s, max undershoot -0.74 kt at 15.9 s
+anti-windup a320: within 2 kt after 7.8 s, max undershoot -0.75 kt at 15.7 s
+anti-windup a330: within 2 kt after 9.5 s, max undershoot -0.59 kt at 18.1 s

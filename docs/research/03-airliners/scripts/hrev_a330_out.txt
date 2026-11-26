@@ -1,0 +1,137 @@
+== 1. units ==
+lb: 242000/187000/171000/212000/174000         [533519,412264,376990,467380,383604]
+fuel kg, lb, USgal                             [76561,168788,25765]
+S ft2, MAC in, AR, AR_jenk                     [3892,286.2,10.056,9.265]
+VMO, VFE FULL, VFE1, VLE m/s                   [169.77,92.6,123.47,128.61]
+VFE 215/205/196/186 m/s                        [110.6,105.5,100.8,95.7]
+235 mph m/s, kt; 204 kt m/s                    [105.05,204.2,104.95]
+68500 lb kN; 223 psi kPa                       [304.7,1538]
+ceiling 12500 m ft; 150 lbf N; 30 ft m         [41010,667,9.14]
+FG k/c conversions                             [2007689,786823,786190,583133]
+FG inertia kg m2 (slug ft2 -> )                [3220609,6784532,5977780]
+FG emptywt kg; B747 kg                         [97069,237599]
+B747 I kg m2                                   [24675887,44877574,67384152,-1315143]
+WRAP 89.9/73/71.5 m/s -> kt; 8.82 m/s fpm      [174.8,141.9,139,151.2,198.5,1736]
+Trent 71100 lbf kN                             316.3
+
+== 2. CLmax anchors ==
+Jenk Vapp136@179t CL (S361.6); x1.23^2         [1.6191,2.45]
+if Vapp=VLS+5 -> CLmax                         2.64
+Jenk V2 144@217t CL (361.6), x1.13^2; S363.1 x1.2^2 [1.7508,2.236,2.511]
+Jenk Vapp CL S363.1 x1.3^2                     2.725
+TSB V2 162@222.7t CL, x1.13^2                  [1.4197,1.813]
+cat C bound CLmax FULL > (VAT 141=1.23VS @187t) 2.3808
+CONF0 1.316 cos29.7/cos25                      1.2613
+
+== 3. speed tables ==
+VS1g CONF0                                     [131.38,141.13,150.24,157.58,166.99,179.26]
+VS1g CONF1                                     [109.92,118.08,125.7,131.84,139.71,149.98]
+VS1g CONF1+F                                   [101.77,109.32,116.38,122.06,129.35,138.85]
+VS1g CONF2                                     [98.54,105.85,112.68,118.18,125.24,134.44]
+VS1g CONF3                                     [96.82,104.01,110.72,116.13,123.06,132.1]
+VS1g FULL                                      [94.22,101.21,107.74,113,119.75,128.55]
+VLS CONF3 1.23                                 [119.09,127.93,136.19,142.84,151.37,162.49]
+VLS FULL 1.23                                  [115.89,124.49,132.53,138.99,147.29,158.12]
+VAPP FULL                                      [120.89,129.49,137.53,143.99,152.29,163.12]
+VAPP CONF3                                     [124.09,132.93,141.19,147.84,156.37,167.49]
+VLS FULL 179t                                  135.99
+V2min 1.13VS1g 180000 1+F/2/3                  [135.32,131.02,128.74]
+V2min 1.13VS1g 200000 1+F/2/3                  [142.64,138.11,135.71]
+V2min 1.13VS1g 222700 1+F/2/3                  [150.52,145.74,143.2]
+V2min 1.13VS1g 242000 1+F/2/3                  [156.9,151.92,149.28]
+V2 typical 1.13*1.03 VS1g CONF2 242t; VR, V1   [156.48,151.48,147.98]
+TSB V2/VS1g(1+F)@222.7t                        1.2162
+VAPP187, VFE FULL - VAPP                       [143.99,36.01]
+
+== 4. hot day + wake ==
+rho35C, VAPP TAS hot                           [1.1455,148.91]
+b0                                             47.36
+Gamma0 ISA, w0, t(b0)                          [426.7,1.434,33]
+Gamma0 35C with TAS=144 (author)               [456.3,1.534]
+Gamma0 35C with CAS 144 -> TAS                 [441.3,1.483]
+Gamma0 MTOW V2 156.5 ISA                       [508.2,1.708]
+RECAT 3/4/5/7 NM @140 kt s                     [77.1,102.9,128.6,180]
+
+== 5. QF72 cruise ==
+FL370 p, rho, a                                [21663,0.3483,295.07]
+TAS kt, q Pa, CL, EAS kt, CAS kt               [470.3,10196,0.4928,250.8,266.9]
+CL0(M0.82) for alpha 2.5 w/ CLa 6.654; /(1/beta) [0.2025,0.1159]
+CD, L/D, drag kN                               [0.0322,15.32,118.6]
+
+== 6. Korn Mcrit / wave drag ==
+Mcrit CL0.5                                    0.7636
+CDw table M .74 .78 .80 .82 .84 .86 .88        [0,0,0.00004,0.0002,0.00068,0.00173,0.00367]
+M at CDw=0.002 (Mcrit+0.1)                     0.8636
+
+== 7. build-up spot checks ==
+a_w M0.21, a_t M0.21                           [4.563,3.884]
+V_H, V_V                                       [0.7931,0.057]
+CLa (deda 0.278, eta 0.9)                      5.072
+Cma @28% (hn 0.470)                            -0.9637
+Cma cruise @28% (hn 0.441, CLa 6.654)          -1.0713
+CLq=2 eta a_t VH; CLadot; Cmadot               [5.545,1.541,-6.064]
+Cmq tail only; x1.1                            [-21.81,-23.99]
+CLde (tau .5), Cmde, CLih, Cmih                [0.3524,-1.3862,0.7047,-2.7725]
+CLa vs Mach (wing+tail, deda/Mach not modelled) M0.2..0.86 [4.557,4.756,4.925,5.16,5.491,5.756,5.973,6.097,6.382]
+
+== 8. inertia ==
+I 130000                                       [10990000,28600000,37630000]
+I 170000                                       [14380000,37400000,49210000]
+I 187000                                       [15810000,41140000,54130000]
+I 205500                                       [17380000,45210000,59480000]
+I 242000                                       [20460000,53240000,70050000]
+187t slug ft2 (1e6)                            [11.66,30.34,39.92]
+FG radii Rx Ry Rz                              [0.191,0.263,0.253]
+B747 Rx (b 64.47)                              0.316
+Ixz stab axes at alpha 5 deg (Ixx,Izz 187t)    -3326741
+
+== 9. approach trim FULL 187 t ==
+CL, alpha, theta, CD, L/D, T kN, T/W, sink fpm [1.5068,5.714,2.714,0.1886,7.988,133.27,0.0727,763.2]
+L=W variant: CL, alpha, CD, T kN               [1.5089,5.737,0.1889,133.62]
+legacy drag K(CL-0.15)^2 at CL: CD             0.1615
+SP approx approach wn, zeta, n/alpha, CAP      [0.569,0.684,3.361,0.096]
+Lanchester approach s                          33.56
+SP approx cruise wn, zeta, n/alpha, CAP        [0.932,0.509,13.502,0.0644]
+Lanchester cruise s                            109.62
+DR period 2pi/wd approach, cruise              [12.57,9.59]
+spiral T1/2 = ln2/0.037, ln2/0.012             [18.7,57.8]
+
+== 10. TSB lift-off / V2 CONF2 / OEI ==
+TSB CL_req 221.2t 152kt; model 0.429+CLa*13.7  [1.6018,1.6418,1.025]
+CL0 check CONF* = CLmax+0.1-CLa a*             {"CONF1":0.13,"CONF1+F":0.43,"CONF2":0.614,"CONF3":0.782,"FULL":1.001}
+V2 CONF2: CL, alpha, CD, L/D                   [1.7542,12.881,0.1774,9.888]
+OEI grad % static 316.3 kN; +0.005             [3.215,2.93]
+OEI grad % with 0.85 lapse (as VMCA case)      [1.216,0.931]
+lapse factor needed for 2.4% (no extra / +0.005) [0.939,0.96]
+
+== 11. VMCA build-up check ==
+VMCA Cndr -0.091 (kt EAS)                      122.5
+VMCA Cndr -0.101 (kt EAS)                      116.3
+scale static (1/0.85), +10%                    [132.5,139]
+1.13 VSR 1+F 242t                              156.9
+
+== 12. field lengths ==
+TOFL m ft; -15%/+15%                           [2736.7,8979,2326,3147]
+LFL m ft; actual 187/179                       [1671.5,5484,1002.7,959.8]
+Vtd kt, roll 1.7, 3.0; decel for roll 1003-300 [135.99,1440,816,3.48]
+
+== 13. tyre + strut ==
+per tyre lb, ratio, p psi, kPa, bar            [62922,0.9186,204.8,1412,14.12]
+strut 94/6 187t: main dx, zeta, fn | nose dx, zeta [0.429,0.937,0.761,0.14,3.104]
+strut 94/6 242t: main dx, zeta, fn | nose dx, zeta [0.556,0.823,0.669,0.181,2.729]
+strut 92/8 187t: main dx, zeta, fn | nose dx, zeta [0.42,0.947,0.769,0.187,2.688]
+strut 92/8 242t: main dx, zeta, fn | nose dx, zeta [0.544,0.832,0.676,0.241,2.363]
+c for zeta 0.6 nose/main (94/6)                [112705,504080]
+
+== 14. LEMAC / tail volume ==
+LEMAC = 30.77 - 0.25*7.27                      28.953
+
+== 15. legacy blend (code stallBlend M = 55, out of ground effect) ==
+flaps 0 CLmax, alpha                           [1.26,13.98]
+flaps 0.015 CLmax, alpha                       [1.277,14.03]
+flaps 0.354 CLmax, alpha                       [1.676,15.14]
+flaps 0.563 CLmax, alpha                       [1.925,15.86]
+flaps 0.753 CLmax, alpha                       [2.152,16.53]
+flaps 1 CLmax, alpha                           [2.45,17.42]
+flapMap fractions                              [0.0147,0.3537,0.5627,0.7525]
+trim alpha clean (Cm0/Cma), FULL ((Cm0+Cmflap)/Cma) deg [4.3,5.74]

@@ -22,7 +22,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `geo` (AIP geometry), `flight` (start trim, parked, autoland per wind), `runways` (autoland on all four ends),
   `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01), `modes` (trim, linearise and
   MIL-F-8785C Level 1 modes with regression bands, research T-V-01…T-V-06), `keys` (keyboard map and key handling,
-  research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `input` (shaping, key ramps, the
+  research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `papi` (PAPI distance from MEHT, colour
+  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `input` (shaping, key ramps, the
   sub-frame key latch, the standard gamepad and source arbitration, research T-I-01…T-I-06, T-I-09…T-I-12 and T-C-14,
   phone tilt geometry and `TiltStick`, and that `src/90-app.js` reads the gamepad and the tilt through it), `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
@@ -94,7 +95,12 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   quaternion body→NED, SI units internally.
 - Render: x = east, y = up, z = −north. Data JSON coordinates are `[e, n]` metres from the ARP.
 - `RWY_END[id]`: `thr` [n,e], `u` landing direction, `r` right normal, `lda`, `aim` (GP origin = RDH / tan 3°),
-  `papi` (distance from MEHT), `locDist`, `appr.kind` ILS or RNP (03R is RNP with a synthetic 3° path).
+  `papi` (estimated distance solved from the AIP MEHT in the drawn geometry: `PAPI_GEOM` light height 0.64 m,
+  2°50′ unit 33 m outside the edge), `locDist`, `appr.kind` ILS or RNP (03R is RNP with a synthetic 3° path).
+- Body points (FRD from the CG, estimates): `AC.eye` (cockpit camera, PAPI colours) and `AC.gsAnt` (ILS receiver).
+  ILS deviations and the autopilot use the antenna, PAPI uses the eye. LOC 1 dot = atan(105 m / locDist) / 2
+  per runway (0.75° on 21R/03L, 0.89° on 21L), G/S 1 dot 0.36°. On the ILS the trainer sees the PAPI read low in
+  the last ~0.7 km because DMK's MEHT is 3.3–5.1 m above the beam over the threshold (real, AIP-derived).
 
 ## Flight model (current state)
 - Generic two-seat turboprop trainer (fictional): m 2250 kg, S 16.3 m², b 10.2 m, P 700 kW, static thrust 11.5 kN.
@@ -270,6 +276,14 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   results go to `$LM_OUT_DIR`, never into the repo. `lm_ci.mjs --root .` runs the same checks on the working tree.
   After a physics change, re-pin the commit and move the expected values in one PR (`lm_selftest` T-LM-32 checks
   that the scripts' copies of `stallBlend` and `Evaluator.score` still match the pinned sim).
+- Round 3 (airliners: ATR 72-600, 737-800, A320/A321 ceo and neo, A330-300) follows the same split:
+  `03-airliners.md` holds the summary, conflicts and the task list; `03-airliners/` holds 10 topic files, one
+  merged parameter file per type (`params-<type>.json`, plus `params-common-airliner.json`), the per-type
+  summary `schema.md`, the round-1 schema extension `schema-ext.md` (new categories airframe, speeds, performance,
+  propulsion, controls, afcs, ops; `_inherits` for neo and A321 variants) and the scripts in `scripts/`
+  (`r3_merge.mjs` rebuilds the JSON from the topic files, `r3_schema.mjs` rebuilds `schema.md`).
+  Round 3 keeps scope by meaning and gives airliner speeds as mass tables or rules, unlike round 2's card rules,
+  so do not run round 2's `lm_merge --strict` on round 3's `params-*.json`.
 - Read the relevant report before changing physics, input or data. Physics code changes wait until the owner
   approves the development plan that follows all five rounds.
 

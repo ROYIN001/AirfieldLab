@@ -1,0 +1,14 @@
+T1 737 nominal (exp 100): 100
+T2 JA56AN-like (exp 15): 15
+T3 F-GTAT-like (exp 70): 70
+T4 VH-FVZ-like (exp 35): 35
+T5 long 1000 m (exp 50): 50
+T6 A320 bank 6 crab 7 (exp 94): 94
+T12 A330 nominal (exp 100): 100
+hard G-DHJH: true
+hard F-GTAT: false
+hard VH-YQR 2nd: true
+hard VH-VUJ comp: false
+hard JA56AN: true
+hard VT-JTD 2nd: true
+hard VH-FVZ: true

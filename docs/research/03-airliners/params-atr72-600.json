@@ -1,0 +1,4159 @@
+{
+ "_meta": {
+  "type": "atr72_600",
+  "note": "สร้างอัตโนมัติจากบล็อก JSON ในไฟล์หัวข้อของรอบที่ 3 ด้วย scripts/r3_merge.mjs ห้ามแก้ด้วยมือ ให้แก้ที่ไฟล์หัวข้อแล้วสร้างใหม่",
+  "leaf": "{v,u,scope,src,conf,est,note}",
+  "inheritsResolved": null,
+  "leaves": 282,
+  "est": 164
+ },
+ "_na": {
+  "v": [
+   "turbofan.*",
+   "aero.spin_reference.*",
+   "aero.mach.CD_wave_table",
+   "gear.certification.part23_limit_descent",
+   "gear.certification.part23_wing_lift_ratio",
+   "gear.certification.part23_min_load_factors",
+   "gear.certification.part23_reserve_drop_factor",
+   "wind.fFactor.trainerExcessTW",
+   "wind.wake.trainerRollControl",
+   "validation.typicalModes.*"
+  ],
+  "u": "-",
+  "scope": "aircraft",
+  "src": [],
+  "conf": "สูง",
+  "est": false,
+  "note": "เทอร์โบพร็อปสองเครื่องยนต์ CS-25: ไม่มีเทอร์โบแฟน, ไม่รับรอง spin, MMO 0.55 จึงไม่ต้องมีตาราง wave drag, เกณฑ์ Part 23 และค่าของเครื่องฝึก/แบบอ้างอิงอื่นใช้ไม่ได้"
+ },
+ "airframe": {
+  "identity": {
+   "v": {
+    "manufacturer": "ATR (GIE Avions de Transport Régional)",
+    "model": "ATR 72-212A",
+    "variant": "\"600 version\" = Major Modification 5948 (CS-25 Amdt 3)",
+    "engine": "2 × Pratt & Whitney Canada PW127M (PW127N/PW127XT-M เป็นตัวเลือก)",
+    "propeller": "Hamilton Sundstrand (ปัจจุบัน Collins) 568F-1, 6 ใบ คอมโพสิต",
+    "seats": "74 สูงสุดตามการรับรอง (78 ด้วย Mod 7289/10001); Bangkok Airways 70",
+    "icao_type": "AT76",
+    "operatorsDMK": [
+     "Bangkok Airways (PG): ATR 72-600 10 ลำ + สั่ง 12 (ส.ค. 2025); เส้นทาง Koh Samui–Don Mueang 3 เที่ยว/วันด้วย ATR72 ตั้งแต่ 29 ต.ค. 2023 (สถานะปี 2026 ยังไม่ยืนยัน)",
+     "Nok Air (DD): เคยใช้ ATR 72-500 ปี 2014 รับช่วงเส้นทาง Nok Mini/SGA ซึ่งมีฐานที่ DMK; ฝูงบิน ส.ค. 2025 เหลือ 737-800 เท่านั้น",
+     "โดยรวม ATR 72 ที่ DMK พบน้อย (ราว 1 % ของเที่ยวบิน, ค่าประมาณจากรอบที่ 5)"
+    ]
+   },
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "R1",
+    "R13",
+    "R37",
+    "R38",
+    "R39",
+    "R41",
+    "R47"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "ตัวตนของแบบสูง; AT76 ตาม [R47]; สถานะผู้ให้บริการที่ DMK ปี 2026 ยังไม่ยืนยัน"
+  },
+  "weights": {
+   "MTW": {
+    "v": {
+     "WV00": 21170,
+     "WV09": 22170,
+     "WV10": 22180,
+     "WV20": 22670,
+     "WV30": 22670,
+     "WV40": 22970,
+     "WV50": 23170
+    },
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "R1"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "Maximum ramp weight ตาม weight variant ของ Mod 6852 (TCDS III.13.b); ค่าที่สายการบินไทยใช้: ไม่พบในแหล่งสาธารณะ"
+   },
+   "MTOW": {
+    "v": {
+     "WV00": 21000,
+     "WV09": 21999,
+     "WV10": 22000,
+     "WV20": 22500,
+     "WV30": 22500,
+     "WV40": 22800,
+     "WV50": 23000
+    },
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "R1",
+     "R4",
+     "R5"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "factsheet: basic 22,800 kg (50,265 lb) = WV40, option 23,000 kg (50,705 lb) = WV50; brochure PW127XT-M ใช้ 23,000 kg"
+   },
+   "MLW": {
+    "v": {
+     "WV00": 21000,
+     "WV09": 21850,
+     "WV10": 21850,
+     "WV20": 22350,
+     "WV30": 22350,
+     "WV40": 22350,
+     "WV50": 22350
+    },
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "R1",
+     "R4"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "factsheet basic 22,350 kg (49,272 lb)"
+   },
+   "MZFW": {
+    "v": {
+     "WV00": 20000,
+     "WV09": 20500,
+     "WV10": 20000,
+     "WV20": 20300,
+     "WV30": 20500,
+     "WV40": 20800,
+     "WV50": 21000
+    },
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "R1",
+     "R4"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "WV10 (20,000) ต่ำกว่า WV09 (20,500) ตามที่พิมพ์ใน TCDS"
+   },
+   "OEW": {
+    "v": {
+     "tech_spec": 13010,
+     "typical_in_service_PW127M": 13450,
+     "typical_in_service_PW127XT": 13750
+    },
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R5"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ค่าตามเอกสารผู้ผลิต; OEW จริงของแต่ละสายการบินต่างกัน"
+   },
+   "max_fuel": {
+    "v": 5000,
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "R1",
+     "R4"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "TCDS III.9: unusable 30 kg, usable 5,000 kg, normal refuelling with pre-selector 5,050 kg, refuelling up to high level indication 6,360 L (แก้โดยผู้ตรวจทาน)"
+   }
+  },
+  "cg": {
+   "MAC": {
+    "v": 2.34,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R26",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจาก S 61 m², b 27.05 m และ taper 0.50 แบบสี่เหลี่ยมคางหมู (r_aero_modes.mjs); MAC จริงอยู่ใน Weight and Balance Manual ที่ไม่เผยแพร่"
+   },
+   "LEMAC_x": {
+    "v": 11.9,
+    "u": "m STA",
+    "scope": "aircraft",
+    "src": [
+     "R4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบในแหล่งสาธารณะ; ประมาณจาก CG ของ build-up (STA 12.5 m ที่ 21 t) ลบ 25 % MAC"
+   },
+   "fwd_limit_pctMAC": {
+    "v": 20.8,
+    "u": "%MAC",
+    "scope": "aircraft",
+    "src": [
+     "R7"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "ขอบเขตที่ TOW 20.36 t ของ B-22816 (-600) ตามรายงาน GE235; ขอบหน้าเปลี่ยนตามน้ำหนัก (AFM); NTSB AAR-96/01 ให้ช่วง 10–39 % สำหรับ 72-212 ปี 1994"
+   },
+   "aft_limit_pctMAC": {
+    "v": 37,
+    "u": "%MAC",
+    "scope": "aircraft",
+    "src": [
+     "R7",
+     "R10"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "ที่ TOW 20.36 t (GE235); NTSB ให้ 39 % (72-212)"
+   },
+   "ref_pctMAC": {
+    "v": 25,
+    "u": "%MAC",
+    "scope": "aircraft",
+    "src": [
+     "R7"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "นิยามจุดอ้างอิงตาม schema (รายงาน GE235 ใช้ %MAC เช่นกัน)"
+   }
+  },
+  "inertia": {
+   "ref_mass": {
+    "v": 21000,
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "R1"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "มวลที่ใช้คำนวณ build-up"
+   },
+   "Ixx": {
+    "v": 265800,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "R24"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "build-up 12 ชิ้นส่วน (r_aero_modes.mjs); ค่า GE791 ผ่าน Wolfram 289,900 ใกล้เคียง (+9 %)"
+   },
+   "Iyy": {
+    "v": 789800,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "R24"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "build-up; ขัดแย้งกับค่า GE791 ผ่าน Wolfram 298,400 (มวลอ้างอิงไม่ระบุ); เลือก build-up เพราะ Iyy ≈ Ixx ไม่สอดคล้องกับลำตัว 27 m และหาง T หนัก (ดูหัวข้อความขัดแย้ง)"
+   },
+   "Izz": {
+    "v": 1002000,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "R24"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "build-up; GE791 ผ่าน Wolfram 573,600"
+   },
+   "Ixz": {
+    "v": 33400,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "R24"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "build-up (FRD, หางตั้งและแพนหางสูงอยู่เหนือ CG); GE791 ผ่าน Wolfram ให้ 0"
+   },
+   "radii": {
+    "v": {
+     "Rx": 0.263,
+     "Ry": 0.451,
+     "Rz": 0.51
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R24"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "Roskam: R = 2k/b, 2k/L, 2k/e; b 27.05, L 27.17, e = (b+L)/2; ถ้าใช้ค่า GE791 ที่มวล 21,217 kg ได้ Rx 0.273, Ry 0.276, Rz 0.384"
+   }
+  },
+  "wing": {
+   "S": {
+    "v": 61,
+    "u": "m2",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R5"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "657 ft²"
+   },
+   "b": {
+    "v": 27.05,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R28"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "88 ft 9 in"
+   },
+   "MAC": {
+    "v": 2.34,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R26",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ดู airframe.cg.MAC"
+   },
+   "AR": {
+    "v": 12,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R4"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "b²/S = 11.995"
+   },
+   "taper": {
+    "v": 0.5,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R26",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แหล่งขัดแย้ง 0.419 (Seeckt: \"based on the real ATR 72\", c_r 2.73 / c_t 1.14 m) และ 0.59 (สไลด์ Nita ในส่วนออกแบบใหม่ ไม่ชัดว่าเป็นค่าของเครื่องจริง) เลือกค่ากลาง"
+   },
+   "sweep_c4_deg": {
+    "v": 1,
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "R26"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "Seeckt: 0° ปีกใน 1° ปีกนอก \"based on the original ATR 72\"; ค่า 25° ในสไลด์ Nita เป็นข้อความเพี้ยน"
+   },
+   "dihedral_deg": {
+    "v": 0,
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "R26"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "Seeckt ระบุ 0° \"as for the original ATR 72\" (ยังไม่ยืนยัน); ผล dihedral ที่ใช้ใน Clβ (−0.07) รวมผลปีกสูงแล้ว ห้ามนับซ้ำ"
+   },
+   "incidence_deg": {
+    "v": 1,
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "R19",
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบในแหล่งสาธารณะ; ย้อนจาก CL0 ปีกสะอาด 0.229 ที่ α_body 0 และ α0 ของ NACA 43018 ราว −1.2°"
+   },
+   "twist_deg": {
+    "v": -2,
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "R45"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบในแหล่งสาธารณะ; ค่าทั่วไปของปีกตรง AR สูง"
+   },
+   "airfoil": {
+    "v": {
+     "root": "RA 1843 (NACA 43018 mod)",
+     "tip": "RA 1343 (NACA 43013 mod)"
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R19",
+     "R10",
+     "R27"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "NTSB: \"modified NACA 43XXX 5 digit series\", non-laminar"
+   }
+  },
+  "tail": {
+   "S_h": {
+    "v": 11.73,
+    "u": "m2",
+    "scope": "aircraft",
+    "src": [
+     "R27"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "Nita (คอลัมน์ original) 11.7 m²"
+   },
+   "l_h": {
+    "v": 13.6,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "FlightGear htailarm 44.58 ft = 13.59 m; Nita 13.565 m (redesign)"
+   },
+   "S_v": {
+    "v": 12.48,
+    "u": "m2",
+    "scope": "aircraft",
+    "src": [
+     "R27"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "Nita (original) 12.5 m²"
+   },
+   "l_v": {
+    "v": 13.6,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "R22"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "FlightGear vtailarm 44.57 ft"
+   },
+   "b_h": {
+    "v": 7.31,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "สมมติ AR_h ≈ 4.55"
+   },
+   "b_v": {
+    "v": 3.87,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "R26"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "จาก AR_v 1.2 ของ Seeckt (ค่าที่เลือกในงานออกแบบ)"
+   }
+  },
+  "geometry": {
+   "length": {
+    "v": 27.166,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "89 ft 1.5 in; ป้ายในภาพผู้เขียนจับคู่เอง"
+   },
+   "span": {
+    "v": 27.05,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "88 ft 9 in"
+   },
+   "height_tail": {
+    "v": 7.65,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "25 ft 1 in"
+   },
+   "wheelbase": {
+    "v": 10.77,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "35 ft 4 in"
+   },
+   "main_track": {
+    "v": 4.1,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "13 ft 5 in"
+   },
+   "nose_to_nosegear": {
+    "v": 2.9,
+    "u": "m STA",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ; ประมาณจากภาพด้านข้าง ±0.4 m"
+   },
+   "nose_to_maingear": {
+    "v": 13.7,
+    "u": "m STA",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "จมูกถึง NG บวก WB"
+   },
+   "eye_pos_STA": {
+    "v": 2.6,
+    "u": "m STA",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ; ±0.3 m"
+   },
+   "eye_pos_FRD": {
+    "v": [
+     10.24,
+     -0.45,
+     -0.85
+    ],
+    "u": "m FRD",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "CG อ้างอิงสมมติล้อหน้ารับ 8 %; z_MG 1.8, B 2.65 (ประมาณ)"
+   },
+   "eye_height_static": {
+    "v": 2.5,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ; ±0.3 m"
+   },
+   "eye_to_gsAntenna_vertical": {
+    "v": 0.89,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "สมมติสายอากาศในจมูก ต่ำกว่าตา 1.0 m หน้าตา 2.1 m"
+   },
+   "eye_to_maingear_vertical": {
+    "v": 2.65,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D19"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "pitch approach ≈ 0° (FCTM: 2.5° ก้มถึง 1° เงย)"
+   },
+   "eye_to_maingear_horizontal": {
+    "v": 11.1,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "13.7 − 2.6"
+   },
+   "approach_visual": {
+    "v": {
+     "theta_deg": 3,
+     "pitch_deg": 0,
+     "H": 2.3,
+     "H1": 3.2,
+     "H2": 0.9,
+     "H4": 2.65
+    },
+    "u": "m (pitch deg)",
+    "scope": "aircraft",
+    "src": [
+     "D19",
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณทั้งหมด H1 ช่วง 2.7 ถึง 3.7 m"
+   },
+   "turning": {
+    "steering_angle_max": {
+     "v": 60,
+     "u": "deg",
+     "scope": "gear",
+     "src": [
+      "D41"
+     ],
+     "conf": "กลาง",
+     "est": false,
+     "note": "tiller ±60° ของ ATR 72-202 (STSB 2303 หน้า 14; เกณฑ์ทดสอบ 57 ถึง 63°); สมมติ -600 เท่ากัน; FlightGear ตั้ง 70° ไม่ใช้"
+    },
+    "steering_angle_effective": {
+     "v": 57,
+     "u": "deg",
+     "scope": "gear",
+     "src": [
+      "D41",
+      "D2"
+     ],
+     "conf": "ต่ำ",
+     "est": true,
+     "note": "ค่าประมาณ 60 − 3° ตามวิธี tyre slip ของ Boeing; ATR ไม่ได้ประกาศ"
+    },
+    "min_radius_R3": {
+     "v": 12.84,
+     "u": "m",
+     "scope": "aircraft",
+     "src": [
+      "D6",
+      "D2"
+     ],
+     "conf": "ต่ำ",
+     "est": true,
+     "note": "ล้อหน้า R3 = WB/sin θe; มุมสูงสุด 60° [D41], มุมใช้งาน 57° (est); WB 10.77, T 4.10, b 27.05"
+    },
+    "min_radius_R4": {
+     "v": 20.52,
+     "u": "m",
+     "scope": "aircraft",
+     "src": [
+      "D6",
+      "D2"
+     ],
+     "conf": "ต่ำ",
+     "est": true,
+     "note": "ปลายปีก R4 = hypot(d + b/2, Δx_tip), d = WB/tan θe; มุมสูงสุด 60° [D41], มุมใช้งาน 57° (est); WB 10.77, T 4.10, b 27.05"
+    },
+    "min_radius_R5": {
+     "v": 15.38,
+     "u": "m",
+     "scope": "aircraft",
+     "src": [
+      "D6",
+      "D2"
+     ],
+     "conf": "ต่ำ",
+     "est": true,
+     "note": "จมูก R5 = hypot(d, จมูกถึง MG); มุมสูงสุด 60° [D41], มุมใช้งาน 57° (est); WB 10.77, T 4.10, b 27.05"
+    },
+    "min_radius_R6": {
+     "v": 15.18,
+     "u": "m",
+     "scope": "aircraft",
+     "src": [
+      "D6",
+      "D2"
+     ],
+     "conf": "ต่ำ",
+     "est": true,
+     "note": "ท้ายลำตัวบนแนวกลาง R6 = hypot(d, MG ถึงท้าย); ปลายแพนหางอาจไกลกว่า; มุมสูงสุด 60° [D41], มุมใช้งาน 57° (est); WB 10.77, T 4.10, b 27.05"
+    }
+   },
+   "clearances": {
+    "tail_at_rotation": {
+     "v": {
+      "gear_extended": 8,
+      "gear_compressed": 5.9
+     },
+     "u": "deg",
+     "scope": "aircraft",
+     "src": [
+      "D19",
+      "D18"
+     ],
+     "conf": "สูง",
+     "est": false,
+     "note": "BEA F-OZKN §3.1"
+    },
+    "propeller_tip": {
+     "v": 0.835,
+     "u": "m",
+     "scope": "aircraft",
+     "src": [
+      "D12"
+     ],
+     "conf": "ต่ำ",
+     "est": false,
+     "note": "ตัวเลข 2 ft 8.9 in ในภาพ factsheet ที่ไม่มีป้าย ผู้เขียนตีความว่าเป็นระยะปลายใบพัดถึงพื้น"
+    }
+   },
+   "icao_code": {
+    "v": "3C",
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "L46",
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "letter C จาก span; number 3 ถ้า ARFL < 1800 m (ยืนยันกับหัวข้อ 1)"
+   },
+   "faa_adg": {
+    "v": "III",
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "D26"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "span 88.7 ft (III), หาง 25.1 ft (II)"
+   }
+  }
+ },
+ "speeds": {
+  "VMO_kt": {
+   "v": 250,
+   "u": "kt IAS",
+   "scope": "aircraft",
+   "src": [
+    "R12",
+    "R21"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "ATSB AO-2014-032: \"maximum operating speed (VMO) of the aircraft of 250 kt\""
+  },
+  "MMO": {
+   "v": 0.55,
+   "u": "Mach",
+   "scope": "aircraft",
+   "src": [
+    "R21"
+   ],
+   "conf": "ต่ำ",
+   "est": false,
+   "note": "จากชุดบัตรทบทวนของผู้ใช้ (ไม่เป็นทางการ)"
+  },
+  "VLE_kt": {
+   "v": 185,
+   "u": "kt IAS",
+   "scope": "aircraft",
+   "src": [
+    "R21"
+   ],
+   "conf": "ต่ำ",
+   "est": false,
+   "note": "บัตรทบทวน \"Blue 185\" (ตีความว่าเป็น VLE)"
+  },
+  "VLO_kt": {
+   "v": {
+    "extension": 170,
+    "retraction": 160
+   },
+   "u": "kt IAS",
+   "scope": "aircraft",
+   "src": [
+    "R21"
+   ],
+   "conf": "ต่ำ",
+   "est": false,
+   "note": "บัตรทบทวน"
+  },
+  "VFE": {
+   "v": {
+    "15": 185,
+    "30": 150
+   },
+   "u": "kt IAS",
+   "scope": "aircraft",
+   "src": [
+    "R10",
+    "R21"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "flaps 15: NTSB (ATR 72-212) flap overspeed warning > 185 KIAS; flaps 30: บัตรทบทวน 150 kt (ต่ำ); FCOM conservative speeds F15 150, F30 135 kt ไม่ใช่ VFE"
+  },
+  "VA_kt": {
+   "v": 175,
+   "u": "kt IAS",
+   "scope": "aircraft",
+   "src": [
+    "R21"
+   ],
+   "conf": "ต่ำ",
+   "est": false,
+   "note": "บัตรทบทวน; max rough air 180 kt"
+  },
+  "VSR": {
+   "v": {
+    "axes": {
+     "mass_kg": [
+      14000,
+      16000,
+      18000,
+      20000,
+      21000,
+      22000,
+      22350,
+      23000
+     ],
+     "flap": [
+      "0",
+      "15",
+      "30"
+     ]
+    },
+    "data": [
+     [
+      96.2,
+      80.4,
+      72
+     ],
+     [
+      102.9,
+      86,
+      77
+     ],
+     [
+      109.1,
+      91.2,
+      81.7
+     ],
+     [
+      115,
+      96.1,
+      86.1
+     ],
+     [
+      117.8,
+      98.5,
+      88.2
+     ],
+     [
+      120.6,
+      100.8,
+      90.3
+     ],
+     [
+      121.6,
+      101.6,
+      91
+     ],
+     [
+      123.3,
+      103.1,
+      92.3
+     ]
+    ]
+   },
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "R4",
+    "R9",
+    "R14",
+    "R16",
+    "R31"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ย้อนจาก VREF 106 kt @20.4 t (BEA) และ 113 KIAS @MLW (factsheet) = 1.23 VSR30 ได้ CLmax30 2.675; V2min 116 KCAS @22.8 t = 1.13 VSR15 ได้ CLmax15 2.146 (ขอบล่าง ถ้า V2 ถูก VMCA จำกัด); CLmax0 1.50 สมมติ (r_speeds_clmax.mjs)"
+  },
+  "VmLB": {
+   "v": {
+    "axes": {
+     "mass_kg": [
+      14000,
+      16000,
+      18000,
+      20000,
+      21000,
+      22000,
+      22350,
+      23000
+     ],
+     "flap": [
+      "0",
+      "15"
+     ]
+    },
+    "data": [
+     [
+      113.5,
+      94.9
+     ],
+     [
+      121.4,
+      101.5
+     ],
+     [
+      128.7,
+      107.6
+     ],
+     [
+      135.7,
+      113.5
+     ],
+     [
+      139,
+      116.3
+     ],
+     [
+      142.3,
+      119
+     ],
+     [
+      143.4,
+      119.9
+     ],
+     [
+      145.5,
+      121.7
+     ]
+    ]
+   },
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "R14",
+    "R16"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "VmLB = 1.18 VSR (FCOM 2.02, AvioConsult); ค่าสภาวะปกติ ไม่รวม icing; flaps 0 ขึ้นกับ CLmax0 ที่สมมติ"
+  },
+  "VREF_kt": {
+   "v": {
+    "axes": {
+     "mass_kg": [
+      14000,
+      16000,
+      18000,
+      20000,
+      21000,
+      22000,
+      22350,
+      23000
+     ]
+    },
+    "data": [
+     98,
+     98,
+     100.5,
+     105.9,
+     108.5,
+     111.1,
+     112,
+     113.6
+    ]
+   },
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "R9",
+    "R4",
+    "R14",
+    "R17"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "flaps 30: VREF = VmHB30 = max(1.23 VSR30, VMCL 98 kt); ยึดกับ BEA 106 kt @20.4 t; VMCL เป็นขั้นต่ำเมื่อมวล < 17.1 t"
+  },
+  "VAPP_rule": {
+   "v": "VAPP = max(VmHB30 + WF, VMCL); WF = max(1/3 headwind, full gust), สูงสุด 15 kt",
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "R16",
+    "R17"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "สำเนา FCOM ไม่เป็นทางการ + ATR safety conference"
+  },
+  "takeoff_typical": {
+   "v": {
+    "flap": "15",
+    "mass_kg": 22800,
+    "V1": 113,
+    "VR": 113,
+    "V2": 116
+   },
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "R4",
+    "R7"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "V2 116 KCAS (V2min @MTOW, factsheet) สูง; V1 = VR 113 เป็นค่าประมาณ (GE235 บันทึก V1 114 kt ที่ 20.36 t ซึ่งบอกว่า VR ของ ATR ถูกจำกัดด้วย VMCA มากกว่าด้วย stall)"
+  },
+  "VMCG_kt": {
+   "v": 92,
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "R14"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ไม่พบตัวเลขในแหล่งสาธารณะ; AFM กำหนดที่ RTO ของอีกเครื่องยนต์; ค่าประมาณ ≈ VMCA − 9 kt; ATR 72-500 บนทางวิ่งกว้าง 14 m +5 kt"
+  },
+  "VMCA_kt": {
+   "v": 101,
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "R4",
+    "R14",
+    "R30"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ไม่พบตัวเลข (แผนภูมิใน AFM LIM.3); ขอบบน 116/1.10 = 105.5 kt จาก V2min ≥ 1.10 VMCA; RTO อีกเครื่อง, bank 5°"
+  },
+  "VMCL_kt": {
+   "v": 98,
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "R14"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "\"98 kt CAS for both Flaps 30 and 15\" (AFM LIM.3 ผ่าน AvioConsult), อีกเครื่องที่ GA power"
+  },
+  "crosswind_demonstrated_kt": {
+   "v": 35,
+   "u": "kt",
+   "scope": "aircraft",
+   "src": [
+    "R21",
+    "R16"
+   ],
+   "conf": "ต่ำ",
+   "est": false,
+   "note": "บัตรทบทวน \"Maximum crosswind TO/LDG 35 kt\" (ไม่ระบุ gust/steady); ตาราง AP ใน FCOM: crosswind 17 kt, headwind 29, tailwind 10"
+  },
+  "icao_approach_category": {
+   "v": "B",
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "R33"
+   ],
+   "conf": "สูง",
+   "est": true,
+   "note": "VREF ที่ MLW ≈ 112 kt อยู่ในช่วง 91–120 kt (14 CFR 97.3); คำนวณจากนิยาม"
+  }
+ },
+ "performance": {
+  "TOFL_MTOW_ISA_SL": {
+   "v": {
+    "22800_basic": 1279,
+    "23000_option": 1304
+   },
+   "u": "m",
+   "scope": "aircraft",
+   "src": [
+    "R4",
+    "R5"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "PW127M, flaps 15 (สันนิษฐาน), take-off field length; 4,196 / 4,278 ft; โบรชัวร์เก่า (2012) 1,333/1,367 m"
+  },
+  "LFL_MLW_ISA_SL": {
+   "v": 915,
+   "u": "m",
+   "scope": "aircraft",
+   "src": [
+    "R4",
+    "R5"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "\"EASA Air Ops\" (3,002 ft) = ระยะจริง/0.7 สำหรับ turboprop; โบรชัวร์เก่า 1,067 m"
+  },
+  "landing_distance_actual_MLW": {
+   "v": 640,
+   "u": "m",
+   "scope": "aircraft",
+   "src": [
+    "R5",
+    "R36"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "0.7 × 915 m (CAT.POL.A.230 turbo-propeller 70 %); 2,101 ft"
+  },
+  "ROC_initial_fpm": {
+   "v": 1355,
+   "u": "fpm",
+   "scope": "aircraft",
+   "src": [
+    "R4"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "ISA SL MTOW, 170 KCAS; 6.88 m/s"
+  },
+  "service_ceiling_ft": {
+   "v": 25000,
+   "u": "ft",
+   "scope": "aircraft",
+   "src": [
+    "R13",
+    "R21",
+    "R43"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "maximum operating altitude 25,000 ft (7,620 m); OEI net ceiling 95 % MTOW ISA+10 = 10,000 ft (PW127M) / 9,800 ft (XT-M)"
+  },
+  "cruise_Mach": {
+   "v": 0.44,
+   "u": "Mach",
+   "scope": "aircraft",
+   "src": [
+    "R4"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "ค่าประมาณ: 275 KTAS ที่ FL170 สมมติ (ISA a = 319.8 m/s ได้ M 0.442); factsheet ระบุ \"Optimum FL\""
+  },
+  "cruise_TAS_kt": {
+   "v": {
+    "max_cruise_PW127M": 275,
+    "max_cruise_XT_FL200": 270
+   },
+   "u": "kt TAS",
+   "scope": "aircraft",
+   "src": [
+    "R4",
+    "R5"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "95 % MTOW ISA"
+  },
+  "range_km": {
+   "v": 1404,
+   "u": "km",
+   "scope": "aircraft",
+   "src": [
+    "R4"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "758 NM with max pax (PW127M); XT 683 NM"
+  },
+  "max_fuel_kg": {
+   "v": 5000,
+   "u": "kg",
+   "scope": "aircraft",
+   "src": [
+    "R4",
+    "R1"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": ""
+  },
+  "tests": {
+   "v": {
+    "V2min_MTOW_kt": 116,
+    "VREF_landing_kt": 113,
+    "climb_speed_KCAS": 170,
+    "time_to_FL170_min": 17.5,
+    "cruise_FF_kg_h": 762,
+    "block_200NM_fuel_kg": 638,
+    "block_200NM_min": 61,
+    "approach_torque_pct_3deg": 25,
+    "approach_torque_pct_ATSB": 22
+   },
+   "u": "mixed",
+   "scope": "aircraft",
+   "src": [
+    "R4",
+    "R9",
+    "R8"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "ค่าที่ใช้เป็นเป้าตรวจโมเดล (ดูกรณีทดสอบ T-R)"
+  }
+ },
+ "aero": {
+  "ref": {
+   "S": {
+    "v": 61,
+    "u": "m2",
+    "scope": "aircraft",
+    "src": [
+     "R4"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": ""
+   },
+   "b": {
+    "v": 27.05,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "R4"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": ""
+   },
+   "c": {
+    "v": 2.34,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R26",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "MAC ประมาณ (taper 0.50)"
+   }
+  },
+  "static_long": {
+   "CL0": {
+    "v": {
+     "0": 0.229,
+     "15": 0.973,
+     "30": 1.502
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R9"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "α วัดจากแกนลำตัว; = CLmax − CLα·α_CLmax (r_speeds_clmax.mjs)"
+   },
+   "CLalpha": {
+    "v": {
+     "approach": 5.6,
+     "cruise": 6
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R22"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "Helmbold+หาง ได้ 5.93 (M 0.17) และ 6.41 (M 0.45); FlightGear ≈ 5.2; เลือก 5.6/6.0"
+   },
+   "CLmax_target": {
+    "v": {
+     "0": 1.5,
+     "15": 2.146,
+     "30": 2.675
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R9",
+     "R22"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "flaps 30 จาก VREF (กลาง), flaps 15 จาก V2min (ขอบล่าง), clean สมมติ (FlightGear 1.62 ที่ 18°)"
+   },
+   "alpha_CLmax": {
+    "v": {
+     "0": 13,
+     "15": 12,
+     "30": 12
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "R10",
+     "R11"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "α ลำตัว; vane AOA ของ stick shaker 15.9–18.1° (clean) สูงกว่าเพราะ upwash ที่หัววัด"
+   },
+   "Cm0": {
+    "v": 0.074,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R9"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ให้ trim ที่ δe = 0 ใน cruise CL 0.467 กับ Cmα −1.74 (r_legacy.mjs)"
+   },
+   "Cmalpha": {
+    "v": {
+     "approach": -1.74,
+     "cruise": -1.81
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "Cmα = −CLα (h_n − 0.25); h_n ≈ 0.55–0.56 MAC จากหาง V_H 1.12 ลบผลลำตัว/nacelle/ใบพัด (r_aero_modes.mjs)"
+   }
+  },
+  "flaps": {
+   "detents": {
+    "v": [
+     {
+      "name": "0",
+      "flap_deg": 0,
+      "slat_deg": 0,
+      "VFE_kt": null,
+      "dCL0": 0,
+      "dCD0": 0,
+      "dCm0": 0,
+      "CLmax": 1.5
+     },
+     {
+      "name": "15",
+      "flap_deg": 15,
+      "slat_deg": 0,
+      "VFE_kt": 185,
+      "dCL0": 0.744,
+      "dCD0": 0.02,
+      "dCm0": -0.018,
+      "CLmax": 2.146
+     },
+     {
+      "name": "30",
+      "flap_deg": 30,
+      "slat_deg": 0,
+      "VFE_kt": 150,
+      "dCL0": 1.273,
+      "dCD0": 0.052,
+      "dCm0": -0.031,
+      "CLmax": 2.675
+     }
+    ],
+    "u": "mixed",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R9",
+     "R10",
+     "R21",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "แฟลป double-slotted ไม่มี slat (Nita); flap_deg = ชื่อ detent (ยังไม่ยืนยันมุมจริง); dCD0 flaps 30 = 0.072 − gear 0.020 จากการ fit แรงบิด approach 25 %; flaps 15 dCD0 ประมาณ"
+   },
+   "transition_time_s": {
+    "v": {
+     "0-15": 8,
+     "15-30": 8
+    },
+    "u": "s",
+    "scope": "aircraft",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบในแหล่งสาธารณะ"
+   }
+  },
+  "spoilers": {
+   "ground_dCL": {
+    "v": 0,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ATR 72 มี roll spoiler ข้างละหนึ่งแผ่น ไม่มี ground spoiler/speedbrake (ยังไม่ได้ยืนยันจากเอกสาร flight controls ในรอบนี้; หัวข้อ 7)"
+   },
+   "ground_dCD": {
+    "v": 0,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ดู ground_dCL"
+   },
+   "roll_Cl_per_rad": {
+    "v": 0.05,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ส่วนเพิ่มของ roll spoiler ต่อมุม aileron เทียบเท่า (สมมติ)"
+   }
+  },
+  "gear_drag": {
+   "dCD0": {
+    "v": 0.02,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R9"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณทั่วไป; ใช้ร่วมกับ flap30 dCD0 0.052 ให้ผลรวม 0.072"
+   }
+  },
+  "derivatives": {
+   "CD0": {
+    "v": 0.03,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "จาก cruise 762 kg/h @275 KTAS + psfc 0.46–0.50 ได้ 0.028–0.034; ROC 1,355 fpm ได้ 1,350 ที่ 0.030 (r_perf_wake.mjs)"
+   },
+   "K": {
+    "v": {
+     "clean": 0.0313,
+     "landing": 0.04
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R29"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "clean: e = 0.85 ที่ AR 12 (preprint, Nita e 0.85); landing: e ≈ 0.66 (สมมติ)"
+   },
+   "CLq": {
+    "v": {
+     "approach": 8.5,
+     "cruise": 9.01
+    },
+    "u": "1/(rad·c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "2 a_t η V_H"
+   },
+   "CLadot": {
+    "v": {
+     "approach": 1.98,
+     "cruise": 2.28
+    },
+    "u": "1/(rad·c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "2 a_t η V_H dε/dα"
+   },
+   "CLde": {
+    "v": {
+     "approach": 0.329,
+     "cruise": 0.348
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "a_t η (S_h/S) τ_e, τ_e 0.45"
+   },
+   "CYb": {
+    "v": -0.714,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "fin a_v 3.0 + ลำตัว −0.10"
+   },
+   "CYdr": {
+    "v": 0.276,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "a_v (S_v/S) τ_r, τ_r 0.45"
+   },
+   "CYr": {
+    "v": 0.617,
+    "u": "1/(rad·b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "−2 CYβ_v l_v/b"
+   },
+   "Clb": {
+    "v": -0.143,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "dihedral/ปีกสูง −0.07 + fin −0.073"
+   },
+   "Clp": {
+    "v": -0.6,
+    "u": "1/(rad·b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "strip theory −0.73 ลดด้วยผลปลายปีก"
+   },
+   "Clr": {
+    "v": {
+     "approach": 0.447,
+     "cruise": 0.162
+    },
+    "u": "1/(rad·b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "CL/4 + fin"
+   },
+   "Clda": {
+    "v": 0.18,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R10"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "aileron ±14° (NTSB) + roll spoiler"
+   },
+   "Cldr": {
+    "v": 0.033,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "CYδr z_v/b"
+   },
+   "Cmq": {
+    "v": {
+     "approach": -54.4,
+     "cruise": -57.6
+    },
+    "u": "1/(rad·c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "−2.2 a_t η V_H l_h/c̄ (V_H 1.12, l_h/c̄ 5.8 ใหญ่กว่าเจ็ต)"
+   },
+   "Cmadot": {
+    "v": {
+     "approach": -11.5,
+     "cruise": -13.2
+    },
+    "u": "1/(rad·c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "−2 a_t η V_H (l_h/c̄) dε/dα"
+   },
+   "Cmde": {
+    "v": {
+     "approach": -1.91,
+     "cruise": -2.03
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "−V_H a_t η τ_e (δe บวก = ขอบท้ายลง)"
+   },
+   "Cnb": {
+    "v": 0.225,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "fin 0.309 − ลำตัว 0.084"
+   },
+   "Cnp": {
+    "v": {
+     "approach": -0.195,
+     "cruise": -0.052
+    },
+    "u": "1/(rad·b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "−CL/8 + fin"
+   },
+   "Cnr": {
+    "v": -0.33,
+    "u": "1/(rad·b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "−2 a_v V_V l_v/b − 0.02"
+   },
+   "Cnda": {
+    "v": {
+     "approach": -0.03,
+     "cruise": -0.009
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "−0.1 CL Clδa (adverse yaw)"
+   },
+   "Cndr": {
+    "v": -0.139,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "−CYδr l_v/b"
+   }
+  },
+  "stall_warning": {
+   "vane_aoa": {
+    "v": {
+     "shaker": {
+      "0": 15.9,
+      "15": 16.3,
+      "0_icing": 11.2,
+      "15_icing": 12.5
+     },
+     "pusher": {
+      "0": 20,
+      "15": 20,
+      "0_icing": 15.3,
+      "15_icing": 16.4
+     },
+     "shaker_normal_NTSB_1994": 18.1
+    },
+    "u": "deg (vane)",
+    "scope": "aircraft",
+    "src": [
+     "R11",
+     "R10"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "ตาราง 1.6-7/1.6-8 ของ GE791 (การจับคู่คอลัมน์ต้องตรวจกับ PDF); NTSB 1994: 18.1° ปกติ ลดเป็น 11.2° (cruise icing) และ 12.5° (flaps 15 หรือ 10 นาทีหลังวิ่งขึ้น); pusher ดันคันบังคับไป 8° nose down"
+   },
+   "min_margin": {
+    "v": 13,
+    "u": "kt",
+    "scope": "aircraft",
+    "src": [
+     "R45",
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "shaker ราว 1.13–1.15 VSR (ทั่วไปของ CS-25.207: เตือนก่อน stall อย่างน้อย 5 kt หรือ 5 %); ค่าที่เลือก"
+   }
+  },
+  "legacy": {
+   "v": {
+    "CL0": 0.229,
+    "CLa": 5.6,
+    "CLflap": 1.273,
+    "CDflap": 0.0754,
+    "CDgear": 0.02,
+    "Cm0": 0.074,
+    "Cma": -1.74,
+    "Cmflap": -0.0311,
+    "aStall": 16.77,
+    "aStallFlap": -0.36,
+    "flapMap": {
+     "0": 0,
+     "15": 0.584,
+     "30": 1
+    },
+    "CD0": 0.03,
+    "K": 0.0313,
+    "K_CL_offset": 0
+   },
+   "u": "ตามนิยาม AC (deg สำหรับ aStall)",
+   "scope": "aircraft",
+   "src": [
+    "R4",
+    "R9"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "AC.flaps 1 = flaps 30; aStall/aStallFlap หาโดย bisection ให้ CLmax ของ stallBlend (M 55) = 1.50 และ 2.675 (flaps 15 ได้ 2.18); Cm0/Cmflap ให้ trim δe 0 ที่ cruise และ approach; CDflap ให้ CD รวม 0.2096 ที่ CL 1.64 ด้วยเทอม K(CL−0)²; ตั้ง offset 0.15 ของโค้ดเป็น 0 (r_legacy.mjs)"
+  }
+ },
+ "interference": {
+  "downwash": {
+   "deda": {
+    "v": {
+     "approach": 0.233,
+     "cruise": 0.253
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "2 a_w/(π A) × 0.85 (หาง T อยู่สูงพ้น wake)"
+   },
+   "eps0": {
+    "v": 0.02,
+    "u": "rad",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ; ประมาณจาก CL0 ปีก"
+   },
+   "l_t": {
+    "v": 13.6,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "FlightGear 44.58 ft (13.59 m), Nita 13.565 m; ค่าที่เลือก"
+   },
+   "VH": {
+    "v": 1.12,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "S_h l_h /(S c̄) = 11.73·13.6/(61·2.34)"
+   },
+   "a_t": {
+    "v": {
+     "approach": 4,
+     "cruise": 4.24
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "Helmbold AR_h 4.56 sweep 6°"
+   },
+   "eta_t": {
+    "v": 0.95,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "หาง T อยู่เหนือ slipstream"
+   },
+   "CLadot": {
+    "v": 1.98,
+    "u": "1/(rad·c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "approach"
+   },
+   "Cmadot": {
+    "v": -11.5,
+    "u": "1/(rad·c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "R4",
+     "R22",
+     "R27"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "approach"
+   }
+  },
+  "slipstream": {
+   "diskDiameter": {
+    "v": 3.93,
+    "u": "m",
+    "scope": "propeller",
+    "src": [
+     "R4",
+     "R15"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "12.9 ft"
+   },
+   "hubRadius": {
+    "v": 0.4,
+    "u": "m",
+    "scope": "propeller",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ; spinner ประมาณ"
+   },
+   "hubPos": {
+    "v": [
+     [
+      4.3,
+      -4.05,
+      -0.3
+     ],
+     [
+      4.3,
+      4.05,
+      -0.3
+     ]
+    ],
+    "u": "m (FRD จาก CG)",
+    "scope": "aircraft",
+    "src": [
+     "R4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "y ±4.05 จากระยะ 8.10 m ใน factsheet (ตีความว่าเป็นระยะห่างแนวแกนใบพัด); x จากระนาบใบพัด STA ≈ 8.2 m (ประมาณ)"
+   },
+   "sense": {
+    "v": 1,
+    "u": "-",
+    "scope": "propeller",
+    "src": [
+     "R15"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "FCOM 1.16.10: \"clockwise (looking forward)\" คือมองจากด้านหลัง ทั้งสองเครื่องยนต์ (ไม่ใช่ counter-rotating); swirl หมุนทางเดียวกับใบพัด; P-factor ทำให้เครื่องยนต์ซ้าย (หมายเลข 1) เป็น critical engine"
+   },
+   "blownArea": {
+    "v": 16.3,
+    "u": "m2",
+    "scope": "aircraft",
+    "src": [
+     "R4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "2 × 0.8 D × คอร์ดเฉลี่ย 2.6 m (ส่วนปีกและแฟลปหลังใบพัด ≈ 27 % ของ S)"
+   },
+   "blownSpanFactor": {
+    "v": 0.8,
+    "u": "D",
+    "scope": "aircraft",
+    "src": [
+     "R44",
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "การหดตัวของ slipstream ที่ปีก"
+   },
+   "immersionH": {
+    "v": 0,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R44",
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "หาง T อยู่สูงพ้น slipstream ในการบินปกติ"
+   },
+   "immersionV": {
+    "v": 0.15,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R44",
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ส่วนล่างของ fin อาจโดน swirl"
+   }
+  }
+ },
+ "propulsion": {
+  "layout": {
+   "v": [
+    {
+     "id": 1,
+     "pos": [
+      4.3,
+      -4.05,
+      -0.3
+     ],
+     "pos_STA": [
+      8.2,
+      -4.05,
+      null
+     ],
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "type": "turboprop",
+     "model": "PW127M",
+     "prop": "568F-1"
+    },
+    {
+     "id": 2,
+     "pos": [
+      4.3,
+      4.05,
+      -0.3
+     ],
+     "pos_STA": [
+      8.2,
+      4.05,
+      null
+     ],
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "type": "turboprop",
+     "model": "PW127M",
+     "prop": "568F-1",
+     "note": "propeller brake (hotel mode)"
+    }
+   ],
+   "u": "m FRD / m STA",
+   "scope": "aircraft",
+   "src": [
+    "R1",
+    "R4",
+    "R15",
+    "R16"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ระนาบใบพัดเป็นค่าประมาณ; hotel mode ใช้ propeller brake ที่เครื่องยนต์หมายเลข 2 (ขวา) ตามขั้นตอนมาตรฐานของ FCOM 2.02 [R16]"
+  },
+  "legacy": {
+   "v": {
+    "P": 3692000,
+    "eta": 0.957,
+    "T0": 76955,
+    "idle": 0.02
+   },
+   "u": "W, -, N, -",
+   "scope": "aircraft",
+   "src": [
+    "R3",
+    "R4"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ทั้งลำ (สองเครื่อง) ที่ NTO 2×1,846 kW; T0 = 2 × แรงขับสถิต FM 0.75; eta เป็นพารามิเตอร์ fit ให้ T(V2) ตรง momentum (ไม่ใช่ประสิทธิภาพจริง) (r_engine_prop.mjs)"
+  }
+ },
+ "turboprop": {
+  "ratings": {
+   "P_rated": {
+    "v": {
+     "NTO": 1846000,
+     "RTO": 2051000,
+     "MCT": 1864000,
+     "CLB": 1635000,
+     "CRZ": 1590000
+    },
+    "u": "W",
+    "scope": "engine",
+    "src": [
+     "R3",
+     "R4",
+     "R15"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "shp: NTO 2,475, RTO 2,750, MCT 2,500, CLB 2,192, CRZ 2,132; CLB/CRZ ที่ Np 82 %"
+   },
+   "T_flat_C": {
+    "v": {
+     "NTO": 39,
+     "RTO": 39,
+     "MCT": 48
+    },
+    "u": "degC",
+    "scope": "engine",
+    "src": [
+     "R3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "PW127M (PW127N 44/44/48)"
+   },
+   "rating_basis": {
+    "v": {
+     "pressure_Pa": 101325,
+     "static": true,
+     "bleed": "ไม่ระบุ",
+     "note": "TCDS: kW ที่เพลาออก"
+    },
+    "u": "-",
+    "scope": "engine",
+    "src": [
+     "R3"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": ""
+   },
+   "install_loss_frac": {
+    "v": 0,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R3"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ"
+   },
+   "Np_max_rpm": {
+    "v": 1212,
+    "u": "rpm",
+    "scope": "engine",
+    "src": [
+     "R3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ขีดจำกัด output shaft (TCDS); Np 100 % = 1,200 rpm ตาม FCOM (R15)"
+   },
+   "Np_100pct_rpm": {
+    "v": 1200,
+    "u": "rpm",
+    "scope": "engine",
+    "src": [
+     "R15"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "FCOM 1.16 (สำเนาไม่เป็นทางการ); 82 % = 984 rpm"
+   },
+   "Np_transient_rpm": {
+    "v": {
+     "20s": 1296,
+     "5s": 1440
+    },
+    "u": "rpm",
+    "scope": "engine",
+    "src": [
+     "R3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": ""
+   },
+   "Q_lim": {
+    "v": 17354,
+    "u": "N m",
+    "scope": "engine",
+    "src": [
+     "R3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "= 106.3 % ของ 100 % TQ 16,325 N m (12,038 lbf ft); transient 20 s 19,578 N m = 120 %"
+   },
+   "Q_100pct": {
+    "v": 16321,
+    "u": "N m",
+    "scope": "engine",
+    "src": [
+     "R3",
+     "R15",
+     "R7"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "RTO 2,051 kW / (2π·1200/60); ตรงกับ 17,354/1.063 ภายใน 0.03 %"
+   },
+   "Ng_100pct_rpm": {
+    "v": 33457,
+    "u": "rpm",
+    "scope": "engine",
+    "src": [
+     "R3",
+     "R15"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: อนุมานว่า red mark NH 102.7 % (FCOM: green 62–102.7 %) = 34,360 rpm (TCDS MTO); NL 100 % ≈ 27,706 rpm (104.2 % = 28,870)"
+   },
+   "Ng_max_pct": {
+    "v": 102.7,
+    "u": "%",
+    "scope": "engine",
+    "src": [
+     "R15"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "NH red mark; NL 104.2 %"
+   },
+   "ITT_max_C": {
+    "v": {
+     "NTO": 765,
+     "RTO": 800,
+     "MCT": 800,
+     "transient20s": 840
+    },
+    "u": "degC",
+    "scope": "engine",
+    "src": [
+     "R3",
+     "R15"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "hotel mode alert 715 °C"
+   },
+   "ITT_start_C": {
+    "v": 950,
+    "u": "degC",
+    "scope": "engine",
+    "src": [
+     "R3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "5 s"
+   },
+   "takeoff_time_limit_s": {
+    "v": 300,
+    "u": "s",
+    "scope": "engine",
+    "src": [
+     "R3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "600 s เมื่อ OEI (Note 2)"
+   }
+  },
+  "steady_map": {
+   "Ng_GI_pct": {
+    "v": 63,
+    "u": "%",
+    "scope": "engine",
+    "src": [
+     "R15"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ; ใกล้ขอบล่าง green arc NH 62 %"
+   },
+   "Ng_FI_pct": {
+    "v": 70,
+    "u": "%",
+    "scope": "engine",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ"
+   },
+   "kMap": {
+    "v": 2.7,
+    "u": "-",
+    "scope": "engine",
+    "src": [
+     "R44"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ใช้รูปแผนที่ของรอบที่ 1 (PT6A) ไปก่อน"
+   }
+  },
+  "dynamics": {
+   "cert_accel_FI_to_95pct_max_s": {
+    "v": 5,
+    "u": "s",
+    "scope": "engine",
+    "src": [
+     "R34"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "14 CFR 33.73(b)"
+   },
+   "tauAcc_s": {
+    "v": 0.8,
+    "u": "s",
+    "scope": "engine",
+    "src": [
+     "R44"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "เครื่องใหญ่กว่า PT6A: เพิ่มจาก 0.6 s ของรอบที่ 1"
+   },
+   "rAcc_pct_s": {
+    "v": 8,
+    "u": "%Ng/s",
+    "scope": "engine",
+    "src": [
+     "R44"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ให้เวลาจาก FI ถึง 95 % ราว 4–5 s"
+   }
+  },
+  "atpcs": {
+   "v": {
+    "arm_torque_pct": 46.2,
+    "arm_PLA_deg": 49,
+    "trigger_torque_pct": 18.5,
+    "delay_s": 2.15,
+    "uptrim": "เครื่องที่เหลือเพิ่มจาก NTO 90 % เป็น RTO 100 % TQ (+10 %)",
+    "feather_beta_deg": 78,
+    "interlock": "ห้าม feather สองเครื่องพร้อมกัน"
+   },
+   "u": "mixed",
+   "scope": "engine",
+   "src": [
+    "R7",
+    "R15"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "GE235 1.6.4 + FCOM (FCOM ระบุ arm > 46 %, trigger < 18 %)"
+  },
+  "airframe_coupling": {
+   "spin": {
+    "v": 1,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R15"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "ทั้งสองเครื่อง clockwise"
+   },
+   "thrust_axis_body": {
+    "v": [
+     1,
+     0,
+     0
+    ],
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบมุม toe/tilt"
+   }
+  },
+  "fuel": {
+   "psfc": {
+    "v": 0.48,
+    "u": "lb/(hp h)",
+    "scope": "engine",
+    "src": [
+     "R4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "สมมติในช่วง 0.46–0.50 ให้ cruise 762 kg/h สอดคล้องกับ CD0 0.030"
+   }
+  },
+  "beta_reverse": {
+   "blade_angle_FI_deg": {
+    "v": null,
+    "u": "deg",
+    "scope": "propeller",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบในแหล่งสาธารณะ"
+   },
+   "reverse_available": {
+    "v": true,
+    "u": "bool",
+    "scope": "engine",
+    "src": [
+     "R16"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ใช้ reverse ตั้งแต่ touchdown, คืน GI ต่ำกว่า ~40 kt"
+   }
+  }
+ },
+ "propeller": {
+  "identity": {
+   "nBlades": {
+    "v": 6,
+    "u": "-",
+    "scope": "propeller",
+    "src": [
+     "R4",
+     "R15"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "คอมโพสิตทั้งใบ (FAA special conditions 1995)"
+   },
+   "diameter": {
+    "v": 3.93,
+    "u": "m",
+    "scope": "propeller",
+    "src": [
+     "R4",
+     "R15"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "12.9 ft"
+   },
+   "sense": {
+    "v": 1,
+    "u": "-",
+    "scope": "propeller",
+    "src": [
+     "R15"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "clockwise ทั้งสองเครื่อง"
+   },
+   "massComplete": {
+    "v": 180,
+    "u": "kg",
+    "scope": "propeller",
+    "src": [
+     "R15"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "FCOM 1.16"
+   },
+   "hubPosition": {
+    "v": [
+     [
+      4.3,
+      -4.05,
+      -0.3
+     ],
+     [
+      4.3,
+      4.05,
+      -0.3
+     ]
+    ],
+    "u": "m (FRD จาก CG)",
+    "scope": "aircraft",
+    "src": [
+     "R4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ดู interference.slipstream.hubPos"
+   },
+   "thrustAxis": {
+    "v": [
+     1,
+     0,
+     0
+    ],
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "สมมติแกนแรงขับขนานแกน x ของลำตัว; มุมติดตั้งเครื่องยนต์จริงไม่พบ"
+   }
+  },
+  "engineInterface": {
+   "maxShaftPower": {
+    "v": 2051,
+    "u": "kW",
+    "scope": "engine",
+    "src": [
+     "R3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "RTO"
+   },
+   "rpmGoverned": {
+    "v": {
+     "TO": 1200,
+     "CLB_CRZ": 984
+    },
+    "u": "rpm",
+    "scope": "engine",
+    "src": [
+     "R15",
+     "R16"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "Np 100 % / 82 %; ขั้นต่ำ fuel governing 70.8 % = 850 rpm"
+   },
+   "rpmTransientLimit": {
+    "v": 1296,
+    "u": "rpm",
+    "scope": "engine",
+    "src": [
+     "R3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "20 s; 1,440 rpm 5 s"
+   },
+   "gearRatio": {
+    "v": 16.68,
+    "u": "-",
+    "scope": "engine",
+    "src": [
+     "R22"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "จาก FlightGear prop_hs568f.xml; TCDS ไม่ระบุ"
+   },
+   "flightIdleShaftPower": {
+    "v": null,
+    "u": "kW",
+    "scope": "engine",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ"
+   }
+  },
+  "inertia": {
+   "Ip": {
+    "v": 104,
+    "u": "kg m2",
+    "scope": "propeller",
+    "src": [
+     "R15",
+     "R22"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "6 ใบ × 22 kg ที่ k = 0.45 R (สมมติ) จากมวล 180 kg; FlightGear 146 kg m²"
+   }
+  },
+  "governor": {
+   "rpmOverspeed": {
+    "v": 1224,
+    "u": "rpm",
+    "scope": "propeller",
+    "src": [
+     "R15"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "threshold แรก 102 %; ที่สอง 106 % = 1,272 rpm"
+   },
+   "betaFeather": {
+    "v": 78.5,
+    "u": "deg (β_ref)",
+    "scope": "propeller",
+    "src": [
+     "R15",
+     "R7"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "GE235 บันทึก 78° ตอน feather; สถานีอ้างอิงไม่ระบุ"
+   },
+   "featherRate": {
+    "v": 20,
+    "u": "deg/s",
+    "scope": "propeller",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ"
+   }
+  },
+  "betaReverse": {
+   "reverseAvailable": {
+    "v": true,
+    "u": "-",
+    "scope": "propeller",
+    "src": [
+     "R16"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": ""
+   },
+   "betaReverseMax": {
+    "v": -14,
+    "u": "deg (β_ref)",
+    "scope": "propeller",
+    "src": [
+     "R15"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "ช่วง β_ref −14° ถึง 78.5°"
+   }
+  },
+  "checks": {
+   "staticThrustISA": {
+    "v": 38.5,
+    "u": "kN",
+    "scope": "propeller",
+    "src": [
+     "R3",
+     "R4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ต่อเครื่อง NTO, momentum + FM 0.75 (FM 0.70–0.80 ได้ 36.7–40.2 kN); 8,650 lbf"
+   },
+   "staticThrustVTBD31C": {
+    "v": 37.8,
+    "u": "kN",
+    "scope": "propeller",
+    "src": [
+     "R3",
+     "R4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ต่อเครื่อง NTO ที่ 31 °C (ยังอยู่ใต้ flat rating 39 °C)"
+   },
+   "momentumIdealStaticISA": {
+    "v": 46.6,
+    "u": "kN",
+    "scope": "propeller",
+    "src": [
+     "R3",
+     "R4"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "(2ρA P²)^(1/3), P 1,846 kW, A 12.13 m²"
+   },
+   "peakEfficiency": {
+    "v": 0.88,
+    "u": "-",
+    "scope": "propeller",
+    "src": [
+     "R3",
+     "R4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "momentum×0.90 ที่ cruise J 2.2"
+   },
+   "CP_static_NTO": {
+    "v": 0.201,
+    "u": "-",
+    "scope": "propeller",
+    "src": [
+     "R3",
+     "R4"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "P/(ρ n³ D⁵) ที่ 1,200 rpm"
+   },
+   "tipMach_static": {
+    "v": 0.726,
+    "u": "-",
+    "scope": "propeller",
+    "src": [
+     "R3",
+     "R4"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "π n D / a ที่ ISA SL"
+   }
+  }
+ },
+ "gear": {
+  "strut_main": {
+   "stroke": {
+    "v": 0.35,
+    "u": "m",
+    "scope": "gear",
+    "src": [
+     "R8",
+     "R32"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: จากพลังงาน 10 fps ที่ MLW, η_s 0.8, load factor 1.5, หักยางยุบ 0.08 m (η_t 0.47) (r_perf_wake.mjs); ระยะยุบจริงไม่พบ"
+   }
+  },
+  "tyre_main": {
+   "size": {
+    "v": "H34x10.0R16",
+    "u": "-",
+    "scope": "gear",
+    "src": [
+     "R1",
+     "R25"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "TCDS EASA.A.084 III.22 \"Main Landing Gear tyres H 34 x 10.0 R16\" (ATR 72 ทุกรุ่น); Michelin M10001 H34x10.0R16 14 ply \"ATR 72 (MLG)\"; หน้าร้านค้าที่ระบุ 32x8.8R16 ขัดแย้งกับ TCDS (แก้โดยผู้ตรวจทาน)"
+   },
+   "rated_load": {
+    "v": 57827,
+    "u": "N",
+    "scope": "gear",
+    "src": [
+     "R23"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: 13,000 lb จากแถว 32x8.8 14 ply 170 psi ของ Goodyear ซึ่งเป็นคนละขนาดกับ H34x10.0R16 ของ TCDS; rated load ของ H34x10.0R16 ไม่พบในแหล่งสาธารณะ"
+   },
+   "operating_pressure": {
+    "v": 120,
+    "u": "psi",
+    "scope": "gear",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบในแหล่งสาธารณะ; 8.3 bar"
+   },
+   "outside_diameter": {
+    "v": 0.864,
+    "u": "m",
+    "scope": "gear",
+    "src": [
+     "R1"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "34 in ตามชื่อขนาด H34x10.0R16 (ค่า nominal; ค่า max/min ของผู้ผลิตไม่พบ)"
+   },
+   "section_width": {
+    "v": 0.254,
+    "u": "m",
+    "scope": "gear",
+    "src": [
+     "R1"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "10.0 in ตามชื่อขนาด (nominal)"
+   },
+   "static_load_MTOW": {
+    "v": 51877,
+    "u": "N",
+    "scope": "gear",
+    "src": [
+     "R1"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ: (1 − 0.08) W/4 ที่ 23 t = 11,662 lbf (สัดส่วนล้อหน้า 8 % สมมติ)"
+   }
+  },
+  "tyre_nose": {
+   "size": {
+    "v": "450x190-5",
+    "u": "-",
+    "scope": "gear",
+    "src": [
+     "R1"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "TCDS EASA.A.084 III.22: \"450x190-5 Or 453X190R5 (these two references are not mixable)\" (แก้โดยผู้ตรวจทาน)"
+   },
+   "rated_load": {
+    "v": 16014,
+    "u": "N",
+    "scope": "gear",
+    "src": [
+     "R23"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "3,600 lb (Goodyear 459M08-2 10 ply, 75 psi); data book มีขนาดเดียวกัน 10 ply 3,822 lb 90 psi ด้วย ไม่ทราบว่า ATR ใช้แบบใด"
+   },
+   "outside_diameter": {
+    "v": 0.455,
+    "u": "m",
+    "scope": "gear",
+    "src": [
+     "R23"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "17.52–18.31 in"
+   }
+  },
+  "brakes": {
+   "antiskid": {
+    "v": true,
+    "u": "bool",
+    "scope": "aircraft",
+    "src": [
+     "R16"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "มี antiskid; ตัวเลขในแบบทดสอบ smartcockpit ไม่ระบุคำตอบที่ถูก จึงไม่ใช้"
+   },
+   "autobrake": {
+    "v": false,
+    "u": "bool",
+    "scope": "aircraft",
+    "src": [
+     "R16"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "FCOM สั่ง \"max braking\" ด้วยแป้น; ไม่พบระบบ autobrake"
+   },
+   "emergency_brake_note": {
+    "v": "ห้ามดันคัน EMER BRAKE เลย notch เมื่อความเร็ว > 60 kt",
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R16"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": ""
+   },
+   "max_tyre_ground_speed_kt": {
+    "v": 165,
+    "u": "kt GS",
+    "scope": "gear",
+    "src": [
+     "R21"
+    ],
+    "conf": "ต่ำ",
+    "est": false,
+    "note": "บัตรทบทวน"
+   }
+  },
+  "steering": {
+   "mode": {
+    "v": "tiller (hand wheel); การเลี้ยวด้วยแป้นยังไม่ยืนยัน",
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R16"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": ""
+   },
+   "pedal_max": {
+    "v": null,
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ"
+   },
+   "tiller_max": {
+    "v": 60,
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ; แบบทดสอบมีตัวเลือก ±60/70/80° โดยไม่บอกคำตอบ"
+   },
+   "caster_max": {
+    "v": 91,
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ; ใช้เป็นขีดจำกัดตอนลาก (ตัวเลือก ±81/91/101° ในแบบทดสอบ)"
+   }
+  },
+  "certification": {
+   "part25_limit_descent": {
+    "v": 3.05,
+    "u": "m/s",
+    "scope": "aircraft",
+    "src": [
+     "R8",
+     "R32"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "600 ft/min = 10 fps ที่ MLW; reserve 720 ft/min = 12 fps (25.723)"
+   },
+   "tail_clearance": {
+    "v": {
+     "strut_extended_deg": 8,
+     "strut_compressed_deg": 5.9
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "R9",
+     "R8"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "มุม pitch ที่หางแตะพื้น; tail bumper ป้องกันถ้า sink ที่ touchdown ≤ 5 ft/s (FCOM)"
+   }
+  },
+  "geometry": {
+   "ref_cg": {
+    "v": {
+     "STA": 12.84,
+     "pctMAC": 25
+    },
+    "u": "m STA",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ LEMAC (TCDS: Refer to Weight and Balance Manual); สมมติล้อหน้ารับ 8 %"
+   },
+   "nose_contact_body_extended": {
+    "v": [
+     9.91,
+     0,
+     1.75
+    ],
+    "u": "m FRD",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ประมาณ"
+   },
+   "main_contact_body_extended": {
+    "v": [
+     [
+      -0.86,
+      -2.05,
+      1.8
+     ],
+     [
+      -0.86,
+      2.05,
+      1.8
+     ]
+    ],
+    "u": "m FRD",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ประมาณ"
+   },
+   "cg_height_parked": {
+    "v": 1.65,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ประมาณ"
+   }
+  }
+ },
+ "wind": {
+  "wake": {
+   "b0_over_b": {
+    "v": 0.785,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R45"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "π/4 (ปีกรูปไข่)"
+   },
+   "rc_over_b": {
+    "v": 0.05,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "R45"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าทั่วไป"
+   },
+   "leaders": {
+    "v": {
+     "icao_wtc": "M",
+     "recat_eu": "E (Lower Medium)",
+     "Gamma0_landing_m2s": 146.2,
+     "w0_landing_ms": 1.1,
+     "Gamma0_takeoff_m2s": 145.2,
+     "b0_m": 21.25
+    },
+    "u": "kg, m, kt, m2/s, m/s",
+    "scope": "aircraft",
+    "src": [
+     "R35"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ICAO M (7–136 t); RECAT-EU E อนุมานจากตาราง; Γ0 = W/(ρ V b0) ที่ ISA SL (ρ 1.225), MLW/VREF 112 kt และ 23,000 kg/V2 116 kt (r_perf_wake.mjs; ตรวจซ้ำด้วย rrev_atr72.mjs)"
+   }
+  }
+ },
+ "validation": {
+  "reference_modes": {
+   "approach_F30_111kt_20t": {
+    "v": {
+     "short_period": {
+      "wn": [
+       0.96,
+       1.55
+      ],
+      "zeta": [
+       0.59,
+       0.63
+      ]
+     },
+     "phugoid": {
+      "T_s": [
+       30.8,
+       31
+      ],
+      "zeta": [
+       0.065,
+       0.11
+      ]
+     },
+     "dutch_roll": {
+      "wn": [
+       1.05,
+       1.35
+      ],
+      "zeta": [
+       0.15,
+       0.19
+      ],
+      "note": "ไม่มี yaw damper"
+     },
+     "roll_tau_s": [
+      0.53,
+      0.59
+     ],
+     "spiral_T2_s": [
+      15.2,
+      18.2
+     ]
+    },
+    "u": "rad/s, -, s",
+    "scope": "aircraft",
+    "src": [
+     "R45",
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: eigenvalue ของโมเดลเชิงเส้นที่ประมาณเอง ช่วงค่า = inertia build-up กับค่า GE791 (r_aero_modes.mjs) ขยายให้ครอบผลของการคำนวณอิสระของผู้ตรวจทาน (rrev_atr72_modes.mjs); ไม่ใช่ข้อมูลทดสอบบินจริง"
+   },
+   "cruise_275KTAS_FL170_21t": {
+    "v": {
+     "short_period": {
+      "wn": [
+       1.71,
+       2.79
+      ],
+      "zeta": [
+       0.49,
+       0.53
+      ]
+     },
+     "phugoid": {
+      "T_s": 71.6,
+      "zeta": [
+       0.067,
+       0.076
+      ]
+     },
+     "dutch_roll": {
+      "wn": [
+       1.69,
+       2.23
+      ],
+      "zeta": [
+       0.1,
+       0.15
+      ]
+     },
+     "roll_tau_s": [
+      0.37,
+      0.41
+     ],
+     "spiral": "เกือบเป็นกลาง (เสถียร τ ≈ 200–370 s)"
+    },
+    "u": "rad/s, -, s",
+    "scope": "aircraft",
+    "src": [
+     "R45",
+     "R46"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ เช่นเดียวกัน; การคำนวณอิสระของผู้ตรวจทานได้ Dutch roll ζ 0.10 และ spiral เสถียร τ ≈ 200 s (ไวต่อรายละเอียดของโมเดล)"
+   }
+  },
+  "trim_targets": {
+   "approach_3deg": {
+    "v": {
+     "mass_kg": 20400,
+     "VAPP_kt": 111,
+     "flap": "30",
+     "gear": "down",
+     "torque_pct": 25,
+     "theta_deg": -1.5,
+     "theta_range_FCTM": [
+      -2.5,
+      1
+     ],
+     "alpha_deg": 1.4,
+     "dTorque_per_deg_slope": 5
+    },
+    "u": "mixed",
+    "scope": "aircraft",
+    "src": [
+     "R9",
+     "R8",
+     "R17"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "มีส่วนที่เป็นค่าประมาณ: theta_deg −1.5 และ alpha_deg 1.4 มาจากโมเดล (r_speeds_clmax.mjs) ส่วนอื่นเผยแพร่; FCTM ผ่าน BEA: torque 25 % ±5 %/1°, pitch −2.5…+1°; ATSB: ~22 % ที่ 21.7 t; ATR: −1.4° ในตัวอย่าง"
+   },
+   "touchdown": {
+    "v": {
+     "flare_height_ft": 20,
+     "power": "flight idle",
+     "theta_deg": [
+      3,
+      6
+     ],
+     "tailstrike_deg": 8
+    },
+    "u": "mixed",
+    "scope": "aircraft",
+    "src": [
+     "R8",
+     "R9",
+     "R16"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ขอบล่าง theta 3° มาจากโมเดล (ค่าประมาณ); ATSB VH-FVZ touchdown 6°; BEA: หางแตะ 5.9° (strut ยุบ) ถึง 8°"
+   },
+   "climb_V2": {
+    "v": {
+     "mass_kg": 22800,
+     "flap": "15",
+     "V2_kt": 116,
+     "alpha_deg": 7.2
+    },
+    "u": "mixed",
+    "scope": "aircraft",
+    "src": [
+     "R4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "α จากโมเดล"
+   }
+  }
+ },
+ "controls": {
+  "architecture": {
+   "v": {
+    "pitch": "reversible",
+    "roll": "reversible",
+    "yaw": "reversible",
+    "trim": "tab"
+   },
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "Y18",
+    "Y17"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "ทุกพื้นบังคับเป็นกลไก (cable, pulley, push-pull rod) ยกเว้น roll spoiler ที่ใช้ไฮดรอลิก"
+  },
+  "pitch": {
+   "architecture": {
+    "v": {
+     "kind": "reversible",
+     "input": "force"
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "Y18"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "elevator ซ้ายขวาต่อกันผ่าน pitch uncoupling mechanism"
+   },
+   "S_e": {
+    "v": 3.5,
+    "u": "m2",
+    "scope": "aircraft",
+    "src": [
+     "R1:C17"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "0.30 × S_h 11.73 m² (หัวข้อ 3.1)"
+   },
+   "c_e": {
+    "v": 0.48,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "Y34"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "0.30 × คอร์ดเฉลี่ยหางระดับราว 1.6 m"
+   },
+   "gearing": {
+    "v": 3.717,
+    "u": "rad/m",
+    "scope": "aircraft",
+    "src": [
+     "Y19"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "อัตราทด elevator/column 23/11.25 = 2.04 rad/rad หารแขนด้ามจับ 0.55 m (สมมติ)"
+   },
+   "Ch_delta": {
+    "v": -0.0519,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "Y19",
+     "Y18"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่ายังผล (รวม spring/geared tab) คาลิเบรตให้ full nose-up 23° ที่ 154 kt ใช้ 50 daN (y_controls.mjs)"
+   },
+   "Ch_alpha": {
+    "v": -0.0173,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "Y34"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "สัดส่วน 1/3 ของ Ch_delta ตามแนวรอบที่ 1"
+   },
+   "stops": {
+    "v": {
+     "teu": 23,
+     "ted": 13
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "Y19"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ATSB second interim p.2"
+   },
+   "rate_limit": {
+    "v": 60,
+    "u": "deg/s",
+    "scope": "aircraft",
+    "src": [
+     "Y18"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่มี actuator; จำกัดเพื่อเสถียรภาพเชิงตัวเลขของอินพุต"
+   },
+   "breakout": {
+    "v": 20,
+    "u": "N",
+    "scope": "aircraft",
+    "src": [
+     "Y34"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ"
+   },
+   "trim_rate_flaps_up": {
+    "v": 0.5,
+    "u": "deg/s",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ (อัตรา tab); เลือกให้ทั้งช่วงใช้ราว 20 to 30 s"
+   },
+   "trim_rate_flaps_down": {
+    "v": 0.5,
+    "u": "deg/s",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ"
+   }
+  },
+  "roll": {
+   "architecture": {
+    "v": {
+     "kind": "reversible",
+     "input": "force"
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ไม่มีไฮดรอลิกที่ aileron; geared balance tab"
+   },
+   "S_a_each": {
+    "v": 1.5,
+    "u": "m2",
+    "scope": "aircraft",
+    "src": [
+     "Y34"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ประมาณจากแปลนปีก; แรงที่ wheel รวม hinge moment ของ aileron ทั้งสองข้าง (×2) ตามสคริปต์ y_controls.mjs"
+   },
+   "c_a": {
+    "v": 0.45,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "Y34"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ราว 0.25 ของคอร์ดปลายปีก"
+   },
+   "gearing": {
+    "v": 1.197,
+    "u": "rad/m",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "aileron/wheel 14/65 = 0.2154 rad/rad หารรัศมี wheel 0.18 m (สมมติ)"
+   },
+   "Ch_delta": {
+    "v": -0.0667,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่ายังผลรวม balance tab; ให้ full aileron ที่ VMO 250 KCAS = 60 lb ที่ wheel (เกณฑ์ออกแบบ < 60 lb)"
+   },
+   "tab_max": {
+    "v": 4,
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "balance tab ±4° ที่ aileron ±14°"
+   },
+   "stops": {
+    "v": {
+     "max": 14
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "aileron ±14°, wheel ±65°"
+   },
+   "breakout": {
+    "v": 13,
+    "u": "N",
+    "scope": "aircraft",
+    "src": [
+     "Y34"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ; เลือก 3 lbf"
+   },
+   "rate_limit": {
+    "v": 80,
+    "u": "deg/s",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่มี actuator"
+   }
+  },
+  "yaw": {
+   "architecture": {
+    "v": {
+     "kind": "reversible",
+     "input": "force"
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "Y18"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "rudder กลไก + TLU"
+   },
+   "stops": {
+    "v": {
+     "max": 27
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "low-speed mode (ATR 72-212) ใช้กับ -600 จึงกลาง"
+   },
+   "S_r": {
+    "v": 3.7,
+    "u": "m2",
+    "scope": "aircraft",
+    "src": [
+     "Y34"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "0.30 × S_v 12.48 m²"
+   },
+   "c_r": {
+    "v": 0.6,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "Y34"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ประมาณ"
+   },
+   "rate_limit": {
+    "v": 60,
+    "u": "deg/s",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่มี actuator"
+   },
+   "breakout": {
+    "v": 40,
+    "u": "N",
+    "scope": "aircraft",
+    "src": [
+     "Y34"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ไม่พบ"
+   }
+  },
+  "mech": {
+   "pitch_uncoupling": {
+    "v": {
+     "each_column_N": [
+      500,
+      550
+     ],
+     "total_differential_N": [
+      1000,
+      1100
+     ]
+    },
+    "u": "N",
+    "scope": "aircraft",
+    "src": [
+     "Y18"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "50 to 55 daN ต่อคันในทิศตรงข้ามพร้อมกัน; ผลต่างรวม 100 to 110 daN"
+   },
+   "column_travel_deg": {
+    "v": {
+     "up": 11.25,
+     "down": 6.75,
+     "stop_up": 13.25,
+     "stop_down": 8.75
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "Y19"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ATSB second interim p.2"
+   },
+   "wheel_travel_deg": {
+    "v": 65,
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "±65°"
+   },
+   "cable_tension_N": {
+    "v": [
+     200,
+     250
+    ],
+    "u": "N",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "tension regulator 20 to 25 daN"
+   },
+   "stick_pusher_column_deg": {
+    "v": 8,
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "pusher ดัน column ไป 8° nose-down"
+   }
+  },
+  "surfaces": {
+   "roll_spoiler": {
+    "v": {
+     "travel_deg": {
+      "up": 57
+     },
+     "rate_dps": 60,
+     "actuator_tau_s": 0.08,
+     "panels_per_wing": 1,
+     "hydraulic_systems": [
+      "hydraulic (สีไม่ยืนยัน)"
+     ]
+    },
+    "u": "deg, deg/s, s",
+    "scope": "aircraft",
+    "src": [
+     "Y17",
+     "Y18"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "มุมจาก NTSB (สูง); อัตราและ tau เลือกเอง"
+   }
+  },
+  "spoiler_mixing": {
+   "roll": {
+    "v": {
+     "threshold_aileron_deg": 2.5,
+     "gain_deg_per_deg": 4.957,
+     "max_deg": 57
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "δsp = 57·(δa − 2.5)/11.5 สำหรับ aileron ขาขึ้น > 2.5°"
+   }
+  },
+  "rudder_limiter": {
+   "v": {
+    "kind": "TLU",
+    "low_speed_deg": 27,
+    "high_speed_deg": 3,
+    "to_high_above_kt": 185,
+    "to_low_below_kt": 180,
+    "stroke_auto_s": 15,
+    "stroke_manual_s": 30
+   },
+   "u": "deg, kt, s",
+   "scope": "aircraft",
+   "src": [
+    "Y17",
+    "Y21",
+    "Y22"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "NTSB: ราว 3° ต่อข้างเหนือ 185 KIAS; AAIB: กลับ low speed เมื่อ ADC < 180 kt, stroke 15 s (auto) / 30 s (manual)"
+  },
+  "feel": {
+   "wheel_force_design_max_N": {
+    "v": 267,
+    "u": "N",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ออกแบบให้ < 60 lb"
+   }
+  },
+  "trim": {
+   "kinds": {
+    "v": {
+     "pitch": "electric elevator trim tab (normal + standby)",
+     "roll": "electric on left aileron balance tab",
+     "yaw": "rudder trim tab"
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "อัตราและช่วงไม่พบในแหล่งสาธารณะ"
+   }
+  },
+  "reference_types": {
+   "atr72_ap_aileron_rate_monitor": {
+    "v": 3.6,
+    "u": "deg/s",
+    "scope": "aircraft",
+    "src": [
+     "Y17"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "AP disconnect เมื่ออัตรา aileron เกิน"
+   }
+  }
+ },
+ "afcs": {
+  "modes": {
+   "v": {
+    "lateral": [
+     "HDG SEL",
+     "HDG HOLD",
+     "NAV",
+     "LOC",
+     "APP"
+    ],
+    "vertical": [
+     "IAS",
+     "VS",
+     "PITCH HOLD",
+     "ALT SEL",
+     "ALT",
+     "G/S",
+     "VNAV",
+     "GA"
+    ],
+    "athr": []
+   },
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "O33",
+    "O34"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "ไม่มี autothrottle; VNAV coupled ตั้งแต่ Standard 2 (2014)"
+  },
+  "arm_engage": {
+   "AP_on_ground": {
+    "v": false,
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "O33"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "AP และ YD engage บนพื้นไม่ได้"
+   },
+   "AP_after_liftoff_s": {
+    "v": 12,
+    "u": "s",
+    "scope": "aircraft",
+    "src": [
+     "O33"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "12 s หลัง liftoff (ราว 400 ft AGL)"
+   }
+  },
+  "autoland": {
+   "LAND_ft": {
+    "v": null,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "O33"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "ไม่มี autoland/FLARE mode"
+   },
+   "AP_disc_min_ft": {
+    "v": 30.48,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "O33",
+     "O7"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ปลด AP ที่ DH CAT II (100 ft ที่ 21R); ตาราง CAT 2 ของ FCOM ใช้ตัวอย่าง \"Visual at DH 80 ft RA\" (2.02.04 p.10-11)"
+   }
+  },
+  "capability": {
+   "certified": {
+    "v": [
+     "CAT 2 (AP + FD)"
+    ],
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "O33"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "CAT 2 approaches are flown with AP + FD ON"
+   },
+   "cat2_wind_demonstrated": {
+    "v": {
+     "headwind": 14.919,
+     "tailwind": 5.1444,
+     "crosswind": 8.7456
+    },
+    "u": "m/s",
+    "scope": "aircraft",
+    "src": [
+     "O33"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "HW 29, TW 10, XW 17 kt"
+   },
+   "LPV_min": {
+    "v": 60.96,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "O34"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "LPV ถึง 200 ft"
+   }
+  }
+ },
+ "ops": {
+  "speed_additive": {
+   "v": {
+    "rule": "VAPP = max(VmHB30 + WF, VMCL); WF = min(15, max(HW/3, gust))",
+    "max_mps": 7.717
+   },
+   "u": "m/s",
+   "scope": "aircraft",
+   "src": [
+    "K40",
+    "K41"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "ผ่านหัวข้อ 1 [R16][R17]"
+  },
+  "approach_pitch_deg": {
+   "v": {
+    "range": [
+     -2.5,
+     1
+    ],
+    "excess_energy_below": -2.5
+   },
+   "u": "deg",
+   "scope": "aircraft",
+   "src": [
+    "K22"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "\"between 2.5° nose down and 1° nose up\" (FCTM ผ่าน BEA)"
+  },
+  "approach_thrust": {
+   "v": {
+    "torque_pct_3deg": 25,
+    "torque_pct_per_deg_slope": 5,
+    "torque_pct_3p8deg": 20,
+    "atsb_typical_torque_pct_VH_FVZ": 22
+   },
+   "u": "% torque",
+   "scope": "aircraft",
+   "src": [
+    "K22",
+    "K23"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "BEA F-OZKN หน้า 6; ATSB VH-FVZ หน้า 11: 22 % เป็นค่าปกติที่ ATSB ประเมินสำหรับสภาพเที่ยวนั้น ไม่ใช่ค่าที่บันทึกได้"
+  },
+  "flare_height_m": {
+   "v": 6.096,
+   "u": "m",
+   "scope": "aircraft",
+   "src": [
+    "K22",
+    "K23"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "\"starting the flare at a height of 20 ft by completely reducing power\"; FCOM: flight idle ที่ 20 ft"
+  },
+  "thrust_retard": {
+   "v": {
+    "to": "FLIGHT IDLE",
+    "height_m": 6.096,
+    "early_retard_risk": "idle at 100 ft -> excessive sink"
+   },
+   "u": "m",
+   "scope": "aircraft",
+   "src": [
+    "K23",
+    "K22"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "VH-FVZ ลดเป็น FI ที่ 118 ft แล้วแตะพื้น 928 fpm"
+  },
+  "touchdown_pitch_deg": {
+   "v": {
+    "typical": 4,
+    "range": [
+     2,
+     5.5
+    ]
+   },
+   "u": "deg",
+   "scope": "aircraft",
+   "src": [
+    "K22",
+    "K23"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ต้องต่ำกว่าขีดยุบ 5.9°; เหตุการณ์ hard landing แตะที่ 6° (VH-FVZ, ATSB) และ 6.4° (F-OZKN, BEA); ATSB: pitch ≥ 5.5° ร่วมกับ sink สูงอาจทำให้ลำตัวแตะพื้น"
+  },
+  "touchdown_speed_rel_mps": {
+   "v": [
+    -5.144,
+    -2.572
+   ],
+   "u": "m/s relative to VAPP",
+   "scope": "aircraft",
+   "src": [
+    "K40"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "แตะพื้นช้ากว่า VAPP 5–10 kt (หัวข้อ 1 [R9][R16])"
+  },
+  "tailstrike_pitch_deg": {
+   "v": {
+    "gear_extended": 8,
+    "gear_compressed": 5.9,
+    "tail_skid_contact": 8
+   },
+   "u": "deg",
+   "scope": "aircraft",
+   "src": [
+    "K22",
+    "K23"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "BEA หน้า 7: \"between 5.9° when the main landing gear is compressed and 8°\"; ATSB หน้า 7: skid แตะเมื่อ pitch \"8° or more\" และ pitch ≥ 5.5° ร่วมกับ sink สูงอาจแตะพื้น"
+  },
+  "crosswind_limits": {
+   "v": {
+    "demonstrated_mps": 18.006,
+    "autopilot_mps": 8.746
+   },
+   "u": "m/s",
+   "scope": "aircraft",
+   "src": [
+    "K50"
+   ],
+   "conf": "ต่ำ",
+   "est": false,
+   "note": "บัตรทบทวนออนไลน์ (หัวข้อ 1 [R21])"
+  },
+  "autobrake": {
+   "v": null,
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "K40"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "ATR 72-600 ไม่มี autobrake (FCOM ใช้ max braking ด้วยแป้น)"
+  },
+  "reverse": {
+   "v": {
+    "use": "reverse from touchdown, ground idle below ~40 kt ground speed",
+    "ground_idle_speed_mps": 20.578
+   },
+   "u": "m/s (ground speed)",
+   "scope": "aircraft",
+   "src": [
+    "K40"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "ผ่านหัวข้อ 1 [R16]; FCOM: \"release slowly PL back to GI when reaching low ground speeds (below 40 kt estimated)\" เป็น ground speed ไม่ใช่ IAS"
+  },
+  "hard_landing": {
+   "v": {
+    "gear_design_sink_mps": 3.048,
+    "gear_reserve_sink_mps": 3.658,
+    "score_flag_nz_est": 2,
+    "event_VH_FVZ": {
+     "sink_mps": 4.714,
+     "nz_g": 2.97
+    },
+    "event_F_OZKN_nz": 2.2
+   },
+   "u": "m/s, g",
+   "scope": "aircraft",
+   "src": [
+    "K23",
+    "K22"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "ATSB AO-2017-111 p.7: ล้อออกแบบรับ 600 fpm ที่ MLW สำรองถึง 720 fpm; เกณฑ์ nz ของ ATR AMM ไม่พบ (2.0 g = est)"
+  },
+  "stabilised_criteria": {
+   "v": {
+    "speed_rel_target_mps": [
+     -2.572,
+     5.144
+    ],
+    "vs_max_mps": 5.08
+   },
+   "u": "m/s",
+   "scope": "aircraft",
+   "src": [
+    "K23",
+    "K22"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "ผู้ให้บริการใน ATSB และ BEA"
+  }
+ }
+}

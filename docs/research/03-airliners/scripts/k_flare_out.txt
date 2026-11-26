@@ -1,0 +1,17 @@
+737-800 60 t F30 Vref+5: sink on 3deg 753 fpm; K 0.502 1/s, hB 5 ft, flare 3.21 s; wheel aim 231 m, flare start 115 m, TD 346 m (1134 ft) at 137.1 kt
+737-800 60 t F30 Vref+5, flare 30 ft: sink on 3deg 753 fpm; K 0.335 1/s, hB 7.5 ft, flare 4.82 s; wheel aim 231 m, flare start 57 m, TD 403 m (1322 ft) at 137.1 kt
+A320ceo 64.5 t FULL VAPP: sink on 3deg 708 fpm; K 0.31 1/s, hB 8.1 ft, flare 5.01 s; wheel aim 221 m, flare start 47 m, TD 380 m (1247 ft) at 125.5 kt
+A321neo 79.2 t FULL VAPP: sink on 3deg 764 fpm; K 0.341 1/s, hB 7.3 ft, flare 4.77 s; wheel aim 222 m, flare start 48 m, TD 392 m (1286 ft) at 136.2 kt
+A321neo flare 20 ft (FCOM Bull. 22/2): sink on 3deg 764 fpm; K 0.512 1/s, hB 4.9 ft, flare 3.18 s; wheel aim 222 m, flare start 106 m, TD 335 m (1100 ft) at 136.2 kt
+A330-300 VAPP 140 kt (est): sink on 3deg 742 fpm; K 0.247 1/s, hB 10.1 ft, flare 6.48 s; wheel aim 151 m, flare start -82 m, TD 371 m (1219 ft) at 132 kt
+ATR 72-600 20.4 t VAPP 106: sink on 3deg 562 fpm; K 0.343 1/s, hB 7.3 ft, flare 3.85 s; wheel aim 276 m, flare start 160 m, TD 362 m (1189 ft) at 98.5 kt
+float: +1 s at 140 kt adds 72 m (236 ft)
+AC 91-79B: +10% speed -> ground roll x1.21 (+21 %)
+AC 91-79B: +10 ft TCH -> +191 ft air distance
+AC 91-79B: 2 s delay at 118 kt -> +398 ft
+AC 91-79B: 132 kt vs 120 kt over 3,000 ft -> 3630 ft (AC says 3,600)
+tailwind 10 kt at 140 kt: GS^2 ratio 1.148 ; 21% in AC includes air distance
+DMK 21R GP origin 314.1 m; 21L (53 ft) 308.2 m; 03L (55 ft) 319.9 m
+LDA 3150 m, TD at 500 m, 135 kt GS: required mean decel 0.91 m/s^2 (3 ft/s^2)
+LDA 3150 m, TD at 1200 m, 135 kt GS: required mean decel 1.24 m/s^2 (4.1 ft/s^2)
+LDA 3500 m, TD at 500 m, 135 kt GS: required mean decel 0.8 m/s^2 (2.6 ft/s^2)

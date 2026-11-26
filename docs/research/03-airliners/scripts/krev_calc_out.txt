@@ -1,0 +1,67 @@
+Vref30(60000) 137.05  Vref40 132.08
+Vref30(66361) 144.13  Vref40 138.9
+Vapp A/T 142.05 kt = 73.08 m/s
+Boeing HW10 G0: add 5 -> 142 kt; gust kept 0
+Boeing HW20 G0: add 10 -> 147 kt; gust kept 0
+Boeing HW20 G10: add 20 -> 157 kt; gust kept 10
+Boeing HW0 G25: add 20 -> 157 kt; gust kept 20
+Boeing HW30 G15: add 20 -> 157 kt; gust kept 15
+Airbus HW0: COR 5 VAPP 133.5
+Airbus HW12: COR 5 VAPP 133.5
+Airbus HW15: COR 5 VAPP 133.5
+Airbus HW20: COR 6.67 VAPP 135.17
+Airbus HW30: COR 10 VAPP 138.5
+Airbus HW45: COR 15 VAPP 143.5
+Airbus HW60: COR 15 VAPP 143.5
+GS mini ceo 148.5 neo 138.45; A330 blend 12.5 s k=0.665 -> 9.975 ; 25 s 4.95
+ATR HW0 G0: WF 0 VAPP 106
+ATR HW15 G0: WF 5 VAPP 111
+ATR HW15 G10: WF 10 VAPP 116
+ATR HW60 G0: WF 15 VAPP 121
+737 20ft: sink 753 fpm K 0.502 hB 5 tF 3.21 xw 231.5 xs 115 TD 346 m (1134 ft) Vtd 137
+737 30ft: sink 753 fpm K 0.335 hB 7.5 tF 4.82 xw 231.5 xs 57 TD 403 m (1322 ft) Vtd 137
+A320 30ft: sink 708 fpm K 0.31 hB 8.1 tF 5.01 xw 221 xs 47 TD 380 m (1247 ft) Vtd 125.5
+A330 40ft: sink 742 fpm K 0.247 hB 10.1 tF 6.48 xw 150.6 xs -82 TD 371 m (1219 ft) Vtd 132
+ATR 20ft: sink 562 fpm K 0.343 hB 7.3 tF 3.85 xw 276.3 xs 160 TD 362 m (1189 ft) Vtd 98.5
+float 140 kt 1 s = 72 m = 236 ft
+AC91-79B (1.1)^2=1.21, 10ft/tan3 = 190.8 ft; 2 s at 118 kt = 398 ft
+req decel TD500 0.91 TD1200 1.237
+737 dth/dV 0.222 deg/kt, 10 kt 2.22
+A320 dth/dV 0.289 deg/kt, 10 kt 2.89
+A321 dth/dV 0.271 deg/kt, 10 kt 2.71
+A320 crab 4.3/8.6/13/16.5
+737 crab 4/8.1/12.2/15.5
+A321 crab 4/8/12/15.3
+ATR crab 5.4/10.9/16.4/21
+A320 slip 10: 4.3,4,1.2,-0.5 ; 737: 4,5.7,1.5,-0.544
+A320 slip 20: 8.6,8,2.4,-0.5 ; 737: 8.1,11.5,3.1,-0.544
+A320 slip 30: 13,12.1,3.6,-0.5 ; 737: 12.2,17.3,4.6,-0.544
+FOBN implied CY 10kt 1.247 30kt 1.233
+nacelle MTW 0 (h 0.48): asin 13.58 atan 13.21
+nacelle MTW -2.5 L3.2 (h 0.34): asin 9.58 atan 9.45
+nacelle MTW -2.5 L5 (h 0.262): asin 7.36 atan 7.3
+nacelle MTW dc0.1 (h 0.38): asin 10.71 atan 10.53
+nacelle OEW 0 (h 0.64): asin 18.24 atan 17.38
+nacelle OEW -2.5 L3.2 (h 0.5): asin 14.17 atan 13.75
+nacelle OEW -2.5 L5 (h 0.422): asin 11.91 atan 11.66
+wingtip 3.66: asin 14.09 atan 13.68
+wingtip 3.91: asin 15.07 atan 14.58
+737 TD 4.9 margin 4.1 / 6.1
+A320 TD 6.5 margin 5.2 / 7
+A321 TD 6.6 margin 3.1 / 4.6
+ATR TD 3.75 margin 2.15 / 4.25
+737 AB1 2048,58 AB2 1652,46.6 AB3 1168,32.6 MAX 668,18.9
+A320 LO1.7/4 1583,43.3 1368,40.3 LO2/2 1252,35.4 1076,32.9 MED 879,24.3 759,22.6
+manual mu .35 3.43 772,21.2 mu .45 4.41 616,16.7
+AB3 130->60 16.4 s; A320 MED 130->70 10.3 s
+kt/s -> m/s2: 1.543,3.087,4.116,5.144
+ft/s2: 1.219,1.524,2.195,4.267,3.658
+kt->m/s: 5:2.572 15:7.717 17:8.746 20:10.289 25:12.861 26:13.376 30:15.433 33:16.977 34:17.491 35:18.006 36:18.52 38:19.549 40:20.578 60:30.867 70:36.011 72:37.04
+ft->m: 20:6.096 27:8.23 30:9.144 40:12.192 200:60.96 300:91.44 400:121.92 500:152.4 1000:304.8 1500:457.2
+fpm->m/s: 240:1.219 360:1.829 540:2.743 600:3.048 720:3.658 840:4.267 928:4.714 1000:5.08; 2.4 ft/s 0.732 11.5 ft/s 3.505
+GP origin: 314.1,308.2,319.9
+dispatch 1666.7 wet 1916.7 FSF tw10 1.21
+rotation 4.25,3.4,2.83 A330 3.33
+theta_lim 737 c=.5 10
+wingtip base 737-800 (semi-span 17.16, d 14.3): 3.66 -> asin 14.83 atan 14.35; 3.91 -> asin 15.87 atan 15.29
+winglet top 6.50 at semi-span 17.9: atan 23.4

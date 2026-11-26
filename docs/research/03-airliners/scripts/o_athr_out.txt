@@ -1,0 +1,9 @@
+Design: omega 0.15 rad/s, zeta 0.8, engine lag 1.5 s (omega*tauE = 0.225)
+b737_800: Kp 14.4 kN/(m/s) = 0.0615 Tmax/(m/s) = 0.0317 Tmax/kt; Ki 1.35 kN/(m/s.s) = 0.00297 Tmax/(kt.s); +10 kt step: peak 10 kt, within 2 kt after 23.6 s
+a320ceo: Kp 15.48 kN/(m/s) = 0.0644 Tmax/(m/s) = 0.0332 Tmax/kt; Ki 1.451 kN/(m/s.s) = 0.00311 Tmax/(kt.s); +10 kt step: peak 10 kt, within 2 kt after 23.1 s
+a330_300: Kp 44.4 kN/(m/s) = 0.0702 Tmax/(m/s) = 0.0361 Tmax/kt; Ki 4.162 kN/(m/s.s) = 0.00339 Tmax/(kt.s); +10 kt step: peak 10 kt, within 2 kt after 28.2 s
+AirfieldLab trainer today: 0.035 thr/kt proportional, 0.0045 thr/(kt.s) integral (src/20-flight.js line 404-405)
+engine lag 1.5 s: 95 % of a thrust step after 4.49 s (14 CFR 33.73(b) limit 5 s) -> OK
+b737_800: Kp/Kp_trainer = 0.905, Ki/Ki_trainer = 0.66, m g / Tmax = 2.515
+a320ceo: Kp/Kp_trainer = 0.947, Ki/Ki_trainer = 0.691, m g / Tmax = 2.633
+a330_300: Kp/Kp_trainer = 1.032, Ki/Ki_trainer = 0.752, m g / Tmax = 2.868
