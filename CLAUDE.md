@@ -41,7 +41,10 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   research round 5 T-A01…T-A19, T-A21, T-A22, T-A24, T-A25), `licenses` (footer credits and links, the cited AIRAC
   cycle, forbidden sources and file types, `source`/`license` of data files, `data/LICENSE-DATA.md`, README and the MIT
   `LICENSE`, and no GPL/LGPL text or JSBSim model outside the owner's allowlist: research round 5 §11 T-K01…T-K05 and
-  §12 P3-9, round 1 §12 T-S-11, policy in `test/fixtures/license_policy.json`), `page` (parses the assembled page
+  §12 P3-9, round 1 §12 T-S-11, policy in `test/fixtures/license_policy.json`), `oracle` (our model against JSBSim
+  1.3.3 flying the same elevator, aileron and rudder doublets from the trimmed approach with a model built from our
+  own `AC` numbers, research round 1 §12.8 T-S-01…T-S-03 and T-S-05, fixture
+  `test/fixtures/jsbsim_trainer_doublet.json`), `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
   types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview` command
   line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers every file the
@@ -66,6 +69,16 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is a loose 50); touchdown
   points and every mode value have regression bands. A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
+  The oracle flies from the state, `AC` numbers and field elevation recorded in its fixture, so tuning `AC` or
+  retrimming `setApproach` does not touch it; a change to the terms of `Aircraft.deriv`, or a new or renamed numeric
+  `AC` field, needs the same change in `tools/jsbsim/make_model.py` and a fixture regenerated from a committed tree
+  (`python tools/jsbsim/run_cases.py`, offline, Python ≥ 3.10, `pip install jsbsim==1.3.3`; `tools/jsbsim/README.md`).
+  `step` and `atmosphere` are not mirrored: JSBSim flies its own US 1976 atmosphere, so an atmosphere change that
+  moves the density at 230–310 m (humid air) must leave the oracle on the dry ISA. It does not cover ground effect,
+  the stall blend or the gear. T-S-03 mostly checks the α̇ estimate in `updateAir`, which `make_model.py` does not
+  mirror, so a change to that estimate alone (research task item 17) needs no new fixture. A self-convergence test
+  (240 Hz against 960 Hz) checks that `step` stays RK4. When `AC` moves to `data/aircraft/` (research task item 8),
+  run it with `ORACLE_AC_FROZEN=1` before and after. Its JavaScript side is `test/lib/oracle.mjs`.
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 25-input.js` with
   `new Function` in strict mode, `test/keys.test.mjs` evaluates `18-keys.js`, `test/siting.test.mjs` `17-siting.js`
   and `test/licenses.test.mjs` `85-shot.js` the same way, so those seven files must stay DOM-free. The siting and
