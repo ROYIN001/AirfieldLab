@@ -30,6 +30,12 @@ ceilings, density altitude) from the IEM METAR archive. Node ≥ 18, no dependen
 
 Commit only the derived summary, not the raw METAR downloads.
 
+## JSBSim oracle (`jsbsim/`)
+
+`jsbsim/run_cases.py` regenerates `test/fixtures/jsbsim_trainer_doublet.json`, which `test/oracle.test.mjs` checks
+our flight model against (research round 1 §12.8, plan item B1). Offline, Python with `jsbsim==1.3.3`; see
+`jsbsim/README.md`.
+
 ## AIRAC, SUP/AIC and aircraft register watch (`watch/`)
 
 `watch/watch.mjs` (plan A10) tells when AIP Thailand AD 2 VTBD, the AIP supplements and circulars, or the CAAT aircraft
