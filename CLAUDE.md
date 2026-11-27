@@ -65,7 +65,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   table of every steady light; every taxiway edge light tried with separate geometry code, every place without one
   held to a cause, every free corner of a junction lit, no bare edge dark over 54 m, and the same places with every
   line drawn the other way round; the stands of
-  `alsStands` against the real pavements; every flash seen at 20, 30 and 60 frames a second). Autoland
+  `alsStands` against the real pavements; every flash seen at 20, 30 and 60 frames a second),
+  `metar` (`parseMetar` and its helpers in `21-metar.js`: MET-1…MET-4 and MET-6…MET-8 of research round 4 §10.5, every
+  report printed in §3.2, edge forms, a seeded fuzz, and that `tools/climo` uses the page's decoder). Autoland
   score floors sit just under the values measured on 2026-11-19 (the assist robot's floor is a loose 50); touchdown
   points and every mode value have regression bands. A physics change that moves them updates the test in the same PR.
   `test/lib/fstd.mjs` holds `f9`, `trim`, `linearise`, `eig4`, `modes` (research round 1 §10.5).
@@ -79,9 +81,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   mirror, so a change to that estimate alone (research task item 17) needs no new fixture. A self-convergence test
   (240 Hz against 960 Hz) checks that `step` stays RK4. When `AC` moves to `data/aircraft/` (research task item 8),
   run it with `ORACLE_AC_FROZEN=1` before and after. Its JavaScript side is `test/lib/oracle.mjs`.
-  `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 25-input.js` with
+  `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 21-metar.js + 25-input.js` with
   `new Function` in strict mode, `test/keys.test.mjs` evaluates `18-keys.js`, `test/siting.test.mjs` `17-siting.js`
-  and `test/licenses.test.mjs` `85-shot.js` the same way, so those seven files must stay DOM-free. The siting and
+  and `test/licenses.test.mjs` `85-shot.js` the same way, so those eight files must stay DOM-free. The siting and
   lights tests also evaluate `48-data.js` and `60-lights.js`: these two may use three.js and the DOM inside their
   functions, never at the top level. `test/lib/png.mjs` reads the land-use PNGs (8-bit greyscale) with `node:zlib`.
   `build.mjs` exports `assemble()`, `build()`, `dataFiles()`, `checkPr()` and `previewHtml()` for the page test.
@@ -108,6 +110,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 17-siting.js | pure: where something tall may stand: obstacle limitation surfaces `olsHeight(e, n)`, approach light lanes `alsLaneOf`, `ALS` (length and spacing per system), `RWY_PAD`, `TWY_W`, `SiteIndex` (clearances from buildings, decks, aprons, taxiways, water; the land-use class under a point), `STATIONS` and `stationSites(af)`, `mappedSite`, `placeTrees`, `siteBuildings` (`buildingProblem`, `groundShare`); also `rwyST`, `rwyEN`, `onAnyRunway`, `pointInPoly`, `nearestOnLine`, `lineLength`, `pointAlong` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions + `frame()` with sub-frame taps; `app.keys`) |
 | 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
+| 21-metar.js | pure: METAR/SPECI decoder `parseMetar` (research round 4 §3, OD-METAR: our own decoder; TAF not read), and the helpers `metarCeilingFt`, `metarRvrFor`, `metarGustSigmaKt`, `metarRainMmh`, `metarRunway`, `metarIssuedMs`; not wired to the weather yet (lane B10) |
 | 25-input.js | pure: `INPUT_CFG` (estimates from research §11), calibration and dead-zone helpers, `shapeAxis` / `shapeLever`, `keyRamp` + `KeyAxis`, `readPad` (W3C standard gamepad), `Arbiter` (last-moved source wins) + `InputAxis` (no jump on a switch), `TiltStick` (phone tilt), `PilotInput` (one frame from keys, pad, touch and tilt; `app.pin`) |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()` (fog = MOR haze, `HAZE_GLSL`), `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
