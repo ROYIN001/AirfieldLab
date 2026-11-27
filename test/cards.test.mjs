@@ -480,16 +480,20 @@ test('page wiring: cards load with the scene data, AC is switched only by useTyp
   // unit into spdUnit, which the live gate row and the debrief's touchdown speed use too: those two said KIAS on an
   // airliner. No speed on a training screen carries a unit of its own.)
   assert.match(APP, /const spdUnit = \(id = app\.train\.type\) => \(isLiner\(id\) \? 'KCAS' : 'KIAS'\);/);
-  assert.match(APP, /\['แบบ', info\.name, 2\], \['มวล \(ค่าประมาณ\)', `\$\{fmt\(AC\.m\)\} kg`\], \['Vref', `\$\{fmt\(V\.Vref\)\} \$\{spdUnit\(\)\}`\], \['Vapp', `\$\{fmt\(V\.Vapp\)\} \$\{spdUnit\(\)\}`\]/);
+  assert.match(APP, /\['แบบ', info\.name, 2\], \['มวล \(ค่าประมาณ\)', `\$\{fmt\(AC\.m\)\} kg`\], \[V\.label, `\$\{fmt\(V\.Vref\)\} \$\{spdUnit\(\)\}`\], \[V\.kind === 'airbus' \? 'VAPP' : 'Vapp', `\$\{fmt\(V\.Vapp\)\} \$\{spdUnit\(\)\}`\]/);
   assert.match(APP, /\['ความเร็ว Vref −5\/\+20', [^\n]*`\$\{fmt\(f\.ac\.kias\(\)\)\} \$\{spdUnit\(\)\}`\]\);/);
   assert.match(APP, /\['ความเร็วตอนแตะพื้น', `\$\{fmt\(td\.ias\)\} \$\{spdUnit\(\)\}`, P\.spd\]/);
   assert.doesNotMatch(APP, /\} K[IC]AS`/, 'a speed shown with a fixed unit');
-  assert.match(APP, /\['SPD ' \+ fmt\(V\.Vapp\), 'c'\]/);
-  assert.match(APP, /'A\/THR SPD ' \+ fmt\(V\.Vapp\)/);
-  assert.match(APP, /const V = speedsKias\(\);\s*\$\('#brief'\)/);
-  assert.match(APP, /ias = fl\.ac\.kias\(\), V = speedsKias\(\)/);
+  // plan C5: the brief, the FMA, the speed colour, the gate row and the HUD read the flight's Approach (src/20-flight.js: the
+  // type's speeds at the mass flown and in the wind; a card with no approach rule gives speedsKias() unchanged, test/speeds.test.mjs)
+  assert.match(APP, /\['SPD ' \+ fmt\(V\.cmd\), 'c'\]/);
+  assert.match(APP, /'A\/THR SPD ' \+ fmt\(V\.cmd\)/);
+  assert.match(APP, /const V = new Approach\(\{ wind: sc, atOn: app\.train\.pilot === 'ap' \|\| app\.train\.autoThr \}\);\s*\$\('#brief'\)/);
+  assert.match(APP, /ias = fl\.ac\.kias\(\), V = fl\.appr/);
+  assert.match(APP, /Math\.abs\(f\.ac\.kias\(\) - f\.appr\.Vref - 7\.5\) <= 12\.5/);
   assert.match(HUD, /const ias = fl\.ac\.kias\(\);/);
-  assert.match(HUD, /ctx\.fillText\(`Vref \$\{fmt\(speedsKias\(\)\.Vref\)\}`/);
+  assert.match(HUD, /const ap = fl\.appr;\s*ctx\.textAlign = 'center'; ctx\.fillText\(`\$\{ap\.label\} \$\{fmt\(ap\.Vref\)\}`/);
+  assert.match(HUD, /ctx\.fillText\(`\$\{ap\.kind === 'airbus' \? 'VAPP' : 'Vapp'\} \$\{fmt\(ap\.cmd\)\}`/);
   for (const [f, t] of [['src/90-app.js', APP], ['src/80-hud.js', HUD]]) assert.doesNotMatch(t, /a\.ias \/ KT|AC\.V(?:ref|app|s0)\b/, `${f} reads the CAS or the card's CAS speeds for display`);
   for (const [f, t] of [['src/90-app.js', APP], ['src/80-hud.js', HUD]]) assert.doesNotMatch(t, /\$\{AC\.V(?:ref|app|s0)\}|' \+ AC\.V(?:ref|app|s0)\b/, `${f} shows a speed without fmt`);
   // the result names the type; the cockpit view hides a fitted type's model; shots.mjs can pick a type

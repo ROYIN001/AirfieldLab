@@ -296,32 +296,50 @@
       23000
      ],
      "flap": [
+      "0",
+      "15",
       "30"
      ]
     },
     "data": [
      [
+      96.2,
+      80.4,
       72
      ],
      [
+      102.9,
+      86,
       77
      ],
      [
+      109.1,
+      91.2,
       81.7
      ],
      [
+      115,
+      96.1,
       86.1
      ],
      [
+      117.8,
+      98.5,
       88.2
      ],
      [
+      120.6,
+      100.8,
       90.3
      ],
      [
+      121.6,
+      101.6,
       91
      ],
      [
+      123.3,
+      103.1,
       92.3
      ]
     ]
@@ -338,7 +356,7 @@
    ],
    "conf": "ต่ำ",
    "est": true,
-   "note": "ค่าประมาณ: ความเร็ว stall 1 g ที่แฟลปลงจอด 30 = คอลัมน์ 30 ของ speeds.VSR ในบัตรวิจัย ตามมวล; ซิมอ่านที่มวลที่เลือกแบบเส้นตรงและไม่ต่อเกินปลายตาราง [AL:C4]"
+   "note": "ค่าประมาณ: ความเร็ว stall 1 g ทุกตำแหน่งแฟลป = ตาราง speeds.VSR ของบัตรวิจัยทุกคอลัมน์ ตามมวล; VS0 ที่ซิมใช้ (AC.Vs0) อ่านคอลัมน์แฟลปลงจอด 30 ที่มวลที่เลือกแบบเส้นตรงและไม่ต่อเกินปลายตาราง [AL:C4]"
   },
   "VREF_kt": {
    "v": {
@@ -416,6 +434,28 @@
    "conf": "กลาง",
    "est": true,
    "note": "ค่าประมาณ: Vapp ในลมสงบตามกฎ speeds.VAPP_rule ของบัตรวิจัย (VAPP = max(VmHB30 + WF, VMCL), ลมสงบ WF = 0) จึงเท่ากับ Vref (VmHB30) ตามมวล; ลมยังไม่เพิ่ม (plan C5) [AL:C4]"
+  },
+  "approach_rule": {
+   "v": {
+    "kind": "atr",
+    "max_kt": 15,
+    "headwind_div": 3,
+    "gust_factor": 1,
+    "vmcl_kt": 98
+   },
+   "u": "-, kt",
+   "scope": "aircraft",
+   "src": [
+    "K40",
+    "K41",
+    "R16",
+    "R17",
+    "R14",
+    "AL:C5"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "VAPP ของ ATR 72-600 = max(VmHB30 + WF, VMCL); WF = min(15 kt, max(1/3 ของ headwind, gust เต็มค่า)) (VAPP = max(VmHB30 + WF, VMCL); WF = max(1/3 headwind, full gust), สูงสุด 15 kt) [K40][K41]; VmHB30 คือ Vref ของตาราง speeds.VREF_kt ที่แฟลป 30; VMCL 98 kt CAS ตาม AFM LIM.3 ผ่านแหล่งทุติยภูมิ [R14] [AL:C5]"
   }
  },
  "aero": {
@@ -1309,6 +1349,10 @@
     "what": "AirfieldLab plan C4, this generator's own derivations and the owner's decisions OD-LEMAC, OD-SOURCES and OD-RATINGS: the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research's tables and rules, control travels the research card lacks, the gear struts, the glide-slope antenna at the eye, the stall-warning angles, the A330 derivatives in body axes, the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists",
     "link": "tools/aircraft/build_airliners.mjs"
    },
+   "AL:C5": {
+    "what": "AirfieldLab plan C5 (research round 3 task item 3, R3-3) and the owner decision OD-WIND-ADDITIVE: speeds.approach_rule, this generator's transcription, in knots, of the wind rules of research topic 3.10 (the 737 additive and its two caps, the Airbus APPR COR, the ATR wind factor)",
+    "link": "tools/aircraft/build_airliners.mjs"
+   },
    "D12": {
     "what": "ATR, ATR 72-600 factsheet (ไม่ระบุวันที่ อัปโหลด ก.ค. 2020) (reference [D12] of docs/research/03-airliners/05-airport-geometry.md)",
     "link": "https://www.atr-aircraft.com/wp-content/uploads/2020/07/Factsheets_-_ATR_72-600.pdf"
@@ -1320,6 +1364,14 @@
    "K23": {
     "what": "ATSB, AO-2017-111 Hard landing, ATR 72-212A VH-FVZ, Canberra, 19 พ.ย. 2017 (reference [K23] of docs/research/03-airliners/10-fctm-technique.md)",
     "link": "https://www.atsb.gov.au/sites/default/files/media/5776944/ao-2017-111_final.pdf"
+   },
+   "K40": {
+    "what": "ATR, ATR 72 FCOM 2.02 Procedures and Techniques, rev 001 เม.ย. 2011 (Mod 5948, -600), สำเนาไม่เป็นทางการ (reference [K40] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://pdfcoffee.com/atr-72-procedures-and-techniques-pdf-free.html"
+   },
+   "K41": {
+    "what": "ATR (L. Sartorius, E. Delesalle, H. Barthe), Watch your speed in approach, Regional Flight Safety Conference, 2016 (reference [K41] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://safety.atr-aircraft.com/wp-content/uploads/ATR-Safety-Conf-04-Watch-Your-Speed-Approach.pdf"
    },
    "R1": {
     "what": "European Union Aviation Safety Agency, Type-Certificate Data Sheet EASA.A.084 ATR 42 / ATR 72, Issue 14, 23 กุมภาพันธ์ 2026 (reference [R1] of docs/research/03-airliners/01-atr72-600.md)",

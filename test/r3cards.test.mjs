@@ -202,14 +202,23 @@ test('every airliner loads, trims on a 3° glide at its Vapp (flaps 1, gear down
 // and the A321ceo hit too hard in calm air on every end; the A320neo, the A321neo and the ATR in some winds; the A330
 // stalls about 29 s after the start, 3.3 km before the threshold; the A320ceo lands everywhere but at 135–165 m, short
 // of the 300 m window (score 55–63).
+// Plan C5 moved the rows that have a wind along the runway, on purpose: the approach speed now follows the wind rule of
+// the type (src/20-flight.js SPD, Approach): the ATR's wind factor adds a third of the 10 kt headwind of `head` (3.3 kt;
+// score 69 → 88, the point 414 → 244 m); the Airbus cards fly the ground speed
+// mini (the headwind aloft above the tower's: k 1 for the A320ceo and A321ceo, 0.33 for the neo types and the A330), which
+// moves every `head` row (the A320ceo lands at 147 m, score 60; the A321ceo no longer stalls, 84 at 132 m, but still
+// crashes; the A321neo no longer stalls but crashes at 80 m; the A330 still stalls) and, by the 0.4° that the rounded wind
+// direction leaves between `xl` and a pure crosswind, the `xl` rows by at most 1.2 m and 1 point. The calm rows and
+// `xr` did not move. Boeing's additive stays at Vref + 5 in these winds (no gust figure in the scenarios). The cause of
+// the crashes is still the trainer-tuned Autopilot, not the speeds.
 const AIRLINER_AUTOLAND = {
-  a320ceo: [[0, 57, 158.8, ''], [0, 57, 153.1, ''], [0, 55, 164.5, ''], [0, 55, 135.4, ''], [0, 58, 164.1, ''], [0, 58, 162.0, ''], [0, 63, 152.2, '']],
+  a320ceo: [[0, 57, 158.8, ''], [0, 57, 153.1, ''], [0, 55, 164.5, ''], [0, 55, 135.4, ''], [0, 60, 147.2, ''], [0, 58, 162.0, ''], [0, 64, 152.5, '']],
   b737_800: [[1, 63, 195.6, 'crash'], [1, 63, 189.8, 'crash'], [1, 64, 201.4, 'crash'], [1, 63, 172.3, 'crash'], [1, 71, 201.5, 'crash'], [1, 66, 200.1, 'crash'], [0, 72, 187.8, '']],
-  a320neo: [[0, 56, 159.6, ''], [0, 56, 153.8, ''], [0, 56, 165.4, ''], [0, 35, 136.3, ''], [0, 60, 169.5, ''], [0, 35, 158.6, ''], [1, 35, 145.3, 'crash']],
-  a330_300: [[1, 20, -3300.2, 'stall,crash'], [1, 20, -3300.8, 'stall,crash'], [1, 20, -3299.5, 'stall,crash'], [1, 20, -3302.5, 'stall,crash'], [1, 19, -3513.4, 'stall,crash'], [1, 20, -3308.7, 'stall,crash'], [1, 2, -3264.2, 'stall,crash']],
-  a321neo: [[0, 35, 162.4, ''], [0, 35, 157.8, ''], [0, 35, 167.4, ''], [0, 35, 143.4, ''], [1, 20, -170.6, 'stall,crash'], [1, 35, 161.0, 'crash'], [1, 35, 150.3, 'crash']],
-  atr72_600: [[0, 86, 266.3, ''], [0, 86, 260.5, ''], [0, 86, 272.1, ''], [0, 86, 243.1, ''], [0, 69, 414.4, ''], [0, 76, 271.5, ''], [1, 90, 282.9, 'crash']],
-  a321ceo: [[1, 35, 146.3, 'crash'], [1, 35, 140.7, 'crash'], [1, 35, 151.6, 'crash'], [1, 35, 124.9, 'crash'], [1, 74, 50.6, 'stall,crash'], [1, 35, 141.8, 'crash'], [1, 35, 117.0, 'crash']],
+  a320neo: [[0, 56, 159.6, ''], [0, 56, 153.8, ''], [0, 56, 165.4, ''], [0, 35, 136.3, ''], [0, 64, 163.2, ''], [0, 35, 158.6, ''], [1, 35, 145.2, 'crash']],
+  a330_300: [[1, 20, -3300.2, 'stall,crash'], [1, 20, -3300.8, 'stall,crash'], [1, 20, -3299.5, 'stall,crash'], [1, 20, -3302.5, 'stall,crash'], [1, 20, -3110.8, 'stall,crash'], [1, 20, -3308.7, 'stall,crash'], [1, 2, -3264.1, 'stall,crash']],
+  a321neo: [[0, 35, 162.4, ''], [0, 35, 157.8, ''], [0, 35, 167.4, ''], [0, 35, 143.4, ''], [1, 35, 79.8, 'crash'], [1, 35, 161.0, 'crash'], [1, 35, 150.2, 'crash']],
+  atr72_600: [[0, 86, 266.3, ''], [0, 86, 260.5, ''], [0, 86, 272.1, ''], [0, 86, 243.1, ''], [0, 88, 243.8, ''], [0, 76, 271.5, ''], [1, 89, 281.7, 'crash']],
+  a321ceo: [[1, 35, 146.3, 'crash'], [1, 35, 140.7, 'crash'], [1, 35, 151.6, 'crash'], [1, 35, 124.9, 'crash'], [1, 84, 132.0, 'crash'], [1, 35, 141.8, 'crash'], [1, 35, 117.1, 'crash']],
 };
 const AL_RUNS = [['21R', 'calm'], ['21L', 'calm'], ['03L', 'calm'], ['03R', 'calm'], ['03L', 'head'], ['03L', 'xr'], ['21R', 'xl']];
 test('known gap: the trainer\'s Autopilot on each airliner, seed 5, calm on all four ends and three winds (regression table for plans C5/C6; the Thai note follows it)', (t) => {

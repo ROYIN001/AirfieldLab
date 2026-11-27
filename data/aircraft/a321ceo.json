@@ -731,41 +731,101 @@
       100000
      ],
      "flap": [
+      "CONF0",
+      "CONF1",
+      "CONF1+F",
+      "CONF2",
+      "CONF3",
       "FULL"
      ]
     },
     "data": [
      [
+      137,
+      112,
+      102,
+      100,
+      100,
       93
      ],
      [
+      144,
+      118,
+      107,
+      105,
+      105,
       98
      ],
      [
+      150,
+      123,
+      112,
+      110,
+      110,
       102
      ],
      [
+      156,
+      128,
+      117,
+      114,
+      114,
       106
      ],
      [
+      162,
+      133,
+      121,
+      119,
+      119,
       110
      ],
      [
+      168,
+      138,
+      125,
+      123,
+      123,
       114
      ],
      [
+      173,
+      142,
+      129,
+      127,
+      127,
       118
      ],
      [
+      179,
+      146,
+      133,
+      131,
+      131,
       121
      ],
      [
+      184,
+      151,
+      137,
+      135,
+      135,
       125
      ],
      [
+      189,
+      155,
+      141,
+      138,
+      138,
       128
      ],
      [
+      194,
+      159,
+      145,
+      142,
+      142,
       132
      ]
     ]
@@ -779,7 +839,7 @@
    ],
    "conf": "ต่ำ",
    "est": true,
-   "note": "ค่าประมาณ: ความเร็ว stall 1 g ที่แฟลปลงจอด FULL = คอลัมน์ FULL ของ speeds.VS1g ในบัตรวิจัย ตามมวล; ซิมอ่านที่มวลที่เลือกแบบเส้นตรงและไม่ต่อเกินปลายตาราง [AL:C4]"
+   "note": "ค่าประมาณ: ความเร็ว stall 1 g ทุกตำแหน่งแฟลป = ตาราง speeds.VS1g ของบัตรวิจัยทุกคอลัมน์ ตามมวล; VS0 ที่ซิมใช้ (AC.Vs0) อ่านคอลัมน์แฟลปลงจอด FULL ที่มวลที่เลือกแบบเส้นตรงและไม่ต่อเกินปลายตาราง [AL:C4]"
   },
   "VREF_kt": {
    "v": {
@@ -846,7 +906,7 @@
    ],
    "conf": "กลาง",
    "est": true,
-   "note": "ค่าประมาณ: Vref ตามกฎของบัตรวิจัย \"VLS CONF FULL\" = คอลัมน์ FULL ของ speeds.VLS.all_cg (CG 25 % MAC) ตามมวล [AL:C4]"
+   "note": "ค่าประมาณ: Vref ตามกฎของบัตรวิจัย \"VLS CONF FULL\" = ตาราง speeds.VLS.all_cg (CG 25 % MAC) ทุกคอลัมน์ที่บัตรวิจัยให้ ตามมวล; Vref ที่ซิมใช้ (AC.Vref) อ่านคอลัมน์ FULL [AL:C4]"
   },
   "VAPP_kt": {
    "v": {
@@ -918,6 +978,25 @@
    "conf": "กลาง",
    "est": true,
    "note": "ค่าประมาณ: Vapp ในลมสงบตามกฎ \"VLS + clamp(HW/3, 5, 15)\" ของบัตรวิจัย: VLS CONF FULL + 5 kt (ค่าต่ำสุดของ APPR COR เมื่อใช้ A/THR) ตามมวล; ลมยังไม่เพิ่ม (plan C5) [AL:C4]"
+  },
+  "approach_rule": {
+   "v": {
+    "kind": "airbus",
+    "min_kt": 5,
+    "max_kt": 15,
+    "headwind_div": 3
+   },
+   "u": "-, kt",
+   "scope": "aircraft",
+   "src": [
+    "K7",
+    "K20",
+    "K35",
+    "AL:C5"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "VAPP ของ Airbus = VLS + APPR COR; APPR COR = 1/3 ของ headwind จากหอ จำกัดระหว่าง 5 ถึง 15 kt (5 kt เมื่อ A/THR ต่อ) gust ไม่รวมใน VAPP แต่ชดเชยด้วย GS mini (ops.gs_mini) [K7][K35]; ไม่จำลองน้ำแข็ง (ซิมไม่มีสภาพน้ำแข็ง) [AL:C5]"
   }
  },
  "wind": {
@@ -1489,6 +1568,10 @@
   "sources": {
    "AL:C4": {
     "what": "AirfieldLab plan C4, this generator's own derivations and the owner's decisions OD-LEMAC, OD-SOURCES and OD-RATINGS: the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research's tables and rules, control travels the research card lacks, the gear struts, the glide-slope antenna at the eye, the stall-warning angles, the A330 derivatives in body axes, the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists",
+    "link": "tools/aircraft/build_airliners.mjs"
+   },
+   "AL:C5": {
+    "what": "AirfieldLab plan C5 (research round 3 task item 3, R3-3) and the owner decision OD-WIND-ADDITIVE: speeds.approach_rule, this generator's transcription, in knots, of the wind rules of research topic 3.10 (the 737 additive and its two caps, the Airbus APPR COR, the ATR wind factor)",
     "link": "tools/aircraft/build_airliners.mjs"
    },
    "D14": {

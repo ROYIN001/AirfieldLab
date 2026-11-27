@@ -26,7 +26,7 @@ const TYPE_TEXT = {
 // tools/aircraft/build_airliners.mjs, in its order: by the number of each type based at Don Mueang (03-airliners.md).
 // The explore mode always flies the trainer.
 const AIRLINER_TYPES = ['a320ceo', 'b737_800', 'a320neo', 'a330_300', 'a321neo', 'atr72_600', 'a321ceo'];
-// ap: what the trainer's Autopilot does with the type (measured, test/r3cards.test.mjs AIRLINER_AUTOLAND; plans C5/C6 tune it)
+// ap: what the trainer's Autopilot does with the type (measured, test/r3cards.test.mjs AIRLINER_AUTOLAND; plan C6 tunes it)
 const AP_CALM = 'ออโต้ไพลอตของเครื่องฝึกพาแบบนี้กระแทกพื้นแรงเกินไปแม้ลมสงบ ทุกทางวิ่ง ให้บินเอง';
 const AP_WIND = 'ออโต้ไพลอตของเครื่องฝึกพาแบบนี้กระแทกพื้นแรงเกินไปในลมบางแบบ';
 const AIRLINER_TEXT = {
@@ -103,7 +103,8 @@ function typeInfo(id, card, ac) {
 // table, so the HUD shows KCAS), the mass and the engine rating are the ones chosen (ac.m, the rating name given)
 function airlinerInfo(id, T, card, ac, out) {
   const det = landingDetent(card), flap = /^\d+$/.test(String(det.name)) ? `${det.name}°` : String(det.name);
-  out.em = `Vref ${Math.round(ac.Vref)} · Vapp ${Math.round(ac.Vapp)} KCAS`;
+  const bus = ac.spd && ac.spd.kind === 'airbus';   // an Airbus card's Vref is its VLS and its approach speed VAPP (as the brief and the HUD print them)
+  out.em = `${bus ? 'VLS' : 'Vref'} ${Math.round(ac.Vref)} · ${bus ? 'VAPP' : 'Vapp'} ${Math.round(ac.Vapp)} KCAS`;
   out.span = `${EXP_SWITCH} · ค่าประมาณ · มวล ${Math.round(ac.m).toLocaleString('en-US')} kg`;
   out.lede = `${T.desc} (${EXP_SWITCH}) เริ่มบนแนวร่อน 3° ใส่ล้อและแฟลปลงจอด (${flap}) แล้ว`;
   out.notes.push(...EXP_NOTES);

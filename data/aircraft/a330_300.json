@@ -769,26 +769,61 @@
       242000
      ],
      "flap": [
+      "CONF0",
+      "CONF1",
+      "CONF1+F",
+      "CONF2",
+      "CONF3",
       "FULL"
      ]
     },
     "data": [
      [
+      131.4,
+      109.9,
+      101.8,
+      98.5,
+      96.8,
       94.2
      ],
      [
+      141.1,
+      118.1,
+      109.3,
+      105.8,
+      104,
       101.2
      ],
      [
+      150.2,
+      125.7,
+      116.4,
+      112.7,
+      110.7,
       107.7
      ],
      [
+      157.6,
+      131.8,
+      122.1,
+      118.2,
+      116.1,
       113
      ],
      [
+      167,
+      139.7,
+      129.3,
+      125.2,
+      123.1,
       119.8
      ],
      [
+      179.3,
+      150,
+      138.9,
+      134.4,
+      132.1,
       128.6
      ]
     ]
@@ -802,7 +837,7 @@
    ],
    "conf": "ต่ำ",
    "est": true,
-   "note": "ค่าประมาณ: ความเร็ว stall 1 g ที่แฟลปลงจอด FULL = คอลัมน์ FULL ของ speeds.VS1g ในบัตรวิจัย ตามมวล; ซิมอ่านที่มวลที่เลือกแบบเส้นตรงและไม่ต่อเกินปลายตาราง [AL:C4]"
+   "note": "ค่าประมาณ: ความเร็ว stall 1 g ทุกตำแหน่งแฟลป = ตาราง speeds.VS1g ของบัตรวิจัยทุกคอลัมน์ ตามมวล; VS0 ที่ซิมใช้ (AC.Vs0) อ่านคอลัมน์แฟลปลงจอด FULL ที่มวลที่เลือกแบบเส้นตรงและไม่ต่อเกินปลายตาราง [AL:C4]"
   },
   "VREF_kt": {
    "v": {
@@ -816,26 +851,33 @@
       242000
      ],
      "flap": [
+      "CONF3",
       "FULL"
      ]
     },
     "data": [
      [
+      119.1,
       115.9
      ],
      [
+      127.9,
       124.5
      ],
      [
+      136.2,
       132.5
      ],
      [
+      142.8,
       139
      ],
      [
+      151.4,
       147.3
      ],
      [
+      162.5,
       158.1
      ]
     ]
@@ -849,7 +891,7 @@
    ],
    "conf": "ต่ำ",
    "est": true,
-   "note": "ค่าประมาณ: Vref ตามกฎของบัตรวิจัย \"VLS CONF FULL\" = คอลัมน์ FULL ของ speeds.VLS (CG 25 % MAC) ตามมวล [AL:C4]"
+   "note": "ค่าประมาณ: Vref ตามกฎของบัตรวิจัย \"VLS CONF FULL\" = ตาราง speeds.VLS (CG 25 % MAC) ทุกคอลัมน์ที่บัตรวิจัยให้ ตามมวล; Vref ที่ซิมใช้ (AC.Vref) อ่านคอลัมน์ FULL [AL:C4]"
   },
   "VAPP_kt": {
    "v": {
@@ -896,6 +938,24 @@
    "conf": "ต่ำ",
    "est": true,
    "note": "ค่าประมาณ: คอลัมน์ FULL ของ speeds.VAPP_kt ในบัตรวิจัย (VLS + 5 kt ลมสงบ A/THR) ตามมวล [AL:C4]"
+  },
+  "approach_rule": {
+   "v": {
+    "kind": "airbus",
+    "min_kt": 5,
+    "max_kt": 15,
+    "headwind_div": 3
+   },
+   "u": "-, kt",
+   "scope": "aircraft",
+   "src": [
+    "K7",
+    "K35",
+    "AL:C5"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "VAPP ของ Airbus = VLS + APPR COR; APPR COR = 1/3 ของ headwind จากหอ จำกัดระหว่าง 5 ถึง 15 kt (5 kt เมื่อ A/THR ต่อ) gust ไม่รวมใน VAPP แต่ชดเชยด้วย GS mini (ops.gs_mini) [K7][K35]; ไม่จำลองน้ำแข็ง (ซิมไม่มีสภาพน้ำแข็ง) [AL:C5]"
   }
  },
  "wind": {
@@ -1460,6 +1520,10 @@
     "what": "AirfieldLab plan C4, this generator's own derivations and the owner's decisions OD-LEMAC, OD-SOURCES and OD-RATINGS: the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research's tables and rules, control travels the research card lacks, the gear struts, the glide-slope antenna at the eye, the stall-warning angles, the A330 derivatives in body axes, the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists",
     "link": "tools/aircraft/build_airliners.mjs"
    },
+   "AL:C5": {
+    "what": "AirfieldLab plan C5 (research round 3 task item 3, R3-3) and the owner decision OD-WIND-ADDITIVE: speeds.approach_rule, this generator's transcription, in knots, of the wind rules of research topic 3.10 (the 737 additive and its two caps, the Airbus APPR COR, the ATR wind factor)",
+    "link": "tools/aircraft/build_airliners.mjs"
+   },
    "D10": {
     "what": "Airbus, A330 Facts and Figures, มิ.ย. 2023 (reference [D10] of docs/research/03-airliners/05-airport-geometry.md)",
     "link": "https://www.airbus.com/sites/g/files/jlcbta136/files/2023-06/Airbus-A330-Facts-and-Figures-June%202023.pdf"
@@ -1595,6 +1659,10 @@
    "K21": {
     "what": "TSB Canada, Aviation Investigation Report A02F0069, Airbus A330-343 C-GHLM, Frankfurt, 14 มิ.ย. 2002 (reference [K21] of docs/research/03-airliners/10-fctm-technique.md)",
     "link": "https://bst.gc.ca/sites/default/files/rapports-reports/aviation/A02F0069/eng/A02F0069.pdf"
+   },
+   "K35": {
+    "what": "code7700 (E. Haskel), Approach speed additives (ยก 737NG FCTM Rev 12 30 มิ.ย. 2013 p.1.11 และ A330/340 FCTM §6.30.2) (reference [K35] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://code7700.com/approach_speed_additives.htm"
    },
    "K6": {
     "what": "R. Geuter, S. Gupta, T. Lepagnot, M. Le-Louer (Airbus), A Focus on the Landing Flare, Safety First ออนไลน์ (ราว 2021) (reference [K6] of docs/research/03-airliners/10-fctm-technique.md)",

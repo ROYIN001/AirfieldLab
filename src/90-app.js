@@ -395,9 +395,10 @@ async function main() {
     // humid air at the field from QNH (research round 4, 04-weather.md §6.1, ATM-5); the old dry rule read ~420 ft low.
     // QNH is shown as a METAR gives it, rounded down to a whole hPa (ICAO Annex 3 App. 3)
     const da = densityAltitudeFt(airDensity(fieldPressure(qnh, FIELD.elev), wx.oatC, wx.dewC));
-    // Vref and Vapp in KIAS as the HUD shows them (plan C3): the card's figures, or its kt CAS read back through its table; whole knots
-    const V = speedsKias();
-    $('#brief').innerHTML = [['แบบ', info.name, 2], ['มวล (ค่าประมาณ)', `${fmt(AC.m)} kg`], ['Vref', `${fmt(V.Vref)} ${spdUnit()}`], ['Vapp', `${fmt(V.Vapp)} ${spdUnit()}`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${fmt(wx.oatC)}°C`], ['จุดน้ำค้าง', wx.dewC == null ? '—' : `${fmt(wx.dewC)}°C`], ['QNH', `${Math.floor(qnh)} hPa`], ['ความชื้นสัมพัทธ์', wx.dewC == null ? '—' : `${fmt(relHumidity(wx.oatC, wx.dewC))}%`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
+    // Vref (VLS on an Airbus card) and Vapp as the HUD shows them (plan C3: KIAS from the card's table; plan C5: the speeds the
+    // flight will fly at this mass and in this wind, 'fixed' cards the card's own figures); whole knots
+    const V = new Approach({ wind: sc, atOn: app.train.pilot === 'ap' || app.train.autoThr });
+    $('#brief').innerHTML = [['แบบ', info.name, 2], ['มวล (ค่าประมาณ)', `${fmt(AC.m)} kg`], [V.label, `${fmt(V.Vref)} ${spdUnit()}`], [V.kind === 'airbus' ? 'VAPP' : 'Vapp', `${fmt(V.Vapp)} ${spdUnit()}`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${fmt(wx.oatC)}°C`], ['จุดน้ำค้าง', wx.dewC == null ? '—' : `${fmt(wx.dewC)}°C`], ['QNH', `${Math.floor(qnh)} hPa`], ['ความชื้นสัมพัทธ์', wx.dewC == null ? '—' : `${fmt(relHumidity(wx.oatC, wx.dewC))}%`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
       .map(([k, v, span]) => `<div${span ? ` style="grid-column: span ${span}"` : ''}><small>${k}</small><b>${v}</b></div>`).join('') + '<div style="grid-column: 1 / -1"><small>ค่าประมาณของวันทั่วไป: QNH เฉลี่ยทั้งปีและจุดน้ำค้างเฉลี่ยเวลา 11:00 น. จากสถิติ METAR ดอนเมือง 2016–2025 (Iowa Environmental Mesonet) · อุณหภูมิเป็นค่าเริ่มต้นของโปรแกรม</small></div>';
   }
   function refreshLive() { for (const b of $('#segWarp').children) b.setAttribute('aria-pressed', String(+b.dataset.w === app.train.warp)); $('#btnTake').textContent = app.flight && app.flight.pilot === 'ap' ? 'รับช่วงบังคับเอง' : 'ให้ออโต้ไพลอตบิน'; }
@@ -727,7 +728,7 @@ async function main() {
       rows.push(['ล้อลงและแฟลปลงจอด', f.ac.gearPos > 0.98 && f.ac.flaps > 0.95 ? 'ok' : 'bad', 'ครบ']);
       rows.push(['แนวกลาง (LOC)', Math.abs(a.locDots) <= 1 ? 'ok' : 'bad', `${a.locDots >= 0 ? '+' : ''}${a.locDots.toFixed(1)} จุด`]);
       rows.push(['แนวร่อน (G/S)', a.s > FIELD.aim - 50 ? '' : Math.abs(a.gsDots) <= 1 ? 'ok' : 'bad', a.s > FIELD.aim - 50 ? '—' : `${a.gsDots >= 0 ? '+' : ''}${a.gsDots.toFixed(1)} จุด`]);
-      rows.push(['ความเร็ว Vref −5/+20', Math.abs(f.ac.kias() - speedsKias().Vref - 7.5) <= 12.5 ? 'ok' : 'bad', `${fmt(f.ac.kias())} ${spdUnit()}`]);
+      rows.push(['ความเร็ว Vref −5/+20', Math.abs(f.ac.kias() - f.appr.Vref - 7.5) <= 12.5 ? 'ok' : 'bad', `${fmt(f.ac.kias())} ${spdUnit()}`]);
       rows.push(['อัตราจม ≤ 1,000 fpm', a.vs / FT * 60 >= -1000 ? 'ok' : 'bad', `${fmt(a.vs / FT * 60)}`]);
     }
     rows.push(['ผ่าน 500 ft แบบเสถียร', st(g5), g5 ? (g5.ok ? 'ผ่าน' : 'ไม่ผ่าน') : 'ยังไม่ถึง']);
@@ -913,8 +914,8 @@ async function main() {
     uiT += dt;
     if (uiT > 0.1 && app.mode === 'train' && fl) {
       uiT = 0;
-      const a = fl.ac.air, ias = fl.ac.kias(), V = speedsKias();   // KIAS and the card's KIAS figures (plan C3)
-      const iasEl = $('#iIas'); iasEl.textContent = fmt(ias); iasEl.className = Math.abs(ias - V.Vapp) < 8 || (a.hWheel < 15 && ias > V.Vref - 6) ? 'ok' : 'am';
+      const a = fl.ac.air, ias = fl.ac.kias(), V = fl.appr;   // KIAS and the flight's approach speeds in the HUD's unit (plan C3, C5)
+      const iasEl = $('#iIas'); iasEl.textContent = fmt(ias); iasEl.className = Math.abs(ias - V.cmd) < 8 || (a.hWheel < 15 && ias > V.Vref - 6) ? 'ok' : 'am';
       $('#iAlt').textContent = fmt(Math.max(0, a.hWheel / FT)); $('#iVs').textContent = `${a.vs >= 0 ? '+' : ''}${fmt(a.vs / FT * 60)}`;
       $('#iHdg').textContent = String(Math.round(wrap360(a.psi * RAD))).padStart(3, '0');
       $('#iDist').textContent = a.s < 0 ? `${(-a.s / NM).toFixed(1)} nm` : `+${fmt(a.s)} ม.`;
@@ -922,8 +923,8 @@ async function main() {
       $('#iWind').textContent = wkt < 0.5 ? 'สงบ' : `${String(Math.round(wdir / 10) * 10 % 360).padStart(3, '0')}/${fmt(wkt)}`;
       const ph = fl.phase();
       const fma = fl.pilot === 'ap'
-        ? [['A/P', ''], ph === 'APP' ? ['LOC', ''] : ['', ''], ph === 'APP' ? ['G/S', ''] : ph === 'FLARE' ? ['FLARE', ''] : ['ROLLOUT', ''], ['SPD ' + fmt(V.Vapp), 'c']]
-        : [['MAN', 'w'], [fl.opts.assist ? 'ASSIST' : 'DIRECT', 'a'], [fl.opts.autoThr ? 'A/THR SPD ' + fmt(V.Vapp) : `THR ${Math.round(fl.ac.thr * 100)}%`, fl.opts.autoThr ? 'c' : 'w'], ['FD', 'c']];
+        ? [['A/P', ''], ph === 'APP' ? ['LOC', ''] : ['', ''], ph === 'APP' ? ['G/S', ''] : ph === 'FLARE' ? ['FLARE', ''] : ['ROLLOUT', ''], ['SPD ' + fmt(V.cmd), 'c']]
+        : [['MAN', 'w'], [fl.opts.assist ? 'ASSIST' : 'DIRECT', 'a'], [fl.opts.autoThr ? 'A/THR SPD ' + fmt(V.cmd) : `THR ${Math.round(fl.ac.thr * 100)}%`, fl.opts.autoThr ? 'c' : 'w'], ['FD', 'c']];
       $('#fma').innerHTML = fma.filter(([t]) => t).map(([t, c]) => `<span class="${c}">${t}</span>`).join('');
       if (app.train.state === 'fly') {
         gateRows($('#gates'), fl, true);

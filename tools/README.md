@@ -69,7 +69,8 @@ use is fixed in the generator, never in the research data) and the reference row
 keeps the research's leaves, adds generated ones with source code `AL:C4` (training mass and the masses offered,
 Vref/Vapp/VS0 mass tables, surface limits, `gear.legacy`, the stall-warning angles, the ratings offered, the A330's
 lateral derivatives in body axes, the OD-LEMAC fixes), the research's `_na` plus the generator's rules, and `_deferred`
-(paths for later plans). `build_airliners.mjs` and `build_cards.mjs` import each other: neither may use the other's
+(paths for later plans). Plan C5 adds source code `AL:C5`: `speeds.approach_rule` (the Boeing, Airbus or ATR approach
+speed rule, read by `SPD` in `src/20-flight.js`) and every column of `speeds.VREF_kt` and `speeds.VS0_kt`. `build_airliners.mjs` and `build_cards.mjs` import each other: neither may use the other's
 bindings at the top level.
 
 ## JSBSim oracle (`jsbsim/`)

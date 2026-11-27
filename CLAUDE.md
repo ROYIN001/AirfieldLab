@@ -155,7 +155,11 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `kias` (plan C3; the research rows T-LC-03, T-LC-05, T-LE-04 and T-LF-07 are in `types`: `iasToCas`/`casToIas` monotone,
   inverse of each other, equal to the table at its points, flap mixing and clamping; `AC.kias` hidden from keys and
   JSON; the reader's row checks; `anchorStallRows` and the stall pairs the cards hold; the Evaluator's gates, touchdown
-  speed and speed score in KIAS on three types, and the trainer's values unchanged to the bit), `page` (parses the
+  speed and speed score in KIAS on three types, and the trainer's values unchanged to the bit), `speeds` (plan C5, research R3-3; the
+  pure `SPD` functions and the `Approach` of a flight: T-B-01…T-B-03, T-B-24, T-K-01…T-K-06, T-R-05, T-R-06, T-R-21, T-R-29,
+  T-L-04…T-L-06, T-H-01…T-H-04, OD-737-VREF, OD-WIND-ADDITIVE both caps, OD-A321NEO-CLMAX; the trainer and the six light
+  cards on `kind: 'fixed'`, to the bit; a 737, an ATR and an Airbus flight; the Autopilot, PilotLaws and Evaluator reading
+  the flight's `appr`; the HUD and page wiring is in `cards`), `page` (parses the
   assembled page module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
   types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview` command
   line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers every file the
@@ -240,7 +244,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
 | 17-siting.js | pure: where something tall may stand: obstacle limitation surfaces `olsHeight(e, n)`, approach light lanes `alsLaneOf`, `ALS` (length and spacing per system), `RWY_PAD`, `TWY_W`, `SiteIndex` (clearances from buildings, decks, aprons, taxiways, water; the land-use class under a point), `STATIONS` and `stationSites(af)`, `mappedSite`, `placeTrees`, `siteBuildings` (`buildingProblem`, `groundShare`); also `rwyST`, `rwyEN`, `onAnyRunway`, `pointInPoly`, `nearestOnLine`, `lineLength`, `pointAlong` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions + `frame()` with sub-frame taps; `app.keys`) |
-| 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC` (empty until `setAircraft(card, opts)` fills it from an aircraft card; `acFromCard`, `inertiaInverse`; `AC.K_CL_offset` of the drag polar), `table1`/`table2` (clamped tables), `toSI`/`UNIT_SI` (card units), `pctMAC`/`armAtPctMAC`, `engineLoads`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
+| 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC` (empty until `setAircraft(card, opts)` fills it from an aircraft card; `acFromCard`, `inertiaInverse`; `AC.K_CL_offset` of the drag polar), `table1`/`table2` (clamped tables), `toSI`/`UNIT_SI` (card units), `pctMAC`/`armAtPctMAC`, `engineLoads`, `SPD` (Vref, VLS, VS1g, V2min, VAPP by mass, configuration and wind; `AC.spd`) and `Approach` (the speeds one flight flies), `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
 | 22-types.js | pure: `AIRCRAFT_TYPES` (selector order), `AIRLINER_TYPES` (plan C4, behind รุ่นทดลอง), `typeInfo` (Thai card, lede, notes from the card's `thai_fleet`; `airlinerInfo` for the airliners), `EXP_SWITCH`/`EXP_NOTES`, `massOptions`/`ratingOptions`/`ratingName`, `modelSpec` (generic model fit) |
 | 25-input.js | pure: `INPUT_CFG` (estimates from research §11), calibration and dead-zone helpers, `shapeAxis` / `shapeLever`, `keyRamp` + `KeyAxis`, `readPad` (W3C standard gamepad), `Arbiter` (last-moved source wins) + `InputAxis` (no jump on a switch), `TiltStick` (phone tilt), `PilotInput` (one frame from keys, pad, touch and tilt; `app.pin`) |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()` (fog = MOR haze, `HAZE_GLSL`), `Batch` |
@@ -298,13 +302,17 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   the 737-800's BA 627.1 in; both low confidence. Each card carries the research's `_na` plus the generator's rules, and `_deferred` (paths waiting for a
   later plan); every `r3_merge.mjs --coverage` gap is in one of them (`test/r3cards.test.mjs`). The HUD of an airliner
   reads KCAS (no `speeds.ias_cas`), and so do the brief, the live gate row and the debrief's touchdown speed
-  (`spdUnit` in `90-app.js`). Known limits: the Autopilot and the flare are tuned for the trainer. Measured on
-  2026-11-27, seed 5 (`AIRLINER_AUTOLAND` in `test/r3cards.test.mjs`; calm = 21R, 21L, 03L, 03R; winds = 03L `head`,
+  (`spdUnit` in `90-app.js`). Approach speeds (plan C5, below): the HUD, the Autopilot and the Evaluator use `Flight.appr`, no longer
+  the fixed `AC.Vref`. Known limits: the Autopilot and the flare are tuned for the trainer. Measured on
+  2026-11-27 and re-measured after plan C5 moved the wind rows of the ATR and the Airbus types, seed 5 (`AIRLINER_AUTOLAND` in `test/r3cards.test.mjs`; calm = 21R, 21L, 03L, 03R; winds = 03L `head`,
   03L `xr`, 21R `xl`): the 737-800 and the A321ceo hit too hard (crash) in calm air on all four ends and in every wind
   but the 737's `xl` (72); the A320neo crashes in `xl` (calm 35–56), the A321neo in all three winds (calm 35), the ATR
-  in `xl` (calm 86, `head` 69, `xr` 76); the A330 stalls about 29 s after the start, 3.3 km before the threshold, in
-  every run; only the A320ceo lands everywhere, at 135–165 m, short of the 300 m window (55–63). Each type's Thai note
-  says so (`AP_CALM`, `AP_WIND`, the A330's: fly it by hand); plans C5/C6 tune the Autopilot and move the table. Gear:
+  in `xl` (calm 86, `head` 88, `xr` 76); the A330 stalls about 29 s after the start, 3.3 km before the threshold, in
+  every run; only the A320ceo lands everywhere, at 135–165 m, short of the 300 m window (55–64). Plan C5 moved the 03L `head` rows
+  of the ATR (wind factor: its 03L `head` 69 → 88, 414 → 244 m) and of the Airbus types (ground speed mini), and the 21R `xl` rows by
+  at most about a point and a metre (a scenario's wind direction is a whole degree, which leaves ≈ 0.1 kt of headwind in a
+  "crosswind"); calm and `xr` are as before. Each type's Thai note
+  says so (`AP_CALM`, `AP_WIND`, the A330's: fly it by hand); plan C6 tunes the Autopilot and moves the table again. Gear:
   `gear.legacy` is built once at the card's default mass (the research's strut k and c, or where it gives none k from
   the static deflection and c from ζ 0.6), and the struts
   do not follow a mass chosen in the setup pane (only the inertia does; a Thai note says so; research item 2 asks for
@@ -330,6 +338,29 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `thr·thrustAvail(V)` equally among them and adds each one's force and moment `pos × F` through `engineLoads`
   (sums start at −0, so the trainer's one engine along +x gives exactly T on x and no moment: bit for bit as before).
   `table1`/`table2` (clamped, T-S-07): `table1` converts kt IAS (plan C1) and reads the airliners' mass tables (plan C4); `table2` is not yet used by a card.
+- Approach speeds (plan C5, research round 3 task item 3, R3-3): `SPD` and `Approach` in `src/20-flight.js`, with the
+  generator's `speeds.approach_rule` on the seven airliner cards (`tools/aircraft/build_airliners.mjs`; `AL:C5`). The
+  card's mass tables are read with `table1` (clamped, never extrapolated): `speeds.VREF_kt` now holds every column the
+  research gives (the 737's flaps 30 and 40, the Airbus VLS of each CONF), `speeds.VS0_kt` every flap column,
+  `speeds.VAPP_kt` the landing one. `AC.spd` (a property that is not enumerable, like `AC.kias`; `setAircraft` keeps it)
+  is `{ kind, land, rule, ref, stall, app, vfe, gs }`; a card without a rule is `{ kind: 'fixed' }`: the trainer and the six
+  light cards, whose `Approach` returns `AC.Vref` / `AC.Vapp` and adds `+ 0`, so their hashes did not move. Rules, in
+  kt: **Boeing** (737-800; FCTM 2013) with the autothrottle on Vref + 5; off, Vref + max(5, ½ steady headwind + the whole
+  gust), at most Vref + 20 (`OD-WIND-ADDITIVE`, the default) or + 15 (the option `windCap: 15`, labelled unconfirmed) and at
+  most VFE − 5; the steady part is bled off between 61 and 15 m, the gust part is kept to touchdown (`keep`).
+  `OD-737-VREF`: Vref = 1.23 VS1g (the card's table). **Airbus** VAPP = VLS + clamp(headwind / 3, 5, 15), VLS from the
+  card's CG ≥ 25 % table (1.23 VS1g, an estimate, where a CONF has no column); the ground speed mini adds
+  k·max(0, headwind now − headwind at the tower) while the autothrottle flies (k 1 on A320ceo and A321ceo, 0.33 on the neo
+  types, and on the A330 from 1 to 0.33 over 25 s below 400 ft: a linear blend, an estimate; it reads the mean wind, so the
+  Dryden gusts are not compensated by it, a simplification the research does not make: plan C6). **ATR** VAPP = max(VmHB30 +
+  WF, VMCL), WF = min(15, max(headwind / 3, gust)), VmHB30 = VREF = max(1.23 VSR30, VMCL 98 kt): the table's rows, except
+  between 16,000 and 18,000 kg where the definition is used (the floor ends at 17,124 kg). ICAO approach category from Vat (A < 91, B < 121, C < 141, D < 166, E < 211 kt);
+  V2min = 1.13 VS1g. `OD-A321NEO-CLMAX`: CLmax FULL 3.05 (category C at MLW). The scenarios give no reported gust, so
+  it is 0 (`Flight` option `gust`), and no scenario reaches the 15 kt cap: there is no switch for it on the page. The
+  wind is the scenario's at the tower (a whole-degree direction, so 03L's 10 kt `head` is 9.99996 kt). The HUD prints
+  `VLS` (Airbus) or `Vref` and the approach speed (`VAPP` on an Airbus, `Vapp` otherwise) under it, in the HUD, the brief and the type card; the brief, the FMA and the gate row use the same `Approach`;
+  mass changes follow (`setAircraft` with a mass). The light cards have no mass option on the page, so their `fixed`
+  speeds do not follow a mass.
 - KIAS (plan C3, research round 2 task item 12, R2-12): the sim flies CAS (`air.ias` is EAS, equal to CAS to 0.1 % below
   3,000 ft and 200 kt); the HUD, the instrument strip, the brief, the debrief, the Recorder and the Evaluator use the
   KIAS a real indicator reads. `AC.kias` (a property that is not enumerable, so `Object.keys(AC)`, JSON and `{...AC}` are
@@ -342,8 +373,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   KIAS = KCAS, bit for bit, and its hashes did not move. Decision on the Evaluator (the task said to decide): the gates
   (Vref −5/+20), the touchdown speed `td.ias` and the speed score (−8/+5 full marks) compare the KIAS of the HUD with the
   card's Vref in KIAS, the POH figure the HUD prints (the C172S's 61 KIAS, not its 63.9 KCAS): one scale for the pilot;
-  the band widths are the same knots. The Autopilot and PilotLaws still fly CAS against `AC.Vref` / `AC.Vapp` (plan C5
-  moves them), and the stall horn and `'stall'` event keep their 40 kt CAS cut-off. The stall end of the table: the POH's
+  the band widths are the same knots. The Autopilot and PilotLaws fly CAS against the flight's `Approach` (plan C5: for the trainer and the six light cards it is
+  `AC.Vref` / `AC.Vapp`, bit for bit), and the stall horn and `'stall'` event keep their 40 kt CAS cut-off. The stall end of the table: the POH's
   Fig 5-1 starts at 40 or 50 KIAS, above the stall, so `tools/aircraft/build_cards.mjs` `anchorStallRows` makes the stall
   pair of `speeds.stall_table` (forward CG, 0° bank, [KIAS, KCAS]) the first point of a row when it is at or below the
   row's first KIAS, dropping the Fig 5-1 points it contradicts (C152 flaps 30: 35 KIAS = 43 KCAS, so T-LF-07 reads 35.4

@@ -14,6 +14,11 @@
 //    ATR and 737, VS1g of the Airbus types), VREF the research's own table (ATR, 737) or VLS CONF FULL (Airbus, the
 //    research's rule "VLS CONF FULL"), VAPP in calm air the research's rule with no wind (ATR VmHB30 + 0 = VREF; 737
 //    VREF + 5 kt, the minimum additive; Airbus VLS + 5 kt, the A/THR minimum; the A330's own VAPP table);
+//    plan C5 (R3-3): VS0_kt and VREF_kt keep every flap column of the research table (the 737's Vref30 and Vref40, the
+//    Airbus VLS columns the research gives, the stall table of every detent) for the functions of src/20-flight.js SPD,
+//    which read them at any mass and configuration; AC.Vref and the others still read the landing detent's column;
+//  - speeds.approach_rule (plan C5): the wind rule of the type in knots (737 additive, Airbus APPR COR, ATR wind factor),
+//    from ops.speed_additive, speeds.VAPP_rule and speeds.VMCL_kt of the research card;
 //  - controls.surfaces where the research card has none: the ATR's travels from topic 07's text, the A330 aileron
 //    (the A320 figure) and rudder (the 30° of the research's VMCA build-up);
 //  - gear.legacy (three linear struts at the default mass), gear.layout and airframe.geometry.gsAntenna_pos_FRD (at
@@ -82,12 +87,12 @@ const LEGACY_U = { 'aero.legacy': '-, 1/rad, deg, deg/f, s', 'propulsion.legacy'
 
 // The note rules of build_cards (an empty note names its source, an estimate says ค่าประมาณ, every code a note cites
 // is in src), with round 3's code forms
-const CODE_RE = /\[(R1:[A-Z]\d+|[RBLHDJYZOK]\d+|AL:C4)\]/g;   // a code the note cites in brackets
+const CODE_RE = /\[(R1:[A-Z]\d+|[RBLHDJYZOK]\d+|AL:C[45])\]/g;   // a code the note cites in brackets
 const codesIn = (s) => uniq([...String(s || '').matchAll(CODE_RE)].map((m) => m[1]));
 function noteRules(l) {
   if (!String(l.note || '').trim()) l.note = `${l.est ? EST + ': ' : ''}ค่าตามแหล่ง ${l.src.map((s) => `[${s}]`).join('')}`;
   if (l.est && !l.note.includes(EST)) l.note = `${EST}: ${l.note}`;
-  l.src = uniq([...l.src, ...codesIn(l.note).filter((c) => c === 'AL:C4' || /^R1:/.test(c) || hasRef(c))]);
+  l.src = uniq([...l.src, ...codesIn(l.note).filter((c) => /^AL:C[45]$/.test(c) || /^R1:/.test(c) || hasRef(c))]);
   return l;
 }
 const mk = (v, u, scope, src, note, { conf = 'ต่ำ', est = true } = {}) => noteRules({ v, u, scope, src: uniq(src), conf, est, note: est && !note.includes(EST) ? `${EST}: ${note}` : note });
@@ -127,14 +132,14 @@ function speedLeaves(id, card) {
   const land = String(landing(card).name);
   const out = {};
   const stall = leaf(card, AIRBUS.has(id) ? 'speeds.VS1g' : 'speeds.VSR');
-  out.VS0_kt = mk(tableAt(stall, 'VS0', [land]), 'kt CAS', 'aircraft', [...stall.src, 'AL:C4'],
-    `ความเร็ว stall 1 g ที่แฟลปลงจอด ${land} = คอลัมน์ ${land} ของ speeds.${AIRBUS.has(id) ? 'VS1g' : 'VSR'} ในบัตรวิจัย ตามมวล; ซิมอ่านที่มวลที่เลือกแบบเส้นตรงและไม่ต่อเกินปลายตาราง [AL:C4]`,
+  out.VS0_kt = mk(tableAt(stall, 'VS0', null), 'kt CAS', 'aircraft', [...stall.src, 'AL:C4'],
+    `ความเร็ว stall 1 g ทุกตำแหน่งแฟลป = ตาราง speeds.${AIRBUS.has(id) ? 'VS1g' : 'VSR'} ของบัตรวิจัยทุกคอลัมน์ ตามมวล; VS0 ที่ซิมใช้ (AC.Vs0) อ่านคอลัมน์แฟลปลงจอด ${land} ที่มวลที่เลือกแบบเส้นตรงและไม่ต่อเกินปลายตาราง [AL:C4]`,
     { conf: stall.conf, est: true });
   if (AIRBUS.has(id)) {
     const { l, t, which } = vlsLeaf(card), ref = leaf(card, 'speeds.VREF_kt') || leaf(card, 'speeds.VAPP_kt');
-    const vls = tableAt({ v: t }, 'VLS', [land]);
-    out.VREF_kt = mk(vls, 'kt CAS', 'aircraft', [...l.src, ...(ref ? ref.src : []), 'AL:C4'],
-      `Vref ตามกฎของบัตรวิจัย "VLS CONF FULL" = คอลัมน์ ${land} ของ speeds.VLS${which ? `.${which}` : ''} (CG 25 % MAC) ตามมวล [AL:C4]`, { conf: l.conf });
+    const vls = tableAt({ v: t }, 'VLS', [land]), vlsAll = tableAt({ v: t }, 'VLS', null);
+    out.VREF_kt = mk(vlsAll, 'kt CAS', 'aircraft', [...l.src, ...(ref ? ref.src : []), 'AL:C4'],
+      `Vref ตามกฎของบัตรวิจัย "VLS CONF FULL" = ตาราง speeds.VLS${which ? `.${which}` : ''} (CG 25 % MAC) ทุกคอลัมน์ที่บัตรวิจัยให้ ตามมวล; Vref ที่ซิมใช้ (AC.Vref) อ่านคอลัมน์ ${land} [AL:C4]`, { conf: l.conf });
     const vapp = leaf(card, 'speeds.VAPP_kt');
     if (vapp && isObj(vapp.v) && vapp.v.axes) {
       out.VAPP_kt = mk(tableAt(vapp, 'VAPP', [land]), 'kt CAS', 'aircraft', [...vapp.src, 'AL:C4'], `คอลัมน์ ${land} ของ speeds.VAPP_kt ในบัตรวิจัย (VLS + 5 kt ลมสงบ A/THR) ตามมวล [AL:C4]`, { conf: vapp.conf });
@@ -145,8 +150,8 @@ function speedLeaves(id, card) {
     }
   } else {
     const vr = leaf(card, 'speeds.VREF_kt');
-    const t = tableAt(vr, 'VREF', vr.v.axes.flap ? [land] : null);
-    out.VREF_kt = mk(t, 'kt CAS', 'aircraft', [...vr.src, 'AL:C4'], `speeds.VREF_kt ของบัตรวิจัย${vr.v.axes.flap ? ` คอลัมน์แฟลป ${land}` : ''} ตามมวล [AL:C4]`, { conf: vr.conf });
+    const t = tableAt(vr, 'VREF', vr.v.axes.flap ? [land] : null), tAll = tableAt(vr, 'VREF', null);
+    out.VREF_kt = mk(tAll, 'kt CAS', 'aircraft', [...vr.src, 'AL:C4'], `speeds.VREF_kt ของบัตรวิจัย${vr.v.axes.flap ? ` ทุกคอลัมน์แฟลป (Vref ที่ซิมใช้ AC.Vref อ่านคอลัมน์ ${land})` : ''} ตามมวล [AL:C4]`, { conf: vr.conf });
     if (id === 'b737_800') {
       const add = leaf(card, 'ops.speed_additive');
       out.VAPP_kt = mk(tableAt({ v: t }, 'VAPP', null, 5), 'kt CAS', 'aircraft', [...vr.src, ...add.src, 'AL:C4'],
@@ -157,7 +162,41 @@ function speedLeaves(id, card) {
         `Vapp ในลมสงบตามกฎ speeds.VAPP_rule ของบัตรวิจัย (VAPP = max(VmHB30 + WF, VMCL), ลมสงบ WF = 0) จึงเท่ากับ Vref (VmHB30) ตามมวล; ลมยังไม่เพิ่ม (plan C5) [AL:C4]`, { conf: vr.conf });
     }
   }
+  out.approach_rule = approachRule(id, card);
   return out;
+}
+
+// speeds.approach_rule (plan C5, research R3-3 and topic 3.10): how the wind changes the approach speed of the type, in
+// knots, for the functions of src/20-flight.js (SPD.vapp). The research writes the rule in text and in m/s; each number
+// here is the research's own, read from its leaf and turned to knots (the generator checks it comes out as the round
+// figure the rule's text states). Owner decision OD-WIND-ADDITIVE: the Boeing cap is Vref + 20 kt (FCTM 2013) and the
+// Vref + 15 kt of Boeing's 2018 study stays an option labelled unconfirmed (no revised FCTM seen).
+const KT_R = 0.514444;   // the research scripts' kt (m/s)
+function approachRule(id, card) {
+  const add = leaf(card, 'ops.speed_additive'), kt = (mps, want, what) => {
+    const x = r2(mps / KT_R);
+    if (x !== want) throw new Error(`${id}: ${what} ${mps} m/s is ${x} kt, not the ${want} kt of the rule`);
+    return want;
+  };
+  if (id === 'b737_800') {
+    const a = add.v;
+    return mk({ kind: 'boeing', at_kt: kt(a.at_engaged_mps, 5, 'at_engaged_mps'), min_kt: kt(a.min_mps, 5, 'min_mps'), max_kt: kt(a.max_mps, 20, 'max_mps'),
+      max_option_kt: 15, headwind_factor: a.headwind_factor, gust_factor: a.gust_factor, vfe_margin_kt: 5 }, '-, kt', 'aircraft', [...add.src, 'AL:C5'],
+      'wind additive ของ Boeing 737: A/T ต่ออยู่ Vref + 5 kt; A/T ปลด Vref + max(5, 0.5 × headwind คงที่ + gust เต็มค่า) ไม่เกิน Vref + 20 kt และไม่เกิน VFE − 5 kt (FCTM Rev 12 ปี 2013 ผ่านแหล่งทุติยภูมิ [K35][K60]);'
+      + ' ส่วน headwind คงที่ลดลงใน flare ส่วน gust คงถึงแตะพื้น [K28]; max_option_kt 15 คือเพดานที่เอกสาร Boeing ปี 2018 เสนอ (OD-WIND-ADDITIVE) แต่ยังไม่เห็น FCTM ฉบับที่แก้ จึงเป็นตัวเลือกที่ยังไม่ยืนยัน;'
+      + ' VFE − 5 kt อ่านจาก aero.flaps.detents ของแฟลปนั้น (VFE_kt) [AL:C5]', { conf: add.conf, est: false });
+  }
+  if (AIRBUS.has(id)) {
+    const a = add.v;
+    return mk({ kind: 'airbus', min_kt: kt(a.appr_cor_min_mps, 5, 'appr_cor_min_mps'), max_kt: kt(a.appr_cor_max_mps, 15, 'appr_cor_max_mps'), headwind_div: 3 }, '-, kt', 'aircraft', [...add.src, 'AL:C5'],
+      'VAPP ของ Airbus = VLS + APPR COR; APPR COR = 1/3 ของ headwind จากหอ จำกัดระหว่าง 5 ถึง 15 kt (5 kt เมื่อ A/THR ต่อ) gust ไม่รวมใน VAPP แต่ชดเชยด้วย GS mini (ops.gs_mini) [K7][K35];'
+      + ' ไม่จำลองน้ำแข็ง (ซิมไม่มีสภาพน้ำแข็ง) [AL:C5]', { conf: add.conf, est: false });
+  }
+  const rule = leaf(card, 'speeds.VAPP_rule'), vmcl = leaf(card, 'speeds.VMCL_kt');
+  if (id !== 'atr72_600' || !rule || !vmcl) throw new Error(`${id}: no approach rule`);
+  return mk({ kind: 'atr', max_kt: kt(add.v.max_mps, 15, 'max_mps'), headwind_div: 3, gust_factor: 1, vmcl_kt: vmcl.v }, '-, kt', 'aircraft', [...add.src, ...rule.src, ...vmcl.src, 'AL:C5'],
+    `VAPP ของ ATR 72-600 = max(VmHB30 + WF, VMCL); WF = min(15 kt, max(1/3 ของ headwind, gust เต็มค่า)) (${rule.v}) [K40][K41]; VmHB30 คือ Vref ของตาราง speeds.VREF_kt ที่แฟลป 30; VMCL ${vmcl.v} kt CAS ตาม AFM LIM.3 ผ่านแหล่งทุติยภูมิ [R14] [AL:C5]`,
+    { conf: add.conf, est: false });
 }
 
 // Control travels the research card lacks, from the research's own text
@@ -372,6 +411,8 @@ const FIXED3 = {
     + ' the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research\'s tables and rules, control travels the'
     + ' research card lacks, the gear struts, the glide-slope antenna at the eye, the stall-warning angles, the A330 derivatives in body axes,'
     + ' the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists', link: SELF },
+  'AL:C5': { what: 'AirfieldLab plan C5 (research round 3 task item 3, R3-3) and the owner decision OD-WIND-ADDITIVE: speeds.approach_rule, this generator\'s'
+    + ' transcription, in knots, of the wind rules of research topic 3.10 (the 737 additive and its two caps, the Airbus APPR COR, the ATR wind factor)', link: SELF },
 };
 const PREFIX_FILE = { R: '01-atr72-600.md', B: '02-b737-800.md', L: '03-a320-a321.md', H: '04-a330-300.md', D: '05-airport-geometry.md',
   J: '06-jet-engines.md', Y: '07-flight-controls.md', Z: '08-fbw-laws.md', O: '09-afcs-autoland.md', K: '10-fctm-technique.md' };
