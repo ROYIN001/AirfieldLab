@@ -167,6 +167,239 @@ function table2(R, C, D, r, c) {
   const f = (r - R[i - 1]) / (R[i] - R[i - 1]); return row(i - 1) + f * (row(i) - row(i - 1));
 }
 
+// ── KIAS from the card's IAS–CAS table (plan C3, research round 2 task item 12) ──
+// The sim flies and tests in CAS (its `air.ias` is EAS, equal to CAS to within 0.1 % below 3,000 ft and 200 kt, the
+// round 2 reading of the POH's "KCAS"); a real airspeed indicator reads KIAS, which differs by the position error that
+// each type's calibration table speeds.ias_cas gives per flap detent (POH Fig 5-1 for the Cessnas, the AFM for the
+// DA40 and DA42). A card with the table has AC.kias = { Vref, Vapp, Vs0 (KIAS), rows: [{ f, kias[], kcas[] }] }, one
+// row per detent of the table at its flap position f (the lift increment over the landing detent's, flapMap of the
+// research's lm_card.mjs; the deflection ratio when the detents carry no dCL0). AC.kias is null on a card with no
+// table (the fictional trainer): KIAS = KCAS there, and every function below returns its argument unchanged.
+// Inside a row the table is read linearly. Outside it, estimates (ค่าประมาณ, no source): below the first point KIAS
+// and KCAS stay in proportion to the origin (a stopped aircraft reads zero), above the last the difference stays that of
+// the last point (slope 1); the POH gives the table only between its points. Between two rows (flaps moving) the
+// CAS of the two rows is mixed linearly in f, the same rule as the research's iasCas (R2-07), which mixes in flap angle.
+// Rows are read for any f, clamped to the first and last row.
+function rowCas(R, x) {
+  const K = R.kias, C = R.kcas, n = K.length;
+  if (x <= K[0]) return C[0] * x / K[0];
+  if (x >= K[n - 1]) return C[n - 1] + (x - K[n - 1]);
+  return table1(K, C, x);
+}
+function rowIas(R, y) {   // the inverse of rowCas (KCAS ascending, equal values allowed: the first KIAS that reads y)
+  const K = R.kias, C = R.kcas, n = K.length;
+  if (y <= C[0]) return K[0] * y / C[0];
+  if (y >= C[n - 1]) return K[n - 1] + (y - C[n - 1]);
+  let i = 1; while (C[i] < y) i++;   // C[i - 1] < y <= C[i], so C[i] > C[i - 1]
+  return K[i - 1] + (y - C[i - 1]) / (C[i] - C[i - 1]) * (K[i] - K[i - 1]);
+}
+// the two rows around flap position f and the weight of the upper one, or the one row when f is at one (or past an end)
+function rowsAt(T, f) {
+  const R = T.rows, n = R.length;
+  if (f <= R[0].f) return [R[0], R[0], 0];
+  if (f >= R[n - 1].f) return [R[n - 1], R[n - 1], 0];
+  let i = 1; while (R[i].f < f) i++;
+  const w = (f - R[i - 1].f) / (R[i].f - R[i - 1].f);
+  return w < 1e-9 ? [R[i - 1], R[i - 1], 0] : w > 1 - 1e-9 ? [R[i], R[i], 0] : [R[i - 1], R[i], w];
+}
+// T is AC.kias; kt in, kt out
+function iasToCas(T, f, kias) {
+  if (!T) return kias;
+  const [A, B, w] = rowsAt(T, f);
+  return w === 0 ? rowCas(A, kias) : (1 - w) * rowCas(A, kias) + w * rowCas(B, kias);
+}
+function casToIas(T, f, kcas) {
+  if (!T) return kcas;
+  const [A, B, w] = rowsAt(T, f);
+  if (w === 0) return rowIas(A, kcas);
+  let lo = 0, hi = 2 * kcas + 20;   // a mix of two rows: bisection on the (increasing) forward function, only while the flaps move
+  for (let k = 0; k < 60; k++) { const mid = 0.5 * (lo + hi); if ((1 - w) * rowCas(A, mid) + w * rowCas(B, mid) < kcas) lo = mid; else hi = mid; }
+  return 0.5 * (lo + hi);
+}
+// Vref, Vapp and Vs0 in the unit of the HUD: KIAS from the card's table, or the card's own kt (CAS = IAS) with no table
+const speedsKias = () => AC.kias || AC;
+// The KIAS of an aircraft state: anything with `flaps` and `air.ias` (EAS, m/s), so the research scripts' stand-ins for
+// an Aircraft work too (Aircraft.kias, the Evaluator and the Recorder all call it)
+const kiasOf = (ac) => casToIas(AC.kias, ac.flaps, ac.air.ias / KT);
+
+// ── Approach speeds by mass, configuration and wind (plan C5, research round 3 task item 3, R3-3; topics 3.1–3.4, 3.10) ──
+// AC.Vref, AC.Vapp and AC.Vs0 (above) are one number each: the landing detent at the mass flown, in calm air, with the
+// autothrottle on. The functions of SPD give the speeds the page needs for any mass and configuration the card has
+// tables for, and the wind additive of the type, from what the card holds (acFromCard builds AC.spd from it):
+//  - speeds.VREF_kt, speeds.VS0_kt and speeds.VAPP_kt as mass tables { axes: { mass_kg, flap? }, data } in kt CAS, one
+//    column per flap detent the research gives (the 737's Vref30 and Vref40, the Airbus VLS columns of the CG ≥ 25 %
+//    table, the stall speed of every detent), read at a mass with table1 (linear, clamped at the ends, never extrapolated);
+//  - speeds.approach_rule: the wind rule in knots (kind 'boeing', 'airbus' or 'atr'), transcribed by
+//    tools/aircraft/build_airliners.mjs from research topic 3.10 (ported here from the research's k_speeds.mjs);
+//  - ops.gs_mini: the ground speed mini factors of the Airbus cards; aero.flaps.detents: the VFE of each detent.
+// A card with no approach_rule (the trainer and the six light cards: their POH figures stand for the training mass, the
+// page offers no other) is kind 'fixed': Vref, Vapp and Vs0 are AC's own numbers whatever the mass, so nothing moves
+// for them (the bit-identity check of plan C5 flies them again). Boeing's wind additive: A/T engaged Vref + 5 kt; A/T
+// off Vref + max(5, ½ steady headwind + full gust), commanded at most Vref + cap (cap 20 kt, FCTM 2013, the default)
+// and VFE − 5 kt; the FCTM bleeds the steady part off in the flare and keeps the gust part to touchdown (`keep`); see
+// Approach.target for what the sim does (known gap). Owner decision
+// OD-WIND-ADDITIVE: the cap of 15 kt that Boeing's 2018 study proposed (no revised FCTM seen: unconfirmed) is the
+// option `cap: SPD.capOption(S)`. Airbus: VAPP = VLS + APPR COR, APPR COR = ⅓ of the tower headwind between 5 and 15 kt,
+// gust left to the ground speed mini (target = VAPP + k·max(0, headwind now − tower headwind), k from ops.gs_mini; the
+// A330's k falls from 1 to 0.33 within 25 s below 400 ft, a linear blend that is an estimate). ATR: VAPP = max(VmHB30 +
+// WF, VMCL), WF = min(15, max(⅓ headwind, gust)). The ICAO approach category from Vat (1.23 VS1g or Vref). Speeds in kt.
+const VLS_K = 1.23;   // VLS/VS1g where a card has no VLS column for a configuration: Airbus 1.23 ≤ k ≤ 1.28 (research 03-a320-a321.md [L9]), the low end; ค่าประมาณ
+const ATR_VREF_K = 1.23;   // ATR VREF = max(1.23 VSR30, VMCL) (research 01-atr72-600.md, r_speeds_clmax.mjs line 30: [R14][R16][R31])
+const V2_K = 1.13;    // 14 CFR 25.107(b)(1) V2min = 1.13 VS1g (research 04-a330-300.md T-H-04 [H22])
+const SPD = {
+  // the column of table T for configuration `conf` (a detent name, the landing detent when omitted) read at mass m; null
+  // when the table has no such column. A table with no flap axis is the landing detent's.
+  col(T, m, conf, land) {
+    if (!T) return null;
+    const c = conf === undefined || conf === null ? land : String(conf);
+    const col = T.cols[c] ?? (T.noFlap && c === land ? T.cols[''] : undefined);
+    return col ? table1(T.ms, col, m) : null;
+  },
+  // 1-g stall speed (VS1g of the Airbus cards, VSR of the 737 and ATR), kt CAS
+  vs1g(S, m, conf) { return S.kind === 'fixed' ? AC.Vs0 : SPD.col(S.stall, m, conf, S.land); },
+  // Vref: the research's own table (737 flap 30 and 40, ATR flap 30) or VLS CONF FULL (Airbus: the VLS column)
+  // ATR: the table is the research's own, but its VMCL floor ends at 17,124 kg, between the table's rows at 16,000 and 18,000
+  // kg, where a straight line would run up to 1.4 kt above max(1.23 VSR30, VMCL); below the first row that is above the floor
+  // the research's definition is used itself (T-R-29: 98 ± 0.5 kt below 17,124 kg). The rows at and above that mass stay the table.
+  vref(S, m, conf) {
+    if (S.kind === 'fixed') return AC.Vref;
+    const t = SPD.col(S.ref, m, conf, S.land);
+    if (S.kind === 'atr' && t !== null) {
+      const col = S.ref.noFlap ? S.ref.cols[''] : S.ref.cols[conf === undefined || conf === null ? S.land : String(conf)];
+      const i = col.findIndex((v) => v > S.rule.vmcl_kt + 1e-9);
+      const vs = SPD.vs1g(S, m, conf);
+      if (i > 0 && m < S.ref.ms[i] && vs !== null) return Math.max(S.rule.vmcl_kt, ATR_VREF_K * vs);
+    }
+    return t;
+  },
+  // VLS of an Airbus card: the card's VLS column, or VLS_K × VS1g where the card has none; null for the other kinds
+  vls(S, m, conf) {
+    if (S.kind !== 'airbus') return null;
+    const t = SPD.col(S.ref, m, conf, S.land);
+    if (t !== null) return t;
+    const vs = SPD.vs1g(S, m, conf);
+    return vs === null ? null : VLS_K * vs;
+  },
+  // V2min = 1.13 VS1g (takeoff, 14 CFR 25.107(b)(1)), the 1.1 VMCA floor not applied
+  v2min: (vs1g) => V2_K * vs1g,
+  // the rules, on numbers: R is a card's speeds.approach_rule, w the wind in kt (hw tower headwind, negative for a tail
+  // wind; gust the reported gust increment). Each returns the approach speed and what it added.
+  boeing(R, vref, { atOn = true, hw = 0, gust = 0, cap = R.max_kt, vfe = null } = {}) {
+    if (atOn) return { vapp: vref + R.at_kt, add: R.at_kt, keep: 0 };
+    let add = Math.min(cap, Math.max(R.min_kt, R.headwind_factor * Math.max(0, hw) + R.gust_factor * Math.max(0, gust)));
+    if (vfe !== null) add = Math.min(add, Math.max(0, vfe - R.vfe_margin_kt - vref));
+    return { vapp: vref + add, add, keep: Math.min(add, Math.max(0, gust)) };
+  },
+  airbus(R, vls, { hw = 0 } = {}) {
+    const add = Math.min(R.max_kt, Math.max(R.min_kt, Math.max(0, hw) / R.headwind_div));
+    return { vapp: vls + add, add, keep: 0 };
+  },
+  atr(R, vmhb30, { hw = 0, gust = 0, vmcl = R.vmcl_kt } = {}) {
+    const wf = Math.min(R.max_kt, Math.max(Math.max(0, hw) / R.headwind_div, R.gust_factor * Math.max(0, gust)));
+    return { vapp: Math.max(vmhb30 + wf, vmcl), add: wf, keep: 0 };
+  },
+  // the cap of the unconfirmed option (OD-WIND-ADDITIVE), null for a type with none
+  capOption: (S) => (S.rule && S.rule.max_option_kt !== undefined ? S.rule.max_option_kt : null),
+  // the ground speed mini: the IAS target is VAPP + k·max(0, headwind now − tower headwind) (Airbus FOBN, research [K7]);
+  // the part added, kt. A330: k = kAbove above 400 ft, falling linearly to kBelow within blendS seconds below it.
+  gsMini: (k, hwTower, hwNow) => k * Math.max(0, hwNow - Math.max(0, hwTower)),
+  gsK(g, hFt, tBelow) {
+    if (hFt >= 400 || !(g.blendS > 0)) return hFt >= 400 ? g.kAbove : g.kBelow;
+    return g.kAbove - (g.kAbove - g.kBelow) * Math.min(1, tBelow / g.blendS);
+  },
+  // the wind additive of a type at mass m: { vref, vapp, add, keep } in kt CAS
+  vapp(S, m, w = {}, conf) {
+    if (S.kind === 'fixed') return { vref: AC.Vref, vapp: AC.Vapp, add: AC.Vapp - AC.Vref, keep: 0 };
+    const c = conf === undefined || conf === null ? S.land : String(conf);
+    if (S.kind === 'airbus') {
+      const vls = SPD.vls(S, m, c), r = SPD.airbus(S.rule, vls, w);
+      return { vref: vls, ...r };
+    }
+    const vref = SPD.vref(S, m, c);
+    if (S.kind === 'atr') return { vref, ...SPD.atr(S.rule, vref, w) };
+    return { vref, ...SPD.boeing(S.rule, vref, { ...w, vfe: S.vfe[c] ?? null }) };
+  },
+  // ICAO approach category from Vat in kt (Doc 8168 Vol I; 14 CFR 97.3): A below 91, B 91 to below 121, C 121 to below
+  // 141, D 141 to below 166, E 166 to below 211. Vat = 1.3 VS0 or 1.23 VS1g, the landing Vref of the cards.
+  category: (vat) => (vat < 91 ? 'A' : vat < 121 ? 'B' : vat < 141 ? 'C' : vat < 166 ? 'D' : vat < 211 ? 'E' : null),
+};
+
+// The approach speeds of one flight: what the HUD shows, what the Autopilot and the autothrottle fly and what the
+// Evaluator judges the approach and the touchdown by. Built from AC.spd at the mass flown and the wind of the flight
+// (`wind` is its wind spec, as Flight takes it; `gust` the reported gust increment, kt, which no scenario gives yet).
+// Vref and Vapp are in the unit of the HUD (KIAS from the card's table, else KCAS, as speedsKias), vref and vapp in kt CAS.
+// `keep` is the gust allowance kept to touchdown (Boeing), `extra` the ground speed mini part of the target (Airbus),
+// updated every tick. For a 'fixed' card every number is AC's own, so the trainer and the light types fly and score
+// as before plan C5.
+// a wind component the cosine of a right angle leaves at 1e-15 kt is no wind: a crosswind adds nothing to the speed
+const snapZero = (x) => (Math.abs(x) < 1e-9 ? 0 : x);
+class Approach {
+  constructor({ wind = null, gust = 0, atOn = true, cap = null } = {}) {
+    this.S = AC.spd || { kind: 'fixed' }; this.m = AC.m; this.gust = gust; this.cap = cap;
+    this.kind = this.S.kind; this.label = this.kind === 'airbus' ? 'VLS' : 'Vref';
+    this.hwTower = 0; this.gs = this.kind === 'airbus' && this.S.gs ? this.S.gs : null; this.extra = 0; this.tBelow = 0;
+    // the headwind of the reported (tower) wind, kt, along the landing direction (negative: tail wind)
+    if (wind && this.kind !== 'fixed') this.hwTower = snapZero(wind.kt * Math.cos((windFrom(wind) - FIELD.rwyHdg) * DEG));
+    this.setAt(atOn);
+  }
+  alongRwy(w) { const crs = FIELD.rwyHdg * DEG; return snapZero(-(w[0] * Math.cos(crs) + w[1] * Math.sin(crs)) / KT); }
+  // autothrottle on or off (Boeing's additive depends on it); recomputes the speeds, a no-op when unchanged
+  setAt(atOn) {
+    if (this.atOn === atOn && this.vref !== undefined) return;
+    this.atOn = atOn;
+    const S = this.S, r = SPD.vapp(S, this.m, { hw: this.hwTower, gust: this.gust, atOn, cap: this.cap ?? undefined });
+    this.vref = r.vref; this.vapp = r.vapp; this.add = r.add; this.keep = r.keep;
+    const fixed = this.kind === 'fixed', K = speedsKias();
+    // HUD unit: a fixed card's own KIAS figures; a rule card's CAS through its IAS–CAS table when it has one
+    this.Vref = fixed ? K.Vref : AC.kias ? casToIas(AC.kias, 1, r.vref) : r.vref;
+    this.Vapp = fixed ? K.Vapp : AC.kias ? casToIas(AC.kias, 1, r.vapp) : r.vapp;
+    this.Keep = fixed ? 0 : AC.kias ? casToIas(AC.kias, 1, r.vref + r.keep) - this.Vref : r.keep;
+    if (!atOn) { this.extra = 0; this.tBelow = 0; }
+  }
+  // the ground speed mini of the flight, once a tick before the autopilot: the headwind of the mean wind at the aircraft
+  // against the tower's. Only the Airbus cards carry it; for every other kind this does nothing. Simplification (known gap):
+  // it reads the mean wind (shear profile) only, not the Dryden gusts, so the ground speed mini compensates for the change of
+  // the steady headwind with height but not for gusts, which research 10-fctm-technique.md gives it to do ("gust ไม่บวกใน VAPP
+  // แต่ชดเชยด้วย GS mini"); a filtered instantaneous headwind waits for the A/THR of phase M (plan M5; plan C6 only trims).
+  update(ac, dt) {
+    const g = this.gs;
+    if (!g) return;
+    const a = ac.air;
+    this.tBelow = a.h / FT < 400 ? this.tBelow + dt : 0;
+    const hwNow = this.alongRwy(ac.wind.mean(Math.max(a.h, 1)));
+    this.extra = this.atOn ? SPD.gsMini(SPD.gsK(g, a.h / FT, this.tBelow), this.hwTower, hwNow) : 0;
+  }
+  // the speed commanded at wheel height h (m), kt CAS: the approach speed (with the ground speed mini) far out, Vref plus
+  // the gust allowance at the threshold: the whole additive is bled off between 61 and 15 m (200 to 49 ft) of wheel height,
+  // the trainer's rule for its POH speeds (Vref at 50 ft), applied unchanged to every kind. Known gap on the rule cards
+  // (review of plans C3–C7): that is before the flare (the Autopilot flares at 4.5–9 m), so the airliners cross 50 ft at
+  // Vref (Boeing; VLS on an Airbus, VmHB30 on the ATR) where the research keeps Vref + 5 at least until the flare starts
+  // (Boeing FCTM [K9][K67], the steady part bled off in the flare [K28]; 10-fctm-technique.md) and the Airbus target is
+  // VAPP + the ground speed mini. Holding VAPP to the flare alone was tried and makes things worse while the trainer's flare
+  // loses only about 2 kt where the research expects 5 to 8: in the calm 21R autoland at the cards' default
+  // masses the 737 then touches down at Vref + 3.5 kt and the A320ceo at 132.1 kt, outside the touchdown speeds of T-K-07
+  // (Vref − 5 to + 2) and T-K-08 (125 to 131 kt), which they meet today (Vref − 1.5, 126.9 kt).
+  // The hold and the flare's thrust retard belong together: plan M2 (flare law per type) and M5 (A/THR).
+  target(hWheel) { return lerp(this.vref + this.keep, this.vapp + this.extra, smoothstep(15, 61, hWheel)); }
+  // the approach speed commanded now, in the HUD's unit (the FMA's SPD)
+  get cmd() { return this.Vapp + this.extra; }
+}
+
+// ── Units and balance arms of the research cards (plan C4, research round 3 task item 1, R3-1) ──
+// Round 3 writes each value in the unit its source gives (03-airliners.md, "แกนและหน่วย"): lb and lbf from the TCDS and
+// the engine sheets, in from the Boeing balance arms, slug ft² from the JSBSim inertias. toSI(x, u) turns a number in one
+// of these units into SI (exact factors: lb 0.45359237 kg and in 0.0254 m by definition, ft 0.3048 m, lbf = lb·g0,
+// slug ft² = 14.593903 kg·0.3048² m² (slug = lbf s²/ft); kt is KT of 10-atmo.js, 0.514444 m/s as everywhere in the sim)
+// and throws on a unit it does not know. pctMAC(x, lemac, mac): the %MAC of a balance arm x, with LEMAC and MAC in the
+// same length unit as x (research T-B-22, BA 658.26 in = 20 %MAC of the 737-800); armAtPctMAC its inverse.
+const UNIT_SI = { kg: 1, lb: 0.45359237, m: 1, in: 0.0254, ft: FT, N: 1, lbf: 0.45359237 * G0, 'kg m2': 1, 'slug ft2': 14.593902937206364 * FT * FT, 'm/s': 1, kt: KT };
+function toSI(x, u) {
+  if (!Object.hasOwn(UNIT_SI, u)) throw new Error(`toSI: unknown unit ${JSON.stringify(u)} (known: ${Object.keys(UNIT_SI).join(', ')})`);
+  return x * UNIT_SI[u];
+}
+const pctMAC = (x, lemac, mac) => 100 * (x - lemac) / mac;
+const armAtPctMAC = (pct, lemac, mac) => lemac + pct / 100 * mac;
+
 // Inverse of the inertia tensor [[Ixx, 0, −Ixz], [0, Iyy, 0], [−Ixz, 0, Izz]] (FRD, Ixz product), as deriv uses it
 function inertiaInverse({ Ixx, Iyy, Izz, Ixz }) {
   const G = Ixx * Izz - Ixz * Ixz;
@@ -190,7 +423,8 @@ function inertiaInverse({ Ixx, Iyy, Izz, Ixz }) {
 //    extrapolated): VS0, VREF and VAPP are all landing-configuration speeds, and the landing detent is the entry of
 //    aero.flaps.detents with the largest flap_deg. speeds.ias_cas is { <detent name>: [[KIAS, KCAS], …] } or round 2
 //    lm_lib's { axes: { flap: [names], KIAS: [kt] }, data: [[KCAS per KIAS] per flap] }; the row needs 2 pairs or more
-//    with KIAS strictly ascending. Any other unit throws.
+//    with KIAS strictly ascending (plan C3: every row is checked, positive, KCAS not descending, named after a detent).
+//    Any other unit throws. The card's KIAS figures and the whole table also go to AC.kias (see iasToCas).
 //  - Derivatives: aero.derivatives.<name> is a number or an object of numbers per configuration; the first numeric
 //    entry of [opts.config, 'approach', 'landing', 'cruise', 'clean'], else the first numeric key, is taken (with no
 //    opts, the same pick as buildAC's).
@@ -200,12 +434,30 @@ function inertiaInverse({ Ixx, Iyy, Izz, Ixz }) {
 // rules. buildAC rounds the speeds to whole knots and converts kt IAS with lm_lib.iasCas, which extrapolates past a
 // row's ends and falls back to the first row for an unknown detent; acFromCard does neither. buildAC takes a missing
 // Ixz as 0; here it is required.
+// Plan C4 (research round 3 task items 1, 2 and 39: R3-1, R3-2, R3-39) reads the airliner cards of
+// tools/aircraft/build_airliners.mjs in legacy mode, on today's equations (aero.legacy and propulsion.legacy):
+//  - K_CL_offset: the CL of minimum drag in the polar K·(CL − K_CL_offset)², aero.legacy.K_CL_offset when the card gives
+//    it, else 0.15, the number the code held before (03-airliners.md item 2: the ATR and the 737 set 0, the A320 family
+//    and the A330 fit their legacy polar with 0.15). The trainer and the six light cards have none, so they keep 0.15.
+//  - _na: a path the card's _na leaf marks not applicable ("turbofan.*", or a path and everything under it) is read as
+//    absent; a path the reader needs then throws "marked not applicable".
+//  - opts.mass (kg): the mass flown instead of airframe.weights.training_mass (the inertia follows it by m/ref_mass, as
+//    for every card). A kt CAS speed may be a mass table { axes: { mass_kg: [...], flap?: [names] }, data }, read at that
+//    mass with table1 (linear, clamped at the ends, never extrapolated), in the landing detent's column when the table
+//    has a flap axis (round 3's table form; the airliner cards' VREF_kt, VAPP_kt and VS0_kt).
+//  - opts.rating: an engine class of turbofan.engines (the UI's rating choice, owner decision OD-RATINGS). The legacy
+//    thrust was fitted for turbofan.engine_default, so T0 and P are scaled by F00(rating)/F00(default): the same lapse
+//    shape (Vc = eta·P/T0 unchanged), a different static thrust. Without opts.rating no turbofan path is read.
 function acFromCard(card, opts = {}) {
   const isObj = (o) => o !== null && typeof o === 'object' && !Array.isArray(o);
   const NONE = {};
   const fail = (path, what) => Object.assign(new Error(`aircraft card: ${path} ${what}`), { path });
+  // the card's _na patterns (plan C4): "a.b.*" or "a.b" mark a.b and every path under it not applicable
+  const naList = isObj(card) && isObj(card._na) && Array.isArray(card._na.v) ? card._na.v.filter((x) => typeof x === 'string') : [];
+  const isNA = (path) => naList.some((p) => { const q = p.endsWith('.*') ? p.slice(0, -2) : p; return path === q || path.startsWith(q + '.'); });
   // { v, leaf }: the value at path and the leaf it is in (undefined when absent and not needed)
   const walk = (path, need = true) => {
+    if (isNA(path)) { if (need) throw fail(path, 'is marked not applicable (_na)'); return undefined; }
     let o = card, leaf = null;
     for (const k of path.split('.')) {
       if (!leaf && isObj(o) && 'v' in o) { leaf = o; o = o.v; }   // a leaf before the path ends: go on in its value
@@ -231,29 +483,76 @@ function acFromCard(card, opts = {}) {
     if (!Array.isArray(v) || !v.length) throw fail(path, `is not a list (${JSON.stringify(v)})`);
     return v;
   };
-  let iasRow = null;   // the landing detent's [KIAS[], KCAS[]] of speeds.ias_cas, read at the first kt IAS speed
-  const landingRow = () => {
-    const tab = get('speeds.ias_cas');
+  // speeds.ias_cas: every row as [[KIAS, KCAS], …] by detent name, checked once at the first need. A row needs 2 pairs or
+  // more, positive, with KIAS strictly ascending and KCAS not descending (plan C3: the inverse needs it).
+  let iasRows = null;
+  const tableRows = () => {
+    if (iasRows) return iasRows;
+    const tab = get('speeds.ias_cas'), rows = {};
+    if (isObj(tab) && isObj(tab.axes) && Array.isArray(tab.data)) {   // lm_lib's { axes: { flap, KIAS }, data } form
+      const fl = tab.axes.flap || tab.axes.flaps, ki = tab.axes.KIAS || tab.axes.kias || tab.axes.ias;
+      if (Array.isArray(fl) && Array.isArray(ki)) fl.forEach((nm, j) => {
+        const row = Array.isArray(tab.data[0]) ? tab.data[j] : fl.length === 1 ? tab.data : undefined;
+        if (Array.isArray(row) && row.length === ki.length) rows[String(nm)] = ki.map((k, i) => [k, row[i]]);
+      });
+    } else if (isObj(tab)) for (const k of Object.keys(tab)) if (Array.isArray(tab[k])) rows[k] = tab[k];
+    for (const [name, pairs] of Object.entries(rows)) {
+      const ok = pairs.length >= 2 && pairs.every((q, i) => Array.isArray(q) && q.length === 2 && q.every((x) => typeof x === 'number' && Number.isFinite(x) && x > 0)
+        && (i === 0 || (q[0] > pairs[i - 1][0] && q[1] >= pairs[i - 1][1])));
+      if (!ok) throw fail(`speeds.ias_cas.${name}`, `is not a row of 2 or more [KIAS, KCAS] pairs, above 0, with KIAS strictly ascending and KCAS not descending (${JSON.stringify(pairs)})`);
+    }
+    return (iasRows = rows);
+  };
+  // the detents with their flap position f (lift increment over the landing detent's, as the research's flapMap), the
+  // landing detent (the largest flap_deg) first
+  const detentsF = () => {
     const dets = get('aero.flaps.detents');
     if (!Array.isArray(dets) || !dets.length || !dets.every((d) => isObj(d) && typeof d.flap_deg === 'number' && Number.isFinite(d.flap_deg))) {
       throw fail('aero.flaps.detents', `has no list of detents with flap_deg (${JSON.stringify(dets)})`);
     }
-    const name = String(dets.reduce((a, d) => (d.flap_deg > a.flap_deg ? d : a)).name), p = `speeds.ias_cas.${name}`;
-    let pairs;
-    if (isObj(tab) && isObj(tab.axes) && Array.isArray(tab.data)) {   // lm_lib's { axes: { flap, KIAS }, data } form
-      const fl = tab.axes.flap || tab.axes.flaps, ki = tab.axes.KIAS || tab.axes.kias || tab.axes.ias;
-      const j = Array.isArray(fl) ? fl.map(String).indexOf(name) : -1;
-      const row = j < 0 ? undefined : Array.isArray(tab.data[0]) ? tab.data[j] : fl.length === 1 ? tab.data : undefined;
-      pairs = Array.isArray(ki) && Array.isArray(row) && row.length === ki.length ? ki.map((k, i) => [k, row[i]]) : undefined;
-    } else if (isObj(tab)) pairs = Object.hasOwn(tab, name) ? tab[name] : undefined;
-    if (!Array.isArray(pairs)) throw fail(p, 'is missing (the landing detent\'s row of KIAS → KCAS)');
-    const ok = pairs.length >= 2 && pairs.every((q, i) => Array.isArray(q) && q.length === 2 && q.every((x) => typeof x === 'number' && Number.isFinite(x)) && (i === 0 || q[0] > pairs[i - 1][0]));
-    if (!ok) throw fail(p, `is not a row of 2 or more [KIAS, KCAS] pairs with KIAS strictly ascending (${JSON.stringify(pairs)})`);
+    const full = dets.reduce((a, d) => (d.flap_deg > a.flap_deg ? d : a));
+    const lift = dets.every((d) => typeof d.dCL0 === 'number' && Number.isFinite(d.dCL0)) && full.dCL0 > 0;
+    return { full, f: (d) => (lift ? d.dCL0 / full.dCL0 : full.flap_deg > 0 ? d.flap_deg / full.flap_deg : 0), dets };
+  };
+  const landingRow = () => {
+    const name = String(detentsF().full.name), pairs = tableRows()[name];
+    if (!pairs) throw fail(`speeds.ias_cas.${name}`, 'is missing (the landing detent\'s row of KIAS → KCAS)');
     return [pairs.map((q) => q[0]), pairs.map((q) => q[1])];
+  };
+  let iasRow = null;   // the landing detent's [KIAS[], KCAS[]], read at the first kt IAS speed
+  // a round 3 mass table { axes: { mass_kg, flap? }, data } at ac.m, in the landing detent's column (plan C4)
+  const massAxes = (path, v) => {
+    const ms = v.axes.mass_kg, D = v.data;
+    const okAxis = Array.isArray(ms) && ms.length >= 2 && ms.every((x, i) => typeof x === 'number' && Number.isFinite(x) && (i === 0 || x > ms[i - 1]));
+    if (!okAxis || !Array.isArray(D) || D.length !== ms.length) throw fail(path, `is not a mass table { axes: { mass_kg: [ascending] }, data } (${JSON.stringify(v).slice(0, 200)})`);
+    return { ms, fl: v.axes.flap, D };
+  };
+  const atMass = (path, v) => {
+    const { ms, fl, D } = massAxes(path, v);
+    let col = D;
+    if (fl !== undefined) {
+      const name = String(detentsF().full.name), j = Array.isArray(fl) ? fl.map(String).indexOf(name) : -1;
+      if (j < 0) throw fail(`${path}.axes.flap`, `has no column for the landing detent ${name} (${JSON.stringify(fl)})`);
+      col = D.map((row) => (Array.isArray(row) ? row[j] : NaN));
+    }
+    col.forEach((x, i) => num(`${path}.data.${i}`, x));
+    return table1(ms, col, ac.m);
+  };
+  // the same table with every flap column checked, for AC.spd (plan C5): { ms, noFlap, cols: { <flap name>: [kt…] } },
+  // the one column of a table with no flap axis under ''
+  const massCols = (path) => {
+    const { v } = walk(path);
+    if (!isObj(v) || !isObj(v.axes)) throw fail(path, `is not a mass table { axes: { mass_kg: [ascending] }, data } (${JSON.stringify(v).slice(0, 200)})`);
+    const { ms, fl, D } = massAxes(path, v), cols = {};
+    if (fl === undefined) cols[''] = D;
+    else if (!Array.isArray(fl) || !fl.length) throw fail(`${path}.axes.flap`, `is not a list of flap names (${JSON.stringify(fl)})`);
+    else fl.forEach((name, j) => { cols[String(name)] = D.map((row) => (Array.isArray(row) ? row[j] : NaN)); });
+    for (const [name, col] of Object.entries(cols)) col.forEach((x, i) => num(`${path}.data.${i}${name ? `.${name}` : ''}`, x));
+    return { ms, noFlap: fl === undefined, cols };
   };
   const kcas = (path) => {   // the sim's IAS is EAS ≈ CAS below 200 kt: a speed in any other unit would be misread
     const { v, leaf } = walk(path);
-    if (leaf.u === 'kt CAS') return num(path, v);
+    if (leaf.u === 'kt CAS') return isObj(v) && isObj(v.axes) ? atMass(path, v) : num(path, v);
     if (leaf.u !== 'kt IAS') throw fail(path, `is in ${JSON.stringify(leaf.u)}, not kt CAS or kt IAS`);
     const kias = num(path, v);
     iasRow = iasRow || landingRow();
@@ -274,6 +573,10 @@ function acFromCard(card, opts = {}) {
   };
   const ac = {};
   ac.m = isObj(get('airframe.weights.training_mass')) ? num('airframe.weights.training_mass.kg') : num('airframe.weights.training_mass');
+  if (opts.mass !== undefined) {
+    if (typeof opts.mass !== 'number' || !(opts.mass > 0) || !Number.isFinite(opts.mass)) throw fail('opts.mass', `is not a mass in kg (${JSON.stringify(opts.mass)})`);
+    ac.m = opts.mass;
+  }
   const refMass = get('airframe.inertia.ref_mass', false);
   const inertia = (k) => (refMass === undefined ? num('airframe.inertia.' + k) : num('airframe.inertia.' + k) * (ac.m / num('airframe.inertia.ref_mass')));
   for (const k of ['Ixx', 'Iyy', 'Izz', 'Ixz']) ac[k] = inertia(k);
@@ -281,8 +584,17 @@ function acFromCard(card, opts = {}) {
   const LEG = ['CL0', 'CLa', 'CLflap', 'CD0', 'K', 'CDflap', 'CDgear', 'Cm0', 'Cma', 'Cmflap', 'aStall', 'aStallFlap', 'aWarn', 'aWarnFlap', 'aWarnHyst', 'aWarnMinOn'];
   const DER = ['CLq', 'CLadot', 'CLde', 'CYb', 'CYdr', 'CYr', 'Clb', 'Clp', 'Clr', 'Clda', 'Cldr', 'Cmq', 'Cmadot', 'Cmde', 'Cnb', 'Cnp', 'Cnr', 'Cnda', 'Cndr'];
   for (const k of LEG) ac[k] = num('aero.legacy.' + k);
+  const off = get('aero.legacy.K_CL_offset', false);
+  ac.K_CL_offset = off === undefined ? 0.15 : num('aero.legacy.K_CL_offset', off);
   for (const k of DER) ac[k] = deriv('aero.derivatives.' + k);
   for (const k of ['P', 'eta', 'T0', 'idle']) ac[k] = num('propulsion.legacy.' + k);
+  if (opts.rating !== undefined) {   // OD-RATINGS: another engine rating of the same legacy thrust curve
+    const def = get('turbofan.engine_default'), F00 = (c) => num(`turbofan.engines.${c}.F00`);
+    if (typeof def !== 'string') throw fail('turbofan.engine_default', `is not an engine class name (${JSON.stringify(def)})`);
+    if (typeof opts.rating !== 'string' || get(`turbofan.engines.${opts.rating}.F00`, false) === undefined) throw fail(`turbofan.engines.${opts.rating}.F00`, 'is missing (opts.rating names no engine class of the card)');
+    const r = F00(opts.rating) / F00(def);
+    ac.T0 *= r; ac.P *= r;
+  }
   const [eUp, eDn] = travel('elevator', 'up', 'down'), [aUp, aDn] = travel('aileron', 'up', 'down'), [rL, rR] = travel('rudder', 'left', 'right');
   ac.deUp = eUp * DEG; ac.deDn = eDn * DEG; ac.daMax = 0.5 * (aUp + aDn) * DEG; ac.drMax = Math.min(rL, rR) * DEG;
   const struts = list('gear.legacy');
@@ -300,6 +612,42 @@ function acFromCard(card, opts = {}) {
     if (!(n > 0)) throw fail(`propulsion.layout.${i}.axis`, 'has no direction');
     return { pos, dir: [ax[0] / n, ax[1] / n, ax[2] / n] };
   });
+  // Plan C3: the card's table as AC.kias (see iasToCas), with Vref, Vapp and Vs0 as the HUD shows them, in KIAS: the
+  // card's figure when it is a kt IAS one, else its kt CAS read back through the landing row. A property that
+  // Object.keys, JSON and the spread of AC do not list (setAircraft keeps it, null without a table).
+  let kias = null;
+  if (get('speeds.ias_cas', false) !== undefined) {
+    const { full, f, dets } = detentsF(), rows = tableRows(), land = landingRow(), landR = { kias: land[0], kcas: land[1] };
+    const list = Object.entries(rows).map(([name, pairs]) => {
+      const d = dets.find((x) => String(x.name) === name);
+      if (!d) throw fail(`speeds.ias_cas.${name}`, `names no detent of aero.flaps.detents (${dets.map((x) => x.name).join(', ')})`);
+      return { f: d === full ? 1 : f(d), kias: pairs.map((q) => q[0]), kcas: pairs.map((q) => q[1]) };
+    }).sort((a, b) => a.f - b.f);
+    const speed = (path) => { const { v, leaf } = walk(path); return leaf.u === 'kt IAS' ? num(path, v) : rowIas(landR, num(path, v)); };
+    kias = { Vref: speed('speeds.VREF_kt'), Vapp: speed('speeds.VAPP_kt'), Vs0: speed('speeds.VS0_kt'), rows: list };
+  }
+  Object.defineProperty(ac, 'kias', { value: kias, writable: true, enumerable: false, configurable: true });
+  // Plan C5: the card's speed model for SPD (see there): kind 'fixed' with no speeds.approach_rule, else the tables, the
+  // rule, the VFE of each detent and the ground speed mini. Not enumerable, like AC.kias.
+  let spd = { kind: 'fixed' };
+  const rl = get('speeds.approach_rule', false);
+  if (rl !== undefined) {
+    const kind = isObj(rl) ? rl.kind : undefined, P = (k) => num(`speeds.approach_rule.${k}`, isObj(rl) ? rl[k] : undefined);
+    const need = { boeing: ['at_kt', 'min_kt', 'max_kt', 'headwind_factor', 'gust_factor', 'vfe_margin_kt'], airbus: ['min_kt', 'max_kt', 'headwind_div'], atr: ['max_kt', 'headwind_div', 'gust_factor', 'vmcl_kt'] }[kind];
+    if (!need) throw fail('speeds.approach_rule', `has no kind of boeing, airbus or atr (${JSON.stringify(kind)})`);
+    for (const k of need) P(k);
+    if (rl.max_option_kt !== undefined) P('max_option_kt');
+    const vfe = {};
+    for (const d of detentsF().dets) if (typeof d.VFE_kt === 'number' && Number.isFinite(d.VFE_kt)) vfe[String(d.name)] = d.VFE_kt;
+    let gs = null;
+    const g = get('ops.gs_mini', false);
+    if (isObj(g)) {
+      const k0 = g.k !== undefined ? num('ops.gs_mini.k', g.k) : null;
+      gs = { kAbove: k0 ?? num('ops.gs_mini.k_above_400ft', g.k_above_400ft), kBelow: k0 ?? num('ops.gs_mini.k_below_400ft', g.k_below_400ft), blendS: k0 !== null ? 0 : num('ops.gs_mini.blend_s', g.blend_s) };
+    }
+    spd = { kind, land: String(detentsF().full.name), rule: { ...rl }, ref: massCols('speeds.VREF_kt'), stall: massCols('speeds.VS0_kt'), app: massCols('speeds.VAPP_kt'), vfe, gs };
+  }
+  Object.defineProperty(ac, 'spd', { value: spd, writable: true, enumerable: false, configurable: true });
   return ac;
 }
 
@@ -318,6 +666,12 @@ function setAircraft(card, opts = {}) {
     if (Object.hasOwn(AC, k)) AC[k] = next[k];
     else Object.defineProperty(AC, k, { value: next[k], writable: true, enumerable: true, configurable: true });
   }
+  // AC.kias (plan C3) is not enumerable: it stays through the delete loop above, and AC's field list and JSON stay as before
+  if (Object.hasOwn(AC, 'kias')) AC.kias = next.kias;
+  else Object.defineProperty(AC, 'kias', { value: next.kias, writable: true, enumerable: false, configurable: true });
+  // AC.spd (plan C5), the same way
+  if (Object.hasOwn(AC, 'spd')) AC.spd = next.spd;
+  else Object.defineProperty(AC, 'spd', { value: next.spd, writable: true, enumerable: false, configurable: true });
   setPapiSiting(FIELD.papiSiting);   // the ils siting follows this aircraft's eye and antenna (the others do not move)
   return AC;
 }
@@ -344,7 +698,11 @@ function engineLoads(engines, thrusts, out = { F: [0, 0, 0], M: [0, 0, 0] }) {
 // is on the path: wings level at pitch θ, d = eye − antenna in body FRD, so d sits `along` ahead of the antenna and `up`
 // above it, and the path is higher by −along·tan(gs) where the eye is. The trainer (data/aircraft/trainer.json):
 // 1.3 − 1.65·tan 3° = 1.2135 m at θ = 0; the plan C1 cards put the antenna at the eye (no source gives its place), so 0
-// for them, and their ils siting stands 12.2 m short of the glide-path origin ((0 − PAPI_GEOM.h) / tan 3°). The
+// for them, and their ils siting stands 12.2 m short of the glide-path origin ((0 − PAPI_GEOM.h) / tan 3°); the airliner
+// cards of plan C7 at θ = 0, worked from each card's eye and antenna: 0.890 (ATR 72-600), 1.495 (737-800), 1.856 to 1.906
+// (A320 family) and 2.792 m (A330-300), so (H2 − 0.64 m) / tan 3° = 4.8 to 41.1 m beyond it (test/papi.test.mjs P-14).
+// These are not the manufacturers' H2, which hold at each type's reference attitude (ATR 0°, A320 family 2.5°, A330 3.0°,
+// 737 3.2°): 0.89, 1.433, 1.85 to 1.90 and 2.78 m (the cards' eye_to_gsAntenna_vertical; build_airliners.mjs eyeAntenna). The
 // trainer's trimmed calm approach flies at about −1.3° pitch (measured 2026-11-26), where it is about 0.04 m more:
 // 0.7 m of PAPI distance and 0.007° at the threshold, far inside the ±10′ on-slope band, so the matched siting uses 0.
 function eyeAboveBeam(ac = AC, pitchDeg = 0, gsDeg = 3) {
@@ -356,13 +714,16 @@ function eyeAboveBeam(ac = AC, pitchDeg = 0, gsDeg = 3) {
 //   aip (default) and tc: solved from the AIP MEHT at 2°50′ and 2°48′ (papiFromMEHT and PAPI_MEHT_ANG in 15-geo.js)
 //   ils: the PAPI's 3° line from the light centre (PAPI_GEOM.h high) runs along the eye path of the aircraft flown
 //     (AC) when its antenna is on the glide path: D = aim + (H2 − h) / tan 3°, H2 = eyeAboveBeam(AC, 0), so for the
-//     trainer 10.9 to 11.0 m beyond the glide-path origin (12.2 m short of it for the plan C1 cards). This is the
+//     trainer 10.9 to 11.0 m beyond the glide-path origin (12.2 m short of it for the plan C1 cards, 4.8 m (ATR 72-600)
+//     to 41.1 m (A330-300) beyond it for the airliners of plan C7, each with its own eye and antenna). This is the
 //     eye-to-antenna harmonisation of Transport Canada AC 302-009 [D23] (harmonise the PAPI with the ILS for the
 //     height of the eye above the antenna). FAA, Order JO 6850.2B Visual Guidance Lighting Systems (20 Aug 2010),
 //     ¶502 and Table 5-1, https://www.faa.gov/documentLibrary/media/Order/FAA_Order_6850.2B.pdf [D22], puts the PAPI
 //     at the distance of the GS virtual source ±30 ft (±10 m), adding 300 ft only for height group 4: for the trainer
 //     this siting stands about 11 m beyond that (the C1 cards about 12 m short of the virtual source, 2 m outside
-//     the −10 m). Not the published configuration of VTBD. 03R has no ILS: its aim is TCH / tan 3°, so the PAPI
+//     the −10 m; the airliners 4.8 to 41.1 m beyond it, the 737 16.3 m, the A320 family 23.2 to 24.2 m). Not the
+//     published configuration of VTBD. An airliner's mass and engine rating (acFromCard opts) do not move it: the eye
+//     and the antenna are the card's geometry alone. 03R has no ILS: its aim is TCH / tan 3°, so the PAPI
 //     matches the synthetic RNP 3° path the sim flies there. The match is solved in the vertical plane along the
 //     track, while the units stand 37.5 to 72 m beside it: over the threshold an eye on its path sees the 2°50′ unit
 //     6.7′ to 7.3′ above its setting and the 3°10′ unit 11.9′ to 12.4′ below (21R: 6.7′ and 12.4′), against 10′ and
@@ -490,7 +851,7 @@ class Aircraft {
     const CLlin = AC.CL0 + AC.CLflap * f + AC.CLa * (1 + 0.12 * (1 - phiGE)) * alpha + AC.CLq * qh + AC.CLadot * adh + AC.CLde * this.de;
     const sa = Math.sin(alpha), ca = Math.cos(alpha);
     const CL = (1 - sig) * CLlin + sig * 2 * Math.sign(alpha) * sa * sa * ca;
-    const CDlin = AC.CD0 + AC.CDflap * Math.pow(f, 1.5) + AC.CDgear * this.gearPos + AC.K * phiGE * (CLlin - 0.15) ** 2 + 0.25 * beta * beta;
+    const CDlin = AC.CD0 + AC.CDflap * Math.pow(f, 1.5) + AC.CDgear * this.gearPos + AC.K * phiGE * (CLlin - AC.K_CL_offset) ** 2 + 0.25 * beta * beta;
     const CD = (1 - sig) * CDlin + sig * (AC.CD0 + 1.6 * sa * sa);
     const CY = AC.CYb * beta + AC.CYdr * this.dr + AC.CYr * rh;
     const Cl = AC.Clb * beta + AC.Clp * ph + AC.Clr * rh + AC.Clda * this.da + AC.Cldr * this.dr;
@@ -616,6 +977,8 @@ class Aircraft {
   }
 
   // Trimmed, wings-level state on the extended centre line of runway 03
+  // The speed the pilot reads (plan C3): KIAS from the card's table at the flap position now, else the CAS (KIAS = KCAS)
+  kias() { return kiasOf(this); }
   setApproach({ dist = 5500, ias = AC.Vapp, dh = 0, dt = 0, gearDown = true, flaps = 1 }) {
     const s = -dist, h = Math.max(30, gpHeight(s) + dh);
     const [n, e] = rwyToNED(s, dt);
@@ -715,18 +1078,41 @@ class Aircraft {
       gammaA: thrFix.v == null ? gammaA : x[2], limited, residual: Math.max(...r.map(Math.abs)), it, ok: why.length === 0, why };
   }
 
-  // Parked on the ground (used for apron aircraft and resets)
+  // Parked on the ground (resets and tests; the page's apron aircraft are drawn, not flown), gear down, idle, brakes on.
+  // Plan C7 (research round 3 task item 6, R3-6: each type stands on its own wheel contact points): the CG height and
+  // the pitch are the static equilibrium of the card's gear (AC.gear), solved with newtonSolve for zero vertical and
+  // pitch acceleration in deriv() at rest, wings level (the throttle then spools to idle against the brakes, as before).
+  // Before, every type started at d −1.30 m and θ 0.5° (the trainer's numbers): the trainer 3 mm above and 0.49° nose up
+  // of its rest (d −1.303 m, θ 0.01°), the DA40s 0.45 m above theirs, and the airliners' struts up to 2.8 m into the
+  // ground, which threw them over (test/flight.test.mjs). Start of the solve: the main wheels deflected by the weight over
+  // the sum of the spring rates, θ 0. If the solve fails (no contact, a stroke run out) that start is kept.
   setParked(n, e, psi) {
-    const x = this.x; const q = eulerToQ(0, 0.5 * DEG, psi);
-    x.set([n, e, -1.30, 0, 0, 0, q[0], q[1], q[2], q[3], 0, 0, 0]);
-    this.thr = this.cmd.thr = 0; this.brake = this.cmd.brake = 1; this.updateAir(0); this.gen = (this.gen || 0) + 1;
+    const x = this.x, g = AC.gear;
+    this.thr = this.cmd.thr = 0; this.brake = this.cmd.brake = 1; this.gearPos = 1; this.cmd.gear = 1;
+    const put = (d, th) => { const q = eulerToQ(0, th, psi); x.set([n, e, d, 0, 0, 0, q[0], q[1], q[2], q[3], 0, 0, 0]); };
+    // |q| made 1 to the last bit, so renderPose's normalising nlerp draws this state exactly (§9.7): divide by |q|, and
+    // where that cycles about 1 by a rounding, step the largest component one unit in the last place toward |q| = 1
+    const unit = () => {
+      for (let k = 0; k < 12; k++) {
+        const l = Math.hypot(x[6], x[7], x[8], x[9]); if (l === 1) return;
+        if (k < 2) { for (let i = 6; i < 10; i++) x[i] /= l; continue; }
+        let j = 6; for (let i = 7; i < 10; i++) if (Math.abs(x[i]) > Math.abs(x[j])) j = i;
+        x[j] -= Math.sign(x[j]) * Math.sign(l - 1) * Number.EPSILON * 2 ** Math.floor(Math.log2(Math.abs(x[j])));
+      }
+    };
+    const res = (v) => { put(v[0], v[1]); this.deriv(x, this.tmp); return [this.tmp[5], this.tmp[11]]; };
+    const zMain = Math.max(g[1].b[2], g[2].b[2]), defl = AC.m * G0 / (g[0].k + g[1].k + g[2].k);
+    const sol = newtonSolve(res, [-(zMain - defl), 0], { tol: 1e-9 });
+    put(...(sol.ok ? sol.x : [-(zMain - defl), 0])); unit();
+    this.updateAir(0); this.gen = (this.gen || 0) + 1;
   }
 }
 
 // ── Autopilot: coupled ILS approach, flare, decrab and rollout ──
 class Autopilot {
-  constructor(ac, trim) {
-    this.ac = ac; this.mode = 'APP';
+  // appr: the flight's Approach (plan C5), the speeds it flies; none = the card's own AC.Vref and AC.Vapp
+  constructor(ac, trim, appr = null) {
+    this.ac = ac; this.appr = appr; this.mode = 'APP';
     this.thrI = trim.thr; this.thBias = trim.th; this.deI = trim.de; this.thCmd = trim.th;
     this.hFlare = 7; this.tTd = null; this.tFlare = null; this.thTd = 0;
     this.out = { phiCmd: 0, gammaCmd: -FIELD.gs * DEG, thCmd: trim.th };
@@ -783,7 +1169,7 @@ class Autopilot {
       this.deI = clamp(this.deI - 0.6 * e * dt, -AC.deUp, AC.deDn);
       c.de = this.deI - 2.0 * e + 0.85 * a.q;
       if (this.mode === 'APP') {
-        const vTgt = lerp(AC.Vref, AC.Vapp, smoothstep(15, 61, a.hWheel));   // cross the threshold at Vref
+        const vTgt = this.appr ? this.appr.target(a.hWheel) : lerp(AC.Vref, AC.Vapp, smoothstep(15, 61, a.hWheel));   // cross the threshold at Vref (plus Boeing's gust allowance)
         const err = vTgt - a.ias / KT;
         this.thrI = clamp(this.thrI + 0.0045 * err * dt, AC.idle, 1);
         c.thr = clamp(this.thrI + 0.035 * err, AC.idle, 1);
@@ -809,7 +1195,7 @@ class Autopilot {
 
 // ── Pilot assist (attitude command) and direct control for manual flying ──
 class PilotLaws {
-  constructor(ac, trim) { this.ac = ac; this.thHold = trim.th; this.deI = trim.de; this.trimDe = trim.de; this.spdI = trim.thr; }
+  constructor(ac, trim, appr = null) { this.ac = ac; this.appr = appr; this.thHold = trim.th; this.deI = trim.de; this.trimDe = trim.de; this.spdI = trim.thr; }
   // inp: x roll (+right), y pitch (+pull), rud (+right), thr 0..1, brake 0..1; opts.assist, opts.autoThr
   update(dt, inp, opts, apOut) {
     const ac = this.ac, a = ac.air, c = ac.cmd, crs = FIELD.rwyHdg * DEG;
@@ -838,7 +1224,7 @@ class PilotLaws {
         c.dr = clamp(lerp(-1.6 * a.beta, 1.5 * wrapPi(a.psi - crs) + 0.6 * a.r, blend), -AC.drMax, AC.drMax);
       } else c.dr = clamp(-1.6 * a.beta - rudUser, -AC.drMax, AC.drMax);
       if (opts.autoThr && !onG && a.hWheel > 6) {
-        const err = lerp(AC.Vref, AC.Vapp, smoothstep(15, 61, a.hWheel)) - a.ias / KT;
+        const err = (this.appr ? this.appr.target(a.hWheel) : lerp(AC.Vref, AC.Vapp, smoothstep(15, 61, a.hWheel))) - a.ias / KT;
         this.spdI = clamp(this.spdI + 0.0045 * err * dt, AC.idle, 1);
         c.thr = clamp(this.spdI + 0.035 * err, AC.idle, 1);
       } else if (opts.autoThr && !onG) c.thr = Math.max(0, c.thr - dt / 2.5);
@@ -871,18 +1257,27 @@ class PilotLaws {
 const aWarnAt = (f) => (AC.aWarn + AC.aWarnFlap * f) * DEG;
 
 // ── Landing evaluation: stabilized-approach gates, touchdown, rollout ──
+// Speeds (plan C3): the gates, the touchdown record `td.ias` and the speed score read the KIAS of the HUD (Aircraft.kias,
+// the card's table at the flap position of that moment) against the card's Vref in KIAS (speedsKias, the POH figure the
+// HUD prints beside the speed): the pilot sees one scale, and the 61 KIAS of the C172S is compared as 61 KIAS, not as its
+// 63.9 KCAS. The band widths (−5/+20 kt at the gates, −8/+5 kt in the score) are the same knots on that scale. The
+// autopilot and the autothrottle (PilotLaws) fly CAS against the flight's Approach (plan C5; AC.Vref and AC.Vapp for a 'fixed' card), the stall
+// horn and the stall event keep their 40 kt CAS cut-off, and the Recorder's `ias` is the KIAS shown. With no table
+// (the trainer) KIAS = KCAS and every value is the same as before.
 class Evaluator {
-  constructor() {
-    this.gates = {}; this.td = null; this.events = []; this.maxT = 0; this.stopS = null; this.callouts = []; this.done = false;
+  // appr: the flight's Approach (plan C5): its Vref in the HUD's unit and the gust allowance kept to touchdown (Boeing);
+  // none = the card's own KIAS figure (speedsKias), as before
+  constructor(appr = null) {
+    this.appr = appr; this.gates = {}; this.td = null; this.events = []; this.maxT = 0; this.stopS = null; this.callouts = []; this.done = false;
     this.lastH = Infinity; this.stallWarn = false; this.unstable = false;
     this.stallHorn = false; this.hornOnT = 0;   // stall warning, every step (horn + HUD); stallWarn latches the debrief stall event
   }
   gateCheck(ac, name) {
     const a = ac.air;
-    const ias = a.ias / KT, vsFpm = a.vs / FT * 60;
+    const ias = kiasOf(ac), vsFpm = a.vs / FT * 60, V = this.appr || speedsKias();
     const items = {
       loc: Math.abs(a.locDots) <= 1, gs: Math.abs(a.gsDots) <= 1,
-      spd: ias >= AC.Vref - 5 && ias <= AC.Vref + 20, vs: vsFpm >= -1000,
+      spd: ias >= V.Vref - 5 && ias <= V.Vref + 20, vs: vsFpm >= -1000,
       cfg: ac.gearPos > 0.98 && ac.flaps > 0.95,
     };
     this.gates[name] = { ok: Object.values(items).every(Boolean), items, ias, vsFpm, loc: a.locDots, gs: a.gsDots };
@@ -909,7 +1304,7 @@ class Evaluator {
       const crs = FIELD.rwyHdg * DEG;
       const vLat = -a.wind[0] * 0 + (ac.x[3] * RWY_R[0] + ac.x[4] * RWY_R[1]);
       this.td = {
-        t: ac.t, s: a.s, tl: a.t, vsFpm: a.vs / FT * 60, ias: a.ias / KT, gs: a.gs / KT,
+        t: ac.t, s: a.s, tl: a.t, vsFpm: a.vs / FT * 60, ias: kiasOf(ac), gs: a.gs / KT,
         bank: a.phi * RAD, pitch: a.theta * RAD, crab: wrapPi(a.psi - crs) * RAD, drift: vLat,
         noseFirst: a.wow[0] && !(a.wow[1] || a.wow[2]),
         onRunway: a.s >= 0 && a.s <= FIELD.rwyLen && Math.abs(a.t) <= FIELD.rwyWid / 2,
@@ -930,7 +1325,7 @@ class Evaluator {
     parts.push({ k: 'pos', pts: pPos, max: 25 });
     const cl = Math.abs(td.tl);
     parts.push({ k: 'cl', pts: cl <= 2 ? 15 : cl <= 5 ? 12 : cl <= 10 ? 6 : 0, max: 15 });
-    const dv = td.ias - AC.Vref;
+    const dv = td.ias - (this.appr ? this.appr.Vref + this.appr.Keep : speedsKias().Vref);
     parts.push({ k: 'spd', pts: dv >= -8 && dv <= 5 ? 10 : dv >= -12 && dv <= 12 ? 6 : 2, max: 10 });
     const att = (Math.abs(td.bank) <= 3 ? 4 : Math.abs(td.bank) <= 6 ? 2 : 0) + (Math.abs(td.crab) <= 3 ? 3 : Math.abs(td.crab) <= 6 ? 1.5 : 0) + (Math.abs(td.drift) <= 0.8 ? 3 : Math.abs(td.drift) <= 1.6 ? 1.5 : 0);
     parts.push({ k: 'att', pts: att - (td.noseFirst ? 5 : 0), max: 10 });
@@ -961,7 +1356,7 @@ class Recorder {
     const x = ac.x, a = ac.air;
     this.f.push({
       t: ac.t, n: x[0], e: x[1], d: x[2], q: [x[6], x[7], x[8], x[9]], de: ac.de, da: ac.da, dr: ac.dr, fl: ac.flaps, gr: ac.gearPos,
-      thr: ac.thr, ias: a.ias / KT, vs: a.vs / FT * 60, s: a.s, tl: a.t, h: a.h, hw: a.hWheel, gsd: a.gsDots, locd: a.locDots, brake: ac.brake, ...extra,
+      thr: ac.thr, ias: kiasOf(ac), vs: a.vs / FT * 60, s: a.s, tl: a.t, h: a.h, hw: a.hWheel, gsd: a.gsDots, locd: a.locDots, brake: ac.brake, ...extra,
     });
   }
   at(t) {
@@ -996,15 +1391,29 @@ const SCENARIOS = {
 const windFrom = (sc) => (sc.fromDeg != null ? sc.fromDeg : Math.round(wrap360(FIELD.rwyHdg + sc.rel)));
 
 class Flight {
-  constructor({ wind = SCENARIOS.calm, W20 = null, oatC = WX_DEFAULT.oatC, qnh = WX_DEFAULT.qnh, dewC = WX_DEFAULT.dewC, dist = 5500, pilot = 'ap', assist = true, autoThr = true, seed = 11, dh = 0, dtl = 0 } = {}) {
+  // gust (plan C5): the reported gust increment, kt, for the wind additive of the 737 (SPD.boeing; no scenario gives one,
+  // so 0); windCap: the cap of that additive in kt (null = the card's, Vref + 20; SPD.capOption(AC.spd) is the 15 kt of
+  // OD-WIND-ADDITIVE, unconfirmed)
+  constructor({ wind = SCENARIOS.calm, W20 = null, oatC = WX_DEFAULT.oatC, qnh = WX_DEFAULT.qnh, dewC = WX_DEFAULT.dewC, dist = 5500, pilot = 'ap', assist = true, autoThr = true, seed = 11, dh = 0, dtl = 0, gust = wind.gust ?? 0, windCap = null } = {}) {
     this.ac = new Aircraft();
     qnh = qnh ?? P0_HPA; this.ac.isaDev = oatC - (15 - 0.0065 * FIELD.elev); this.ac.qnh = qnh; this.ac.dewC = dewC;
     this.ac.wind = new Wind({ fromDeg: windFrom(wind), kt: wind.kt, W20: W20 ?? windW20(wind), seed }); this.W20 = this.ac.wind.W20;
-    const trim = this.ac.setApproach({ dist, dh, dt: dtl });
+    // the approach speeds of this flight (plan C5): the autopilot's autothrottle is always on, a hand flight has the
+    // autothrottle only when autoThr is set (the 737's additive depends on it)
+    this.appr = new Approach({ wind, gust, atOn: pilot === 'ap' || autoThr, cap: windCap });
+    let trim = this.ac.setApproach({ dist, dh, dt: dtl, ias: this.appr.vapp });
+    // the ground speed mini of an Airbus card is part of the speed it commands from the first tick, so the flight starts
+    // trimmed at VAPP plus the mini at the start height, not about 6 kt below its own target in a headwind (review of
+    // plans C3–C7). appr.update reads only the height and the mean wind there, which the second trim leaves as they were.
+    // The other cards carry no mini (appr.gs null): one trim, as before.
+    if (this.appr.gs) {
+      this.appr.update(this.ac, 0);
+      if (this.appr.extra > 0) trim = this.ac.setApproach({ dist, dh, dt: dtl, ias: this.appr.vapp + this.appr.extra });
+    }
     this.trim = trim;
-    this.ap = new Autopilot(this.ac, trim);
-    this.laws = new PilotLaws(this.ac, trim);
-    this.ev = new Evaluator();
+    this.ap = new Autopilot(this.ac, trim, this.appr);
+    this.laws = new PilotLaws(this.ac, trim, this.appr);
+    this.ev = new Evaluator(this.appr);
     this.rec = new Recorder();
     this.pilot = pilot; this.opts = { assist, autoThr };
     this.input = { x: 0, y: 0, rud: 0, thr: trim.thr, brake: 0 };
@@ -1062,6 +1471,8 @@ class Flight {
     const ac = this.ac;
     this.keepPrev();             // before the crash check, so a frozen flight draws still; direct tick() callers too
     if (this.crashed) return;
+    this.appr.setAt(this.pilot === 'ap' || this.opts.autoThr);
+    this.appr.update(ac, dt);
     const apC = this.ap.guidance();
     if (this.pilot === 'ap') this.ap.update(dt);
     else {

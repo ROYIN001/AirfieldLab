@@ -1,0 +1,1736 @@
+{
+ "airframe": {
+  "identity": {
+   "v": {
+    "manufacturer": "Airbus S.A.S.",
+    "model": "A330-300",
+    "variant": "A330-343 (ATSB: AirAsia X ใช้ A330-343X; HS-XTC เป็น A330-343E)",
+    "engine": "Rolls-Royce Trent 772B-60 (Trent 700) สองเครื่อง",
+    "icao": "A333",
+    "seats": {
+     "XJ_P_E": [
+      12,
+      365
+     ],
+     "XJ_total": 377,
+     "XJ_all_economy": 367,
+     "XJ_C18_Y345_from_Dec2025": 363,
+     "airbus_typical": "250-290",
+     "max_exit": 440
+    },
+    "operatorsDMK": [
+     {
+      "airline": "Thai AirAsia X (XJ/TAX)",
+      "fleet": {
+       "wikipedia_2025_08": 11,
+       "capa_2024_12_31": 10
+      },
+      "base": "DMK"
+     }
+    ]
+   },
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "H10",
+    "H27",
+    "H28",
+    "H9",
+    "H11",
+    "H2",
+    "H3"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "รุ่นเครื่องยนต์ของฝูงบินไทยอนุมานจากกลุ่ม AirAsia X (ATSB) และ TCDS ที่ให้ A330-343 ใช้ Trent 768-60/772B-60/772C-60; รุ่น 772B-60 ของ HS-XT* ยังไม่ยืนยันรายลำ; จำนวนลำต่างกันตามวันที่ (หัวข้อรอบ 5 เขียน 6 ลำที่ยังบิน)"
+  },
+  "weights": {
+   "MTOW": {
+    "v": {
+     "WV000": 212000,
+     "WV022": 233000,
+     "WV052": 233000,
+     "WV054": 235000,
+     "WV080": 238000,
+     "WV081": 242000,
+     "WV083": 240000
+    },
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "H1",
+     "H3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "WV081 533,519 lb; WV000 467,380 lb"
+   },
+   "MLW": {
+    "v": {
+     "WV000": 174000,
+     "WV022": 187000,
+     "WV052": 187000,
+     "WV054": 187000,
+     "WV080": 187000,
+     "WV081": 187000,
+     "WV083": 187000
+    },
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "H1"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "187,000 kg = 412,264 lb; OpenAP 188,000 (ขัดแย้ง ใช้ AC)"
+   },
+   "default_sim": {
+    "v": {
+     "MTW": 242900,
+     "MTOW": 242000,
+     "MLW": 187000,
+     "MZFW": 171000
+    },
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "H1",
+     "H3",
+     "H29"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: เลือก WV081 (MTOW 242 t ตาม Facts & Figures; ตัวเลือก 242 t ส่งมอบครั้งแรกปี 2015) เพราะไม่พบ WV ของ Thai AirAsia X; MLW 187 t เป็นค่าสูงสุดของ A330-300 (WV022, 031, 033, 035, 039, 051 ถึง 056, 058, 080 ถึง 083)"
+   },
+   "training_mass": {
+    "v": 187000,
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "H1",
+     "H3",
+     "H29",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: มวลตั้งต้นของซิม = MLW ใน airframe.weights.default_sim ของบัตรวิจัย 187000 kg (ลงจอดที่มวลลงจอดสูงสุด) ผู้ใช้เลือกมวลอื่นในหน้าตั้งค่าได้ (OD-RATINGS) [AL:C4]"
+   },
+   "mass_options": {
+    "v": [
+     187000,
+     174000,
+     168300,
+     149600
+    ],
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "H1",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: มวลที่หน้าตั้งค่าให้เลือก: มวลตั้งต้น 187000 kg, MLW ของ weight variant อื่นที่ไม่เกินมวลนั้น และ 90 % กับ 80 % ของมวลตั้งต้น ปัดเป็น 100 kg (มวลลงจอดของสายการบินจริงไม่เผยแพร่) [AL:C4]"
+   }
+  },
+  "cg": {
+   "LEMAC_x": {
+    "v": 28.95,
+    "u": "m STA",
+    "scope": "aircraft",
+    "src": [
+     "D4",
+     "H2"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไม่พบในแหล่งสาธารณะ; = CG อ้างอิง 30.77 m STA ของหัวข้อ 5 (ล้อหน้ารับ 8 %) − 0.25 × 7.27 (h_speeds_perf.mjs)"
+   },
+   "MAC": {
+    "v": 7.27,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "H2",
+     "H5",
+     "H12"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "TCDS (ส่วน A330-200 ปีกเดียวกัน) \"MAC: 7,270m\" = 286.2 in; Jenkinson/OpenAP 7.26"
+   },
+   "ref_pctMAC": {
+    "v": 25,
+    "u": "%MAC",
+    "scope": "aircraft",
+    "src": [
+     "H2"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "ค่าประมาณ: ข้อตกลงรอบที่ 3; กรณีทดสอบพลวัตใช้ 28 %"
+   }
+  },
+  "inertia": {
+   "ref_mass": {
+    "v": 187000,
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "H1"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: MLW"
+   },
+   "Ixx": {
+    "v": 15810000,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "L23",
+     "L13",
+     "H17"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: m (Rx b/2)², Rx 0.305, b 60.30 (h_inertia.mjs); ±25 %"
+   },
+   "Iyy": {
+    "v": 41140000,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "L23",
+     "L13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: m (Ry L/2)², Ry 0.466, L 63.66; ถ้าใช้ Ry ระดับ B747 (~0.35 ถึง 0.39) จะต่ำลง 30 ถึง 45 %"
+   },
+   "Izz": {
+    "v": 54130000,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "L23",
+     "L13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: m (Rz e/2)², Rz 0.549, e = (b + L)/2"
+   },
+   "Ixz": {
+    "v": 0,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "H16",
+     "H17"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แกนตัวเครื่อง (FG A330 0; JSBSim B747 −970,000 slug ft²); แกน stability ที่ α 5°: −3.33e6; derivative ด้านข้างของบัตรเป็นแกน stability ต้องใช้คู่กับ Ixz แกน stability หรือแปลงทั้งคู่เป็นแกนตัวเครื่อง (ใช้ Ixz 0 กับ derivative แกน stability ทำให้ DR ไม่เสถียร, ผู้ตรวจเพิ่ม)"
+   },
+   "radii": {
+    "v": {
+     "Rx": 0.305,
+     "Ry": 0.466,
+     "Rz": 0.549
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "L23",
+     "L13",
+     "L45",
+     "H17"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: รัศมีของ A320 (หัวข้อ 3) ใช้กับขนาด A330; B747 JSBSim Rx 0.287 ถึง 0.316 สนับสนุน Rx; FG A330 (0.191/0.263/0.253, Izz < Iyy) ตัดทิ้ง"
+   }
+  },
+  "geometry": {
+   "length": {
+    "v": 63.66,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D10"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "เอกสารเขียน 208 ft (ปัดลง); 63.66 m = 208 ft 10 in"
+   },
+   "eye_pos_FRD": {
+    "v": [
+     27.37,
+     -0.8,
+     -4.1966
+    ],
+    "u": "m FRD",
+    "scope": "aircraft",
+    "src": [
+     "D4",
+     "D5",
+     "D32",
+     "AL:C7"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: x, y ตามบัตรวิจัย (27.37, -0.8, -3.9); z ตั้งใหม่ให้ทางเดินตาสูงกว่าทางเดินล้อหลัก (gear.geometry.main_contact_body_extended, โช้คยืด) H1 11.34 m ตามข้อมูล Airbus ฉบับ 2023 [D4] ที่แนวร่อน 3° และ pitch อ้างอิง 3°; OD-A330-VISUAL เลือกฉบับ 2023 (H1 11.34 m) ไม่ใช่ฉบับ 2021 (10.82 m) [D5]; จุดสัมผัสล้อหลักเป็นศูนย์ bogie: z ของบัตรวิจัย -3.9 ให้ H1 11.04 m ที่ pitch นี้; ตาเหนือล้อจุดต่อจุดได้ H4 9.82 m (Airbus 9.77 m) [AL:C7]"
+   },
+   "eye_to_gsAntenna_vertical": {
+    "v": 2.78,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D4"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ: H1 − H"
+   },
+   "approach_visual": {
+    "v": {
+     "theta_deg": 3,
+     "H": 8.56,
+     "H1": 11.34,
+     "H2": 2.78,
+     "H4": 9.77
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D4",
+     "D5"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ft 28.1/37.2/–/32.0; ฉบับ 2021: H 8.05 H1 10.82 H4 9.24"
+   },
+   "gsAntenna_pos_FRD": {
+    "v": [
+     27.37,
+     0,
+     -1.4051
+    ],
+    "u": "m FRD",
+    "scope": "aircraft",
+    "src": [
+     "D4",
+     "D5",
+     "D32",
+     "AL:C7"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: เสาอากาศรับ glide slope บนแนวกลางลำ x เท่าตา (ไม่มีตำแหน่งสายอากาศของ Airbus หัวข้อ 3.5.9 ข้อ 1); z ตั้งให้ทางเดินเสาอากาศต่ำกว่าทางเดินตา H2 2.78 m (airframe.geometry.eye_to_gsAntenna_vertical) ที่แนวร่อน 3° และ pitch อ้างอิง 3°: z_ant = z_eye + (H2 + dx·(sin ρ + cos ρ·tan θ))/(cos ρ − sin ρ·tan θ) = z_eye + 2.7915 m (รูปเต็มของ z_ant = z_eye + H2 ในหัวข้อ 3.5.9 ข้อ 1); ILS และออโต้ไพลอตอ่านที่จุดนี้ ไฟ PAPI อ่านที่ตา [AL:C7]"
+   }
+  }
+ },
+ "aero": {
+  "ref": {
+   "S": {
+    "v": 361.6,
+    "u": "m2",
+    "scope": "aircraft",
+    "src": [
+     "H12"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ค่าตามแหล่ง [H12]"
+   },
+   "b": {
+    "v": 60.3,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "H3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ค่าตามแหล่ง [H3]"
+   },
+   "c": {
+    "v": 7.27,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "H2"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ค่าตามแหล่ง [H2]"
+   }
+  },
+  "flaps": {
+   "detents": {
+    "v": [
+     {
+      "name": "CONF0",
+      "slat_deg": null,
+      "flap_deg": 0,
+      "VFE_kt": null,
+      "dCL0": 0,
+      "dCD0": 0,
+      "dCm0": null,
+      "CLmax": 1.26
+     },
+     {
+      "name": "CONF1",
+      "slat_deg": null,
+      "flap_deg": 0,
+      "VFE_kt": 240,
+      "dCL0": 0.013,
+      "dCD0": 0.004,
+      "dCm0": null,
+      "CLmax": 1.8
+     },
+     {
+      "name": "CONF1+F",
+      "slat_deg": null,
+      "flap_deg": 8,
+      "VFE_kt": 215,
+      "dCL0": 0.313,
+      "dCD0": 0.01,
+      "dCm0": null,
+      "CLmax": 2.1
+     },
+     {
+      "name": "CONF2",
+      "slat_deg": null,
+      "flap_deg": 14,
+      "VFE_kt": 196,
+      "dCL0": 0.498,
+      "dCD0": 0.02,
+      "dCm0": null,
+      "CLmax": 2.24
+     },
+     {
+      "name": "CONF3",
+      "slat_deg": null,
+      "flap_deg": 22,
+      "VFE_kt": 186,
+      "dCL0": 0.666,
+      "dCD0": 0.03,
+      "dCm0": null,
+      "CLmax": 2.32
+     },
+     {
+      "name": "FULL",
+      "slat_deg": null,
+      "flap_deg": 32,
+      "VFE_kt": 180,
+      "dCL0": 0.885,
+      "dCD0": 0.05,
+      "dCm0": null,
+      "CLmax": 2.45
+     }
+    ],
+    "u": "deg, kt IAS, -",
+    "scope": "aircraft",
+    "src": [
+     "H20",
+     "H16"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "VFE จากการ์ดทบทวน (240/215/196/186/180; CONF2* 205 สำหรับวิ่งขึ้น) conf กลาง; มุมแฟลปไม่พบในแหล่งปฐมภูมิ (ค่าในตารางเป็นค่าประมาณ ไม่ยืนยัน); FG ใช้แฟลปเต็ม 35° สแลตเต็ม 27°"
+   }
+  },
+  "derivatives": {
+   "CLq": {
+    "v": {
+     "approach": 5.55,
+     "cruise": 6.98
+    },
+    "u": "1/rad (c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "H5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: 2 η a_t V_H"
+   },
+   "CLadot": {
+    "v": {
+     "approach": 1.54,
+     "cruise": 2.59
+    },
+    "u": "1/rad (c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "H5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: CLq dε/dα"
+   },
+   "CLde": {
+    "v": {
+     "approach": 0.352,
+     "cruise": 0.443
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "H5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: τe 0.50"
+   },
+   "CYb": {
+    "v": {
+     "approach": -0.505,
+     "cruise": -0.547
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "H5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: FG −0.609; derivative ด้านข้างทุกตัวในหมวดนี้เป็นแกน stability (α 5.74° approach, 2.5° cruise) ส่วนโค้ดใช้แกนตัวเครื่อง ดูหัวข้อ 3.4.7.5 (ผู้ตรวจเพิ่ม)"
+   },
+   "CYr": {
+    "v": {
+     "approach": 0.3164,
+     "cruise": 0.3525
+    },
+    "u": "1/rad (b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "H5",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แปลงจากแกน stability ของบัตรวิจัย ({\"approach\":0.314,\"cruise\":0.35}, α 5.74° ที่ approach และ 2.5° ที่ cruise) เป็นแกนตัวเครื่องที่ซิมใช้ ตามสูตรของ Etkin เพราะหัวข้อ 3.4.7.5 บอกว่าใช้ค่าแกน stability คู่กับ Ixz = 0 แล้ว Dutch roll ไม่เสถียร (ζ −0.031); ที่ approach ได้ Clβ −0.205, Cnβ 0.026, Clp −0.492, Clr 0.235, Cnp −0.180, Cnr −0.188 ตรงกับค่าที่หัวข้อนั้นให้ (DR ζ 0.024) [AL:C4]; ค่าประมาณจาก build-up แบบ DATCOM (หัวข้อ 3.4.7) เป็นแกน stability ดูหัวข้อ 3.4.7.5 ก่อนใช้ในโค้ด"
+   },
+   "CYdr": {
+    "v": {
+     "approach": 0.196,
+     "cruise": 0.22
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "H5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: τr 0.58 (ปรับให้ VMCA ≈ 122 kt)"
+   },
+   "Clb": {
+    "v": {
+     "approach": -0.2046,
+     "cruise": -0.1786
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "H5",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แปลงจากแกน stability ของบัตรวิจัย ({\"approach\":-0.201,\"cruise\":-0.176}, α 5.74° ที่ approach และ 2.5° ที่ cruise) เป็นแกนตัวเครื่องที่ซิมใช้ ตามสูตรของ Etkin เพราะหัวข้อ 3.4.7.5 บอกว่าใช้ค่าแกน stability คู่กับ Ixz = 0 แล้ว Dutch roll ไม่เสถียร (ζ −0.031); ที่ approach ได้ Clβ −0.205, Cnβ 0.026, Clp −0.492, Clr 0.235, Cnp −0.180, Cnr −0.188 ตรงกับค่าที่หัวข้อนั้นให้ (DR ζ 0.024) [AL:C4]; FG −0.1"
+   },
+   "Clp": {
+    "v": {
+     "approach": -0.4916,
+     "cruise": -0.6395
+    },
+    "u": "1/rad (b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "H5",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แปลงจากแกน stability ของบัตรวิจัย ({\"approach\":-0.483,\"cruise\":-0.638}, α 5.74° ที่ approach และ 2.5° ที่ cruise) เป็นแกนตัวเครื่องที่ซิมใช้ ตามสูตรของ Etkin เพราะหัวข้อ 3.4.7.5 บอกว่าใช้ค่าแกน stability คู่กับ Ixz = 0 แล้ว Dutch roll ไม่เสถียร (ζ −0.031); ที่ approach ได้ Clβ −0.205, Cnβ 0.026, Clp −0.492, Clr 0.235, Cnp −0.180, Cnr −0.188 ตรงกับค่าที่หัวข้อนั้นให้ (DR ζ 0.024) [AL:C4]; FG −0.46"
+   },
+   "Clr": {
+    "v": {
+     "approach": 0.2354,
+     "cruise": 0.1245
+    },
+    "u": "1/rad (b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "H5",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แปลงจากแกน stability ของบัตรวิจัย ({\"approach\":0.265,\"cruise\":0.145}, α 5.74° ที่ approach และ 2.5° ที่ cruise) เป็นแกนตัวเครื่องที่ซิมใช้ ตามสูตรของ Etkin เพราะหัวข้อ 3.4.7.5 บอกว่าใช้ค่าแกน stability คู่กับ Ixz = 0 แล้ว Dutch roll ไม่เสถียร (ζ −0.031); ที่ approach ได้ Clβ −0.205, Cnβ 0.026, Clp −0.492, Clr 0.235, Cnp −0.180, Cnr −0.188 ตรงกับค่าที่หัวข้อนั้นให้ (DR ζ 0.024) [AL:C4]; ค่าประมาณจาก build-up แบบ DATCOM (หัวข้อ 3.4.7) เป็นแกน stability ดูหัวข้อ 3.4.7.5 ก่อนใช้ในโค้ด"
+   },
+   "Clda": {
+    "v": {
+     "approach": 0.1374,
+     "cruise": 0.1804
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "H5",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แปลงจากแกน stability ของบัตรวิจัย ({\"approach\":0.135,\"cruise\":0.18}, α 5.74° ที่ approach และ 2.5° ที่ cruise) เป็นแกนตัวเครื่องที่ซิมใช้ ตามสูตรของ Etkin เพราะหัวข้อ 3.4.7.5 บอกว่าใช้ค่าแกน stability คู่กับ Ixz = 0 แล้ว Dutch roll ไม่เสถียร (ζ −0.031); ที่ approach ได้ Clβ −0.205, Cnβ 0.026, Clp −0.492, Clr 0.235, Cnp −0.180, Cnr −0.188 ตรงกับค่าที่หัวข้อนั้นให้ (DR ζ 0.024) [AL:C4]; aileron ช่วง 0.66 ถึง 0.97 ของครึ่งปีก (ประมาณ) ไม่รวม spoiler"
+   },
+   "Cldr": {
+    "v": {
+     "approach": 0.0205,
+     "cruise": 0.023
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "H5",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แปลงจากแกน stability ของบัตรวิจัย ({\"approach\":0.0115,\"cruise\":0.0186}, α 5.74° ที่ approach และ 2.5° ที่ cruise) เป็นแกนตัวเครื่องที่ซิมใช้ ตามสูตรของ Etkin เพราะหัวข้อ 3.4.7.5 บอกว่าใช้ค่าแกน stability คู่กับ Ixz = 0 แล้ว Dutch roll ไม่เสถียร (ζ −0.031); ที่ approach ได้ Clβ −0.205, Cnβ 0.026, Clp −0.492, Clr 0.235, Cnp −0.180, Cnr −0.188 ตรงกับค่าที่หัวข้อนั้นให้ (DR ζ 0.024) [AL:C4]; ค่าประมาณจาก build-up แบบ DATCOM (หัวข้อ 3.4.7) เป็นแกน stability ดูหัวข้อ 3.4.7.5 ก่อนใช้ในโค้ด"
+   },
+   "Cmq": {
+    "v": {
+     "approach": -24,
+     "cruise": -30.2
+    },
+    "u": "1/rad (c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "H5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: FG −37.2"
+   },
+   "Cmadot": {
+    "v": {
+     "approach": -6.06,
+     "cruise": -10.18
+    },
+    "u": "1/rad (c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "H5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจาก build-up แบบ DATCOM (หัวข้อ 3.4.7)"
+   },
+   "Cmde": {
+    "v": {
+     "approach": -1.387,
+     "cruise": -1.744
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "H5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: −CLde l_h/c"
+   },
+   "Cnb": {
+    "v": {
+     "approach": 0.0257,
+     "cruise": 0.0563
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "H5",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แปลงจากแกน stability ของบัตรวิจัย ({\"approach\":0.046,\"cruise\":0.064}, α 5.74° ที่ approach และ 2.5° ที่ cruise) เป็นแกนตัวเครื่องที่ซิมใช้ ตามสูตรของ Etkin เพราะหัวข้อ 3.4.7.5 บอกว่าใช้ค่าแกน stability คู่กับ Ixz = 0 แล้ว Dutch roll ไม่เสถียร (ζ −0.031); ที่ approach ได้ Clβ −0.205, Cnβ 0.026, Clp −0.492, Clr 0.235, Cnp −0.180, Cnr −0.188 ตรงกับค่าที่หัวข้อนั้นให้ (DR ζ 0.024) [AL:C4]; FG 0.139"
+   },
+   "Cnp": {
+    "v": {
+     "approach": -0.1796,
+     "cruise": -0.1115
+    },
+    "u": "1/rad (b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "H5",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แปลงจากแกน stability ของบัตรวิจัย ({\"approach\":-0.15,\"cruise\":-0.091}, α 5.74° ที่ approach และ 2.5° ที่ cruise) เป็นแกนตัวเครื่องที่ซิมใช้ ตามสูตรของ Etkin เพราะหัวข้อ 3.4.7.5 บอกว่าใช้ค่าแกน stability คู่กับ Ixz = 0 แล้ว Dutch roll ไม่เสถียร (ζ −0.031); ที่ approach ได้ Clβ −0.205, Cnβ 0.026, Clp −0.492, Clr 0.235, Cnp −0.180, Cnr −0.188 ตรงกับค่าที่หัวข้อนั้นให้ (DR ζ 0.024) [AL:C4]; ค่าประมาณจาก build-up แบบ DATCOM (หัวข้อ 3.4.7) เป็นแกน stability ดูหัวข้อ 3.4.7.5 ก่อนใช้ในโค้ด"
+   },
+   "Cnr": {
+    "v": {
+     "approach": -0.1884,
+     "cruise": -0.1695
+    },
+    "u": "1/rad (b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "H5",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แปลงจากแกน stability ของบัตรวิจัย ({\"approach\":-0.197,\"cruise\":-0.171}, α 5.74° ที่ approach และ 2.5° ที่ cruise) เป็นแกนตัวเครื่องที่ซิมใช้ ตามสูตรของ Etkin เพราะหัวข้อ 3.4.7.5 บอกว่าใช้ค่าแกน stability คู่กับ Ixz = 0 แล้ว Dutch roll ไม่เสถียร (ζ −0.031); ที่ approach ได้ Clβ −0.205, Cnβ 0.026, Clp −0.492, Clr 0.235, Cnp −0.180, Cnr −0.188 ตรงกับค่าที่หัวข้อนั้นให้ (DR ζ 0.024) [AL:C4]; FG −0.3"
+   },
+   "Cnda": {
+    "v": {
+     "approach": -0.0173,
+     "cruise": -0.0051
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "H5",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แปลงจากแกน stability ของบัตรวิจัย ({\"approach\":-0.031,\"cruise\":-0.013}, α 5.74° ที่ approach และ 2.5° ที่ cruise) เป็นแกนตัวเครื่องที่ซิมใช้ ตามสูตรของ Etkin เพราะหัวข้อ 3.4.7.5 บอกว่าใช้ค่าแกน stability คู่กับ Ixz = 0 แล้ว Dutch roll ไม่เสถียร (ζ −0.031); ที่ approach ได้ Clβ −0.205, Cnβ 0.026, Clp −0.492, Clr 0.235, Cnp −0.180, Cnr −0.188 ตรงกับค่าที่หัวข้อนั้นให้ (DR ζ 0.024) [AL:C4]; ค่าประมาณจาก build-up แบบ DATCOM (หัวข้อ 3.4.7) เป็นแกน stability ดูหัวข้อ 3.4.7.5 ก่อนใช้ในโค้ด"
+   },
+   "Cndr": {
+    "v": {
+     "approach": -0.0894,
+     "cruise": -0.1001
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "H5",
+     "H20",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: แปลงจากแกน stability ของบัตรวิจัย ({\"approach\":-0.091,\"cruise\":-0.101}, α 5.74° ที่ approach และ 2.5° ที่ cruise) เป็นแกนตัวเครื่องที่ซิมใช้ ตามสูตรของ Etkin เพราะหัวข้อ 3.4.7.5 บอกว่าใช้ค่าแกน stability คู่กับ Ixz = 0 แล้ว Dutch roll ไม่เสถียร (ζ −0.031); ที่ approach ได้ Clβ −0.205, Cnβ 0.026, Clp −0.492, Clr 0.235, Cnp −0.180, Cnr −0.188 ตรงกับค่าที่หัวข้อนั้นให้ (DR ζ 0.024) [AL:C4]; เครื่องหมายตามโค้ด (rudder บวก = จมูกซ้าย)"
+   }
+  },
+  "legacy": {
+   "v": {
+    "CL0": 0.116,
+    "CLa": 5.072,
+    "CLflap": 0.885,
+    "CDflap": 0.05,
+    "CDgear": 0.014,
+    "CD0": 0.022,
+    "K": 0.041,
+    "Cm0": 0.0722,
+    "Cma": -0.963,
+    "Cmflap": 0.0243,
+    "aStall": 16.59,
+    "aStallFlap": 4.16,
+    "flapMap": {
+     "CONF0": 0,
+     "CONF1": 0.015,
+     "CONF1+F": 0.354,
+     "CONF2": 0.563,
+     "CONF3": 0.753,
+     "FULL": 1
+    },
+    "CLq": 5.55,
+    "CLadot": 1.54,
+    "CLde": 0.352,
+    "Cmq": -24,
+    "Cmadot": -6.06,
+    "Cmde": -1.387,
+    "aWarn": 11.85,
+    "aWarnFlap": 1.3,
+    "aWarnHyst": 0.5,
+    "aWarnMinOn": 0.5
+   },
+   "u": "-, 1/rad, deg, deg/f, s",
+   "scope": "aircraft",
+   "src": [
+    "H5",
+    "H12",
+    "H8",
+    "AL:C4"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: AC.flaps 1 = FULL; aStall/aStallFlap หาให้ max ของ blend (M 55) = CLmax CONF0/FULL; legacy ให้ CLmax CONF1 1.28 แทน 1.80 (สแลตแสดงไม่ได้); Cm0/Cmflap ให้ trim ที่ elevator 0 ทั้ง clean 250 kt และ FULL α 5.74°. ค่าประมาณ (plan C4): K_CL_offset ไม่ระบุ ซิมใช้ค่าตั้งต้น 0.15 ของเครื่องฝึก (งานวิจัยออกแบบชุดนี้กับ 0.15); CLmax ของ blend บนเส้นของซิม (trim q̇ = 0) 1.222 ที่ α 13.96° (แฟลป 0) และ 2.402 ที่ α 17.39° (แฟลปลงจอด); สัญญาณเตือน stall aWarn 11.85° และ aWarn + aWarnFlap 13.15° ที่ความเร็ว 1 g สูงกว่า stall 7.00 kt ที่มวลตั้งต้น (มากกว่าเกณฑ์ 5 kt หรือ 5 % ของ CS-25.207); ตรวจเฉพาะแฟลป 0 และแฟลปลงจอด เพราะ CLmax ของแฟลปกลางในโหมด legacy ผิดตามที่งานวิจัยบอก (03-airliners.md งานข้อ 2) เลิกเตือนตามเครื่องฝึก 0.5° และ 0.5 s [AL:C4]"
+  }
+ },
+ "speeds": {
+  "icao_approach_category": {
+   "v": "C",
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "H4"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "Airbus ME1911189; VAT < 141 kt (แบบจำลองให้ VLS FULL ที่ 187 t = 139.0 kt)"
+  },
+  "VS0_kt": {
+   "v": {
+    "axes": {
+     "mass_kg": [
+      130000,
+      150000,
+      170000,
+      187000,
+      210000,
+      242000
+     ],
+     "flap": [
+      "CONF0",
+      "CONF1",
+      "CONF1+F",
+      "CONF2",
+      "CONF3",
+      "FULL"
+     ]
+    },
+    "data": [
+     [
+      131.4,
+      109.9,
+      101.8,
+      98.5,
+      96.8,
+      94.2
+     ],
+     [
+      141.1,
+      118.1,
+      109.3,
+      105.8,
+      104,
+      101.2
+     ],
+     [
+      150.2,
+      125.7,
+      116.4,
+      112.7,
+      110.7,
+      107.7
+     ],
+     [
+      157.6,
+      131.8,
+      122.1,
+      118.2,
+      116.1,
+      113
+     ],
+     [
+      167,
+      139.7,
+      129.3,
+      125.2,
+      123.1,
+      119.8
+     ],
+     [
+      179.3,
+      150,
+      138.9,
+      134.4,
+      132.1,
+      128.6
+     ]
+    ]
+   },
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "H5",
+    "H6",
+    "AL:C4"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: ความเร็ว stall 1 g ทุกตำแหน่งแฟลป = ตาราง speeds.VS1g ของบัตรวิจัยทุกคอลัมน์ ตามมวล; VS0 ที่ซิมใช้ (AC.Vs0) อ่านคอลัมน์แฟลปลงจอด FULL ที่มวลที่เลือกแบบเส้นตรงและไม่ต่อเกินปลายตาราง [AL:C4]"
+  },
+  "VREF_kt": {
+   "v": {
+    "axes": {
+     "mass_kg": [
+      130000,
+      150000,
+      170000,
+      187000,
+      210000,
+      242000
+     ],
+     "flap": [
+      "CONF3",
+      "FULL"
+     ]
+    },
+    "data": [
+     [
+      119.1,
+      115.9
+     ],
+     [
+      127.9,
+      124.5
+     ],
+     [
+      136.2,
+      132.5
+     ],
+     [
+      142.8,
+      139
+     ],
+     [
+      151.4,
+      147.3
+     ],
+     [
+      162.5,
+      158.1
+     ]
+    ]
+   },
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "H5",
+    "L9",
+    "AL:C4"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: Vref ตามกฎของบัตรวิจัย \"VLS CONF FULL\" = ตาราง speeds.VLS (CG 25 % MAC) ทุกคอลัมน์ที่บัตรวิจัยให้ ตามมวล; Vref ที่ซิมใช้ (AC.Vref) อ่านคอลัมน์ FULL [AL:C4]"
+  },
+  "VAPP_kt": {
+   "v": {
+    "axes": {
+     "mass_kg": [
+      130000,
+      150000,
+      170000,
+      187000,
+      210000,
+      242000
+     ],
+     "flap": [
+      "FULL"
+     ]
+    },
+    "data": [
+     [
+      120.9
+     ],
+     [
+      129.5
+     ],
+     [
+      137.5
+     ],
+     [
+      144
+     ],
+     [
+      152.3
+     ],
+     [
+      163.1
+     ]
+    ]
+   },
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "L9",
+    "AL:C4"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: คอลัมน์ FULL ของ speeds.VAPP_kt ในบัตรวิจัย (VLS + 5 kt ลมสงบ A/THR) ตามมวล [AL:C4]"
+  },
+  "approach_rule": {
+   "v": {
+    "kind": "airbus",
+    "min_kt": 5,
+    "max_kt": 15,
+    "headwind_div": 3
+   },
+   "u": "-, kt",
+   "scope": "aircraft",
+   "src": [
+    "K7",
+    "K35",
+    "AL:C5"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "VAPP ของ Airbus = VLS + APPR COR; APPR COR = 1/3 ของ headwind จากหอ จำกัดระหว่าง 5 ถึง 15 kt (5 kt เมื่อ A/THR ต่อ) gust ไม่รวมใน VAPP แต่ชดเชยด้วย GS mini (ops.gs_mini) [K7][K35]; ไม่จำลองน้ำแข็ง (ซิมไม่มีสภาพน้ำแข็ง) [AL:C5]"
+  }
+ },
+ "wind": {
+  "wake": {
+   "category": {
+    "v": {
+     "ICAO": "H",
+     "RECAT_EU": "CAT-B Upper Heavy",
+     "FAA_CWT": "B",
+     "FAA_SRS": "III",
+     "ARC": "4E",
+     "ADG": "V",
+     "APC": "C"
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "H21",
+     "H4",
+     "H32",
+     "H33"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ICAO Heavy เพราะ MTOM ≥ 136,000 kg (Doc 4444); FAA JO 7360.1J: \"A333 Fixed-wing 2J/H Heavy B III 8\""
+   }
+  }
+ },
+ "turbofan": {
+  "engine_default": {
+   "v": "TRENT_772B_class",
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "J32",
+    "J7",
+    "J34"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "AirAsia X A330-343 = Trent 772B-60 (ATSB); A330-343 อาจเป็น 768-60/772B-60/772C-60 ตาม TCDS"
+  },
+  "engines": {
+   "TRENT_772B_class": {
+    "F00": {
+     "v": 316300,
+     "u": "N",
+     "scope": "engine",
+     "src": [
+      "J6"
+     ],
+     "conf": "สูง",
+     "est": false,
+     "note": "net take-off 316.3 kN (71,100 lbf); equivalent bare engine 320.3 kN (72,000 lbf) = EEDB rated output"
+    },
+    "Tflat_C": {
+     "v": 30,
+     "u": "degC",
+     "scope": "engine",
+     "src": [
+      "J6"
+     ],
+     "conf": "กลาง",
+     "est": true,
+     "note": "ค่าประมาณ: อนุมานจาก Note VI.12 (772B ต่างจาก 772 เมื่อ > ISA+15)"
+    },
+    "bpr": {
+     "v": 5,
+     "u": "-",
+     "scope": "engine",
+     "src": [
+      "J31",
+      "J9"
+     ],
+     "conf": "กลาง",
+     "est": false,
+     "note": "RR poster ผ่าน Wikipedia 5.0; EEDB 14RR071 5.03"
+    }
+   }
+  },
+  "ratings_offered": {
+   "v": [
+    "TRENT_772B_class"
+   ],
+   "u": "-",
+   "scope": "engine",
+   "src": [
+    "J32",
+    "J7",
+    "J34",
+    "AL:C4"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "รุ่นเครื่องยนต์ที่หน้าตั้งค่าให้เลือก ค่าแรกคือ turbofan.engine_default ของบัตรวิจัย; ซิมคูณ T0 และ P ของ propulsion.legacy ด้วย F00 ของรุ่นที่เลือก/F00 ของรุ่นตั้งต้น (สายการบินไม่เผยแพร่ rating จริง, OD-RATINGS) [AL:C4]"
+  }
+ },
+ "propulsion": {
+  "layout": {
+   "v": [
+    {
+     "id": 1,
+     "pos": [
+      3.184,
+      -9.401,
+      2.149
+     ],
+     "posSTA": [
+      null,
+      -9.401
+     ],
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "type": "turbofan",
+     "model": "TRENT_772B_class"
+    },
+    {
+     "id": 2,
+     "pos": [
+      3.184,
+      9.401,
+      2.149
+     ],
+     "posSTA": [
+      null,
+      9.401
+     ],
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "type": "turbofan",
+     "model": "TRENT_772B_class"
+    }
+   ],
+   "u": "m FRD",
+   "scope": "aircraft",
+   "src": [
+    "J25"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: FlightGear A330-300-RR (engine x −2.703, CG 0.481, AERORP 1.481 จึงได้ 4.18 m ถ้าอ้าง AERORP); z ขัดกับความสูง CG 3.6 m ของหัวข้อ 5 (ดูความขัดแย้ง); STA ไม่มีเพราะไม่มี LEMAC"
+  },
+  "legacy": {
+   "v": {
+    "P": 75596000,
+    "eta": 0.8,
+    "T0": 632600,
+    "idle": 0.05
+   },
+   "u": "W, -, N, -",
+   "scope": "sim",
+   "src": [
+    "J11",
+    "J10"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: Vc 95.6 m/s, T0 = 2 × 316,300 N, max err 0.042"
+  }
+ },
+ "controls": {
+  "surfaces": {
+   "elevator": {
+    "v": {
+     "travel_deg": {
+      "up": 30,
+      "down": 15
+     }
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "Y25"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ATSB AO-2008-070 §1.6.3"
+   },
+   "aileron": {
+    "v": {
+     "travel_deg": {
+      "up": 25,
+      "down": 25
+     }
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "Y28",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไม่พบระยะเคลื่อน aileron ของ A330 ในแหล่งสาธารณะ จึงใช้ ±25° ของ A320 (ระบบ FBW ตระกูลเดียวกัน) [AL:C4]"
+   },
+   "rudder": {
+    "v": {
+     "travel_deg": {
+      "left": 30,
+      "right": 30
+     }
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "H24",
+     "H20",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไม่พบระยะเคลื่อน rudder ของ A330 ในแหล่งสาธารณะ ใช้ 30° ที่งานวิจัยใช้คิด VMCA build-up (speeds.VMCA_kt, หัวข้อ 3.4.8) [AL:C4]"
+   }
+  }
+ },
+ "ops": {
+  "gs_mini": {
+   "v": {
+    "k_above_400ft": 1,
+    "k_below_400ft": 0.33,
+    "blend_s": 25
+   },
+   "u": "-, s",
+   "scope": "aircraft",
+   "src": [
+    "K7"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "A330/A340: k = 1 เหนือ 400 ft ลดเป็น 0.33 ต่ำกว่า 400 ft ภายใน 25 s"
+  },
+  "flare_height_m": {
+   "v": 12.192,
+   "u": "m (RA)",
+   "scope": "aircraft",
+   "src": [
+    "K6"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "\"40 ft (A330/A340/A350/A380)\""
+  },
+  "tailstrike_pitch_deg": {
+   "v": {
+    "gear_compressed": 10.4,
+    "gear_extended": 13.7
+   },
+   "u": "deg",
+   "scope": "aircraft",
+   "src": [
+    "K21",
+    "K73"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "ค่าประมาณ: ค่าจากเหตุการณ์ ไม่ใช่ขีดออกแบบ: C-GHLM หางแตะที่ 10.4° ขณะโช้ค \"almost fully compressed\" (TSB); HB-JHC หางแตะที่ 13.7° ขณะล้อหลัก \"about to lift off\" (STSB ผ่าน SKYbrary)"
+  }
+ },
+ "gear": {
+  "layout": {
+   "v": "tricycle_retract",
+   "u": "-",
+   "scope": "gear",
+   "src": [
+    "H10",
+    "H27",
+    "H28",
+    "H9",
+    "H11",
+    "H2",
+    "H3",
+    "AL:C4"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "ล้อสามจุดแบบพับเก็บได้ (ล้อหน้าและล้อหลัก) ตามแบบของเครื่องบินโดยสาร [AL:C4]"
+  },
+  "legacy": {
+   "v": [
+    {
+     "b": [
+      23.368,
+      0,
+      4
+     ],
+     "k": 786190,
+     "c": 583133,
+     "stroke": 0.622,
+     "steer": true
+    },
+    {
+     "b": [
+      -2.032,
+      -5.35,
+      4.1
+     ],
+     "k": 2007689,
+     "c": 786823,
+     "stroke": 1.4006,
+     "brake": true
+    },
+    {
+     "b": [
+      -2.032,
+      5.35,
+      4.1
+     ],
+     "k": 2007689,
+     "c": 786823,
+     "stroke": 1.4006,
+     "brake": true
+    }
+   ],
+   "u": "m FRD, N/m, N s/m, m",
+   "scope": "gear",
+   "src": [
+    "D32",
+    "D10",
+    "H16",
+    "AL:C4"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: ขาล้อสปริง-แดมเปอร์เชิงเส้น 3 ขาของซิม (ล้อหน้าเลี้ยวได้ ล้อหลักมีเบรก; ล้อคู่และ bogie เป็นจุดสัมผัสเดียวต่อขา) b คือจุดสัมผัสเมื่อขายืดสุด จาก gear.geometry.*_contact_body_extended ของบัตรวิจัย ที่มวลตั้งต้น 187000 kg: น้ำหนักล้อหน้า N = W·(−x_main)/(x_nose − x_main) = 146707 N; ล้อหน้า: k strut_nose.k_linear, c c_linear, stroke ยุบสถิต/0.3 (กฎ gearStaticFrac ของรอบที่ 2); ล้อหลัก: k strut_main.k_linear, c c_linear, stroke ยุบสถิต/0.3 (กฎ gearStaticFrac ของรอบที่ 2); ซิมไม่ปรับขาล้อตามมวลที่เลือก [AL:C4]"
+  }
+ },
+ "_na": {
+  "v": [
+   "aero.spin_reference.*",
+   "controls.pitch.Ch0",
+   "controls.pitch.Ch_alpha",
+   "controls.pitch.Ch_delta",
+   "controls.pitch.Ch_tab",
+   "controls.pitch.tab_max",
+   "controls.reference_types.*",
+   "controls.roll.Ch_alpha",
+   "controls.roll.Ch_delta",
+   "controls.roll.tab_max",
+   "controls.yaw.Ch_beta",
+   "controls.yaw.Ch_delta",
+   "controls.yaw.slipstream_q_ratio",
+   "controls.yaw.tab_max",
+   "gear.certification.part23_limit_descent",
+   "gear.certification.part23_min_load_factors",
+   "gear.certification.part23_reserve_drop_factor",
+   "gear.certification.part23_wing_lift_ratio",
+   "interference.slipstream.*",
+   "otherSims.*",
+   "propeller.*",
+   "turboprop.*",
+   "validation.currentModel.*",
+   "validation.procedures.v50MinFactor_singleEngine",
+   "validation.typicalModes.*",
+   "wind.fFactor.trainerExcessTW",
+   "wind.wake.trainerRollControl"
+  ],
+  "u": "-",
+  "scope": "aircraft",
+  "src": [
+   "AL:C4"
+  ],
+  "conf": "กลาง",
+  "est": false,
+  "note": "path ของรอบที่ 1 ที่ใช้กับแบบนี้ไม่ได้: _na ของบัตรวิจัย (13 รายการ: เจ็ตสองเครื่องยนต์ไม่มีใบพัดและ slipstream; ไม่จำลอง spin; การรับรองล้อเป็น Part 25; ค่าเฉพาะของเครื่องฝึกไม่ใช้ ให้ใช้ validation.reference_modes และ validation.trim_targets แทน) และที่ตัวอ่านเพิ่ม: hinge moment และ tab ของระบบบังคับแบบ reversible ใช้ไม่ได้กับระบบ irreversible (737) และ FBW (Airbus) (03-airliners.md งานข้อ 39); ATR เป็นระบบกลไกจึงไม่อยู่ในกลุ่มนี้ (controls.pitch.Ch0, controls.pitch.Ch_alpha, controls.pitch.Ch_delta, controls.pitch.Ch_tab, controls.pitch.tab_max, controls.roll.Ch_alpha, controls.roll.Ch_delta, controls.roll.tab_max, controls.yaw.Ch_beta, controls.yaw.Ch_delta, controls.yaw.tab_max); เจ็ตไม่มีใบพัดและ slipstream ของใบพัด (controls.yaw.slipstream_q_ratio); ตัวเลขอ้างอิงของแบบอื่นที่รอบที่ 1 เก็บไว้เทียบ (ค่าของแบบนี้อยู่ใน controls.surfaces) (controls.reference_types.*); ค่าตั้งต้นและผลของซิมอื่นที่รอบที่ 1 ใช้เทียบกับเครื่องฝึก ไม่ใช่ข้อมูลของแบบนี้ (otherSims.*); ตัวอ่าน acFromCard ไม่อ่าน path ใน _na [AL:C4]"
+ },
+ "_deferred": {
+  "v": {
+   "aero.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 9 (ตารางอากาศพลศาสตร์ตาม detent) และข้อของรอบที่ 1 เรื่อง stall, buffet และ strip wing",
+    "paths": [
+     "aero.static_long.alpha_star_neg",
+     "aero.static_long.a1",
+     "aero.static_long.CL_sep_at_alpha_star",
+     "aero.static_long.CDmax_90",
+     "aero.static_long.dCD_sep",
+     "aero.static_long.CmX",
+     "aero.static_long.Cm0",
+     "aero.static_long.table_clean",
+     "aero.elevator_fade.alpha_t_star",
+     "aero.elevator_fade.a_t",
+     "aero.elevator_fade.floor",
+     "aero.separation_dynamics.tau1",
+     "aero.separation_dynamics.tau2",
+     "aero.large_beta.CY_crossflow",
+     "aero.strip_wing.taper",
+     "aero.strip_wing.dihedral_eff",
+     "aero.strip_wing.washout",
+     "aero.strip_wing.kp_roll",
+     "aero.strip_wing.tau_aileron",
+     "aero.strip_wing.aileron_span_frac",
+     "aero.stall_warning.min_margin",
+     "aero.stall_warning.alpha_warn_5kt",
+     "aero.stall_warning.alpha_warn_design",
+     "aero.buffet.vertical_filter",
+     "aero.buffet.lateral_filter",
+     "aero.buffet.rms_full"
+    ]
+   },
+   "interference.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 9 (ground effect และ downwash) และข้อ 11 (slipstream ของ ATR)",
+    "paths": [
+     "interference.downwash.eps0",
+     "interference.groundEffect.rMac",
+     "interference.groundEffect.rEps",
+     "interference.groundEffect.tablesCheck"
+    ]
+   },
+   "turbofan.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 10 (ENGINE_DB และ TurbofanEngine) และข้อ 13 (reverser), ระยะ K ของแผน",
+    "paths": [
+     "turbofan.reverser.revSpool_target_s"
+    ]
+   },
+   "controls.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 17 ถึง 19, 24 และ 27 (architecture ต่อแกน, actuator, stabilizer, feel ของ 737, ระบบกลไกของ ATR)",
+    "paths": [
+     "controls.pitch.architecture",
+     "controls.pitch.S_e",
+     "controls.pitch.c_e",
+     "controls.pitch.gearing",
+     "controls.pitch.eta_t",
+     "controls.pitch.a_t",
+     "controls.pitch.tau_e",
+     "controls.pitch.l_t",
+     "controls.pitch.deda",
+     "controls.pitch.trim_rate_flaps_down",
+     "controls.pitch.trim_rate_flaps_up",
+     "controls.pitch.breakout",
+     "controls.pitch.friction",
+     "controls.pitch.centring_spring",
+     "controls.pitch.stops",
+     "controls.pitch.rate_limit",
+     "controls.pitch.derived_check",
+     "controls.roll.architecture",
+     "controls.roll.S_a_each",
+     "controls.roll.c_a",
+     "controls.roll.gearing",
+     "controls.roll.trim_rate",
+     "controls.roll.breakout",
+     "controls.roll.stops",
+     "controls.roll.rate_limit",
+     "controls.yaw.architecture",
+     "controls.yaw.S_r",
+     "controls.yaw.c_r",
+     "controls.yaw.gearing",
+     "controls.yaw.trim_rate",
+     "controls.yaw.breakout",
+     "controls.yaw.stops",
+     "controls.yaw.rate_limit"
+    ]
+   },
+   "gear.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 40 (ล้อของเครื่องบินโดยสาร)",
+    "paths": [
+     "gear.strut_main.stroke",
+     "gear.strut_main.p_static",
+     "gear.strut_main.piston_area",
+     "gear.strut_main.ratio_static_to_extended",
+     "gear.strut_main.ratio_compressed_to_extended",
+     "gear.strut_main.polytropic_n_dynamic",
+     "gear.strut_main.polytropic_n_static",
+     "gear.strut_main.Kh_compression",
+     "gear.strut_main.Kr_rebound",
+     "gear.strut_main.seal_friction_ratio",
+     "gear.strut_nose.stroke",
+     "gear.strut_nose.p_static",
+     "gear.strut_nose.piston_area",
+     "gear.strut_nose.ratio_static_to_extended",
+     "gear.strut_nose.ratio_compressed_to_extended",
+     "gear.strut_nose.Kh_compression",
+     "gear.strut_nose.Kr_rebound",
+     "gear.tyre_main.k_vertical",
+     "gear.tyre_main.c_vertical",
+     "gear.tyre_main.cornering_stiffness_coef",
+     "gear.tyre_main.relaxation_length",
+     "gear.tyre_main.k_longitudinal",
+     "gear.tyre_main.mu_peak_dry",
+     "gear.tyre_main.mu_skid_ratio_dry",
+     "gear.tyre_main.mu_skid_ratio_wet",
+     "gear.tyre_main.rolling_radius",
+     "gear.tyre_main.wheel_inertia",
+     "gear.tyre_nose.rated_load",
+     "gear.tyre_nose.rated_pressure",
+     "gear.tyre_nose.operating_pressure",
+     "gear.tyre_nose.k_vertical",
+     "gear.tyre_nose.c_vertical",
+     "gear.tyre_nose.cornering_stiffness_coef",
+     "gear.tyre_nose.relaxation_length",
+     "gear.brakes.force_limit_ratio",
+     "gear.brakes.pressure_rise_rate",
+     "gear.brakes.antiskid",
+     "gear.brakes.antiskid_efficiency",
+     "gear.brakes.antiskid_efficiency_measured",
+     "gear.brakes.antiskid_slip_setpoint",
+     "gear.brakes.heat_sink_mass",
+     "gear.brakes.heat_sink_cool_tau",
+     "gear.brakes.fade_start_temp",
+     "gear.brakes.fade_full_temp",
+     "gear.steering.caster_max",
+     "gear.steering.steer_rate",
+     "gear.steering.shimmy_lag",
+     "gear.certification.part25_limit_descent",
+     "gear.certification.part25_friction_cap"
+    ]
+   },
+   "wind.*": {
+    "item": "งานลมของรอบที่ 1 (01-flight-physics/08-wind.md: discrete gust, wake)",
+    "paths": [
+     "wind.discreteGust.cfr25_341_Fg",
+     "wind.wake.rc_over_b"
+    ]
+   },
+   "numerics.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 40 (แบบจำลองแรงเสียดทานของล้อ)",
+    "paths": [
+     "numerics.contact.frictionModel",
+     "numerics.contact.bristleZ0",
+     "numerics.contact.bristleTau",
+     "numerics.contact.tanhV0Longitudinal",
+     "numerics.contact.tanhV0Lateral",
+     "numerics.contact.yasimStopSpeedReference",
+     "numerics.contact.currentFrictionTimeConstants",
+     "numerics.contact.currentGearModes"
+    ]
+   },
+   "validation.*": {
+    "item": "plan N4 (ตรวจโหมดพลวัตและสมรรถนะรายแบบ ซึ่งใช้ class และ category ของ MIL-F-8785C) และงานวิจัยรอบที่ 3 ข้อ 42 และ 43",
+    "paths": [
+     "validation.classification.hqClassCategory"
+    ]
+   },
+   "input.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 26 และรอบที่ 1 ข้อ 1 (คีย์แฟลปและ trim)",
+    "paths": [
+     "input.keyboard.interim_trim_rate_elevator",
+     "input.keyboard.flap_notches"
+    ]
+   }
+  },
+  "u": "-",
+  "scope": "sim",
+  "src": [
+   "AL:C4"
+  ],
+  "conf": "กลาง",
+  "est": false,
+  "note": "path ของรอบที่ 1 ที่ใช้กับแบบนี้ได้แต่บัตรวิจัยยังไม่มีค่าและโหมด legacy ไม่อ่าน (126 path) จัดกลุ่มตามงานที่จะเติม; ช่องว่างทุกตัวที่ r3_merge.mjs --coverage แสดงอยู่ใน _na หรือ _deferred [AL:C4]"
+ },
+ "_meta": {
+  "id": "a330_300",
+  "source": "AirfieldLab plan C4: the round 3 research card a330_300 in docs/research/03-airliners/params-a330-300.json (topic file 04-a330-300.md, _inherits resolved by the research's r3_merge.mjs), with the engine classes of 06-jet-engines.md and the control travels of 07-flight-controls.md; only what the simulator's legacy mode reads and the type's identity, weights, CG reference and classification, generated by tools/aircraft/build_airliners.mjs; each leaf names its sources in src, listed in _meta.sources",
+  "license": "MIT (LICENSE): the repository's own compilation, fits and estimates; manufacturer, authority, investigation-board and airline figures used as cited numbers only (no text, table, figure or document copied; © their owners, see _meta.sources); a few numbers come from open simulator models (FlyByWire A32NX, FlightGear, JSBSim) and OpenAP, cited as numbers with their source, no code or file copied (research round 3 licence rule)",
+  "note": "บัตรพารามิเตอร์รุ่นทดลองของ A330-300 สำหรับซิม สร้างด้วย tools/aircraft/build_airliners.mjs จากบัตรวิจัยรอบที่ 3 ห้ามแก้ไฟล์นี้ด้วยมือ (แก้ไฟล์หัวข้อของงานวิจัยหรือสคริปต์แล้วสร้างใหม่) ตัวเลขการบินเกือบทั้งหมดเป็นค่าประมาณ (est true, ค่าประมาณ ใน note) จากเอกสารสาธารณะ ซิมบินด้วยโหมด legacy บนสมการของเครื่องฝึก (aero.legacy, propulsion.legacy) จนกว่าระยะ K ของแผนจะให้เครื่องยนต์และตาราง ใช้เพื่อการฝึกในเกมนี้เท่านั้น ไม่ใช้เพื่อการบินจริง; สายการบินไม่เผยแพร่มวลและ rating จริง จึงเป็นค่าตั้งต้นที่ผู้ใช้เปลี่ยนได้ (OD-RATINGS); รูปแบบ leaf {v, u, scope, src, conf, est, note} ตาม docs/research/01-flight-physics/schema.md และ docs/research/03-airliners/schema-ext.md; ความเร็วเป็น kt CAS ตามมวล (ซิมไม่มีตาราง IAS–CAS ของแบบนี้ HUD จึงแสดง KCAS); _na คือ path ของรอบที่ 1 ที่ใช้กับแบบนี้ไม่ได้ และ _deferred คือ path ที่ใช้ได้แต่โหมด legacy ยังไม่อ่าน พร้อมงานที่จะเติม; รหัส AL:C4 ไม่ใช่รหัสของงานวิจัย",
+  "sources": {
+   "AL:C4": {
+    "what": "AirfieldLab plan C4, this generator's own derivations and the owner's decisions OD-LEMAC, OD-SOURCES and OD-RATINGS: the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research's tables and rules, control travels the research card lacks, the gear struts, the stall-warning angles, the A330 derivatives in body axes, the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists",
+    "link": "tools/aircraft/build_airliners.mjs"
+   },
+   "AL:C5": {
+    "what": "AirfieldLab plan C5 (research round 3 task item 3, R3-3) and the owner decision OD-WIND-ADDITIVE: speeds.approach_rule, this generator's transcription, in knots, of the wind rules of research topic 3.10 (the 737 additive and its two caps, the Airbus APPR COR, the ATR wind factor)",
+    "link": "tools/aircraft/build_airliners.mjs"
+   },
+   "AL:C7": {
+    "what": "AirfieldLab plan C7 (research round 3 task item 6, R3-6) and the owner decisions OD-A320-PITCH and OD-A330-VISUAL: the pilot's eye and the glide-slope antenna placed from the manufacturers' approach distances H1 and H2 of research topic 3.5 at a reference approach attitude (this generator's eyeAntenna)",
+    "link": "tools/aircraft/build_airliners.mjs"
+   },
+   "D10": {
+    "what": "Airbus, A330 Facts and Figures, มิ.ย. 2023 (reference [D10] of docs/research/03-airliners/05-airport-geometry.md)",
+    "link": "https://www.airbus.com/sites/g/files/jlcbta136/files/2023-06/Airbus-A330-Facts-and-Figures-June%202023.pdf"
+   },
+   "D32": {
+    "what": "L. Jenkinson, P. Simpkin, D. Rhodes, Civil Jet Aircraft Design, Data A Table 1 (Airbus) และ Table 2 (Boeing), Butterworth-Heinemann/Elsevier 1999 (reference [D32] of docs/research/03-airliners/05-airport-geometry.md)",
+    "link": "https://booksite.elsevier.com/9780340741528/appendices/data%2Da/table-1/table.htm"
+   },
+   "D4": {
+    "what": "Airbus Airport Operations, Airbus Aircraft Data for Visual Aids Calibration, ref X06ME2319992, 1 ก.ย. 2023 (reference [D4] of docs/research/03-airliners/05-airport-geometry.md)",
+    "link": "https://aircraft.airbus.com/sites/g/files/jlcbta126/files/2023-10/Airbus%20Aircraft%20Data%20for%20Visual%20Aids%20Calibration%20-%20ref%20ADNS%20X06ME2319992.pdf"
+   },
+   "D5": {
+    "what": "Airbus, Airbus Aircraft Data for Visual Aids Calibration, ref XME2126619, 15 ธ.ค. 2021 (reference [D5] of docs/research/03-airliners/05-airport-geometry.md)",
+    "link": "https://www.airbus.com/sites/g/files/jlcbta136/files/2021-12/Airbus-Aircraft-Data-for-Visual-Aids-Calibration.pdf"
+   },
+   "H1": {
+    "what": "Airbus, A330 Aircraft Characteristics: Airport and Maintenance Planning, rev. Jul 01/23 (ส่วน 2-1-1 น้ำหนักทุก WV, เชื้อเพลิง) (reference [H1] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://aircraft.airbus.com/sites/g/files/jlcbta126/files/2023-08/ac_a330_jul2023_0.pdf"
+   },
+   "H10": {
+    "what": "Wikipedia, Thai AirAsia X (ข้อมูลฝูงบิน \"As of August 2025\") (reference [H10] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://en.wikipedia.org/wiki/Thai_AirAsia_X"
+   },
+   "H11": {
+    "what": "airhistory.net, ภาพถ่าย HS-XTC (A330-343E) (reference [H11] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://airhistory.net/photo/524664/HS-XTC"
+   },
+   "H12": {
+    "what": "TU Delft CNS/ATM, OpenAP aircraft/a333.yml และ dragpolar/a333.yml (reference [H12] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://raw.githubusercontent.com/TUDelft-CNS-ATM/openap/master/openap/data/aircraft/a333.yml"
+   },
+   "H16": {
+    "what": "J. Davidson (Octal450) และผู้ร่วมพัฒนา, FlightGear Airbus A330 (JSBSim FDM: metrics, mass-balance, aerodynamics, ground-reactions, fcs) mirror (reference [H16] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://raw.githubusercontent.com/JMaverick16/Airbus_A330/master/A330-300-RR.xml"
+   },
+   "H17": {
+    "what": "JSBSim Team, aircraft/B747/B747.xml (reference [H17] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://raw.githubusercontent.com/JSBSim-Team/jsbsim/master/aircraft/B747/B747.xml"
+   },
+   "H2": {
+    "what": "EASA, Type Certificate Data Sheet A.004 Airbus A330, Issue 56 (หน้า 27 ส่วน A330-200 datum และ MAC, หน้า 41 ส่วน A330-300 เครื่องยนต์และขนาด) (reference [H2] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://www.easa.europa.eu/sites/default/files/dfu/A330%20EASA%20TCDS%20A.004%20-%20Issue%2056.pdf"
+   },
+   "H20": {
+    "what": "Brainscape, การ์ดทบทวน A330 LIMITATIONS (ผู้ใช้ไม่ระบุชื่อ อ้าง FCOM ของสายการบินหนึ่ง) (reference [H20] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://brainscape.com/flashcards/a330-limitations-1247278/packs/2771041"
+   },
+   "H21": {
+    "what": "EUROCONTROL, RECAT-EU European Wake Turbulence Categorisation and Separation Minima on Approach and Departure, Edition 1.1, 15 ก.ค. 2015 (วันที่บนเอกสาร; ชื่อไฟล์สำเนาที่ code7700 เขียน september-2015; Table 2 หน้า 18, Table 3 หน้า 19) (reference [H21] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://code7700.com/pdfs/wake_turbulence_recat-eu-september-2015.pdf"
+   },
+   "H24": {
+    "what": "14 CFR 25.149 Minimum control speed (reference [H24] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://www.law.cornell.edu/cfr/text/14/25.149"
+   },
+   "H27": {
+    "what": "CAPA Centre for Aviation, Thai AirAsia X reports 10 A330s in fleet as of 31-Dec-2024 (reference [H27] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://centreforaviation.com/news/thai-airasia-x-reports-10-a330s-in-fleet-as-of-31-dec-2024-1304549"
+   },
+   "H28": {
+    "what": "Aeroroutes, Thai AirAsia X NW25 363-seater A330 Operations, 9 ต.ค. 2025 (reference [H28] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://www.aeroroutes.com/eng/251009-xjnw25333"
+   },
+   "H29": {
+    "what": "AviTrader, First 242-tonne A330-300 is delivered to Delta Air Lines, 28 พ.ค. 2015 (reference [H29] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://avitrader.com/2015/05/28/first-242-tonne-a330-300-is-delivered-to-delta-air-lines/"
+   },
+   "H3": {
+    "what": "Airbus, A330 Facts & Figures, มิ.ย. 2023 (reference [H3] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://www.airbus.com/sites/g/files/jlcbta136/files/2023-06/Airbus-A330-Facts-and-Figures-June%202023.pdf"
+   },
+   "H32": {
+    "what": "FAA, Order JO 7360.1J Aircraft Type Designators, 29 เม.ย. 2024 (Appendix A: ข้อความที่ผู้ตรวจสกัดได้ระบุหน้า A-3 ส่วนฉบับเดิมเขียน A-13 ให้ตรวจเลขหน้าอีกครั้ง; ข้อ 2-8.b) (reference [H32] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://www.faa.gov/documentLibrary/media/Order/2024-04-29_FAA_Order_JO_7360.1J_Aircraft_Type_Designators--post.pdf"
+   },
+   "H33": {
+    "what": "Wikipedia, Wake turbulence category (อ้าง ICAO Doc 4444 PANS-ATM) (reference [H33] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://en.wikipedia.org/wiki/Heavy_(aviation"
+   },
+   "H4": {
+    "what": "Airbus, Aerodrome Reference Code, Airplane Design Group and Aircraft Approach Category (ME1911189) Issue 4.0, 6 ก.ค. 2020 (reference [H4] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://aircraft.airbus.com/sites/g/files/jlcbta126/files/2023-02/NEW-AI~1.PDF"
+   },
+   "H5": {
+    "what": "L. R. Jenkinson, P. Simpkin, D. Rhodes, Civil Jet Aircraft Design, Arnold/Butterworth-Heinemann 1999, ภาคผนวกออนไลน์ Data A Table 1 (A330-300) (reference [H5] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://booksite.elsevier.com/9780340741528/appendices/data%2Da/table-1/table.htm"
+   },
+   "H6": {
+    "what": "Transportation Safety Board of Canada, Aviation Investigation Report A02F0069: Tail strike, Airbus A330-343 C-GHLM, Frankfurt, 14 June 2002 (reference [H6] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://bst.gc.ca/sites/default/files/rapports-reports/aviation/A02F0069/eng/A02F0069.pdf"
+   },
+   "H8": {
+    "what": "ATSB, AO-2008-070 In-flight upset, Airbus A330-303 VH-QPA, near Learmonth, 7 October 2008, final ธ.ค. 2011 (reference [H8] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://www.atsb.gov.au/sites/default/files/media/3532398/ao2008070.pdf"
+   },
+   "H9": {
+    "what": "ATSB, AO-2017-066 Engine malfunction, Airbus A330-343X 9M-XXE, final (reference [H9] of docs/research/03-airliners/04-a330-300.md)",
+    "link": "https://www.atsb.gov.au/sites/default/files/media/5778262/ao-2017-066_final.pdf"
+   },
+   "J10": {
+    "what": "J. Sun, OpenAP thrust.py และ fuel.py (reference [J10] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://raw.githubusercontent.com/TUDelft-CNS-ATM/openap/master/openap/thrust.py"
+   },
+   "J11": {
+    "what": "M. Bartel, T. M. Young, \"Simplified Thrust and Fuel Consumption Models for Modern Two-Shaft Turbofan Engines\", J. Aircraft 45(4), 2008, doi:10.2514/1.35589 (reference [J11] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://pure.ul.ie/en/publications/simplified-thrust-and-fuel-consumption-models-for-modern-two-shaf/"
+   },
+   "J25": {
+    "what": "FlightGear Airbus_A330 (FDM โดย J. Davidson) A330-300-RR.xml, Engines/trent772b-60_1.xml, Systems/a333-metrics.xml (reference [J25] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://raw.githubusercontent.com/JMaverick16/Airbus_A330/master/A330-300-RR.xml"
+   },
+   "J31": {
+    "what": "Wikipedia, \"Rolls-Royce Trent 700\" (อ้าง RR Trent 700 poster), เปิดเมื่อ 18 พ.ย. 2026 (reference [J31] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://en.wikipedia.org/wiki/Rolls-Royce_Trent_700"
+   },
+   "J32": {
+    "what": "ATSB, AO-2017-066 (AirAsia X A330-343X 9M-XXE) final report (reference [J32] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://www.atsb.gov.au/sites/default/files/media/5778262/ao-2017-066_final.pdf"
+   },
+   "J34": {
+    "what": "airhistory.net, ภาพ HS-XTC A330-343E (reference [J34] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://airhistory.net/photo/524664/HS-XTC"
+   },
+   "J6": {
+    "what": "EASA, TCDS E.042 RB211 Trent 700, Issue 07, 13 ต.ค. 2022 (reference [J6] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://www.easa.europa.eu/hr/downloads/7723/en"
+   },
+   "J7": {
+    "what": "EASA, TCDS A.004 Airbus A330, Issue 56, 6 เม.ย. 2020 (reference [J7] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://www.easa.europa.eu/sites/default/files/dfu/A330%20EASA%20TCDS%20A.004%20-%20Issue%2056.pdf"
+   },
+   "J9": {
+    "what": "J. Sun (TU Delft), OpenAP openap/data/engine/engines.csv และ openap/data/aircraft/.yml, สาขา master ดึงเมื่อ 18 พ.ย. 2026 (reference [J9] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://raw.githubusercontent.com/TUDelft-CNS-ATM/openap/master/openap/data/engine/engines.csv"
+   },
+   "K21": {
+    "what": "TSB Canada, Aviation Investigation Report A02F0069, Airbus A330-343 C-GHLM, Frankfurt, 14 มิ.ย. 2002 (reference [K21] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://bst.gc.ca/sites/default/files/rapports-reports/aviation/A02F0069/eng/A02F0069.pdf"
+   },
+   "K35": {
+    "what": "code7700 (E. Haskel), Approach speed additives (ยก 737NG FCTM Rev 12 30 มิ.ย. 2013 p.1.11 และ A330/340 FCTM §6.30.2) (reference [K35] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://code7700.com/approach_speed_additives.htm"
+   },
+   "K6": {
+    "what": "R. Geuter, S. Gupta, T. Lepagnot, M. Le-Louer (Airbus), A Focus on the Landing Flare, Safety First ออนไลน์ (ราว 2021) (reference [K6] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://safetyfirst.airbus.com/a-focus-on-the-landing-flare/amp"
+   },
+   "K7": {
+    "what": "Airbus, Safety First #24: Control your speed... during descent, approach and landing, ก.ค. 2017 (reference [K7] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://skybrary.aero/sites/default/files/bookshelf/4071.pdf"
+   },
+   "K73": {
+    "what": "SKYbrary (สำเนาบน dru10.imibo.com), A333, Zurich Switzerland, 2020 (สรุปรายงาน STSB อนุมัติ 18 ต.ค. 2021) (reference [K73] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://dru10.imibo.com/accidents-and-incidents/a333-zurich-switzerland-2020"
+   },
+   "L13": {
+    "what": "FlyByWire Simulations, flight_model.cfg (A32NX, branch master, อ่าน 18 พ.ย. 2026) (reference [L13] of docs/research/03-airliners/03-a320-a321.md)",
+    "link": "https://raw.githubusercontent.com/flybywiresim/aircraft/master/fbw-a32nx/src/base/flybywire-aircraft-a320-neo/SimObjects/AirPlanes/FlyByWire_A320_NEO/flight_model.cfg"
+   },
+   "L23": {
+    "what": "JSBSim Team, aircraft/A320/A320.xml (reference [L23] of docs/research/03-airliners/03-a320-a321.md)",
+    "link": "https://raw.githubusercontent.com/JSBSim-Team/jsbsim/master/aircraft/A320/A320.xml"
+   },
+   "L45": {
+    "what": "D. Decloedt, Investigation into the Effect of Relaxed Static Stability on a Business Jet's Preliminary Design, MSc TU Delft (2016) (สูตรรัศมีไจเรชันของ Roskam) (reference [L45] of docs/research/03-airliners/03-a320-a321.md)",
+    "link": "https://repository.tudelft.nl/file/File_e272252c-8d2a-456f-8913-e5c88a497f59"
+   },
+   "L9": {
+    "what": "Airbus, Safety First #24 (Jul 2017) (สำเนาใน SKYbrary bookshelf) (reference [L9] of docs/research/03-airliners/03-a320-a321.md)",
+    "link": "https://skybrary.aero/sites/default/files/bookshelf/4071.pdf"
+   },
+   "Y25": {
+    "what": "ATSB, AO-2008-070 Final: In-flight upset, Airbus A330-303, VH-QPA, 154 km west of Learmonth, WA, 7 October 2008, ธันวาคม 2011 (reference [Y25] of docs/research/03-airliners/07-flight-controls.md)",
+    "link": "https://www.atsb.gov.au/sites/default/files/media/3532398/ao2008070.pdf"
+   },
+   "Y28": {
+    "what": "FlyByWire Simulations, A32NX (GPL-3.0) branch master อ่าน 18 พฤศจิกายน 2026: FacComputer_data.cpp, FacComputer.cpp, SecComputer_data.cpp, SecComputer.cpp, ElacComputer_data.cpp, ElacComputer.cpp ใต้ (reference [Y28] of docs/research/03-airliners/07-flight-controls.md)",
+    "link": "https://raw.githubusercontent.com/flybywiresim/aircraft/master/fbw-a32nx/src/wasm/fbw_a320/src/model/"
+   }
+  }
+ }
+}

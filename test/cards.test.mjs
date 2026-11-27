@@ -25,7 +25,7 @@ const card = (id) => JSON.parse(fs.readFileSync(path.join(DIR, `${id}.json`), 'u
 const trainer = () => JSON.parse(fs.readFileSync(AIRCRAFT_CARD, 'utf8'));
 after(() => setAircraft(trainer()));
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
-const TY = new Function('"use strict";\n' + read('src/22-types.js') + '\nreturn { AIRCRAFT_TYPES, typeInfo, modelSpec, MODEL_WHEEL_Z, SCENARIO_NOTE };')();
+const TY = new Function('"use strict";\n' + read('src/22-types.js') + '\nreturn { AIRCRAFT_TYPES, AIRLINER_TYPES, typeInfo, modelSpec, MODEL_WHEEL_Z, SCENARIO_NOTE };')();
 const APP = read('src/90-app.js'), HUD = read('src/80-hud.js'), TPL = read('src/template.html');
 const infoOf = (id) => { const c = card(id); return TY.typeInfo(id, c, acFromCard(c)); };
 
@@ -35,13 +35,15 @@ test('tools/aircraft/build_cards.mjs --check: every card is what the generator w
   assert.equal(r.status, 0, `--check exit ${r.status}\n${r.stdout}\n${r.stderr}`);
 });
 
-test('data/aircraft holds the trainer and the six types; the selector (AIRCRAFT_TYPES) lists them in the order of owner decision OD-TYPES', () => {
+test('data/aircraft holds the trainer, the six types and the seven experimental airliners of plan C4; the selector (AIRCRAFT_TYPES) lists the light types in the order of owner decision OD-TYPES', () => {
   // OD-TYPES (plan C1): the selector lists the trainer, then these six
   assert.deepEqual(TYPE_IDS, ['c172s', 'c172r', 'da42ng', 'da42_tae125', 'da40d', 'da40_180']);
   assert.ok(!TYPE_IDS.includes('trainer'), 'the generator never writes the trainer card');
   assert.deepEqual(TY.AIRCRAFT_TYPES, ['trainer', ...TYPE_IDS]);
   const files = fs.readdirSync(DIR).filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -5)).sort();
-  assert.deepEqual(files, [...TY.AIRCRAFT_TYPES].sort());
+  // plan C4: the airliners (test/r3cards.test.mjs) are listed apart, behind the switch รุ่นทดลอง
+  assert.deepEqual(files, [...TY.AIRCRAFT_TYPES, ...TY.AIRLINER_TYPES].sort());
+  assert.ok(TY.AIRLINER_TYPES.every((id) => !TY.AIRCRAFT_TYPES.includes(id)));
 });
 
 // ───────────────────────── reader: speeds ─────────────────────────
@@ -296,15 +298,16 @@ test('T-LM-13: radii of gyration round trip and leave-one-out; the generator\'s 
 });
 
 // ───────────────────────── the selector's Thai text (src/22-types.js, design §3.2) ─────────────────────────
-test('typeInfo: the name, speeds (kt CAS, whole knots) and Thai civil-school line of each type card', () => {
+// plan C3: Vref and Vapp are the KIAS of the HUD (the card's figure, or its kt CAS read back through speeds.ias_cas)
+test('typeInfo: the name, speeds (KIAS, whole knots) and Thai civil-school line of each type card', () => {
   const want = {
-    trainer: ['เครื่องฝึกสมมติ', `Vref ${Math.round(acFromCard(trainer()).Vref)} · Vapp ${Math.round(acFromCard(trainer()).Vapp)} kt`, 'แบบสมมติ ค่าทุกตัวเป็นค่าประมาณ'],
-    c172s: ['Cessna 172S Skyhawk SP', 'Vref 64 · Vapp 68 kt', 'โรงเรียนการบินพลเรือนในไทย 34 ลำ 6 แห่ง · ใช้มากที่สุด'],
-    c172r: ['Cessna 172R Skyhawk', 'Vref 63 · Vapp 66 kt', 'โรงเรียนการบินพลเรือนในไทย 10 ลำ 4 แห่ง'],
-    da42ng: ['Diamond DA42 NG', 'Vref 82 · Vapp 82 kt', 'โรงเรียนการบินพลเรือนในไทย 5 ลำ 4 แห่ง'],
-    da42_tae125: ['Diamond DA42 (TAE 125)', 'Vref 76 · Vapp 82 kt', 'โรงเรียนการบินพลเรือนในไทย 5 ลำ 2 แห่ง'],
-    da40d: ['Diamond DA40 D', 'Vref 67 · Vapp 67 kt', 'โรงเรียนการบินพลเรือนในไทย 9 ลำ 2 แห่ง'],
-    da40_180: ['Diamond DA40 (IO-360)', 'Vref 66 · Vapp 66 kt', 'โรงเรียนการบินพลเรือนในไทย 7 ลำ 1 แห่ง'],
+    trainer: ['เครื่องฝึกสมมติ', `Vref ${Math.round(acFromCard(trainer()).Vref)} · Vapp ${Math.round(acFromCard(trainer()).Vapp)} KIAS`, 'แบบสมมติ ค่าทุกตัวเป็นค่าประมาณ'],
+    c172s: ['Cessna 172S Skyhawk SP', 'Vref 61 · Vapp 65 KIAS', 'โรงเรียนการบินพลเรือนในไทย 34 ลำ 6 แห่ง · ใช้มากที่สุด'],
+    c172r: ['Cessna 172R Skyhawk', 'Vref 62 · Vapp 65 KIAS', 'โรงเรียนการบินพลเรือนในไทย 10 ลำ 4 แห่ง'],
+    da42ng: ['Diamond DA42 NG', 'Vref 84 · Vapp 84 KIAS', 'โรงเรียนการบินพลเรือนในไทย 5 ลำ 4 แห่ง'],
+    da42_tae125: ['Diamond DA42 (TAE 125)', 'Vref 76 · Vapp 82 KIAS', 'โรงเรียนการบินพลเรือนในไทย 5 ลำ 2 แห่ง'],
+    da40d: ['Diamond DA40 D', 'Vref 66 · Vapp 66 KIAS', 'โรงเรียนการบินพลเรือนในไทย 9 ลำ 2 แห่ง'],
+    da40_180: ['Diamond DA40 (IO-360)', 'Vref 65 · Vapp 65 KIAS', 'โรงเรียนการบินพลเรือนในไทย 7 ลำ 1 แห่ง'],
   };
   assert.deepEqual(Object.keys(want), TY.AIRCRAFT_TYPES);
   for (const id of TY.AIRCRAFT_TYPES) {
@@ -313,7 +316,8 @@ test('typeInfo: the name, speeds (kt CAS, whole knots) and Thai civil-school lin
     assert.equal(i.real, id !== 'trainer', id);
   }
   // a card that failed to load: the name only (the page shows the error in its place)
-  assert.deepEqual(TY.typeInfo('da42ng', null, null), { name: 'Diamond DA42 NG', em: '', span: '', lede: '', notes: [], links: [], real: true });
+  // (exp: plan C4's experimental airliners set it; a light type is not one)
+  assert.deepEqual(TY.typeInfo('da42ng', null, null), { name: 'Diamond DA42 NG', em: '', span: '', lede: '', notes: [], links: [], real: true, exp: false });
 });
 
 test('typeInfo: the setup lede and the notes of each type, from the card\'s thai_fleet', () => {
@@ -327,7 +331,7 @@ test('typeInfo: the setup lede and the notes of each type, from the card\'s thai
   assert.deepEqual(s.notes, [
     'ใช้ฝึกที่ Bangkok Aviation Center (BAC) 21 ลำ ฐานฝึกนครราชสีมา (ค่าประมาณ), Bangkok Air Aviation Training Center (BATC) 7 ลำ ฐานฝึกสุโขทัย (ค่าประมาณ), Asia Aviation and Technology (AAT) 2 ลำ ฐานฝึกชุมพร (ค่าประมาณ), Thai Inter Flying (TIF) 2 ลำ ฐานฝึกพิษณุโลก, Thai Aviation Co. (Thai Aviation Academy) 1 ลำ ฐานฝึกร้อยเอ็ด, D-0507 Flight Training 1 ลำ และชมรมการบิน Phoenix Aero Club 1 ลำ',
     'จำนวนจากทะเบียนอากาศยานของ กพท. ณ 9 ก.ค. 2026 นับเครื่องที่จดทะเบียน ไม่ใช่เครื่องที่บินได้วันนี้',
-    'ความเร็วในซิมเป็น kt CAS แปลงจากค่าในบัตร Vref 61 KIAS และ Vapp 65 KIAS',
+    'HUD แสดง KIAS ตามตาราง IAS–CAS ของบัตรที่แฟลปขณะนั้น ซิมบินด้วย KCAS (ลงจอดแฟลปเต็ม Vref 61 KIAS = 64 KCAS, Vapp 65 KIAS = 68 KCAS) และคะแนนวัดเป็น KIAS',
     'ตัวเลขการบินในซิมเป็นค่าประมาณจากเอกสารสาธารณะของผู้ผลิตและหน่วยงาน ดูที่มาทุกค่าใน aircraft/c172s.json',
     'สถานการณ์สมมติ: โรงเรียนการบินในไทยฝึกที่สนามภูมิภาค ไม่ได้ฝึกวงจรที่ดอนเมืองเป็นประจำ',
     'ภาพเครื่องบินในฉากเป็นแบบทั่วไป ไม่ใช่รูปทรงจริงของแบบนี้',
@@ -345,7 +349,8 @@ test('typeInfo: the setup lede and the notes of each type, from the card\'s thai
     assert.equal(i.notes[1], 'จำนวนจากทะเบียนอากาศยานของ กพท. ณ 9 ก.ค. 2026 นับเครื่องที่จดทะเบียน ไม่ใช่เครื่องที่บินได้วันนี้', id);
     const own = id.startsWith('da42') ? ['ซิมยังไม่จำลองเครื่องยนต์ดับข้างเดียว'] : id.startsWith('da40') ? ['โรงเรียนการบินพลเรือนไทยไม่มี DA40 NG'] : [];
     assert.deepEqual(i.notes.slice(2, 2 + own.length), own, id);
-    assert.equal(i.notes[2 + own.length], `ความเร็วในซิมเป็น kt CAS แปลงจากค่าในบัตร Vref ${c.speeds.VREF_kt.v} KIAS และ Vapp ${c.speeds.VAPP_kt.v} KIAS`, id);
+    const ac = acFromCard(c), K = ac.kias;
+    assert.equal(i.notes[2 + own.length], `HUD แสดง KIAS ตามตาราง IAS–CAS ของบัตรที่แฟลปขณะนั้น ซิมบินด้วย KCAS (ลงจอดแฟลปเต็ม Vref ${Math.round(K.Vref)} KIAS = ${Math.round(ac.Vref)} KCAS, Vapp ${Math.round(K.Vapp)} KIAS = ${Math.round(ac.Vapp)} KCAS) และคะแนนวัดเป็น KIAS`, id);
     assert.equal(i.notes.length, 7 + own.length - 1, id);
     assert.deepEqual(i.links.map((l) => l.href).slice(1), [`aircraft/${id}.json`], id);
   }
@@ -365,7 +370,8 @@ test('T-LS-11: c172s is the first real type; the DA40 entries are the DA40 D and
   assert.ok(!TY.typeInfo('trainer', trainer(), acFromCard(trainer())).notes.includes(TY.SCENARIO_NOTE));
   assert.match(APP, /function writeTypeNote\(info\) \{\s*const el = \$\('#typeNote'\);[^\n]*\n\s*info\.notes\.forEach/);
   assert.match(APP, /function refreshSetup\(\) \{\s*const info = typeInfoOf\(app\.train\.type\);[\s\S]{0,200}writeTypeNote\(info\);/);
-  assert.match(APP, /\$\('#liveEyebrow'\)\.textContent = [^\n]* · \$\{info\.name\}\$\{info\.real \? ' · สถานการณ์สมมติ' : ''\}`;/);
+  // (plan C4: an experimental airliner is labelled รุ่นทดลอง instead; airliners do land at Don Mueang)
+  assert.match(APP, /\$\('#liveEyebrow'\)\.textContent = [^\n]* · \$\{info\.name\}\$\{info\.exp \? ' · รุ่นทดลอง' : info\.real \? ' · สถานการณ์สมมติ' : ''\}`;/);
 });
 
 // ───────────────────────── owner rule: no military user (design §3.2) ─────────────────────────
@@ -449,12 +455,16 @@ test('page wiring: cards load with the scene data, AC is switched only by useTyp
   assert.ok(at('setAircraft(data.aircraft)') < at('await cardsP') && at('await cardsP') < at('new Flight('), 'the cards are awaited after the trainer is set and before any Flight');
   // one switch: the trainer at load and useType after it; useType fits the model too
   assert.equal(APP.match(/setAircraft\(/g).length, 2);
-  // (merge of main's PAPI siting, PR #22: setAircraft re-solves the siting for the new eye and antenna, so useType then
-  // places the PAPI housings, lights and hotspot pin again, the same three steps as a siting button)
-  assert.match(APP, /function useType\(id\) \{\s*const T = TYPES\[id\]; setAircraft\(T\.card\); ac3\.fit\(modelSpec\(id, T\.card, AC\)\); flownType = id;\s*field\.placePapi\(\); lights\.placePapi\(\);\s*const sp = SPOTS\.find\(\(x\) => x\.id === 'papi'\), P = sp\.p\(\); sp\.w = W3\(P\[0\], P\[1\], P\[2\]\);\s*if \(app\.spot === 'papi'\) \$\('#cardP'\)\.textContent = spotText\(sp\);\s*\}/);
+  // (plan C4: with the options of typeOpts, {} for every type but an airliner, whose mass and rating the viewer chose;
+  // merge of main's PAPI siting, PR #22: setAircraft re-solves the siting for the new eye and antenna, so useType then
+  // places the PAPI housings, lights and hotspot pin again, the same three steps as a siting button; a mass or rating
+  // choice goes through useType too)
+  assert.match(APP, /function useType\(id\) \{\s*const T = TYPES\[id\]; setAircraft\(T\.card, typeOpts\(id\)\); ac3\.fit\(modelSpec\(id, T\.card, AC\)\); flownType = id;\s*field\.placePapi\(\); lights\.placePapi\(\);\s*const sp = SPOTS\.find\(\(x\) => x\.id === 'papi'\), P = sp\.p\(\); sp\.w = W3\(P\[0\], P\[1\], P\[2\]\);\s*if \(app\.spot === 'papi'\) \$\('#cardP'\)\.textContent = spotText\(sp\);\s*\}/);
+  assert.match(APP, /const typeOpts = \(id\) => \{\s*const o = \(isLiner\(id\) && app\.train\.opts\[id\]\) \|\| \{\};/);
   // the saved choice, kept only when its card is good
   assert.match(APP, /app\.train\.type = store\.get\('afl-type', 'trainer'\);\s*if \(!typeOk\(app\.train\.type\)\) app\.train\.type = 'trainer';/);
-  assert.match(APP, /const typeOk = \(id\) => Object\.hasOwn\(TYPES, id\) && !!TYPES\[id\]\.card;/);
+  // (plan C4: an airliner only while the switch รุ่นทดลอง is on)
+  assert.match(APP, /const typeOk = \(id\) => Object\.hasOwn\(TYPES, id\) && !!TYPES\[id\]\.card && \(!isLiner\(id\) \|\| app\.train\.exp\);/);
   // modes: explore always flies the trainer; training sets the chosen type before its preview Flight
   const sm = APP.slice(at('function setMode('), at("$('#tabExplore').onclick"));
   assert.match(sm, /if \(m === 'explore'\) \{ useType\('trainer'\);/);
@@ -468,11 +478,28 @@ test('page wiring: cards load with the scene data, AC is switched only by useTyp
   assert.match(APP, /function setTrainCam\(id\) \{\s*app\.trainCam = id; \$\('#viewName'\)\.textContent = trainCamName\(id\);/);
   assert.match(APP, /b\.disabled = !T\.card;/);
   assert.match(APP, /sp\.textContent = T\.card \? info\.span : T\.error;/);
-  // the brief, the FMA and the HUD round the card's speeds (kt CAS, not whole knots) for display
-  assert.match(APP, /\['แบบ', info\.name, 2\], \['มวล \(ค่าประมาณ\)', `\$\{fmt\(AC\.m\)\} kg`\], \['Vref', `\$\{fmt\(AC\.Vref\)\} kt`\], \['Vapp', `\$\{fmt\(AC\.Vapp\)\} kt`\]/);
-  assert.match(APP, /\['SPD ' \+ fmt\(AC\.Vapp\), 'c'\]/);
-  assert.match(APP, /'A\/THR SPD ' \+ fmt\(AC\.Vapp\)/);
-  assert.match(HUD, /ctx\.fillText\(`Vref \$\{fmt\(AC\.Vref\)\}`/);
+  // the brief, the FMA and the HUD show the card's speeds in KIAS (plan C3: speedsKias, the HUD's speed is Aircraft.kias), rounded for display
+  // (plan C4: an airliner has no IAS–CAS table, its speeds are KCAS and are labelled so. The C4 review moved the brief's
+  // unit into spdUnit, which the live gate row and the debrief's touchdown speed use too: those two said KIAS on an
+  // airliner. No speed on a training screen carries a unit of its own.)
+  assert.match(APP, /const spdUnit = \(id = app\.train\.type\) => \(isLiner\(id\) \? 'KCAS' : 'KIAS'\);/);
+  assert.match(APP, /\['แบบ', info\.name, 2\], \['มวล \(ค่าประมาณ\)', `\$\{fmt\(AC\.m\)\} kg`\], \[V\.label, `\$\{fmt\(V\.Vref\)\} \$\{spdUnit\(\)\}`\], \[V\.kind === 'airbus' \? 'VAPP' : 'Vapp', `\$\{fmt\(V\.Vapp\)\} \$\{spdUnit\(\)\}`\]/);
+  assert.match(APP, /\[`ความเร็ว \$\{f\.appr\.label\} −5\/\+20`, [^\n]*`\$\{fmt\(f\.ac\.kias\(\)\)\} \$\{spdUnit\(\)\}`\]\);/);
+  // the instrument strip's speed tile names the unit spdUnit gives (CAS kt on an airliner, IAS kt otherwise)
+  assert.match(APP, /iasTxt = spdUnit\(\) === 'KCAS' \? 'CAS kt' : 'IAS kt'; if \(iasLbl\.textContent !== iasTxt\) iasLbl\.textContent = iasTxt;/);
+  assert.match(APP, /\['ความเร็วตอนแตะพื้น', `\$\{fmt\(td\.ias\)\} \$\{spdUnit\(\)\}`, P\.spd\]/);
+  assert.doesNotMatch(APP, /\} K[IC]AS`/, 'a speed shown with a fixed unit');
+  // plan C5: the brief, the FMA, the speed colour, the gate row and the HUD read the flight's Approach (src/20-flight.js: the
+  // type's speeds at the mass flown and in the wind; a card with no approach rule gives speedsKias() unchanged, test/speeds.test.mjs)
+  assert.match(APP, /\['SPD ' \+ fmt\(V\.cmd\), 'c'\]/);
+  assert.match(APP, /'A\/THR SPD ' \+ fmt\(V\.cmd\)/);
+  assert.match(APP, /const V = new Approach\(\{ wind: sc, atOn: app\.train\.pilot === 'ap' \|\| app\.train\.autoThr \}\);\s*\$\('#brief'\)/);
+  assert.match(APP, /ias = fl\.ac\.kias\(\), V = fl\.appr/);
+  assert.match(APP, /Math\.abs\(f\.ac\.kias\(\) - f\.appr\.Vref - 7\.5\) <= 12\.5/);
+  assert.match(HUD, /const ias = fl\.ac\.kias\(\);/);
+  assert.match(HUD, /const ap = fl\.appr;\s*ctx\.textAlign = 'center'; ctx\.fillText\(`\$\{ap\.label\} \$\{fmt\(ap\.Vref\)\}`/);
+  assert.match(HUD, /ctx\.fillText\(`\$\{ap\.kind === 'airbus' \? 'VAPP' : 'Vapp'\} \$\{fmt\(ap\.cmd\)\}`/);
+  for (const [f, t] of [['src/90-app.js', APP], ['src/80-hud.js', HUD]]) assert.doesNotMatch(t, /a\.ias \/ KT|AC\.V(?:ref|app|s0)\b/, `${f} reads the CAS or the card's CAS speeds for display`);
   for (const [f, t] of [['src/90-app.js', APP], ['src/80-hud.js', HUD]]) assert.doesNotMatch(t, /\$\{AC\.V(?:ref|app|s0)\}|' \+ AC\.V(?:ref|app|s0)\b/, `${f} shows a speed without fmt`);
   // the result names the type; the cockpit view hides a fitted type's model; shots.mjs can pick a type
   assert.match(APP, /\$\('#scSub'\)\.textContent = `[^`]*\$\{typeInfoOf\(app\.train\.type\)\.name\}`;/);

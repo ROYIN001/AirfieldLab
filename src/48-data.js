@@ -6,7 +6,8 @@
 // aircraft/trainer.json  the aircraft card of the fictional trainer (plan B3): the app hands it to setAircraft
 //                (src/20-flight.js) before any Flight exists
 // aircraft/<id>.json  the cards of the other types of the training pane (plan C1, AIRCRAFT_TYPES of 22-types.js),
-//                loaded by loadCards beside loadData
+//                loaded by loadCards beside loadData; the experimental airliners (plan C4, AIRLINER_TYPES) only when
+//                the switch รุ่นทดลอง is on
 const LAND = {
   in: { e0: -3600, n1: 5000, res: 2.5, w: 3200, h: 4000 },
   out: { e0: -10000, n1: 12000, res: 8, w: 2500, h: 3000 },

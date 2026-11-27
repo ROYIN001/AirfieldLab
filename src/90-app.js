@@ -108,7 +108,24 @@ async function main() {
   // every type's card and what acFromCard made of it ({ error } for a card that failed); the saved choice (per viewer)
   // comes back when its card is good, else the trainer
   const TYPES = { trainer: { card: data.aircraft, ac: acFromCard(data.aircraft) }, ...(await cardsP) };
-  const typeOk = (id) => Object.hasOwn(TYPES, id) && !!TYPES[id].card;
+  // The experimental airliners (plan C4, AIRLINER_TYPES of 22-types.js): their cards are fetched only while the Thai
+  // switch รุ่นทดลอง is on (remembered per viewer), and each flies at the mass and engine rating the viewer chose
+  // (owner decision OD-RATINGS: the card's default until changed; not remembered between visits)
+  app.train.exp = store.get('afl-exp', '0') === '1';
+  app.train.opts = {};
+  let linersP = null;
+  const loadLiners = () => (linersP ??= loadCards(AIRLINER_TYPES, acFromCard).then((r) => { Object.assign(TYPES, r); return r; }));
+  if (app.train.exp) await loadLiners();
+  const isLiner = (id) => AIRLINER_TYPES.includes(id);
+  // the unit of a speed the training screens show (plan C4): an airliner card has no speeds.ias_cas, so its kias() is KCAS
+  const spdUnit = (id = app.train.type) => (isLiner(id) ? 'KCAS' : 'KIAS');
+  const typeOk = (id) => Object.hasOwn(TYPES, id) && !!TYPES[id].card && (!isLiner(id) || app.train.exp);
+  // acFromCard's options for a type: {} for the trainer and the light aircraft (as before plan C4), the chosen mass and
+  // rating for an airliner
+  const typeOpts = (id) => {
+    const o = (isLiner(id) && app.train.opts[id]) || {};
+    return { ...(o.mass !== undefined ? { mass: o.mass } : {}), ...(o.rating !== undefined ? { rating: o.rating } : {}) };
+  };
   app.train.type = store.get('afl-type', 'trainer');
   if (!typeOk(app.train.type)) app.train.type = 'trainer';
   setMsg('กำลังสร้างสนามบินและเมืองรอบสนาม…');
@@ -122,10 +139,12 @@ async function main() {
   // generic model fitted to it (22-types.js modelSpec). A Flight advances only under the type it was built with:
   // setMode puts the trainer back for explore and the chosen type for training, and builds a new Flight for it.
   // setAircraft also re-solves the PAPI siting in use for the new eye and antenna (setPapiSiting; only `ils` moves), so
-  // the housings, the light sprites and the hotspot pin are placed again, as a siting button does.
+  // the housings, the light sprites and the hotspot pin are placed again, as a siting button does. An airliner's mass
+  // and rating (chooseOpt) come here too; they do not move its eye or antenna (acFromCard reads both from the card's
+  // geometry alone), so the PAPI stays where it was.
   let flownType = 'trainer';   // the type AC holds, named by the PAPI hint of the setup
   function useType(id) {
-    const T = TYPES[id]; setAircraft(T.card); ac3.fit(modelSpec(id, T.card, AC)); flownType = id;
+    const T = TYPES[id]; setAircraft(T.card, typeOpts(id)); ac3.fit(modelSpec(id, T.card, AC)); flownType = id;
     field.placePapi(); lights.placePapi();
     const sp = SPOTS.find((x) => x.id === 'papi'), P = sp.p(); sp.w = W3(P[0], P[1], P[2]);
     if (app.spot === 'papi') $('#cardP').textContent = spotText(sp);
@@ -272,15 +291,52 @@ async function main() {
   // Aircraft type (plan C1, research round 2 task item 10): the trainer and the six light aircraft of data/aircraft/ in
   // the order of AIRCRAFT_TYPES (22-types.js). typeInfo writes the Thai text; school names come from the card, so they
   // are set as text, never as HTML. A card that failed to load shows its Thai error and cannot be chosen.
-  const typeInfoOf = (id) => { const T = TYPES[id] || {}; return typeInfo(id, T.card, T.ac); };
-  for (const id of AIRCRAFT_TYPES) {
-    const T = TYPES[id] || { error: `โหลด aircraft/${id}.json ไม่ได้` }, info = typeInfoOf(id);
-    const b = document.createElement('button'); b.type = 'button'; b.dataset.type = id; b.setAttribute('aria-pressed', 'false');
+  // An airliner's text is that of the mass and rating chosen (acFromCard again with them).
+  const typeInfoOf = (id) => { const T = TYPES[id] || {}; return typeInfo(id, T.card, T.card && isLiner(id) ? acFromCard(T.card, typeOpts(id)) : T.ac); };
+  function fillTypeButton(b) {
+    const id = b.dataset.type, T = TYPES[id] || { error: isLiner(id) && !linersP ? 'ยังไม่ได้โหลด' : `โหลด aircraft/${id}.json ไม่ได้` }, info = typeInfoOf(id);
     const nm = document.createElement('b'), em = document.createElement('em'), sp = document.createElement('span');
     nm.textContent = info.name; em.textContent = info.em; sp.textContent = T.card ? info.span : T.error;
-    b.append(nm, em, sp); b.disabled = !T.card;
+    b.replaceChildren(nm, em, sp); b.disabled = !T.card;
+  }
+  for (const id of [...AIRCRAFT_TYPES, ...AIRLINER_TYPES]) {
+    const b = document.createElement('button'); b.type = 'button'; b.dataset.type = id; b.setAttribute('aria-pressed', 'false');
+    b.hidden = isLiner(id) && !app.train.exp;
+    fillTypeButton(b);
     b.onclick = () => selectType(id);
     $('#typeList').appendChild(b);
+  }
+  // the switch รุ่นทดลอง: shows the airliners (fetching their cards the first time); off puts the trainer back if an
+  // airliner was chosen
+  $('#chkExp').checked = app.train.exp;
+  $('#chkExp').onchange = async (e) => {
+    app.train.exp = e.target.checked; store.set('afl-exp', app.train.exp ? '1' : '0');
+    for (const b of $('#typeList').children) if (isLiner(b.dataset.type)) b.hidden = !app.train.exp;
+    if (app.train.exp) { await loadLiners(); for (const b of $('#typeList').children) if (isLiner(b.dataset.type)) fillTypeButton(b); }
+    else if (isLiner(app.train.type)) selectType('trainer');
+    refreshSetup();
+  };
+  // an airliner's mass and engine rating (OD-RATINGS), offered by its card; a new choice rebuilds the preview flight
+  function chooseOpt(key, v) {
+    const id = app.train.type;
+    if (!isLiner(id) || app.mode !== 'train' || app.train.state !== 'setup') return;
+    app.train.opts[id] = { ...app.train.opts[id], [key]: v };
+    useType(id); refreshSetup(); previewFlight();
+  }
+  function writeExpOpts() {
+    const id = app.train.type, card = isLiner(id) && TYPES[id] ? TYPES[id].card : null;
+    $('#expOpts').hidden = !card;
+    if (!card) return;
+    const seg = (el, list, cur, label, key) => {
+      el.replaceChildren(...list.map((v) => {
+        const b = document.createElement('button'); b.type = 'button'; b.textContent = label(v);
+        b.setAttribute('aria-pressed', String(v === cur)); b.onclick = () => chooseOpt(key, v); return b;
+      }));
+    };
+    const ms = massOptions(card), rs = ratingOptions(card);
+    seg($('#segMass'), ms, AC.m, (m) => `${m.toLocaleString('en-US')} kg`, 'mass');
+    seg($('#segRating'), rs, (app.train.opts[id] && app.train.opts[id].rating) || rs[0], ratingName, 'rating');
+    $('#ratingRow').hidden = !rs.length;
   }
   // A type is chosen only before a flight (the setup pane); in explore, which always flies the trainer, the choice is
   // only remembered for the next training flight (window.__app.setType of test/shots.mjs may call it there).
@@ -313,11 +369,12 @@ async function main() {
     $('#rwyList').appendChild(b);
   }
   // PAPI siting (setPapiSiting in 20-flight.js): the housings, the light sprites, the pin and papiSeen move at once
-  // (AC is the type chosen for training, so the hint names it: the eye of a plan C1 card is at its antenna)
+  // (AC is the type chosen for training, so the hint names it: the eye of a plan C1 card is at its antenna, an airliner's
+  // (plan C7) 1.00 to 2.79 m above it at 0° pitch, so 0.89 to 2.79 m above the beam when the antenna is on it)
   function papiSiteText(id) {
     const E = RWY_END[id], m = FIELD.papiSiting, d = `PAPI ทาง ${id} ห่างหัวทางวิ่ง ${E.papi.toFixed(1)} ม.`, onPath = E.appr.kind === 'ILS' ? 'บน ILS' : 'บนแนวร่อน RNP';
     const who = flownType === 'trainer' ? 'เครื่องฝึก' : ` ${typeInfoOf(flownType).name} `;   // a Latin name between spaces
-    if (m === 'ils') return `${d} ค่าประมาณ: วางให้แนว 3° ของ PAPI ทับทางที่ตาของ${who}ผ่าน (ตาอยู่เหนือแนวร่อน ${eyeAboveBeam(AC, 0, FIELD.gs).toFixed(2)} ม.) เมื่อสายอากาศอยู่บน${E.appr.kind === 'ILS' ? 'แนวร่อน ILS' : 'แนวร่อน RNP 3° (ทางนี้ไม่มี ILS)'} ตามหลักการประสาน PAPI กับ ILS ของ Transport Canada (AC 302-009) ถ้าบินอยู่บนแนวร่อนจะเห็นขาวสองแดงสองจนถึงหัวทางวิ่ง แบบนี้ไม่ใช่การจัดวางตาม AIP`;
+    if (m === 'ils') return `${d} ค่าประมาณ: วางให้แนว 3° ของ PAPI ทับทางที่ตาของ${who}ผ่าน (ตาอยู่เหนือแนวร่อน ${eyeAboveBeam(AC, 0, FIELD.gs).toFixed(2)} ม.) เมื่อสายอากาศอยู่บน${E.appr.kind === 'ILS' ? 'แนวร่อน ILS' : 'แนวร่อน RNP 3° (ทางนี้ไม่มี ILS)'} ตามหลักการประสาน PAPI กับ ILS ของ Transport Canada (AC 302-009) ถ้าบินอยู่บนแนวร่อนจะเห็นขาวสองแดงสองจนถึงหัวทางวิ่ง ระยะนี้คำนวณใหม่ทุกครั้งที่เปลี่ยนแบบเครื่องบิน เครื่องบินโดยสารรุ่นทดลองก็ใช้ตาและสายอากาศของแบบนั้น (มวลและ rating ไม่ทำให้ระยะเปลี่ยน) แบบนี้ไม่ใช่การจัดวางตาม AIP`;
     if (m === 'tc') return `${d} ค่าประมาณ: AIP ประกาศ MEHT แต่ไม่ประกาศระยะ แบบนี้ใช้มุม 2°48′ ตาม Transport Canada จึงไกลกว่าแบบตาม AIP ${(E.papi - E.papiSites.aip).toFixed(1)} ม. ${onPath} จะเห็น PAPI ต่ำเร็วกว่าแบบตาม AIP`;
     const low = E.meht - (E.aim * Math.tan(FIELD.gs * DEG) + eyeAboveBeam(AC, 0, FIELD.gs));   // the eye of the type flown over the threshold, below MEHT
     return `${d} ค่าประมาณ: AIP ประกาศ MEHT แต่ไม่ประกาศระยะ ระยะนี้ทำให้ตาที่ความสูง MEHT เหนือหัวทางวิ่งเห็นดวง 2°50′ ที่มุม 2°50′ พอดี ${onPath} ตาของ${who}ผ่านหัวทางวิ่งต่ำกว่า MEHT ${low.toFixed(1)} ม. จึงเห็น PAPI ต่ำในช่วงท้าย`;
@@ -359,7 +416,8 @@ async function main() {
   function refreshSetup() {
     const info = typeInfoOf(app.train.type);
     for (const b of $('#typeList').children) b.setAttribute('aria-pressed', String(b.dataset.type === app.train.type));
-    $('#trLede').textContent = info.lede; writeTypeNote(info);
+    $('#trLede').textContent = info.lede; writeTypeNote(info); writeExpOpts();
+    for (const b of $('#typeList').children) if (isLiner(b.dataset.type) && b.dataset.type === app.train.type) fillTypeButton(b);   // its mass
     for (const b of $('#scnList').children) b.setAttribute('aria-pressed', String(b.dataset.k === app.train.scn));
     for (const b of $('#rwyList').children) b.setAttribute('aria-pressed', String(b.dataset.r === app.train.rwy));
     $('#trEyebrow').textContent = `ฝึกร่อนลงจอด · ${FIELD.appr} ทางวิ่ง ${FIELD.rwy} ดอนเมือง`;
@@ -375,8 +433,10 @@ async function main() {
     // humid air at the field from QNH (research round 4, 04-weather.md §6.1, ATM-5); the old dry rule read ~420 ft low.
     // QNH is shown as a METAR gives it, rounded down to a whole hPa (ICAO Annex 3 App. 3)
     const da = densityAltitudeFt(airDensity(fieldPressure(qnh, FIELD.elev), wx.oatC, wx.dewC));
-    // the card's speeds are kt CAS as acFromCard gives them, not rounded (plan B3): shown to the whole knot
-    $('#brief').innerHTML = [['แบบ', info.name, 2], ['มวล (ค่าประมาณ)', `${fmt(AC.m)} kg`], ['Vref', `${fmt(AC.Vref)} kt`], ['Vapp', `${fmt(AC.Vapp)} kt`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${fmt(wx.oatC)}°C`], ['จุดน้ำค้าง', wx.dewC == null ? '—' : `${fmt(wx.dewC)}°C`], ['QNH', `${Math.floor(qnh)} hPa`], ['ความชื้นสัมพัทธ์', wx.dewC == null ? '—' : `${fmt(relHumidity(wx.oatC, wx.dewC))}%`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
+    // Vref (VLS on an Airbus card) and Vapp as the HUD shows them (plan C3: KIAS from the card's table; plan C5: the speeds the
+    // flight will fly at this mass and in this wind, 'fixed' cards the card's own figures); whole knots
+    const V = new Approach({ wind: sc, atOn: app.train.pilot === 'ap' || app.train.autoThr });
+    $('#brief').innerHTML = [['แบบ', info.name, 2], ['มวล (ค่าประมาณ)', `${fmt(AC.m)} kg`], [V.label, `${fmt(V.Vref)} ${spdUnit()}`], [V.kind === 'airbus' ? 'VAPP' : 'Vapp', `${fmt(V.Vapp)} ${spdUnit()}`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${fmt(wx.oatC)}°C`], ['จุดน้ำค้าง', wx.dewC == null ? '—' : `${fmt(wx.dewC)}°C`], ['QNH', `${Math.floor(qnh)} hPa`], ['ความชื้นสัมพัทธ์', wx.dewC == null ? '—' : `${fmt(relHumidity(wx.oatC, wx.dewC))}%`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
       .map(([k, v, span]) => `<div${span ? ` style="grid-column: span ${span}"` : ''}><small>${k}</small><b>${v}</b></div>`).join('') + '<div style="grid-column: 1 / -1"><small>ค่าประมาณของวันทั่วไป: QNH เฉลี่ยทั้งปีและจุดน้ำค้างเฉลี่ยเวลา 11:00 น. จากสถิติ METAR ดอนเมือง 2016–2025 (Iowa Environmental Mesonet) · อุณหภูมิเป็นค่าเริ่มต้นของโปรแกรม</small></div>';
   }
   function refreshLive() { for (const b of $('#segWarp').children) b.setAttribute('aria-pressed', String(+b.dataset.w === app.train.warp)); $('#btnTake').textContent = app.flight && app.flight.pilot === 'ap' ? 'รับช่วงบังคับเอง' : 'ให้ออโต้ไพลอตบิน'; }
@@ -400,7 +460,7 @@ async function main() {
     showTrainPane('fly'); refreshLive(); chase.init = false;
     // the type flown, and for a real type the T-LS-11 (ค) label: a light aircraft at Don Mueang is a made-up scene
     const info = typeInfoOf(app.train.type);
-    $('#liveEyebrow').textContent = (app.flight.pilot === 'ap' ? 'ออโต้ไพลอตกำลังบิน' : (app.flight.opts.assist ? 'บินเอง · มีระบบช่วย' : 'บินเอง · ควบคุมตรง')) + ` · ${info.name}${info.real ? ' · สถานการณ์สมมติ' : ''}`;
+    $('#liveEyebrow').textContent = (app.flight.pilot === 'ap' ? 'ออโต้ไพลอตกำลังบิน' : (app.flight.opts.assist ? 'บินเอง · มีระบบช่วย' : 'บินเอง · ควบคุมตรง')) + ` · ${info.name}${info.exp ? ' · รุ่นทดลอง' : info.real ? ' · สถานการณ์สมมติ' : ''}`;
     if (app.trainCam === 'free') setTrainCam('chase');
     updateCtlVisibility();
   }
@@ -706,7 +766,7 @@ async function main() {
       rows.push(['ล้อลงและแฟลปลงจอด', f.ac.gearPos > 0.98 && f.ac.flaps > 0.95 ? 'ok' : 'bad', 'ครบ']);
       rows.push(['แนวกลาง (LOC)', Math.abs(a.locDots) <= 1 ? 'ok' : 'bad', `${a.locDots >= 0 ? '+' : ''}${a.locDots.toFixed(1)} จุด`]);
       rows.push(['แนวร่อน (G/S)', a.s > FIELD.aim - 50 ? '' : Math.abs(a.gsDots) <= 1 ? 'ok' : 'bad', a.s > FIELD.aim - 50 ? '—' : `${a.gsDots >= 0 ? '+' : ''}${a.gsDots.toFixed(1)} จุด`]);
-      rows.push(['ความเร็ว Vref −5/+20', Math.abs(a.ias / KT - AC.Vref - 7.5) <= 12.5 ? 'ok' : 'bad', `${fmt(a.ias / KT)} kt`]);
+      rows.push([`ความเร็ว ${f.appr.label} −5/+20`, Math.abs(f.ac.kias() - f.appr.Vref - 7.5) <= 12.5 ? 'ok' : 'bad', `${fmt(f.ac.kias())} ${spdUnit()}`]);
       rows.push(['อัตราจม ≤ 1,000 fpm', a.vs / FT * 60 >= -1000 ? 'ok' : 'bad', `${fmt(a.vs / FT * 60)}`]);
     }
     rows.push(['ผ่าน 500 ft แบบเสถียร', st(g5), g5 ? (g5.ok ? 'ผ่าน' : 'ไม่ผ่าน') : 'ยังไม่ถึง']);
@@ -728,7 +788,7 @@ async function main() {
         ['อัตราจมตอนแตะพื้น', `${fmt(-td.vsFpm)} fpm`, P.sink],
         ['จุดแตะพื้นจากหัวทางวิ่ง', `${fmt(td.s)} ม.`, P.pos],
         ['ห่างเส้นกลาง', `${Math.abs(td.tl).toFixed(1)} ม. ${td.tl > 0.3 ? 'ขวา' : td.tl < -0.3 ? 'ซ้าย' : ''}`, P.cl],
-        ['ความเร็วตอนแตะพื้น', `${fmt(td.ias)} kt`, P.spd],
+        ['ความเร็วตอนแตะพื้น', `${fmt(td.ias)} ${spdUnit()}`, P.spd],
         ['เอียง / ปัดหัว / ลอยข้าง', `${Math.abs(td.bank).toFixed(1)}° / ${Math.abs(td.crab).toFixed(1)}° / ${Math.abs(td.drift).toFixed(1)} ม./วิ`, P.att],
       ];
       $('#scRows').innerHTML = rows.map(([n, v, p]) => `<span>${n}</span><em>${v}</em><i>${Math.max(0, p.pts).toFixed(0)}/${p.max}</i><div class="bar"><div style="width:${Math.max(0, p.pts) / p.max * 100}%"></div></div>`).join('')
@@ -892,8 +952,10 @@ async function main() {
     uiT += dt;
     if (uiT > 0.1 && app.mode === 'train' && fl) {
       uiT = 0;
-      const a = fl.ac.air, ias = a.ias / KT;
-      const iasEl = $('#iIas'); iasEl.textContent = fmt(ias); iasEl.className = Math.abs(ias - AC.Vapp) < 8 || (a.hWheel < 15 && ias > AC.Vref - 6) ? 'ok' : 'am';
+      const a = fl.ac.air, ias = fl.ac.kias(), V = fl.appr;   // KIAS and the flight's approach speeds in the HUD's unit (plan C3, C5)
+      const iasEl = $('#iIas'); iasEl.textContent = fmt(ias);
+      // the tile's unit follows spdUnit (review of plans C3–C7): an airliner's kias() is KCAS, so its label reads CAS
+      const iasLbl = iasEl.previousElementSibling, iasTxt = spdUnit() === 'KCAS' ? 'CAS kt' : 'IAS kt'; if (iasLbl.textContent !== iasTxt) iasLbl.textContent = iasTxt; iasEl.className = Math.abs(ias - V.cmd) < 8 || (a.hWheel < 15 && ias > V.Vref - 6) ? 'ok' : 'am';
       $('#iAlt').textContent = fmt(Math.max(0, a.hWheel / FT)); $('#iVs').textContent = `${a.vs >= 0 ? '+' : ''}${fmt(a.vs / FT * 60)}`;
       $('#iHdg').textContent = String(Math.round(wrap360(a.psi * RAD))).padStart(3, '0');
       $('#iDist').textContent = a.s < 0 ? `${(-a.s / NM).toFixed(1)} nm` : `+${fmt(a.s)} ม.`;
@@ -901,17 +963,18 @@ async function main() {
       $('#iWind').textContent = wkt < 0.5 ? 'สงบ' : `${String(Math.round(wdir / 10) * 10 % 360).padStart(3, '0')}/${fmt(wkt)}`;
       const ph = fl.phase();
       const fma = fl.pilot === 'ap'
-        ? [['A/P', ''], ph === 'APP' ? ['LOC', ''] : ['', ''], ph === 'APP' ? ['G/S', ''] : ph === 'FLARE' ? ['FLARE', ''] : ['ROLLOUT', ''], ['SPD ' + fmt(AC.Vapp), 'c']]
-        : [['MAN', 'w'], [fl.opts.assist ? 'ASSIST' : 'DIRECT', 'a'], [fl.opts.autoThr ? 'A/THR SPD ' + fmt(AC.Vapp) : `THR ${Math.round(fl.ac.thr * 100)}%`, fl.opts.autoThr ? 'c' : 'w'], ['FD', 'c']];
+        ? [['A/P', ''], ph === 'APP' ? ['LOC', ''] : ['', ''], ph === 'APP' ? ['G/S', ''] : ph === 'FLARE' ? ['FLARE', ''] : ['ROLLOUT', ''], ['SPD ' + fmt(V.cmd), 'c']]
+        : [['MAN', 'w'], [fl.opts.assist ? 'ASSIST' : 'DIRECT', 'a'], [fl.opts.autoThr ? 'A/THR SPD ' + fmt(V.cmd) : `THR ${Math.round(fl.ac.thr * 100)}%`, fl.opts.autoThr ? 'c' : 'w'], ['FD', 'c']];
       $('#fma').innerHTML = fma.filter(([t]) => t).map(([t, c]) => `<span class="${c}">${t}</span>`).join('');
       if (app.train.state === 'fly') {
         gateRows($('#gates'), fl, true);
         const e = a.eye, pw = papiSeen(e[0], e[1], e[2]);
         const nW = pw.filter((v) => v > 0.5).length;
         // On the ILS the PAPI of Don Mueang reads low near the threshold: its MEHT (AIP AD 2.14) is 3.3 to 5.1 m above the ILS beam over the threshold, while
-        // the trainer's eye is 1.3 m above its glide-slope antenna (research round 3, topic 3.5) and the light aircraft of
-        // plan C1 have the antenna at the eye (no source gives its place), so they read lower still. Not with the siting
-        // matched to the ILS (it follows the aircraft flown: setAircraft re-solves it).
+        // the trainer's eye is 1.3 m above its glide-slope antenna (research round 3, topic 3.5), each airliner's by its
+        // manufacturer's H2 (0.9–2.8 m on the path, plan C7: tools/aircraft/build_airliners.mjs eyeAntenna), and the light
+        // aircraft of plan C1 have the antenna at the eye (no source gives its place), so they read lower still. Not with
+        // the siting matched to the ILS (it follows the aircraft flown, airliners included: setAircraft re-solves it).
         const onIls = FIELD.papiSiting !== 'ils' && FIELD.appr === 'ILS' && Math.abs(a.gsDots) < 0.5 && Math.abs(a.locDots) < 1 && nW < 2 && a.s > -1500;
         $('#papiTxt').textContent = pw[0] < 0 ? 'ผ่านตำแหน่ง PAPI แล้ว' : `ขาว ${nW} แดง ${4 - nW} · ${['ต่ำมาก', 'ต่ำเล็กน้อย', 'อยู่บนแนวร่อน', 'สูงเล็กน้อย', 'สูงมาก'][nW]}` + (onIls ? ' · บน ILS ช่วงท้าย PAPI แสดงต่ำได้ ให้ยึด ILS' : '');
         $('#liveTitle').textContent = { APP: `ร่อนเข้าหาทางวิ่ง ${FIELD.rwy}`, FLARE: 'ถอนคันบังคับก่อนแตะพื้น', ROLLOUT: 'วิ่งบนทางวิ่งและเบรก', DONE: 'หยุดเรียบร้อย', STOP: 'หยุดเรียบร้อย', CRASH: 'เครื่องบินกระแทกพื้น' }[ph] || 'กำลังบิน';

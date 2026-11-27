@@ -161,8 +161,9 @@ test("the fixture's start is the trimmed approach of research §12.8: 95 KIAS, f
 // after the move, unchanged. T-S-02 flies the fixture's numbers, so run this check too: ORACLE_AC_FROZEN=1.
 test('AC still holds the numbers the fixture was flown with (ORACLE_AC_FROZEN=1, for a move of AC that must change nothing)', { skip: !process.env.ORACLE_AC_FROZEN && 'set ORACLE_AC_FROZEN=1 to run' }, () => {
   // the α̇ case flew AC's own numbers (its CLadot 1.6 and Cmadot −4.5 are AC's too); the α̇-free case zeroes those two.
-  // Fields in AC_NOT_IN_DERIV came after the fixture (the test above allows only those as extras)
+  // Fields in AC_NOT_IN_DERIV may have come after the fixture (the test above allows only those as extras); a fixture
+  // that holds them (the one regenerated for plan C4 holds the four stall-warning fields) has them compared too
   const fx = FX.cases.adot.params;
-  assert.deepEqual(Object.fromEntries(Object.keys(SRC.params).filter((k) => !AC_NOT_IN_DERIV.includes(k)).map((k) => [k, SRC.params[k]])), fx);
+  assert.deepEqual(Object.fromEntries(Object.keys(SRC.params).filter((k) => !AC_NOT_IN_DERIV.includes(k) || k in fx).map((k) => [k, SRC.params[k]])), fx);
   assert.equal(M.FIELD.elev, FX.cases.noadot.ic.elev_m);
 });

@@ -8,7 +8,7 @@
 // they change no number the stall, climb, glide, takeoff and mode tests read.
 import { leaf, val, leafPaths, loadType } from '../../docs/research/02-light-aircraft/scripts/lm_lib.mjs';
 import { buildAC } from '../../docs/research/02-light-aircraft/scripts/lm_card.mjs';
-import { COPIED, inertiaLeaves, solveWarn } from '../../tools/aircraft/build_cards.mjs';
+import { COPIED, anchorStallRows, inertiaLeaves, solveWarn } from '../../tools/aircraft/build_cards.mjs';
 
 const put = (doc, p, l) => { const ks = p.split('.'); let o = doc; for (const k of ks.slice(0, -1)) o = (o[k] ??= {}); o[ks.at(-1)] = l; };
 const COPY = new Set(COPIED);
@@ -19,6 +19,8 @@ export function researchCard(id) {
   if (cache.has(id)) return structuredClone(cache.get(id));
   const card = loadType(id), doc = {};
   for (const p of leafPaths(card)) if (COPY.has(p)) put(doc, p, structuredClone(leaf(card, p)));
+  // the stall end of the KIAS table, as the generator makes it for the six cards (plan C3)
+  put(doc, 'speeds.ias_cas', anchorStallRows(leaf(doc, 'speeds.ias_cas'), leaf(card, 'speeds.stall_table')).leaf);
   if (!['Ixx', 'Iyy', 'Izz'].every((k) => typeof val(card, 'airframe.inertia.' + k) === 'number')) {
     for (const [k, l] of Object.entries(inertiaLeaves(card))) put(doc, 'airframe.inertia.' + k, l);
   }

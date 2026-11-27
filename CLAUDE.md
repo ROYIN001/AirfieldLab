@@ -34,11 +34,18 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   generator, or to physics that moves the CL/Cm lines (the stall-warning solve flies the sim) regenerates them in the
   same PR, also when the PR is research-only (see Research CI). It never writes `trainer.json` and the cards do not
   depend on it, but it reads it through `test/harness.mjs`, so a broken trainer card stops it too (`tools/README.md`).
+  Since plan C4 it also writes the seven airliner cards (`a320ceo`, `b737_800`, `a320neo`, `a330_300`, `a321neo`,
+  `atr72_600`, `a321ceo`) through `tools/aircraft/build_airliners.mjs` from round 3's
+  `docs/research/03-airliners/params-<type>.json` (read only, never edited; every fix is made in the generator);
+  `--check` and `--only` cover all thirteen. The same rule holds: never edit them by hand, and a change to a round 3
+  params file, a round 3 reference row or the generator regenerates them in the same PR.
 - Run: `python3 -m http.server 8080 -d dist`, open http://localhost:8080 (needs HTTP: the page fetches its data).
 - Tests (Node ≥ 22, no dependencies, `node:test` + `node:assert/strict`): `node --test "test/**/*.test.mjs"`
   (quote the glob: a bare `node --test` would also run `test/shots.mjs`, `test/harness.mjs`, `test/lib/*.mjs` and
   the research scripts under `docs/research/` whose names match Node's default test patterns).
-  `geo` (AIP geometry), `flight` (start trim, parked, autoland per wind), `runways` (autoland on all four ends),
+  `geo` (AIP geometry), `flight` (start trim, parked, every card parked by `setParked` at
+  rest on its three wheels with no drift in 6 s and the airliners at the research's parked CG height ± 0.12 m (plan C7),
+  autoland per wind), `runways` (autoland on all four ends),
   `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01; stall-warning margin T-A-07:
   static trimmed margin 7 ± 1 kt at five flap settings from the Evaluator's `aWarnAt(flaps)`, 1 kt/s deceleration with
   the Evaluator flag ≥ 5 kt above the stall, both corrected to 1 g, and on through the stall; the flag by α at 70 and
@@ -52,7 +59,18 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   siting needs and the trainer's `eyeAboveBeam`, the ils siting on the eye path, the Transport Canada AC 302-009
   example and a 737-800W leaving the on-slope on the 21R ILS through `papiSeen`, what the eye sees on a calm autoland
   with each siting, that `src/90-app.js` applies the siting, and that `setAircraft` re-solves it for a new type's eye
-  and antenna (only `ils` moves; P-13)), `controls` (`air.nz`/`air.ny`,
+  and antenna (only `ils` moves; P-13 with the light cards, P-14 on all fourteen types at every mass and rating offered:
+  the distance worked from the card's points and pinned on 21R, 2 white from 2 NM to every threshold with the antenna
+  on the beam; the whole file about 7 s); plan C7, research R3-6: each
+  airliner card's eye and antenna against H1 and H2 at its reference attitude (OD-A320-PITCH 2.5°, OD-A330-VISUAL 2023),
+  x and y as the research, T-D-23, the ATR's assumed antenna, the light cards' antenna at the eye; T-D-09 and T-D-10 (the
+  back-solve and the Airbus formula, worked by hand); T-D-18 and T-D-19 (the 737 contact points, the nose-wheel shares);
+  T-D-03 (each airliner flown with its antenna on the beam over all four thresholds: wheels at RDH − H to 0.01 m and the
+  research's table to 0.05 m); T-D-06 (the eye at RDH + H2, the ideal PAPI angles and whites of the research's table, the
+  sim's PAPI from that eye worked by hand); T-D-21 and T-D-27 (ideal PAPI; the sim's band from MEHT to its 3°10′ edge);
+  P-03, P-05 and P-06 on all fourteen types, on the `aip` siting (they check that it is in use): `air.eye` and `air.antH` from the card's points, G/S and LOC at the antenna,
+  the 21R ILS flown with the antenna on the beam at the trimmed pitch (2 white at 2 NM, the drop point worked by hand
+  ± 2 m and pinned ± 10 m in `DROP`), the calm autolands of the six light types), `controls` (`air.nz`/`air.ny`,
   research T-C-01: trimmed 95 kt glide nz 1.00 ± 0.02, parked nz 1, level turn nz ≈ 1/cos φ at 30° and 45°,
   elevator pull-up Δnz 1.00 ± 0.15 as in T-C-06, a rudder step whose sideslip gives ny < 0, and nz/ny against finite
   differences of the velocity), `numerics` (fixed-step accumulator and render interpolation, research T-N-07…T-N-09:
@@ -100,8 +118,20 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   T-LS-11 (ก)(ข)(ค), T-LM-13; `typeInfo` and `modelSpec` of `src/22-types.js` (the Thai card, lede and notes of each
   type, the model fit); `loadCards` with a stub fetch (Thai errors, never rejects); the owner's rule that no military
   user is named, not even generically (cards, `22-types.js`, the selector lines of `90-app.js`); the page wiring by
-  regex), `types` (plan C1 and C2, the per-type regression lock; about 23 s: research round 2 tests flown through the cards at the
-  research's masses and tolerances. C1: C172S T-LC-04, 06–08, 12–14, 20–24, 31, C172R T-LE-05–07, 11–13, 19–23, DA40
+  regex), `r3cards` (plan C4, research R3-1, R3-C5, R3-C6, R3-2, R3-39; about 7 s: the seven airliner cards in the
+  generator's order; T-B-25 (lb → kg), T-B-22 (%MAC of a balance arm, OD-LEMAC on the 737), OD-LEMAC on both A321s
+  (FAA TCDS A28NM, low confidence); T-B-14, T-L-24, T-H-17 (inertia at the research's masses); OD-RATINGS (default
+  mass and rating, the choices, Vref/Vapp/VS0 from the mass tables, T0 and P scaled by the F00 ratio, CFM56-7B flat
+  rating 30 °C); `AC.K_CL_offset` (0.15 by default, 0 on the ATR and the 737); T-R-23, T-L-26, T-H-08 (CLmax of the
+  legacy sets); T-R-24/25 (ATR trim); T-J-19 (thrust lapse); every airliner trims at Vapp and flies 20 s; the A330
+  lateral derivatives in body axes; the known gap `AIRLINER_AUTOLAND`: the trainer's Autopilot on every airliner, seed 5,
+  calm on all four ends and 03L `head`, 03L `xr`, 21R `xl`, crash flag and events exact, score ± 7, point ± 4 / 8 m, the
+  main wheels first where no near-stall event comes before the touchdown, the ATR's `xl` nose first (`NOSE_FIRST`; plan C7), and
+  each type's Thai Autopilot note following that table; T-H-21; T-K-27; `r3_merge.mjs --dry --coverage` gaps all in the card's `_na` or
+  `_deferred`; `_na` in `acFromCard`; the รุ่นทดลอง and ค่าประมาณ labels and that explore stays on the trainer),
+  `types` (plan C1 and C2, the per-type regression lock; about 23 s: research round 2 tests flown through the cards at the
+  research's masses and tolerances (plan C3 adds the KIAS rows T-LC-03, T-LC-05, T-LE-04 and T-LF-07; T-LF-07 left
+  `DEFERRED`). C1: C172S T-LC-04, 06–08, 12–14, 20–24, 31, C172R T-LE-05–07, 11–13, 19–23, DA40
   T-LD-27, 28, 31, with four known gaps held by regression bands and the research value in `t.diagnostic`: T-LE-09 Vx
   57.4 ± 1.5 KCAS (research 62 ± 3, its 60 was the first point of its 2-kt sweep, not a maximum; the test checks that the
   largest γ of its 1-kt sweep is not an end point; task item 20), T-LD-29 50 ft 507.2 m ± 3 % (research 450 ± 45), T-LD-30
@@ -140,7 +170,35 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   no GPL/LGPL text or JSBSim model outside the owner's allowlist: research round 5 §11 T-K01…T-K05 and §12 P3-9, round 1
   §12 T-S-11, policy in `test/fixtures/license_policy.json`), `oracle` (our model against JSBSim 1.3.3 flying the same
   elevator, aileron and rudder doublets from the trimmed approach with a model built from our own `AC` numbers,
-  research round 1 §12.8 T-S-01…T-S-03 and T-S-05, fixture `test/fixtures/jsbsim_trainer_doublet.json`), `watch` (the
+  research round 1 §12.8 T-S-01…T-S-03 and T-S-05, fixture `test/fixtures/jsbsim_trainer_doublet.json`),
+  `kias` (plan C3; the research rows T-LC-03, T-LC-05, T-LE-04 and T-LF-07 are in `types`: `iasToCas`/`casToIas` monotone,
+  inverse of each other, equal to the table at its points, flap mixing and clamping; `AC.kias` hidden from keys and
+  JSON; the reader's row checks; `anchorStallRows` and the stall pairs the cards hold; the Evaluator's gates, touchdown
+  speed and speed score in KIAS on three types, and the trainer's values unchanged to the bit), `speeds` (plan C5, research R3-3; the
+  pure `SPD` functions and the `Approach` of a flight: T-B-01…T-B-03, T-B-24, T-K-01…T-K-06, T-R-05, T-R-06, T-R-21, T-R-29,
+  T-L-04…T-L-06, T-H-01…T-H-04, OD-737-VREF, OD-WIND-ADDITIVE both caps, OD-A321NEO-CLMAX; the trainer and the six light
+  cards on `kind: 'fixed'`, to the bit; a 737, an ATR and an Airbus flight; the Autopilot, PilotLaws and Evaluator reading
+  the flight's `appr`; the HUD and page wiring is in `cards`), `airliner` (plan C6, research R3-4; under 1 s: every
+  airliner card trimmed in the landing configuration on a 3° path (wings level, no wind, 300 m, the research's speed as
+  EAS, flaps through the card's `aero.legacy.flapMap`) by `Aircraft.trim` (the page's trim, which reports `ok`, `why`
+  and `limited`), with `test/lib/fstd.mjs` `trim()` solved beside it and held to the same root (1e-6); the conditions
+  and centres read from each research `params-<type>.json`'s `validation.trim_targets`. Passing: T-R-12 (ATR θ −1.59°, α 1.41°),
+  T-R-10/11 through the thrust behind the torque (15.03 kN against the research model's 15.04 kN, 0.233 of itself per
+  degree; the torque reading waits for plan K4, the model has no shaft or propeller), T-B-08…10 (737 θ 2.27/1.18°, α
+  5.27°, 36.9 kN = 15.8 % of the static thrust), T-L-07…09 at the research's own expectations (A320ceo θ 1.24°,
+  CONF 3 3.16°, A321ceo 1.24°), T-L-10 on the card's table (137.0 kt), T-L-11 (VS1g 95.6 kt), T-H-05 α, θ and the trimmed state's sink rate. `UNREAD`
+  names the readings the model lacks (T-R-10/11's torque, plan K4, whose own test list holds neither id yet: it must gain
+  them) and closes itself: the ATR test fails once `AC`, an `Aircraft` or its air data has a field starting `tq`, `torque`,
+  `np` or `rpm`. CG: the research's rows are at 30 % (T-L-07), 22 % (T-L-11) and 25–28 % (T-H-05); the cards stand for 25 %
+  with no CG term; plan O4 (R3-48) adds a CG choice for the A330, none names one for the A320 family yet.
+  Known gaps (`GAPS`, research value in `t.diagnostic`, cause and plan item, value pinned): OD-A320-PITCH's temporary 2.5°
+  (± 1.0°, our tolerance; ค่าประมาณ) on T-L-07, 08 (4.25°) and 09: the legacy A320-family sets are fitted to D-AIRE's 1.5°, K1; T-L-10 on the
+  sim's lift curve 141.0 kt (one flap position per detent cannot give CONF 3 both its lift increment and its CLmax),
+  K1; T-H-05 thrust 99.7 kN against 133 ± 15 (legacy polar L/D 9.3 against 7.99), K1. K1's own test list holds T-H-05 but
+  not T-L-07…T-L-10 (they are named only in plan C6's list): it must gain them, as K4 must gain T-R-10/11. `LOCK`: every card at every
+  `mass_options` mass at the `Approach` speed of plan C5 (α, θ, δe, throttle, thrust; 1.5 %, floor 0.02° on angles and
+  0.002 on the throttle), each a trim inside its limits with α ≥ 5° under the warning angle.
+  `AIRLINER_LOCK_PRINT=1 node --test test/airliner.test.mjs` prints `LOCK` and the gap pins), `watch` (the
   pure parts of `tools/watch/`: eAIP index, cover, SUP/AIC and amendment-list parsers, the AIRAC cycle, AD 2 sections
   compared after dropping only amendment marks and page noise, every fixture value found in its AD 2 section of a
   synthetic page and a changed one named, title classes, `tools/watch/reviewed.json` against its schema and the
@@ -194,8 +252,10 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   task item 17) needs no new fixture. A self-convergence test (240 Hz against 960 Hz) checks that `step` stays RK4.
   When `AC` moved to `data/aircraft/` (plan B3, research task item 8), it ran with `ORACLE_AC_FROZEN=1` before and
   after and passed both times; run it that way again after a change to the card or to `acFromCard` that should keep
-  the numbers. Its JavaScript side is `test/lib/oracle.mjs`; its `withParams` builds `Iinv` with the page's
-  `inertiaInverse`.
+  the numbers. Plan C4 added `AC.K_CL_offset` (mirrored in `make_model.py`) and regenerated the fixture from the
+  commit that added it; the new fixture also holds the stall-warning fields, which `ORACLE_AC_FROZEN` now compares,
+  and its rows start from today's retrimmed approach (`tools/jsbsim/README.md`). Its JavaScript side is
+  `test/lib/oracle.mjs`; its `withParams` builds `Iinv` with the page's `inertiaInverse`.
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 21-metar.js + 25-input.js` with
   `new Function` in strict mode, reads `data/aircraft/trainer.json` from disk (`AIRCRAFT_CARD`) and calls
   `setAircraft` with it before any test runs, `test/keys.test.mjs` evaluates `18-keys.js`, `test/siting.test.mjs` `17-siting.js`,
@@ -206,7 +266,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `checkPr()` and `previewHtml()` for the page test. `M` from `test/harness.mjs` also includes `Evaluator`, `aWarnAt`,
   `Recorder`, `qNlerp`, `WX_DEFAULT`, `Wind`, `logLaw`, `WIND_PROFILE`, `W20_PER_KT_LEGACY`, `windW20`,
   `GUST_FACTOR_3S`, `newtonSolve`, `qMul`, `setAircraft`, `acFromCard`, `table1`, `table2`, `inertiaInverse`,
-  `engineLoads`, the humid-air functions of `10-atmo.js`, the PAPI siting (`papiFromMEHT`, `PAPI_MEHT_ANG`,
+  `engineLoads`, `iasToCas`, `casToIas`, `speedsKias`, `SPD`, `Approach`, `toSI`, `UNIT_SI`, `pctMAC`, `armAtPctMAC`, `thrustAvail`,
+  `stallBlend`, the humid-air functions of `10-atmo.js`, the PAPI siting (`papiFromMEHT`, `PAPI_MEHT_ANG`,
   `PAPI_SITINGS`, `eyeAboveBeam`, `setPapiSiting`) and the METAR decoder of `21-metar.js`.
   Since plan B3 `AC` is empty until `setAircraft` runs, so a script that evaluates `src/*.js` itself with
   `new Function` instead of importing `test/harness.mjs` (several in `docs/research/01-flight-physics/scripts/`, e.g.
@@ -242,13 +303,13 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `PAPI_GEOM`, `papiFromMEHT` and `PAPI_MEHT_ANG`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
 | 17-siting.js | pure: where something tall may stand: obstacle limitation surfaces `olsHeight(e, n)`, approach light lanes `alsLaneOf`, `ALS` (length and spacing per system), `RWY_PAD`, `TWY_W`, `SiteIndex` (clearances from buildings, decks, aprons, taxiways, water; the land-use class under a point), `STATIONS` and `stationSites(af)`, `mappedSite`, `placeTrees`, `siteBuildings` (`buildingProblem`, `groundShare`); also `rwyST`, `rwyEN`, `onAnyRunway`, `pointInPoly`, `nearestOnLine`, `lineLength`, `pointAlong` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions + `frame()` with sub-frame taps; `app.keys`) |
-| 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `PAPI` and `papiSeen`, `Wind` (shear + Dryden), `AC` (empty until `setAircraft(card)` fills it from an aircraft card; `acFromCard`, `inertiaInverse`), `table1`/`table2` (clamped tables), `engineLoads`, `eyeAboveBeam`, `PAPI_SITINGS` + `setPapiSiting(mode)` (called by `setAircraft`, so the `ils` siting follows the type flown), `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
+| 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `PAPI` and `papiSeen`, `Wind` (shear + Dryden), `AC` (empty until `setAircraft(card, opts)` fills it from an aircraft card; `acFromCard`, `inertiaInverse`; `AC.K_CL_offset` of the drag polar), `table1`/`table2` (clamped tables), `toSI`/`UNIT_SI` (card units), `pctMAC`/`armAtPctMAC`, `engineLoads`, `eyeAboveBeam`, `PAPI_SITINGS` + `setPapiSiting(mode)` (called by `setAircraft`, so the `ils` siting follows the type flown, airliners included), `SPD` (Vref, VLS, VS1g, V2min, VAPP by mass, configuration and wind; `AC.spd`) and `Approach` (the speeds one flight flies), `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
 | 21-metar.js | pure: METAR/SPECI decoder `parseMetar` (research round 4 §3, OD-METAR: our own decoder; TAF not read), and the helpers `metarCeilingFt`, `metarRvrFor`, `metarGustSigmaKt`, `metarRainMmh`, `metarRunway`, `metarIssuedMs`; not wired to the weather yet (lane B10) |
-| 22-types.js | pure: `AIRCRAFT_TYPES` (selector order), `typeInfo` (Thai card, lede, notes from the card's `thai_fleet`), `modelSpec` (generic model fit) |
+| 22-types.js | pure: `AIRCRAFT_TYPES` (selector order), `AIRLINER_TYPES` (plan C4, behind รุ่นทดลอง), `typeInfo` (Thai card, lede, notes from the card's `thai_fleet`; `airlinerInfo` for the airliners), `EXP_SWITCH`/`EXP_NOTES`, `massOptions`/`ratingOptions`/`ratingName`, `modelSpec` (generic model fit) |
 | 25-input.js | pure: `INPUT_CFG` (estimates from research §11), calibration and dead-zone helpers, `shapeAxis` / `shapeLever`, `keyRamp` + `KeyAxis`, `readPad` (W3C standard gamepad), `Arbiter` (last-moved source wins) + `InputAxis` (no jump on a switch), `TiltStick` (phone tilt), `PilotInput` (one frame from keys, pad, touch and tilt; `app.pin`) |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()` (fog = MOR haze, `HAZE_GLSL`), `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
-| 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` and the aircraft card `aircraft/trainer.json` (90-app.js hands it to `setAircraft`); progress stops at the first failed file, whose Thai error names it; `loadCards` (the other types' cards, beside `loadData`; never rejects, a failed card disables its entry) |
+| 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` and the aircraft card `aircraft/trainer.json` (90-app.js hands it to `setAircraft`); progress stops at the first failed file, whose Thai error names it; `loadCards` (the other types' cards, beside `loadData`; never rejects, a failed card disables its entry; the airliner cards only once รุ่นทดลอง is on) |
 | 50-airfield.js | land-use bake on the GPU + ground shader, runway marking shader (per runway), taxiways, aprons, hold lines, terminal, towers, navaids, PAPI housings (one group per end, moved by `placePapi`), approach light stands, windsocks, masts |
 | 55-city.js | instanced city buildings (those that pass `siteBuildings`), OSM footprints, tollway / SRT viaduct / BTS (`VIADUCT` deck sizes) + stations from `stationSites`, trees from `placeTrees`, parked airliners |
 | 60-lights.js | point-sprite lights with directional colour (`LightSet`); `airfieldLights(field, data)` is the whole lighting layout as data, `alsStands(E)` the approach light stands, `taxiEdgeLights(af)` the places of the taxiway edge lights, `papiOffset(E)` and `papiPlace(pp)` where an end's PAPI housings stand, `papiLightAt(pp)` where a PAPI light stands, `buildAirfieldLights` draws the lights (its `placePapi` moves the PAPI lights) |
@@ -271,24 +332,102 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   per runway (0.75° on 21R/03L, 0.89° on 21L), G/S 1 dot 0.36°. With the `aip` siting the trainer on the ILS sees
   the PAPI read low in the last 0.7 km (21R/21L) to 1.3 km (03L) because DMK's MEHT is 3.3–5.1 m above the beam over
   the threshold (real, AIP-derived); earlier with `tc`; not with `ils`, which puts the PAPI's 3° line on the
-  eye path of the aircraft flown. The trainer's eye is 1.3 m above its antenna; the plan C1 cards put the antenna at
-  the eye (no source gives its place), so with `aip` or `tc` their PAPI reads lower still.
+  eye path of the aircraft flown (each type's own, airliners included). The trainer's eye is 1.3 m above its antenna;
+  the plan C1 cards put the antenna at the eye (no source gives its place), so with `aip` or `tc` their PAPI reads
+  lower still (from 1,128 m on the 21R ILS with `aip`, the trainer from about 705 m).
+- Per type (plan C7, research round 3 task item 6, R3-6; `05-airport-geometry.md` §3.5.6–§3.5.9): the airliner cards'
+  eye and glide-slope antenna come from the manufacturers' approach distances (H1 eye to wheel path, H2 eye to antenna
+  path, H antenna to wheel path) at a reference attitude: the 737 at its FD pitch 3.2° [D3], the ATR at 0°, the A320
+  family at 2.5° (owner decision OD-A320-PITCH, a temporary estimate), the A330 at 3.0° (the research's estimate).
+  `tools/aircraft/build_airliners.mjs` `eyeAntenna`: the Airbus eye keeps the research's x and y and its z is refitted
+  so that H1 is Airbus's 2023 figure (OD-A330-VISUAL: the A330's 11.34 m, not the 2021 issue's 10.82 m). At 2.5° the
+  research's eye z (FBW's −2.098 on all four) gave H1 0.19 m (A320ceo) and 0.27 m (A320neo) low and 0.08 m (A321ceo)
+  and 0.25 m (A321neo) high; the FBW eye matched Airbus at 3.3° for the A320ceo only (T-D-10). The A330's estimated
+  B ≈ 8.0 m (z_eye = z_MG − B, §3.5.7) gave 0.30 m low. H4 then lands within 0.06 m of Airbus's; the 737 and ATR eyes are the research's. The antenna stands on the centre line, x = x_eye on an
+  Airbus (no station), 0.989 m ahead of the eye on the 737 (gsAntenna_pos_STA, from Boeing's H − H3), 2.1 m ahead on the ATR
+  (the research's assumption), and its z puts its path H2 under the eye's: z_ant = z_eye + (H2 + dx·(sin ρ + cos ρ·tan θ))
+  / (cos ρ − sin ρ·tan θ), the exact form of the research's z_ant = z_eye + H2. With the antenna on the beam the main
+  wheels cross each threshold at the research's RDH − H within 0.05 m (A320ceo 11.58, 737 12.21, A330 7.90 m on 21R), and
+  on the 21R ILS at the trimmed pitch the `aip` PAPI reads low from 490–507 m (A320 family), 632 m (737), 822 m (ATR) and 207 m
+  (A330) before the threshold. The research's T-D-07 (its ideal PAPI at 405 m, the 2°50′ edge, its tables' ρ) gives
+  591 m (A320ceo), 738 m (737) and 276 m (A330), so the sim's low reading starts 88, 106 and 69 m nearer the threshold:
+  the sim's PAPI stands at 384.8 m (P-01) and each type flies its own trimmed pitch (T-D-07 has no ATR or A321 row). The cockpit camera
+  (`AC.eye`), the PAPI colours (`air.eye`) and the gear (`AC.gear`, the research's contact points) were already per type.
+  `Aircraft.setParked` stands each type on its own gear (the static equilibrium of `AC.gear`, solved with `newtonSolve`
+  in `deriv()`; it used to start every type at d −1.30 m, θ 0.5°, which dropped the DA40s 0.45 m and threw the
+  airliners over): the airliners' parked CG height is within 0.12 m of the research's `cg_height_parked`.
+  With the `ils` PAPI siting each type has its own PAPI distance, since `setAircraft` re-solves the siting for the
+  type's eye and antenna (21R: light cards 301.8, ATR 318.8, trainer 325.0, 737 330.4, A320 family 337.3–338.2,
+  A330 355.1 m; `papi` P-14, where each type on the beam at its trimmed pitch sees 2 white from 2 NM to every
+  threshold); an airliner's mass and rating do not move it (the eye and antenna are the card's geometry alone).
 
 ## Flight model (current state)
 - Generic two-seat turboprop trainer (fictional): m 2250 kg, S 16.3 m², b 10.2 m, P 700 kW, static thrust 11.5 kN.
   It is the default and the only aircraft of the explore mode. The training pane also offers (plan C1, research
   round 2 task item 10, owner decision OD-TYPES) the six light aircraft Thai civil schools fly: `c172s`, `c172r`,
   `da42ng`, `da42_tae125`, `da40d`, `da40_180` (no DA40 NG: no Thai civil school has one, T-LS-11). The selector
-  (`#typeList`, `src/22-types.js`) shows each type's speeds (kt CAS, whole knots) and its Thai civil schools, counts and
+  (`#typeList`, `src/22-types.js`) shows each type's Vref and Vapp (KIAS, whole knots; plan C3) and its Thai civil schools, counts and
   bases from the card's `thai_fleet` (CAAT register of 9 Jul 2026 [LS1]), labels every real type สถานการณ์สมมติ
   (T-LS-11 (ค)) and saves the choice per viewer (`afl-type`). One global `AC`: `useType(id)` in 90-app.js is the only
-  switch after start (`setAircraft` + `ac3.fit(modelSpec(...))`), `setMode` puts the trainer back for explore and the
+  switch after start (`setAircraft` + `ac3.fit(modelSpec(...))`, then the PAPI housings, lights and pin placed again for
+  the `ils` siting), `setMode` puts the trainer back for explore and the
   chosen type for training, and a type changes only in the setup pane, so a Flight only advances under its own type.
   The 3D model stays the trainer's, fitted (raised to the card's wheels, its landing flap angle, fixed gear, two
   nacelles on the DA42s) and hidden in the cockpit view of a real type; a Thai note says the picture is generic.
+- Experimental airliners (plan C4, research round 3 R3-1, R3-C5, R3-C6, R3-2, R3-39; owner decisions OD-LEMAC,
+  OD-SOURCES, OD-RATINGS): the training pane's Thai switch "รุ่นทดลอง" (`#chkExp`, saved per viewer as `afl-exp`, off
+  by default) adds the seven airliner cards to the selector, each labelled รุ่นทดลอง and ค่าประมาณ (OD-SOURCES); the
+  cards load lazily (`loadCards`) the first time it is on. Explore stays on the trainer. OD-RATINGS: a type starts at
+  its card's default mass (`training_mass`: the research's `default_sim` MLW, the ATR its maximum MLW 22,350 kg) and
+  default engine rating; the setup pane offers the card's `mass_options` and `turbofan.ratings_offered`
+  (`setAircraft(card, { mass, rating })`; a rating scales T0 and P by the ratio of its F00 to the default's), with a
+  Thai note that airlines do not publish the rating they fly; the CFM56-7B classes are flat rated to 30 °C. Reader
+  (legacy mode on today's equations): `aero.legacy` and `propulsion.legacy`, the round 3 units through `toSI`, Vref/Vapp/
+  VS0 from the mass tables (`{ axes: { mass_kg, flap? }, data }`, kt CAS, read with `table1` at the mass in the
+  landing detent's column), `_na` honoured (a needed path marked `_na` throws, an optional one is skipped). The drag
+  polar's offset is the card's `AC.K_CL_offset` (`K·φGE·(CL − K_CL_offset)²`; 0.15 when a card gives none, as before,
+  so the trainer and the six light cards are bit-identical; the ATR and 737 legacy sets give 0). OD-LEMAC: the A321
+  LEMAC is FAA TCDS A28NM's Sta 700.85 in (the research estimated the A320's LEMAC plus a 4.27 m plug, 19.53 m STA),
+  the 737-800's BA 627.1 in; both low confidence. Nothing in `src/` reads `airframe.cg.LEMAC_x`: the A321 FRD
+  positions (wheels, engines, the eye's x and y) stay the research's, measured from its CG at 25 % MAC on its own LEMAC
+  (19.53 m STA), and only the eye's z was refitted (plan C7). C4 deferred moving them onto the TCDS LEMAC to C7, which
+  did not take it (the plan's C7 covers the eye, the antenna and the wheel contacts only); it stays open until the A321
+  datum is confirmed (03-airliners.md conflict 5), and no plan item holds it yet. Each card carries the research's `_na` plus the generator's rules, and `_deferred` (paths waiting for a
+  later plan); every `r3_merge.mjs --coverage` gap is in one of them (`test/r3cards.test.mjs`). The HUD of an airliner
+  reads KCAS (no `speeds.ias_cas`), and so do the brief, the live gate row (named after the flight's `Approach.label`,
+  VLS on an Airbus), the instrument strip's speed tile (labelled CAS kt) and the debrief's touchdown speed (`spdUnit` in
+  `90-app.js`). Approach speeds (plan C5, below): the HUD, the Autopilot and the Evaluator use `Flight.appr`, no longer
+  the fixed `AC.Vref`. Known limits: the Autopilot and the flare are tuned for the trainer. Measured on
+  2026-11-27, re-measured after plan C5 moved the wind rows of the ATR and the Airbus types and again after plan C7 moved
+  every row (the Autopilot flies each type's own antenna, H2 under the eye, so at the trimmed pitch the aircraft rides
+  higher than with the old antenna at the eye: ATR 0.9 m, 737 1.5, A320 family 1.6–2.2, A330 2.5 m), seed 5
+  (`AIRLINER_AUTOLAND` in `test/r3cards.test.mjs`; calm = 21R, 21L, 03L, 03R; winds = 03L `head`, 03L `xr`, 21R `xl`):
+  the 737-800 hits too hard (crash) in calm air on all four ends and in every wind but `xl` (68), the A321ceo in calm air
+  and in `xr` and `xl` (`head` lands, 81); the A320neo crashes in `xl` (calm 56), the A321neo in `head` (calm 35), the ATR in
+  `xl` (calm 86, `head` 86, `xr` 77): since C7 it floats in the flare, touches nose first at 728 fpm at 463 m (35; before
+  C7 89 at 282 m, main wheels first, then a bounce and a crash), and logs a near-stall event in the bounce before the
+  crash; the A330 stalls in every run: its near-stall event comes about 3.2 km before the threshold in calm air, 168 m up
+  (3.3, 3.9 and 3.8 km in `head`, `xr` and `xl`), and it hits the ground about 2.7 km out in calm air (1.53, 3.18 and
+  3.30 km in the winds); before C7 the event came about 3.8 km out (4.0, 3.8 and 3.8 km) and it hit the ground at 3.30 km
+  (3.11, 3.31 and 3.26 km) (the C7 text gave the ground-hit points as the stall's); only the A320ceo lands everywhere, at 168–197 m, short of the 300 m window (55–60). Where
+  no near-stall event comes before the touchdown the main wheels touch first, except the ATR's `xl` (pinned in `NOSE_FIRST`). Plan C5 had moved the 03L `head` rows of the ATR (wind
+  factor: 69 → 88, 414 → 244 m) and of the Airbus types (ground speed mini), and the 21R `xl` rows by at most about a point
+  and a metre (a scenario's wind direction is a whole degree, which leaves ≈ 0.1 kt of headwind in a "crosswind").
+  The review of plans C3–C7 moved the Airbus `head` rows again: a flight starts trimmed at VAPP plus the ground speed mini
+  at its start height (it started about 6 kt under its own target and the autothrottle stepped up): A320ceo 60 at 181 m,
+  A320neo 61, A321ceo 61 → 81 (190 m), the A321neo still crashes (114 m), the A330 still stalls and comes down at 1.53 km.
+  Each type's Thai note
+  says so (`AP_CALM`, `AP_WIND`, the A330's: fly it by hand); phase M of the plan (AFCS M1, flare law per type M2,
+  A/THR M5) tunes the Autopilot and moves the table again (plan C6 is the trim lock, `test/airliner.test.mjs`). Gear:
+  `gear.legacy` is built once at the card's default mass (the research's strut k and c, or where it gives none k from
+  the static deflection and c from ζ 0.6), and the struts
+  do not follow a mass chosen in the setup pane (only the inertia does; a Thai note says so; research item 2 asks for
+  it: plan E2 rescales the legacy struts by mass; the C4 review's "C5/C6" pointer was stale); the stroke where the research gives none (the Airbus nose and main struts, the ATR nose strut) is an
+  estimate, static deflection / 0.3. The 3D model is the trainer's: C4 deferred an airliner-size model to C7, which did
+  not take it, and no plan item holds it (known gap).
 - Aircraft data (plan B3, research round 1 task list item 8, `12-other-sims.md` §12.14 task 3, `05-turbofan.md`
-  task 1): the numbers live in seven cards in `data/aircraft/`, `trainer.json` and the six of plan C1 (generated by
-  `tools/aircraft/build_cards.mjs`, never edited by hand), one leaf `{v, u, scope, src, conf, est, note}` per value
+  task 1): the numbers live in fourteen cards in `data/aircraft/`, `trainer.json`, the six of plan C1 and the seven
+  airliners of plan C4 (generated by `tools/aircraft/build_cards.mjs`, never edited by hand), one leaf `{v, u, scope, src, conf, est, note}` per value
   (`schema.md`, round 2 `schema-ext.md` paths; `_meta.sources` lists every `src` code with its link). `const AC = {}`
   until `setAircraft(card, opts)` fills it (`acFromCard(card, opts)` reads the card's direct paths; on every card it
   gives the same numbers as round 2's `lm_card.mjs` `buildAC` on its 51 fields, but unlike `buildAC` it takes speeds
@@ -305,10 +444,67 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   load. `AC.engines` (`[{ pos, dir }]`, FRD, from `propulsion.layout`): `deriv` shares
   `thr·thrustAvail(V)` equally among them and adds each one's force and moment `pos × F` through `engineLoads`
   (sums start at −0, so the trainer's one engine along +x gives exactly T on x and no moment: bit for bit as before).
-  `table1`/`table2` (clamped, T-S-07): `table1` converts kt IAS (plan C1); `table2` waits for the tables of plan C4.
+  `table1`/`table2` (clamped, T-S-07): `table1` converts kt IAS (plan C1) and reads the airliners' mass tables (plan C4); `table2` is not yet used by a card.
+- Approach speeds (plan C5, research round 3 task item 3, R3-3): `SPD` and `Approach` in `src/20-flight.js`, with the
+  generator's `speeds.approach_rule` on the seven airliner cards (`tools/aircraft/build_airliners.mjs`; `AL:C5`). The
+  card's mass tables are read with `table1` (clamped, never extrapolated): `speeds.VREF_kt` now holds every column the
+  research gives (the 737's flaps 30 and 40, the Airbus VLS of each CONF), `speeds.VS0_kt` every flap column,
+  `speeds.VAPP_kt` the landing one. `AC.spd` (a property that is not enumerable, like `AC.kias`; `setAircraft` keeps it)
+  is `{ kind, land, rule, ref, stall, app, vfe, gs }`; a card without a rule is `{ kind: 'fixed' }`: the trainer and the six
+  light cards, whose `Approach` returns `AC.Vref` / `AC.Vapp` and adds `+ 0`, so their hashes did not move. Rules, in
+  kt: **Boeing** (737-800; FCTM 2013) with the autothrottle on Vref + 5; off, Vref + max(5, ½ steady headwind + the whole
+  gust), at most Vref + 20 (`OD-WIND-ADDITIVE`, the default) or + 15 (the option `windCap: 15`, labelled unconfirmed) and at
+  most VFE − 5; the gust part is kept to touchdown (`keep`). On every kind `Approach.target` bleeds the whole additive
+  (Boeing's, the Airbus APPR COR and ground speed mini, the ATR's WF) between 61 and 15 m of wheel height, the trainer's
+  POH rule. Known gap: that is before the flare, where the research keeps Vref + 5 at least until the flare (Boeing FCTM,
+  the steady part bled in the flare) and VAPP + the mini on an Airbus; holding it to the flare alone makes the 737 and the
+  A320ceo touch down outside T-K-07 and T-K-08 (the trainer's flare loses about 2 kt, the research 5 to 8), so it waits
+  for the flare law and A/THR of plans M2 and M5 (an owner question in the review of plans C3–C7). A flight on an Airbus
+  card starts trimmed at VAPP plus the ground speed mini at its start height (`Flight` constructor).
+  `OD-737-VREF`: Vref = 1.23 VS1g (the card's table). **Airbus** VAPP = VLS + clamp(headwind / 3, 5, 15), VLS from the
+  card's CG ≥ 25 % table (1.23 VS1g, an estimate, where a CONF has no column); the ground speed mini adds
+  k·max(0, headwind now − headwind at the tower) while the autothrottle flies (k 1 on A320ceo and A321ceo, 0.33 on the neo
+  types, and on the A330 from 1 to 0.33 over 25 s below 400 ft: a linear blend, an estimate; it reads the mean wind, so the
+  Dryden gusts are not compensated by it, a simplification the research does not make: plan M5, the A/THR). **ATR** VAPP = max(VmHB30 +
+  WF, VMCL), WF = min(15, max(headwind / 3, gust)), VmHB30 = VREF = max(1.23 VSR30, VMCL 98 kt): the table's rows, except
+  between 16,000 and 18,000 kg where the definition is used (the floor ends at 17,124 kg). ICAO approach category from Vat (A < 91, B < 121, C < 141, D < 166, E < 211 kt);
+  V2min = 1.13 VS1g. `OD-A321NEO-CLMAX`: CLmax FULL 3.05 (category C at MLW). The scenarios give no reported gust, so
+  it is 0 (`Flight` option `gust`), and no scenario reaches the 15 kt cap: there is no switch for it on the page. The
+  wind is the scenario's at the tower (a whole-degree direction, so 03L's 10 kt `head` is 9.99996 kt). The HUD prints
+  `VLS` (Airbus) or `Vref` and the approach speed (`VAPP` on an Airbus, `Vapp` otherwise) under it, in the HUD, the brief and the type card; the brief, the FMA and the gate row use the same `Approach`;
+  mass changes follow (`setAircraft` with a mass). The light cards have no mass option on the page, so their `fixed`
+  speeds do not follow a mass.
+- Airliner trims (plan C6, research round 3 task item 4, R3-4; `test/airliner.test.mjs`): every airliner trims in the
+  landing configuration on a 3° path at every mass the page offers, inside its control limits, throttle 0.15–0.34, θ
+  −0.28° (ATR) to 2.54° (A330). Against the research: the ATR, the 737 and the A330's attitude pass; the A320 family sits
+  at 1.2–1.3° at the research's masses (0.4–1.3° across the offered masses; the research's 1.5 −1.0/+2.0 passes,
+  owner decision OD-A320-PITCH's temporary 2.5° (± 1.0°, our tolerance) does not: K1 retunes it); the A330's thrust is a quarter low (legacy polar, K1). The airliner cards' `_deferred` `validation.*`
+  (only `validation.classification.hqClassCategory`, the MIL-F-8785C class) now points at plan N4.
+- KIAS (plan C3, research round 2 task item 12, R2-12): the sim flies CAS (`air.ias` is EAS, equal to CAS to 0.1 % below
+  3,000 ft and 200 kt); the HUD, the instrument strip, the brief, the debrief, the Recorder and the Evaluator use the
+  KIAS a real indicator reads. `AC.kias` (a property that is not enumerable, so `Object.keys(AC)`, JSON and `{...AC}` are
+  as before; `setAircraft` keeps it, null without a table) holds `{ Vref, Vapp, Vs0 (KIAS), rows: [{ f, kias[], kcas[] }] }`,
+  one row per detent of the card's `speeds.ias_cas` at its flap position f (lift increment over the landing detent's,
+  research `flapMap`); `iasToCas(T, f, kias)` and `casToIas(T, f, kcas)` read it (T = `AC.kias`): linear inside a row;
+  between two rows the CAS of both mixed by f; outside a row's points an estimate (ค่าประมาณ): in proportion to the
+  origin below the first point, a constant difference above the last. `Aircraft.kias()` is the KIAS now (at `this.flaps`),
+  `speedsKias()` the card's Vref, Vapp, Vs0 in KIAS (`AC.kias` or, with no table, `AC` itself). The trainer has no table:
+  KIAS = KCAS, bit for bit, and its hashes did not move. Decision on the Evaluator (the task said to decide): the gates
+  (Vref −5/+20), the touchdown speed `td.ias` and the speed score (−8/+5 full marks) compare the KIAS of the HUD with the
+  card's Vref in KIAS, the POH figure the HUD prints (the C172S's 61 KIAS, not its 63.9 KCAS): one scale for the pilot;
+  the band widths are the same knots. The Autopilot and PilotLaws fly CAS against the flight's `Approach` (plan C5: for the trainer and the six light cards it is
+  `AC.Vref` / `AC.Vapp`, bit for bit), and the stall horn and `'stall'` event keep their 40 kt CAS cut-off. The stall end of the table: the POH's
+  Fig 5-1 starts at 40 or 50 KIAS, above the stall, so `tools/aircraft/build_cards.mjs` `anchorStallRows` makes the stall
+  pair of `speeds.stall_table` (forward CG, 0° bank, [KIAS, KCAS]) the first point of a row when it is at or below the
+  row's first KIAS, dropping the Fig 5-1 points it contradicts (C152 flaps 30: 35 KIAS = 43 KCAS, so T-LF-07 reads 35.4
+  KIAS, was 40.3; C172R white arc 33 KIAS; the DA cards have no pair cells, unchanged). A leaf that gains a point has `est: true`
+  (the line from the stall pair to the next Fig 5-1 point is an interpolation, not a POH figure). Known gap: the stall table's
+  banked cells (45°, 60°) are a power-off calibration; the sim reads them 4 to 8 KIAS above the POH's (C172S 61 / 76
+  against 57 / 68 KIAS), diagnostic in `test/types.test.mjs` T-LC-03. Reader rules added: every row of the table is
+  checked (positive, KIAS strictly ascending, KCAS not descending) and must name a detent.
   The trainer-era constants in the code still apply to every type (plan C1 R4; per-type values are later work):
-  `setParked` d −1.30 m, the wingtip strike at 15.5° bank, the flare at 4.5–9 m, the 300–600 m touchdown window, the
-  debrief TDZ 350–600 m, the gates at 500/200 ft and the speed band Vref −5/+20.
+  the wingtip strike at 15.5° bank, the flare at 4.5–9 m, the 300–600 m touchdown window, the
+  debrief TDZ 350–600 m, the gates at 500/200 ft and the speed band Vref −5/+20 (in KIAS since plan C3).
 - Linear stability derivatives in `AC`, stall by Beard–McLain blending (M = 55, α_stall 17°, −2.5° with flaps),
   ground effect, spring-damper gear with tanh tyre friction, RK4 at 240 Hz.
 - Trim (plan B2, research round 1 task list item 11, `12-other-sims.md` §12.14 task 6): `Aircraft.trim({ h, n, e, tas,
@@ -521,7 +717,12 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
     harmonisation of Transport Canada AC 302-009; FAA JO 6850.2B ¶502 puts the PAPI at the distance of the GS virtual
     source ±30 ft (±10 m), adding 300 ft only for height group 4, so for the trainer this siting stands about 11 m
     beyond FAA's placement. The plan C1 cards put the antenna at the eye (H2 = 0), so with them `ils` stands 12.2 m
-    short of the glide-path origin (21R 301.8 m), about 2 m short of FAA's −10 m. Not the published
+    short of the glide-path origin (21R 301.8 m), about 2 m short of FAA's −10 m. The experimental airliners (plan
+    C7: H2 at 0° pitch from each card's eye and antenna, 0.890 m for the ATR 72-600 to 2.792 m for the A330-300; the
+    manufacturers' H2 at the reference attitudes are 0.89 to 2.78 m, the 737's 1.433 m against 1.495 m) put it 4.8 to 41.1 m
+    beyond the glide-path origin (21R 318.8 to 355.1 m; `papi` P-14): "matched to the ILS of the aircraft flown"
+    for them too, as the setup hint says; their mass and engine rating (the setup's choices, which go through
+    `useType` as well) do not move the eye or the antenna, so not the PAPI. Not the published
     configuration (the UI says so); on 03R it matches the synthetic RNP path. It is solved in the vertical plane along
     the track, so over the threshold an eye on its path sees the 2°50′ unit 6.7′ to 7.3′ above its setting and the
     3°10′ unit 11.9′ to 12.4′ below (21R: 6.7′ and 12.4′; 10′ and 10′ far out), still 2 white.
@@ -600,8 +801,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   resolves a card, and `scripts/lm_card.mjs` `buildAC(card)` / `applyAC(M, ac)` load it into the current sim for tests.
   The card owns `speeds.VREF_kt` / `VAPP_kt`; handling (08) and procedures (09) quote it. Task item 10 (the type
   selector, cards from `params-light.json`) is done by plan C1 and item 11 (the regression lock over all types, `test/types.test.mjs`)
-  with item 23 (the stall-recovery robot) by plan C2; C3 (KIAS on the HUD) and C4 (airliner cards through the same
-  reader) follow. After editing any JSON block,
+  with item 23 (the stall-recovery robot) by plan C2; item 12 (KIAS on the HUD and in the Evaluator) by plan C3; C4
+  (airliner cards through the same reader) is done. After editing any JSON block,
   `node docs/research/02-light-aircraft/scripts/lm_merge.mjs --coverage --dry --strict` must report 0 warnings
   (`--strict` exits 1 on any warning, and on a card with round-1 per-type paths neither filled nor in `_na`); then run
   it without `--dry` to rewrite `params-light.json` and commit it (CI checks that the file is up to date).
@@ -624,7 +825,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   propulsion, controls, afcs, ops; `_inherits` for neo and A321 variants) and the scripts in `scripts/`
   (`r3_merge.mjs` rebuilds the JSON from the topic files, `r3_schema.mjs` rebuilds `schema.md`).
   Round 3 keeps scope by meaning and gives airliner speeds as mass tables or rules, unlike round 2's card rules,
-  so do not run round 2's `lm_merge --strict` on round 3's `params-*.json`.
+  so do not run round 2's `lm_merge --strict` on round 3's `params-*.json`. Plan C4 turns them into the airliner
+  cards with `tools/aircraft/build_airliners.mjs` (through `build_cards.mjs`); `r3_merge.mjs --dry --coverage` may be
+  run read-only to compare its gaps with the cards' `_na` and `_deferred`.
 - Read the relevant report before changing physics, input or data. Physics code changes wait until the owner
   approves the development plan that follows all five rounds.
 
@@ -711,10 +914,12 @@ Pages deploys only `main`, so the owner tries a pull request on a private claude
    the same artifact (same file path in the same conversation, or its URL as `url` in a later one).
 
 ## Publishing
-- Live as a claude.ai artifact (multi-file: index.html + every file in `data/` at its path, now 13 files: the four
+- Live as a claude.ai artifact (multi-file: index.html + every file in `data/` at its path, now 19 files: the four
   OSM data files `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json`, `aircraft/trainer.json` (plan B3: the page
   does not start without it), the six plan C1 cards `aircraft/c172s.json`, `c172r.json`, `da42ng.json`,
-  `da42_tae125.json`, `da40d.json`, `da40_180.json` (a missing one only disables its entry), and `LICENSE-DATA.md`), title "Airfield Lab ดอนเมือง VTBD", slug f3207a70-5bd7-43d8-a606-a2b9b946413a, `downloads`
+  `da42_tae125.json`, `da40d.json`, `da40_180.json` (a missing one only disables its entry), the seven plan C4 airliner
+  cards `aircraft/a320ceo.json`, `b737_800.json`, `a320neo.json`, `a330_300.json`, `a321neo.json`, `atr72_600.json`,
+  `a321ceo.json` (loaded only once รุ่นทดลอง is on), and `LICENSE-DATA.md`), title "Airfield Lab ดอนเมือง VTBD", slug f3207a70-5bd7-43d8-a606-a2b9b946413a, `downloads`
   capability declared for the PNG snapshot button.
 - The earlier fictional-airfield prototype is a separate artifact (827d3f8b-1c74-4a51-b9e5-6ef7ea33b59c).
 - Pull request previews are separate private artifacts titled "พรีวิว PR #n · Airfield Lab ดอนเมือง VTBD". The live

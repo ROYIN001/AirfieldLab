@@ -51,7 +51,9 @@ each `_meta.sources` entry its text and link; and the simulator itself through `
 angles are solved on the sim's trimmed lift curve, 7 kt above the 1-g stall. Each card keeps 45 copied leaves with
 their sources (what `acFromCard` reads, the speed table `speeds.ias_cas`, the flap detents, and the identity, MTOW,
 length and gear layout), the generated leaves and the Thai `thai_fleet` leaf of the civil schools and clubs that fly
-the type; `_meta.sources` links every source code. The output is deterministic (no dates beyond the register's
+the type; `_meta.sources` links every source code. Plan C3: the leaf `speeds.ias_cas` is the research's, with the stall
+pair of `speeds.stall_table` as the first point of a row where that pair is at or below the row's first KIAS
+(`anchorStallRows`, source code `AL:C3`, an estimate: the HUD then reads the stall near the POH's white arc). The output is deterministic (no dates beyond the register's
 `as_of`).
 
 Regenerate, and commit the cards in the same pull request, after a change to `params-light.json`, to a reference row
@@ -61,6 +63,21 @@ workflow (`pages.yml`, every pull request into `main`) fails on a stale card, al
 (`research.yml` does not run `--check`). The script never writes `data/aircraft/trainer.json` and the cards do not
 depend on it, but it reads it through `test/harness.mjs` at import, so a broken trainer card stops the script too. The
 cards are never edited by hand.
+
+Plan C4: the same command also writes the seven airliner cards `data/aircraft/{a320ceo,b737_800,a320neo,a330_300,
+a321neo,atr72_600,a321ceo}.json` (shown only behind the training pane's switch รุ่นทดลอง) through
+`aircraft/build_airliners.mjs`, and `--check` and `--only` cover all thirteen. Inputs: round 3's
+`docs/research/03-airliners/params-<type>.json` and `params-common-airliner.json` (read only; a value the reader cannot
+use is fixed in the generator, never in the research data) and the reference rows of `03-airliners/0x-*.md`. Each card
+keeps the research's leaves, adds generated ones with source code `AL:C4` (training mass and the masses offered,
+Vref/Vapp/VS0 mass tables, surface limits, `gear.legacy`, the stall-warning angles, the ratings offered, the A330's
+lateral derivatives in body axes, the OD-LEMAC fixes), the research's `_na` plus the generator's rules, and `_deferred`
+(paths for later plans). Plan C5 adds source code `AL:C5`: `speeds.approach_rule` (the Boeing, Airbus or ATR approach
+speed rule, read by `SPD` in `src/20-flight.js`) and every column of `speeds.VREF_kt` and `speeds.VS0_kt`. Plan C7 adds source code `AL:C7`: `eyeAntenna` sets
+`airframe.geometry.gsAntenna_pos_FRD` on every airliner from the manufacturers' approach distances (H2 under the eye's
+path) and, on the Airbus cards only, refits the eye's z so that H1 matches Airbus at the reference attitude (the 737 and
+ATR eyes and the Airbus eye's x and y stay the research's); it also copies `airframe.geometry.approach_visual` into the cards. `build_airliners.mjs` and `build_cards.mjs` import each other: neither may use the other's
+bindings at the top level.
 
 ## JSBSim oracle (`jsbsim/`)
 

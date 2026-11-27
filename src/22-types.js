@@ -21,6 +21,31 @@ const TYPE_TEXT = {
   da40d: { name: 'Diamond DA40 D', desc: 'Diamond DA40 D เครื่องยนต์ดีเซลหนึ่งเครื่อง ปีกต่ำ', note: 'โรงเรียนการบินพลเรือนไทยไม่มี DA40 NG' },
   da40_180: { name: 'Diamond DA40 (IO-360)', desc: 'Diamond DA40 (IO-360) เครื่องยนต์ลูกสูบหนึ่งเครื่อง ปีกต่ำ', note: 'โรงเรียนการบินพลเรือนไทยไม่มี DA40 NG' },
 };
+// The experimental airliners of research round 3 (plan C4), behind the Thai switch "รุ่นทดลอง" and labelled as estimates
+// until phase K gives them engines and tables (owner decisions OD-SOURCES, OD-RATINGS). Cards by
+// tools/aircraft/build_airliners.mjs, in its order: by the number of each type based at Don Mueang (03-airliners.md).
+// The explore mode always flies the trainer.
+const AIRLINER_TYPES = ['a320ceo', 'b737_800', 'a320neo', 'a330_300', 'a321neo', 'atr72_600', 'a321ceo'];
+// ap: what the trainer's Autopilot does with the type (measured, test/r3cards.test.mjs AIRLINER_AUTOLAND; phase M of the plan, the AFCS and the flare law per type, tunes it)
+const AP_CALM = 'ออโต้ไพลอตของเครื่องฝึกพาแบบนี้กระแทกพื้นแรงเกินไปแม้ลมสงบ ทุกทางวิ่ง ให้บินเอง';
+const AP_WIND = 'ออโต้ไพลอตของเครื่องฝึกพาแบบนี้กระแทกพื้นแรงเกินไปในลมบางแบบ';
+const AIRLINER_TEXT = {
+  a320ceo: { name: 'Airbus A320ceo', desc: 'Airbus A320ceo เจ็ตลำตัวแคบสองเครื่องยนต์ (CFM56-5B)' },
+  b737_800: { name: 'Boeing 737-800', desc: 'Boeing 737-800 เจ็ตลำตัวแคบสองเครื่องยนต์ (CFM56-7B)', note: 'flat rating ของ CFM56-7B 30 °C ทุก rating (ซิมยังไม่ลดแรงขับตามอุณหภูมิอากาศ)', ap: AP_CALM },
+  a320neo: { name: 'Airbus A320neo', desc: 'Airbus A320neo เจ็ตลำตัวแคบสองเครื่องยนต์ (LEAP-1A)', ap: AP_WIND },
+  a330_300: { name: 'Airbus A330-300', desc: 'Airbus A330-300 เจ็ตลำตัวกว้างสองเครื่องยนต์ (Trent 772B)', note: 'derivative ด้านข้างของ A330 แปลงจากแกน stability เป็นแกนตัวเครื่อง (ค่าประมาณ) ระยะ aileron และ rudder ยังไม่พบในแหล่งสาธารณะ', ap: 'ออโต้ไพลอตของเครื่องฝึกพาแบบนี้ stall ระหว่างร่อน ทุกทางวิ่งและทุกลม ให้บินเอง' },
+  a321neo: { name: 'Airbus A321neo', desc: 'Airbus A321neo เจ็ตลำตัวแคบสองเครื่องยนต์ (LEAP-1A)', note: 'LEMAC ของ A321 จาก FAA TCDS A28NM ความเชื่อมั่นต่ำ', ap: AP_WIND },
+  atr72_600: { name: 'ATR 72-600', desc: 'ATR 72-600 ใบพัดเทอร์โบสองเครื่องยนต์ ปีกสูง', note: 'ซิมยังไม่จำลองใบพัดสองข้าง แรงบิด และ governor ของ ATR', ap: AP_WIND },
+  a321ceo: { name: 'Airbus A321ceo', desc: 'Airbus A321ceo เจ็ตลำตัวแคบสองเครื่องยนต์ (CFM56-5B)', note: 'LEMAC ของ A321 จาก FAA TCDS A28NM ความเชื่อมั่นต่ำ', ap: AP_CALM },
+};
+for (const [id, t] of Object.entries(AIRLINER_TEXT)) TYPE_TEXT[id] = { ...t, exp: true };
+const EXP_SWITCH = 'รุ่นทดลอง';
+const EXP_NOTES = [
+  'รุ่นทดลอง: ซิมบินเครื่องบินโดยสารด้วยสมการเดิมของเครื่องฝึก (โหมด legacy) ค่าทุกตัวเป็นค่าประมาณจากงานวิจัยรอบที่ 3 ยังไม่มีแบบจำลองเครื่องยนต์ ระบบบังคับ และตารางอากาศพลศาสตร์ของแบบนี้',
+  'แฟลปตำแหน่งกลางเป็นค่าประมาณ (CLmax ในโหมดนี้ต่ำกว่าของจริง) เที่ยวบินเริ่มที่แฟลปลงจอด',
+  'สายการบินไม่เผยแพร่มวลและ rating เครื่องยนต์จริงของแต่ละลำ มวลและ rating ข้างบนจึงเป็นค่าตั้งต้นของบัตร เปลี่ยนได้ (สปริงและแดมเปอร์ของขาล้อคิดที่มวลตั้งต้นของบัตร ไม่เปลี่ยนตามมวลที่เลือก)',
+  'ออโต้ไพลอตและระบบช่วยบังคับยังตั้งไว้สำหรับเครื่องฝึก อาจลงจอดแข็งหรือเสียการทรงตัวกับเครื่องบินโดยสาร จนกว่าจะปรับรายแบบ',
+];
 const TRAINER_LEDE = 'เครื่องฝึกใบพัดเทอร์โบสองที่นั่ง (แบบสมมติ) เริ่มบนแนวร่อน 3° ใส่ล้อและแฟลปลงจอดแล้ว';
 const TRAINER_NOTES = [
   'เครื่องฝึกเทอร์โบพร็อปสองที่นั่งแบบสมมติของ AirfieldLab ไม่ใช่เครื่องบินของผู้ผลิตจริง ค่าทุกตัวเป็นค่าประมาณ',
@@ -37,13 +62,16 @@ const landingDetent = (card) => card.aero.flaps.detents.v.reduce((a, d) => (d.fl
 
 // The Thai text of a type: { name, em, span, lede, notes, links: [{ text, href }], real }. card is the parsed
 // data/aircraft/<id>.json and ac what acFromCard made of it; without them (a card that failed to load) only the name.
-// em and the brief show kt CAS, the sim's speeds, rounded for display; the card's KIAS are in note 4 until plan C3 (they
-// are not all manual figures: the da42ng ones come from a school's deck, the C172 Vapp is the middle of the POH range).
+// em and the brief show Vref and Vapp in KIAS as the HUD does (plan C3: ac.kias, the card's own figures or its kt CAS read
+// back through speeds.ias_cas), rounded for display; note 4 says what the HUD reads and what the sim flies. They are not
+// all manual figures: the da42ng ones come from a school's deck, the C172 Vapp is the middle of the POH range.
 function typeInfo(id, card, ac) {
   const T = TYPE_TEXT[id] || { name: String(id) }, real = id !== 'trainer';
-  const out = { name: T.name, em: '', span: '', lede: '', notes: [], links: [], real };
+  const out = { name: T.name, em: '', span: '', lede: '', notes: [], links: [], real, exp: !!T.exp };
   if (!card || !ac) return out;
-  out.em = `Vref ${Math.round(ac.Vref)} · Vapp ${Math.round(ac.Vapp)} kt`;
+  if (T.exp) return airlinerInfo(id, T, card, ac, out);
+  const V = ac.kias || ac;
+  out.em = `Vref ${Math.round(V.Vref)} · Vapp ${Math.round(V.Vapp)} KIAS`;
   if (!real) {
     out.span = 'แบบสมมติ ค่าทุกตัวเป็นค่าประมาณ'; out.lede = TRAINER_LEDE; out.notes = [...TRAINER_NOTES];
     return out;
@@ -62,8 +90,7 @@ function typeInfo(id, card, ac) {
     out.notes.push(`จำนวนจากทะเบียนอากาศยานของ กพท. ณ ${thaiDate(tf.as_of)} นับเครื่องที่จดทะเบียน ไม่ใช่เครื่องที่บินได้วันนี้`);
   }
   if (T.note) out.notes.push(T.note);
-  const sp = (l) => `${l.v} ${l.u === 'kt IAS' ? 'KIAS' : 'KCAS'}`, S = card.speeds;
-  if (S.VREF_kt.u === 'kt IAS' || S.VAPP_kt.u === 'kt IAS') out.notes.push(`ความเร็วในซิมเป็น kt CAS แปลงจากค่าในบัตร Vref ${sp(S.VREF_kt)} และ Vapp ${sp(S.VAPP_kt)}`);
+  if (ac.kias) out.notes.push(`HUD แสดง KIAS ตามตาราง IAS–CAS ของบัตรที่แฟลปขณะนั้น ซิมบินด้วย KCAS (ลงจอดแฟลปเต็ม Vref ${Math.round(ac.kias.Vref)} KIAS = ${Math.round(ac.Vref)} KCAS, Vapp ${Math.round(ac.kias.Vapp)} KIAS = ${Math.round(ac.Vapp)} KCAS) และคะแนนวัดเป็น KIAS`);
   out.notes.push(`ตัวเลขการบินในซิมเป็นค่าประมาณจากเอกสารสาธารณะของผู้ผลิตและหน่วยงาน ดูที่มาทุกค่าใน aircraft/${id}.json`);
   out.notes.push(SCENARIO_NOTE, MODEL_NOTE);
   const reg = card._meta && card._meta.sources && card._meta.sources.LS1;
@@ -71,6 +98,28 @@ function typeInfo(id, card, ac) {
   out.links.push({ text: `aircraft/${id}.json`, href: `aircraft/${id}.json` });
   return out;
 }
+
+// An experimental airliner (plan C4): its speeds are kt CAS from the card's mass tables at the chosen mass (no IAS–CAS
+// table, so the HUD shows KCAS), the mass and the engine rating are the ones chosen (ac.m, the rating name given)
+function airlinerInfo(id, T, card, ac, out) {
+  const det = landingDetent(card), flap = /^\d+$/.test(String(det.name)) ? `${det.name}°` : String(det.name);
+  const bus = ac.spd && ac.spd.kind === 'airbus';   // an Airbus card's Vref is its VLS and its approach speed VAPP (as the brief and the HUD print them)
+  out.em = `${bus ? 'VLS' : 'Vref'} ${Math.round(ac.Vref)} · ${bus ? 'VAPP' : 'Vapp'} ${Math.round(ac.Vapp)} KCAS`;
+  out.span = `${EXP_SWITCH} · ค่าประมาณ · มวล ${Math.round(ac.m).toLocaleString('en-US')} kg`;
+  out.lede = `${T.desc} (${EXP_SWITCH}) เริ่มบนแนวร่อน 3° ใส่ล้อและแฟลปลงจอด (${flap}) แล้ว`;
+  out.notes.push(...EXP_NOTES);
+  if (T.note) out.notes.push(T.note);
+  if (T.ap) out.notes.push(T.ap);
+  out.notes.push(`HUD แสดงความเร็วเป็น KCAS เพราะบัตรไม่มีตาราง IAS–CAS ของแบบนี้ (${bus ? 'VLS' : 'Vref'} ${Math.round(ac.Vref)} KCAS ที่มวล ${Math.round(ac.m).toLocaleString('en-US')} kg)`);
+  out.notes.push(`ตัวเลขทุกตัวพร้อมที่มาอยู่ใน aircraft/${id}.json`, MODEL_NOTE);
+  out.links.push({ text: `aircraft/${id}.json`, href: `aircraft/${id}.json` });
+  return out;
+}
+// The masses and engine ratings an airliner card offers (airframe.weights.mass_options, turbofan.ratings_offered, the
+// card default first); [] for a type that offers none
+const massOptions = (card) => (card && card.airframe && card.airframe.weights.mass_options ? card.airframe.weights.mass_options.v.slice() : []);
+const ratingOptions = (card) => (card && card.turbofan && card.turbofan.ratings_offered ? card.turbofan.ratings_offered.v.slice() : []);
+const ratingName = (cls) => String(cls).replace(/_class$/, '').replace(/^CFM56_/, 'CFM56-').replace(/^LEAP_/, 'LEAP-').replace(/^TRENT_/, 'Trent ');
 
 // The generic model (70-aircraft.js) is the trainer's: its main wheels touch 1.38 m below its CG (leg y −0.36, wheel
 // −0.73, radius 0.29 in model axes), the trainer card's main-gear contact z. For another type it is raised so the
