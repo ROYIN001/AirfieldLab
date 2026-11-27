@@ -51,7 +51,7 @@ credit and the links.
 - A new JSON file in this folder carries `source` and `license` fields, at the top level or in `_meta` when the file
   keeps its metadata there (a parameter card whose leaves follow `{v, u, scope, ...}`); `license` names ODbL when any of its sources is ODbL, and an ODbL
   file joins the table above and `odbl_derived_files` in `test/fixtures/license_policy.json`. `vtbd_af.json` and
-  `city.json` predate the rule and are described here instead.
+  `city.json` carry both fields (added on 2026-11-26; the data in them is unchanged).
 - Every file in this folder has a row in a table of this file (content, made by, licence), and a new data source adds
   its credit to the page footer when its data arrives, not before (research round 5 §11, tables 11.1 to 11.3 list
   what may and may not be used).

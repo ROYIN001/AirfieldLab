@@ -12,7 +12,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { pathToFileURL } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 const STATION = 'VTBD';
 const UTC_OFFSET_H = 7;              // Asia/Bangkok, no DST
@@ -28,51 +28,36 @@ const RWY03_TRUE = (() => {
   return ((Math.atan2(y, x) / toR) + 360) % 360;
 })();
 
-// ───────────── METAR parser (main body only) ─────────────
-const WX_RE = /^(\+|-|VC)?(MI|BC|PR|DR|BL|SH|TS|FZ)?((?:DZ|RA|SN|SG|PL|GR|GS|UP|BR|FG|FU|VA|DU|SA|HZ|PO|SQ|FC|SS|DS)*)$/;
-export function parseMetar(raw) {
-  const out = { wind: null, varFrom: null, varTo: null, vis: null, cavok: false, wx: [], clouds: [], nsc: false, vv: null, T: null, Td: null, qnh: null };
+// ───────────── METAR decoder: the page's own, src/21-metar.js (research round 4 §3) ─────────────
+// Evaluated like the tests do (a plain script, no exports), resolved from this file so any cwd works.
+const metarSrc = fs.readFileSync(fileURLToPath(new URL('../../src/21-metar.js', import.meta.url)), 'utf8');
+const { parseMetar: decodeMetar } = new Function('"use strict";\n' + metarSrc + '\nreturn { parseMetar };')();
+
+// The statistics below were written for the old tool-local parser, and the numbers in
+// docs/research/04-weather.md and docs/research/data/vtbd-metar-climo.json come from it, so this view
+// gives the new decoder's result the old shape and the old semantics (the output stays byte-identical):
+//  - speeds are rounded to whole knots (MPS conversion) and the A-group pressure to whole hPa;
+//  - cloud layers with an unknown base ('///') are dropped; VV/// counts as a ceiling of 0 ft;
+//  - nsc is true for NSC, NCD, SKC and CLR; wx.ph is the phenomena joined into one string;
+//  - only the main body counts (the decoder also ends it at NOSIG/TEMPO/BECMG/RMK, as the old one did).
+function parseMetar(raw) {
   if (!raw || raw === 'M') return null;
-  let toks = raw.trim().split(/\s+/);
-  const cut = toks.findIndex((t) => t === 'RMK' || t === 'NOSIG' || t === 'TEMPO' || t === 'BECMG');
-  if (cut >= 0) toks = toks.slice(0, cut);
-  let i = 0;
-  if (toks[i] === 'METAR' || toks[i] === 'SPECI') i++;
-  if (/^[A-Z]{4}$/.test(toks[i])) i++;
-  if (/^\d{6}Z$/.test(toks[i])) i++;
-  if (toks[i] === 'AUTO' || toks[i] === 'COR') i++;
-  for (; i < toks.length; i++) {
-    const t = toks[i];
-    let m;
-    if (!out.wind && (m = /^(\d{3}|VRB)(\d{2,3})(?:G(\d{2,3}))?(KT|MPS)$/.exec(t))) {
-      const k = m[4] === 'MPS' ? 1 / 0.514444 : 1;
-      out.wind = { dir: m[1] === 'VRB' ? null : +m[1], vrb: m[1] === 'VRB', kt: Math.round(+m[2] * k), gust: m[3] ? Math.round(+m[3] * k) : null };
-      continue;
-    }
-    if ((m = /^(\d{3})V(\d{3})$/.exec(t))) { out.varFrom = +m[1]; out.varTo = +m[2]; continue; }
-    if (t === 'CAVOK') { out.cavok = true; out.vis = 10000; continue; }
-    if (out.vis === null && (m = /^(\d{4})(NDV)?$/.exec(t))) { out.vis = +m[1] === 9999 ? 10000 : +m[1]; continue; }
-    if (/^\d{4}(N|NE|E|SE|S|SW|W|NW)$/.test(t)) continue;               // directional minimum visibility
-    if (/^R\d{2}[LCR]?\//.test(t)) continue;                            // RVR
-    if (/^RE[A-Z]+$/.test(t)) continue;                                 // recent weather
-    if (/^WS$/.test(t) || /^(R\d{2}[LCR]?|ALL)$/.test(t) || t === 'RWY') continue;
-    if (t === 'NSC' || t === 'NCD' || t === 'SKC' || t === 'CLR') { out.nsc = true; continue; }
-    if ((m = /^VV(\d{3}|\/\/\/)$/.exec(t))) { out.vv = m[1] === '///' ? 0 : +m[1] * 100; continue; }
-    if ((m = /^(FEW|SCT|BKN|OVC)(\d{3}|\/\/\/)(CB|TCU|\/\/\/)?$/.exec(t))) {
-      if (m[2] !== '///') out.clouds.push({ amt: m[1], ft: +m[2] * 100, type: m[3] && m[3] !== '///' ? m[3] : null });
-      continue;
-    }
-    if ((m = /^(M?\d{2})\/(M?\d{2})?$/.exec(t))) {
-      const f = (s) => (s ? (s[0] === 'M' ? -+s.slice(1) : +s) : null);
-      out.T = f(m[1]); out.Td = f(m[2]); continue;
-    }
-    if ((m = /^Q(\d{4})$/.exec(t))) { out.qnh = +m[1]; continue; }
-    if ((m = /^A(\d{4})$/.exec(t))) { out.qnh = Math.round(+m[1] / 100 * 33.8639); continue; }
-    if (t.length >= 2 && t !== 'NSW' && (m = WX_RE.exec(t)) && (m[2] || m[3])) {
-      out.wx.push({ int: m[1] || '', desc: m[2] || '', ph: m[3] || '', code: t });
-      continue;
-    }
+  const m = decodeMetar(raw);
+  const out = { wind: null, varFrom: null, varTo: null, vis: null, cavok: false, wx: [], clouds: [], nsc: false, vv: null, T: null, Td: null, qnh: null };
+  if (!m) return out;   // blank text: the old parser returned an empty report, not null
+  const w = m.wind;
+  if (w && w.kt !== null && (w.fromDeg !== null || w.vrb)) {   // the old parser took only a wind group with digits
+    out.wind = { dir: w.vrb ? null : w.fromDeg, vrb: w.vrb, kt: Math.round(w.kt), gust: w.gustKt === null ? null : Math.round(w.gustKt) };
+    out.varFrom = w.varFrom; out.varTo = w.varTo;
   }
+  out.cavok = m.cavok;
+  out.vis = m.visibility_m;
+  out.wx = m.wx.map((x) => ({ int: x.int, desc: x.desc, ph: x.ph.join(''), code: x.code }));
+  out.clouds = m.clouds.filter((l) => l.amt !== null && l.base_ft !== null).map((l) => ({ amt: l.amt, ft: l.base_ft, type: l.type }));
+  out.nsc = m.sky === 'NSC' || m.sky === 'NCD' || m.sky === 'SKC' || m.sky === 'CLR';
+  out.vv = m.obscured ? (m.vv_ft === null ? 0 : m.vv_ft) : null;
+  out.T = m.oat_C; out.Td = m.dew_C;
+  out.qnh = m.qnh_hPa === null ? null : Math.round(m.qnh_hPa);
   return out;
 }
 
@@ -386,7 +371,7 @@ async function main() {
   console.error(`wrote ${out}: ${res.meta.n_routine} routine + ${res.meta.n_speci_or_offtime} other reports`);
 }
 
-// Run only when executed directly, so the parser can be imported by tests without network access.
+// Run only when executed directly.
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   main().catch((e) => { console.error(e); process.exit(1); });
 }
