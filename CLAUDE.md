@@ -44,12 +44,18 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   §12 P3-9, round 1 §12 T-S-11, policy in `test/fixtures/license_policy.json`), `oracle` (our model against JSBSim
   1.3.3 flying the same elevator, aileron and rudder doublets from the trimmed approach with a model built from our
   own `AC` numbers, research round 1 §12.8 T-S-01…T-S-03 and T-S-05, fixture
-  `test/fixtures/jsbsim_trainer_doublet.json`), `page` (parses the assembled page
-  module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
-  types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview` command
-  line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers every file the
-  page imports; both three.js cache folders sit inside the CI cache; the harness fails fast on an unpinned file,
-  fetches through the proxy and seeds each flight), `visibility` (MOR helpers in `10-atmo.js`, research VIS-1…VIS-3,
+  `test/fixtures/jsbsim_trainer_doublet.json`), `watch` (the pure parts of `tools/watch/`: eAIP index, cover, SUP/AIC
+  and amendment-list parsers, the AIRAC cycle, AD 2 sections compared after dropping only amendment marks and page
+  noise, every fixture value found in its AD 2 section of a synthetic page and a changed one named, title classes,
+  `tools/watch/reviewed.json` against its schema and the military-name rule, and the command line run end to end on
+  synthetic pages with no network), `register` (the register text in both layouts, the selection of school and club
+  aeroplanes, the diff, `registerDue`, `runRegister` on a synthetic file, and that `ls_fleet.mjs --register` rebuilds
+  the committed §02.6 block without touching `scripts/out/`), `page` (parses the assembled page module and checks the
+  element ids the scripts use; a build holds index.html and every data file the page fetches, in types and sizes the
+  artifact host serves; the preview page only adds its title and badge; the `--preview` command line), `shots` (no
+  machine paths under `test/`; the pinned three.js matches the import map and covers every file the page imports; both
+  three.js cache folders sit inside the CI cache; the harness fails fast on an unpinned file, fetches through the proxy
+  and seeds each flight), `visibility` (MOR helpers in `10-atmo.js`, research VIS-1…VIS-3,
   the haze mixed before the sRGB encode as one exact block, `SkySystem.applySunHaze` run on a stub sky, the dome's
   shader text, and that the sky, the fog, the lights, the sunlight and the visibility choices use them), `siting`
   (the Annex 14 and AIP numbers in `17-siting.js`, surface heights worked by hand, the approach light lanes,
@@ -100,6 +106,13 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   (with the base's pin) for pull requests that touch `src/`, `data/` or the harness, and keeps them as the Actions
   artifact `shots-pr-<n>` (`before/`, `after/`); a push to main that changes the pin refreshes the three.js cache for
   all PRs. SwiftShader draws on the CPU: compare the images by eye, never time them.
+- Watch (plan A10, network, not in CI; `tools/watch/README.md`): `node tools/watch/watch.mjs aip` compares AD 2 VTBD of
+  every eAIP edition newer than the fixture's with the one before it, checks every fixture value in each, and lists the
+  SUPs and AICs not yet in `tools/watch/reviewed.json`; `due` (offline) gives the next AIRAC dates, the recheck date
+  (it warns from the day that package is published, 42 days ahead) and the register's; `register --pdf <file>` reads a
+  CAAT aircraft register (the site blocks scripts, so the owner downloads it) and compares it with the committed rows.
+  Exit 0 nothing to do, 1 action needed, 2 could not decide. Reports and cached pages go to `.cache/watch/` (AIP text,
+  never committed).
 
 ## Source layout (concatenated in this order into the `/*__APP__*/` marker of `src/template.html`)
 | file | role |
@@ -336,10 +349,12 @@ Suggested order, each with a Node test before tuning by feel in the browser:
 
 ## Data provenance (data/)
 - Runways, lights, navaids: AIP Thailand AD 2 VTBD, AIRAC 29 OCT 2026 (AMDT 11/26, https://aip.caat.or.th). The values
-  are unchanged since AIRAC 14 MAY 2026 and in the 26 NOV and 24 DEC 2026 cycles (research round 5 §1 and 5D); check
-  again before AIRAC 21 JAN 2027. `test/fixtures/aip_vtbd_current.json` holds the published values (numbers only,
-  © CAAT): `test/aip.test.mjs` checks `RWY_DATA` against it, and `test/licenses.test.mjs` (T-K05) checks that the
-  footer, the source comment of `src/15-geo.js` and this line cite its cycle. For a new cycle, update the fixture first.
+  are unchanged since AIRAC 14 MAY 2026 and in the 26 NOV and 24 DEC 2026 cycles (research round 5 §1 and 5D, and
+  `tools/watch` on 2026-11-26); check again before AIRAC 21 JAN 2027 (published about 10 DEC 2026) with
+  `node tools/watch/watch.mjs aip`, and record each SUP and AIC read in `tools/watch/reviewed.json`.
+  `test/fixtures/aip_vtbd_current.json` holds the published values (numbers only, © CAAT): `test/aip.test.mjs` checks
+  `RWY_DATA` against it, and `test/licenses.test.mjs` (T-K05) checks that the footer, the source comment of
+  `src/15-geo.js` and this line cite its cycle. For a new cycle, update the fixture first.
 - Taxiways, aprons, buildings, water, golf course, land use: OpenStreetMap map renders captured and vectorised,
   mostly by the scripts in `tools/` (the source captures and a few steps are not included, see the "made by" column
   of `data/LICENSE-DATA.md`; regenerate only if the layout must change).

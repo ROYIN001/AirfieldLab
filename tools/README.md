@@ -38,3 +38,11 @@ Commit only the derived summary, not the raw METAR downloads.
 `jsbsim/run_cases.py` regenerates `test/fixtures/jsbsim_trainer_doublet.json`, which `test/oracle.test.mjs` checks
 our flight model against (research round 1 §12.8, plan item B1). Offline, Python with `jsbsim==1.3.3`; see
 `jsbsim/README.md`.
+
+## AIRAC, SUP/AIC and aircraft register watch (`watch/`)
+
+`watch/watch.mjs` (plan A10) tells when AIP Thailand AD 2 VTBD, the AIP supplements and circulars, or the CAAT aircraft
+register change. It needs the network, so it is not run in CI. See `watch/README.md` (Thai).
+
+    node tools/watch/watch.mjs aip        # eAIP editions newer than test/fixtures/aip_vtbd_current.json, SUP/AIC
+    node tools/watch/watch.mjs due        # next AIRAC dates and recheck dates, no network
