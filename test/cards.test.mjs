@@ -476,8 +476,14 @@ test('page wiring: cards load with the scene data, AC is switched only by useTyp
   assert.match(APP, /b\.disabled = !T\.card;/);
   assert.match(APP, /sp\.textContent = T\.card \? info\.span : T\.error;/);
   // the brief, the FMA and the HUD show the card's speeds in KIAS (plan C3: speedsKias, the HUD's speed is Aircraft.kias), rounded for display
-  // (plan C4: an airliner has no IAS–CAS table, its speeds are KCAS and are labelled so)
-  assert.match(APP, /\['แบบ', info\.name, 2\], \['มวล \(ค่าประมาณ\)', `\$\{fmt\(AC\.m\)\} kg`\], \['Vref', `\$\{fmt\(V\.Vref\)\} \$\{info\.exp \? 'KCAS' : 'KIAS'\}`\], \['Vapp', `\$\{fmt\(V\.Vapp\)\} \$\{info\.exp \? 'KCAS' : 'KIAS'\}`\]/);
+  // (plan C4: an airliner has no IAS–CAS table, its speeds are KCAS and are labelled so. The C4 review moved the brief's
+  // unit into spdUnit, which the live gate row and the debrief's touchdown speed use too: those two said KIAS on an
+  // airliner. No speed on a training screen carries a unit of its own.)
+  assert.match(APP, /const spdUnit = \(id = app\.train\.type\) => \(isLiner\(id\) \? 'KCAS' : 'KIAS'\);/);
+  assert.match(APP, /\['แบบ', info\.name, 2\], \['มวล \(ค่าประมาณ\)', `\$\{fmt\(AC\.m\)\} kg`\], \['Vref', `\$\{fmt\(V\.Vref\)\} \$\{spdUnit\(\)\}`\], \['Vapp', `\$\{fmt\(V\.Vapp\)\} \$\{spdUnit\(\)\}`\]/);
+  assert.match(APP, /\['ความเร็ว Vref −5\/\+20', [^\n]*`\$\{fmt\(f\.ac\.kias\(\)\)\} \$\{spdUnit\(\)\}`\]\);/);
+  assert.match(APP, /\['ความเร็วตอนแตะพื้น', `\$\{fmt\(td\.ias\)\} \$\{spdUnit\(\)\}`, P\.spd\]/);
+  assert.doesNotMatch(APP, /\} K[IC]AS`/, 'a speed shown with a fixed unit');
   assert.match(APP, /\['SPD ' \+ fmt\(V\.Vapp\), 'c'\]/);
   assert.match(APP, /'A\/THR SPD ' \+ fmt\(V\.Vapp\)/);
   assert.match(APP, /const V = speedsKias\(\);\s*\$\('#brief'\)/);

@@ -62,6 +62,12 @@ and `make_model.py` still produce from the fixture's own numbers. It reports tun
   unchanged. Since T-S-02 flies the fixture's numbers, `ORACLE_AC_FROZEN=1 node --test test/oracle.test.mjs` was run
   before and after the move and passed both times: it checks that `AC` still holds the fixture's numbers. Run it
   again after a change to the card or to `acFromCard` that should leave the numbers as they are.
+- Plan C4 added `AC.K_CL_offset` (the drag polar's offset, 0.15 on the trainer as before), mirrored in
+  `make_model.py` (`CDlin` reads it, 0.15 when absent) and the fixture regenerated from the commit that added it. The
+  new fixture also holds the four stall-warning fields of `AC_NOT_IN_DERIV`, so `ORACLE_AC_FROZEN` compares them too.
+  Its JSBSim rows and recorded start differ from the plan B1 fixture because `setApproach` had been retrimmed since
+  (2.63e-4 away at the parent commit, a diagnostic before); the code of plan C4 flew the old fixture within every
+  tolerance before it was replaced.
 
 When to regenerate:
 

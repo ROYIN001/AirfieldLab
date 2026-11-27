@@ -111,6 +111,8 @@ async function main() {
   const loadLiners = () => (linersP ??= loadCards(AIRLINER_TYPES, acFromCard).then((r) => { Object.assign(TYPES, r); return r; }));
   if (app.train.exp) await loadLiners();
   const isLiner = (id) => AIRLINER_TYPES.includes(id);
+  // the unit of a speed the training screens show (plan C4): an airliner card has no speeds.ias_cas, so its kias() is KCAS
+  const spdUnit = (id = app.train.type) => (isLiner(id) ? 'KCAS' : 'KIAS');
   const typeOk = (id) => Object.hasOwn(TYPES, id) && !!TYPES[id].card && (!isLiner(id) || app.train.exp);
   // acFromCard's options for a type: {} for the trainer and the light aircraft (as before plan C4), the chosen mass and
   // rating for an airliner
@@ -395,7 +397,7 @@ async function main() {
     const da = densityAltitudeFt(airDensity(fieldPressure(qnh, FIELD.elev), wx.oatC, wx.dewC));
     // Vref and Vapp in KIAS as the HUD shows them (plan C3): the card's figures, or its kt CAS read back through its table; whole knots
     const V = speedsKias();
-    $('#brief').innerHTML = [['แบบ', info.name, 2], ['มวล (ค่าประมาณ)', `${fmt(AC.m)} kg`], ['Vref', `${fmt(V.Vref)} ${info.exp ? 'KCAS' : 'KIAS'}`], ['Vapp', `${fmt(V.Vapp)} ${info.exp ? 'KCAS' : 'KIAS'}`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${fmt(wx.oatC)}°C`], ['จุดน้ำค้าง', wx.dewC == null ? '—' : `${fmt(wx.dewC)}°C`], ['QNH', `${Math.floor(qnh)} hPa`], ['ความชื้นสัมพัทธ์', wx.dewC == null ? '—' : `${fmt(relHumidity(wx.oatC, wx.dewC))}%`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
+    $('#brief').innerHTML = [['แบบ', info.name, 2], ['มวล (ค่าประมาณ)', `${fmt(AC.m)} kg`], ['Vref', `${fmt(V.Vref)} ${spdUnit()}`], ['Vapp', `${fmt(V.Vapp)} ${spdUnit()}`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${fmt(wx.oatC)}°C`], ['จุดน้ำค้าง', wx.dewC == null ? '—' : `${fmt(wx.dewC)}°C`], ['QNH', `${Math.floor(qnh)} hPa`], ['ความชื้นสัมพัทธ์', wx.dewC == null ? '—' : `${fmt(relHumidity(wx.oatC, wx.dewC))}%`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
       .map(([k, v, span]) => `<div${span ? ` style="grid-column: span ${span}"` : ''}><small>${k}</small><b>${v}</b></div>`).join('') + '<div style="grid-column: 1 / -1"><small>ค่าประมาณของวันทั่วไป: QNH เฉลี่ยทั้งปีและจุดน้ำค้างเฉลี่ยเวลา 11:00 น. จากสถิติ METAR ดอนเมือง 2016–2025 (Iowa Environmental Mesonet) · อุณหภูมิเป็นค่าเริ่มต้นของโปรแกรม</small></div>';
   }
   function refreshLive() { for (const b of $('#segWarp').children) b.setAttribute('aria-pressed', String(+b.dataset.w === app.train.warp)); $('#btnTake').textContent = app.flight && app.flight.pilot === 'ap' ? 'รับช่วงบังคับเอง' : 'ให้ออโต้ไพลอตบิน'; }
@@ -725,7 +727,7 @@ async function main() {
       rows.push(['ล้อลงและแฟลปลงจอด', f.ac.gearPos > 0.98 && f.ac.flaps > 0.95 ? 'ok' : 'bad', 'ครบ']);
       rows.push(['แนวกลาง (LOC)', Math.abs(a.locDots) <= 1 ? 'ok' : 'bad', `${a.locDots >= 0 ? '+' : ''}${a.locDots.toFixed(1)} จุด`]);
       rows.push(['แนวร่อน (G/S)', a.s > FIELD.aim - 50 ? '' : Math.abs(a.gsDots) <= 1 ? 'ok' : 'bad', a.s > FIELD.aim - 50 ? '—' : `${a.gsDots >= 0 ? '+' : ''}${a.gsDots.toFixed(1)} จุด`]);
-      rows.push(['ความเร็ว Vref −5/+20', Math.abs(f.ac.kias() - speedsKias().Vref - 7.5) <= 12.5 ? 'ok' : 'bad', `${fmt(f.ac.kias())} KIAS`]);
+      rows.push(['ความเร็ว Vref −5/+20', Math.abs(f.ac.kias() - speedsKias().Vref - 7.5) <= 12.5 ? 'ok' : 'bad', `${fmt(f.ac.kias())} ${spdUnit()}`]);
       rows.push(['อัตราจม ≤ 1,000 fpm', a.vs / FT * 60 >= -1000 ? 'ok' : 'bad', `${fmt(a.vs / FT * 60)}`]);
     }
     rows.push(['ผ่าน 500 ft แบบเสถียร', st(g5), g5 ? (g5.ok ? 'ผ่าน' : 'ไม่ผ่าน') : 'ยังไม่ถึง']);
@@ -747,7 +749,7 @@ async function main() {
         ['อัตราจมตอนแตะพื้น', `${fmt(-td.vsFpm)} fpm`, P.sink],
         ['จุดแตะพื้นจากหัวทางวิ่ง', `${fmt(td.s)} ม.`, P.pos],
         ['ห่างเส้นกลาง', `${Math.abs(td.tl).toFixed(1)} ม. ${td.tl > 0.3 ? 'ขวา' : td.tl < -0.3 ? 'ซ้าย' : ''}`, P.cl],
-        ['ความเร็วตอนแตะพื้น', `${fmt(td.ias)} KIAS`, P.spd],
+        ['ความเร็วตอนแตะพื้น', `${fmt(td.ias)} ${spdUnit()}`, P.spd],
         ['เอียง / ปัดหัว / ลอยข้าง', `${Math.abs(td.bank).toFixed(1)}° / ${Math.abs(td.crab).toFixed(1)}° / ${Math.abs(td.drift).toFixed(1)} ม./วิ`, P.att],
       ];
       $('#scRows').innerHTML = rows.map(([n, v, p]) => `<span>${n}</span><em>${v}</em><i>${Math.max(0, p.pts).toFixed(0)}/${p.max}</i><div class="bar"><div style="width:${Math.max(0, p.pts) / p.max * 100}%"></div></div>`).join('')

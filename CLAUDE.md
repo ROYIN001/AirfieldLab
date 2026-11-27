@@ -100,13 +100,15 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   T-LS-11 (ก)(ข)(ค), T-LM-13; `typeInfo` and `modelSpec` of `src/22-types.js` (the Thai card, lede and notes of each
   type, the model fit); `loadCards` with a stub fetch (Thai errors, never rejects); the owner's rule that no military
   user is named, not even generically (cards, `22-types.js`, the selector lines of `90-app.js`); the page wiring by
-  regex), `r3cards` (plan C4, research R3-1, R3-C5, R3-C6, R3-2, R3-39; under 1 s: the seven airliner cards in the
+  regex), `r3cards` (plan C4, research R3-1, R3-C5, R3-C6, R3-2, R3-39; about 7 s: the seven airliner cards in the
   generator's order; T-B-25 (lb → kg), T-B-22 (%MAC of a balance arm, OD-LEMAC on the 737), OD-LEMAC on both A321s
   (FAA TCDS A28NM, low confidence); T-B-14, T-L-24, T-H-17 (inertia at the research's masses); OD-RATINGS (default
   mass and rating, the choices, Vref/Vapp/VS0 from the mass tables, T0 and P scaled by the F00 ratio, CFM56-7B flat
   rating 30 °C); `AC.K_CL_offset` (0.15 by default, 0 on the ATR and the 737); T-R-23, T-L-26, T-H-08 (CLmax of the
   legacy sets); T-R-24/25 (ATR trim); T-J-19 (thrust lapse); every airliner trims at Vapp and flies 20 s; the A330
-  lateral derivatives in body axes; T-H-21; T-K-27; `r3_merge.mjs --dry --coverage` gaps all in the card's `_na` or
+  lateral derivatives in body axes; the known gap `AIRLINER_AUTOLAND`: the trainer's Autopilot on every airliner, seed 5,
+  calm on all four ends and 03L `head`, 03L `xr`, 21R `xl`, crash flag and events exact, score ± 7, point ± 4 / 8 m, and
+  each type's Thai Autopilot note following that table; T-H-21; T-K-27; `r3_merge.mjs --dry --coverage` gaps all in the card's `_na` or
   `_deferred`; `_na` in `acFromCard`; the รุ่นทดลอง and ค่าประมาณ labels and that explore stays on the trainer),
   `types` (plan C1 and C2, the per-type regression lock; about 23 s: research round 2 tests flown through the cards at the
   research's masses and tolerances (plan C3 adds the KIAS rows T-LC-03, T-LC-05, T-LE-04 and T-LF-07, which left
@@ -195,8 +197,10 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   task item 17) needs no new fixture. A self-convergence test (240 Hz against 960 Hz) checks that `step` stays RK4.
   When `AC` moved to `data/aircraft/` (plan B3, research task item 8), it ran with `ORACLE_AC_FROZEN=1` before and
   after and passed both times; run it that way again after a change to the card or to `acFromCard` that should keep
-  the numbers. Its JavaScript side is `test/lib/oracle.mjs`; its `withParams` builds `Iinv` with the page's
-  `inertiaInverse`.
+  the numbers. Plan C4 added `AC.K_CL_offset` (mirrored in `make_model.py`) and regenerated the fixture from the
+  commit that added it; the new fixture also holds the stall-warning fields, which `ORACLE_AC_FROZEN` now compares,
+  and its rows start from today's retrimmed approach (`tools/jsbsim/README.md`). Its JavaScript side is
+  `test/lib/oracle.mjs`; its `withParams` builds `Iinv` with the page's `inertiaInverse`.
   `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 25-input.js` with
   `new Function` in strict mode, reads `data/aircraft/trainer.json` from disk (`AIRCRAFT_CARD`) and calls
   `setAircraft` with it before any test runs, `test/keys.test.mjs` evaluates `18-keys.js`, `test/siting.test.mjs` `17-siting.js`,
@@ -290,12 +294,22 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   landing detent's column), `_na` honoured (a needed path marked `_na` throws, an optional one is skipped). The drag
   polar's offset is the card's `AC.K_CL_offset` (`K·φGE·(CL − K_CL_offset)²`; 0.15 when a card gives none, as before,
   so the trainer and the six light cards are bit-identical; the ATR and 737 legacy sets give 0). OD-LEMAC: the A321
-  LEMAC is FAA TCDS A28NM's Sta 700.85 in (the research's value was the A320's), the 737-800's BA 627.1 in; both low
-  confidence. Each card carries the research's `_na` plus the generator's rules, and `_deferred` (paths waiting for a
+  LEMAC is FAA TCDS A28NM's Sta 700.85 in (the research estimated the A320's LEMAC plus a 4.27 m plug, 19.53 m STA),
+  the 737-800's BA 627.1 in; both low confidence. Each card carries the research's `_na` plus the generator's rules, and `_deferred` (paths waiting for a
   later plan); every `r3_merge.mjs --coverage` gap is in one of them (`test/r3cards.test.mjs`). The HUD of an airliner
-  reads KCAS (no `speeds.ias_cas`). Known limits: the Autopilot and the flare are tuned for the trainer, so some
-  airliner autolands crash in wind and the A330 stalls on its own (a Thai note says to fly it by hand; plans C5/C6);
-  the 3D model is the trainer's; Airbus gear stroke is an estimate (static deflection / 0.3).
+  reads KCAS (no `speeds.ias_cas`), and so do the brief, the live gate row and the debrief's touchdown speed
+  (`spdUnit` in `90-app.js`). Known limits: the Autopilot and the flare are tuned for the trainer. Measured on
+  2026-11-27, seed 5 (`AIRLINER_AUTOLAND` in `test/r3cards.test.mjs`; calm = 21R, 21L, 03L, 03R; winds = 03L `head`,
+  03L `xr`, 21R `xl`): the 737-800 and the A321ceo hit too hard (crash) in calm air on all four ends and in every wind
+  but the 737's `xl` (72); the A320neo crashes in `xl` (calm 35–56), the A321neo in all three winds (calm 35), the ATR
+  in `xl` (calm 86, `head` 69, `xr` 76); the A330 stalls about 29 s after the start, 3.3 km before the threshold, in
+  every run; only the A320ceo lands everywhere, at 135–165 m, short of the 300 m window (55–63). Each type's Thai note
+  says so (`AP_CALM`, `AP_WIND`, the A330's: fly it by hand); plans C5/C6 tune the Autopilot and move the table. Gear:
+  `gear.legacy` is built once at the card's default mass (the research's strut k and c, or where it gives none k from
+  the static deflection and c from ζ 0.6), and the struts
+  do not follow a mass chosen in the setup pane (only the inertia does; a Thai note says so; research item 2 asks for
+  it, deferred); the stroke where the research gives none (the Airbus nose and main struts, the ATR nose strut) is an
+  estimate, static deflection / 0.3. The 3D model is the trainer's.
 - Aircraft data (plan B3, research round 1 task list item 8, `12-other-sims.md` §12.14 task 3, `05-turbofan.md`
   task 1): the numbers live in fourteen cards in `data/aircraft/`, `trainer.json`, the six of plan C1 and the seven
   airliners of plan C4 (generated by `tools/aircraft/build_cards.mjs`, never edited by hand), one leaf `{v, u, scope, src, conf, est, note}` per value

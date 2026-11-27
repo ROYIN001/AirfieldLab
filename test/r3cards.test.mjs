@@ -25,7 +25,7 @@ const card = (id) => JSON.parse(fs.readFileSync(path.join(DIR, `${id}.json`), 'u
 const trainer = () => JSON.parse(fs.readFileSync(AIRCRAFT_CARD, 'utf8'));
 after(() => setAircraft(trainer()));
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
-const TY = new Function('"use strict";\n' + read('src/22-types.js') + '\nreturn { AIRLINER_TYPES, typeInfo, modelSpec, massOptions, ratingOptions, ratingName, EXP_NOTES };')();
+const TY = new Function('"use strict";\n' + read('src/22-types.js') + '\nreturn { AIRLINER_TYPES, typeInfo, modelSpec, massOptions, ratingOptions, ratingName, EXP_NOTES, AP_CALM, AP_WIND };')();
 const near = (x, want, tol, what) => assert.ok(Math.abs(x - want) <= tol, `${what}: ${x} (want ${want} ± ${tol})`);
 
 // CLmax of the blend on the simulator's lift line, as the research scripts measure it: δe 0, q 0, α̇ 0, h 1,000 m (out of
@@ -189,6 +189,57 @@ test('every airliner loads, trims on a 3° glide at its Vapp (flaps 1, gear down
     for (let i = 0; i < 240 * 20; i++) ac.step(1 / 240);
     assert.ok(ac.air.h > 150 && Math.abs(ac.air.V / KT - AC.Vapp) < 10, `${id}: h ${ac.air.h} V ${ac.air.V / KT}`);
   }
+});
+
+// ───────────────────────── the trainer's Autopilot on the airliners (known gap, plans C5/C6) ─────────────────────────
+// The Autopilot and the flare are tuned for the trainer; plan C4 does not tune them. This table pins what they do with
+// each card at its default mass and rating, so that plans C5/C6 can show what they improve (and move these rows on
+// purpose, with the reason). Seed 5, the A8 default weather, as test/types.test.mjs AUTOLAND: calm on [21R, 21L, 03L,
+// 03R], then 03L `head`, 03L `xr` and 21R `xl`. A row is [crashed (1/0), score, touchdown or impact point (m from the
+// threshold), the Evaluator's events]. Calm has no turbulence, so the calm rows do not depend on the seed. Bands: the
+// crash flag and the events exact, score ± 7, point ± 4 m in calm and ± 8 m in wind (types.test.mjs's). Measured
+// 2026-11-27 on 8bfcd48 (the C4 review: the commit said only "some 737 and A321ceo runs crash in wind"). The 737-800
+// and the A321ceo hit too hard in calm air on every end; the A320neo, the A321neo and the ATR in some winds; the A330
+// stalls about 29 s after the start, 3.3 km before the threshold; the A320ceo lands everywhere but at 135–165 m, short
+// of the 300 m window (score 55–63).
+const AIRLINER_AUTOLAND = {
+  a320ceo: [[0, 57, 158.8, ''], [0, 57, 153.1, ''], [0, 55, 164.5, ''], [0, 55, 135.4, ''], [0, 58, 164.1, ''], [0, 58, 162.0, ''], [0, 63, 152.2, '']],
+  b737_800: [[1, 63, 195.6, 'crash'], [1, 63, 189.8, 'crash'], [1, 64, 201.4, 'crash'], [1, 63, 172.3, 'crash'], [1, 71, 201.5, 'crash'], [1, 66, 200.1, 'crash'], [0, 72, 187.8, '']],
+  a320neo: [[0, 56, 159.6, ''], [0, 56, 153.8, ''], [0, 56, 165.4, ''], [0, 35, 136.3, ''], [0, 60, 169.5, ''], [0, 35, 158.6, ''], [1, 35, 145.3, 'crash']],
+  a330_300: [[1, 20, -3300.2, 'stall,crash'], [1, 20, -3300.8, 'stall,crash'], [1, 20, -3299.5, 'stall,crash'], [1, 20, -3302.5, 'stall,crash'], [1, 19, -3513.4, 'stall,crash'], [1, 20, -3308.7, 'stall,crash'], [1, 2, -3264.2, 'stall,crash']],
+  a321neo: [[0, 35, 162.4, ''], [0, 35, 157.8, ''], [0, 35, 167.4, ''], [0, 35, 143.4, ''], [1, 20, -170.6, 'stall,crash'], [1, 35, 161.0, 'crash'], [1, 35, 150.3, 'crash']],
+  atr72_600: [[0, 86, 266.3, ''], [0, 86, 260.5, ''], [0, 86, 272.1, ''], [0, 86, 243.1, ''], [0, 69, 414.4, ''], [0, 76, 271.5, ''], [1, 90, 282.9, 'crash']],
+  a321ceo: [[1, 35, 146.3, 'crash'], [1, 35, 140.7, 'crash'], [1, 35, 151.6, 'crash'], [1, 35, 124.9, 'crash'], [1, 74, 50.6, 'stall,crash'], [1, 35, 141.8, 'crash'], [1, 35, 117.0, 'crash']],
+};
+const AL_RUNS = [['21R', 'calm'], ['21L', 'calm'], ['03L', 'calm'], ['03R', 'calm'], ['03L', 'head'], ['03L', 'xr'], ['21R', 'xl']];
+test('known gap: the trainer\'s Autopilot on each airliner, seed 5, calm on all four ends and three winds (regression table for plans C5/C6; the Thai note follows it)', (t) => {
+  const { Flight, SCENARIOS, setActiveRunway } = M;
+  assert.deepEqual(Object.keys(AIRLINER_AUTOLAND), AIRLINER_IDS);
+  const printed = [];
+  try {
+    for (const id of AIRLINER_IDS) {
+      setAircraft(card(id));
+      AL_RUNS.forEach(([rw, key], k) => {
+        setActiveRunway(rw);
+        const f = new Flight({ wind: SCENARIOS[key], pilot: 'ap', seed: 5 });
+        while (f.ac.t < 260 && !f.ev.done && !f.crashed) f.tick(f.dt);
+        const s = f.ev.score(), ev = [...new Set(f.ev.events.map((e) => e.k))].join(','), [c, score, td, pinEv] = AIRLINER_AUTOLAND[id][k];
+        const info = `${id} ${rw} ${key}: ${f.crashed ? 'crash' : 'landed'} at ${f.ac.t.toFixed(1)} s, score ${s.total}, point ${f.ev.td ? f.ev.td.s.toFixed(1) : 'none'} m, events [${ev}]`;
+        t.diagnostic(info);
+        printed.push(`[${f.crashed ? 1 : 0}, ${s.total}, ${f.ev.td ? f.ev.td.s.toFixed(1) : null}, '${ev}']`);
+        assert.equal(f.crashed ? 1 : 0, c, info); assert.equal(ev, pinEv, info);
+        near(s.total, score, 7, `${info}: score`); near(f.ev.td.s, td, key === 'calm' ? 4 : 8, `${info}: point`);
+      });
+      // the Thai note of the type says what the table says: crashes in calm, crashes only in some winds, the A330's stall
+      const rows = AIRLINER_AUTOLAND[id], calmCrash = rows.slice(0, 4).some((r) => r[0]), windCrash = rows.slice(4).some((r) => r[0]);
+      const notes = TY.typeInfo(id, card(id), acFromCard(card(id))).notes;
+      const stall = rows.every((r) => r[3].includes('stall'));
+      assert.equal(notes.includes(TY.AP_CALM), calmCrash && !stall, `${id}: AP_CALM`);
+      assert.equal(notes.includes(TY.AP_WIND), !calmCrash && windCrash, `${id}: AP_WIND`);
+      assert.equal(notes.some((n) => /^ออโต้ไพลอตของเครื่องฝึกพาแบบนี้ stall ระหว่างร่อน/.test(n)), stall, `${id}: stall note`);
+    }
+  } finally { setActiveRunway('21R'); setAircraft(trainer()); }
+  if (process.env.TYPES_LOCK_PRINT) console.log(printed.join('\n'));
 });
 
 test('A330 lateral derivatives are in body axes (04-a330-300.md §3.4.7.5: stability axes with Ixz 0 give an unstable Dutch roll)', () => {
