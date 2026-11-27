@@ -102,7 +102,8 @@ test('P-06 calm autoland on every runway lands in the touchdown zone; on the 21R
       // more than 0.9 m under the beam: the PAPI then says what the ILS says, and an eye on its path sees 2 white all
       // the way (P-09). How the autopilot flies the last 200 m is not pinned here. Measured on 2026-11-26: it slows
       // from Vapp to Vref below 61 m and sinks 1.06 to 1.09 m under the beam by the time the PAPI shows 1 white, 111
-      // to 132 m out, and 1.3 to 1.4 m over the threshold, where the PAPI shows 1 white (the diagnostic above).
+      // to 132 m out, and 1.3 to 1.4 m over the threshold, where the PAPI shows 1 white (the diagnostic above). On the
+      // physics stack (PR #21: humid air and QNH, log-law wind; merged 2026-11-27) 110 to 132 m out, 1.06 to 1.08 m under.
       assert.ok(ils.at2nm === 2 && ils.far === 2 && (ils.drop === null || ils.drop > -200) && ils.antLow < -0.9,
         `${id} ils: ${ils.at2nm} white at 2 NM, at least ${ils.far} white to 200 m out, below 2 white from ${fx(ils.drop)} m with the antenna ${ils.antLow.toFixed(2)} m from the beam`);
       // the eye's height above the path is the H2 the ils siting is built on (pitch 0), within the pitch effect
@@ -259,4 +260,28 @@ test('P-12 the page applies the siting: the stored choice before the airfield is
   // the live hint that the PAPI reads low on the ILS: never with the ils siting
   assert.match(app, /const onIls = FIELD\.papiSiting !== 'ils' && FIELD\.appr === 'ILS' && /, 'onIls is false with the ils siting');
   assert.ok(app.includes("(onIls ? ' · บน ILS ช่วงท้าย PAPI แสดงต่ำได้ ให้ยึด ILS' : '')"), 'the live hint shows only with onIls');
+});
+
+// Merge of the PAPI siting (PR #22) into the aircraft cards (PR #21, plan B3): AC is empty until setAircraft, so
+// 20-flight.js has no top-level setPapiSiting; setAircraft calls it, and the ils siting follows the type flown.
+test('P-13 setAircraft re-solves the siting in use for the new eye and antenna: ils moves with the type, aip and tc do not', () => {
+  const trainer = JSON.parse(fs.readFileSync(new URL('../data/aircraft/trainer.json', import.meta.url), 'utf8'));
+  const c172s = JSON.parse(fs.readFileSync(new URL('../data/aircraft/c172s.json', import.meta.url), 'utf8'));
+  const src = fs.readFileSync(new URL('../src/20-flight.js', import.meta.url), 'utf8');
+  assert.equal(src.match(/^setPapiSiting\(/gm), null, 'no top-level setPapiSiting in 20-flight.js (AC is empty there)');
+  const before = Object.fromEntries(ENDS.map((id) => [id, { ...RWY_END[id].papiSites }]));
+  try {
+    setPapiSiting('ils');
+    M.setAircraft(c172s);
+    assert.equal(FIELD.papiSiting, 'ils', 'the siting in use stays');
+    assert.ok(near(eyeAboveBeam(AC, 0), 0, 1e-12), `C172S eye at its antenna: H2 ${eyeAboveBeam(AC, 0)}`);
+    for (const id of ENDS) {
+      const E = RWY_END[id], want = Math.round((E.aim - PAPI_GEOM.h / Math.tan(3 * DEG)) * 10) / 10;
+      assert.ok(near(E.papiSites.ils, want, 1e-9) && E.papi === E.papiSites.ils, `${id} ils with the C172S ${E.papiSites.ils} m (expect ${want})`);
+      assert.ok(E.papiSites.aip === before[id].aip && E.papiSites.tc === before[id].tc, `${id} aip and tc do not move`);
+    }
+    assert.equal(PAPI.s, RWY_END[FIELD.rwy].papi);
+    M.setAircraft(trainer);
+    for (const id of ENDS) assert.deepEqual(RWY_END[id].papiSites, before[id], `${id} back with the trainer`);
+  } finally { M.setAircraft(trainer); reset(); }
 });

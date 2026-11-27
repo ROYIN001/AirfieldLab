@@ -62,7 +62,7 @@ def sha256(rel):
 def git_head():
     try:
         head = subprocess.run(['git', 'rev-parse', 'HEAD'], check=True, capture_output=True, text=True, cwd=REPO).stdout.strip()
-        dirty = subprocess.run(['git', 'status', '--porcelain', '--', 'src', 'test/lib', 'test/harness.mjs', 'tools/jsbsim'],
+        dirty = subprocess.run(['git', 'status', '--porcelain', '--', 'src', 'data/aircraft', 'test/lib', 'test/harness.mjs', 'tools/jsbsim'],
                                check=True, capture_output=True, text=True, cwd=REPO).stdout.strip()
         return head + (' (with uncommitted changes)' if dirty else '')
     except (OSError, subprocess.CalledProcessError):

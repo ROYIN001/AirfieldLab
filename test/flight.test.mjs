@@ -11,6 +11,8 @@ test('setApproach starts in trim (T-V-01): |a_NED| < 0.05 m/s², |ω̇| < 1e-6 r
   const d = new Float64Array(13); f.ac.deriv(f.ac.x, d);
   const a = Math.hypot(d[3], d[4], d[5]), w = Math.hypot(d[10], d[11], d[12]);
   assert.ok(a < 0.05 && w < 1e-6, `|a_NED| ${a.toFixed(4)}, |ω̇| ${w.toExponential(2)}`);
+  // B2 numerical trim: the old linear formula left 0.027 m/s² here (it left out the lift of T·sin α), Newton ~1e-10
+  assert.ok(a < 1e-8 && f.trim.ok, `B2: |a_NED| ${a.toExponential(2)}`);
   assert.ok(Math.abs(f.ac.air.ias / KT - AC.Vapp) < 0.5, `IAS ${(f.ac.air.ias / KT).toFixed(1)} kt`);
 });
 
@@ -22,11 +24,24 @@ test('parked: the gear carries the weight, no drift in 6 s', () => {
   assert.ok(a.gs < 0.05, `ground speed ${a.gs.toFixed(4)} m/s`);
 });
 
-// acceptance: score floors just under the measured scores (calm 100, head 96, xr 97, xl 88).
-// regression band: touchdown point and sink rate measured on 2026-11-19 (seed 5, 21R); an intended change to the
-// autopilot or the model updates REF in the same PR.
+// acceptance: score floors at or just under the measured scores (A9 log-law wind: calm 100, head 100, xr 97, xl 85;
+// A8 default weather before A9: 100, 100, 96, 85; dry ISA before A8: 100, 96, 97, 88). xl sits on its floor; the floor
+// is kept (not lowered for A8 or A9).
+// regression band: touchdown point and sink rate (seed 5, 21R); an intended change to the autopilot or the model
+// updates REF in the same PR. A8 (humid air + QNH 1009.3, research round 4 §6.1, 2026-11-23): ρ −1.4 %, TAS +0.7 % at
+// the same IAS. The Dryden filter steps with TAS, so seed 5's gust sequence differs. Over seeds 7–1006 the
+// distribution is unchanged (xl 35–97 → 35–98, median 85 → 85, mean 83.8 → 84.1). Old REF (2026-11-19, dry ISA):
+// calm 309.5/−129.4, head 307.3/−148.4, xr 311.1/−122.2, xl 343.2/−46.2; measured just before A8 (dry ISA, after A7):
+// 312.4/−129.7, 309.2/−150.4, 314.5/−125.4, 348.6/−53.3; xl after A8 is 305.2/−118.4, outside the old ±25 m/±30 fpm.
+// A9 (log-law mean wind, z0 0.05 m, research round 4 §6.3 and §13 item 3, 2026-11-25; turbulence W20 unchanged): the
+// wind near the ground is weaker (U(10 ft)/U10 0.844 → 0.776) and stronger above 10 m (U(50 ft) 1.062 → 1.080), so the
+// last 50 ft lose more headwind and crosswind. REF (A8) head 308.4/−143.8, xr 304.9/−100.7, xl 305.2/−118.4 → head
+// 302.2/−150.4, xr 305.1/−101.8, xl 304.1/−111.5 (all inside the old band); calm has no wind and is unchanged.
+// B2 (numerical trim, 2026-11-25): the start state is an exact trim (α −0.031°, δe +0.020°, thr −0.0006 against the
+// linear formula), scores unchanged; REF calm 312.5/−133.9, head 302.2/−150.4, xr 305.1/−101.8, xl 304.1/−111.5 →
+// 312.4/−134.0, 302.3/−147.8, 305.2/−100.1, 304.9/−106.3.
 const FLOOR = { calm: 95, head: 90, xr: 90, xl: 85 };
-const REF = { calm: { s: 309.5, fpm: -129.4 }, head: { s: 307.3, fpm: -148.4 }, xr: { s: 311.1, fpm: -122.2 }, xl: { s: 343.2, fpm: -46.2 } };
+const REF = { calm: { s: 312.4, fpm: -134.0 }, head: { s: 302.3, fpm: -147.8 }, xr: { s: 305.2, fpm: -100.1 }, xl: { s: 304.9, fpm: -106.3 } };
 for (const [key, sc] of Object.entries(SCENARIOS)) {
   test(`autoland, ${key} (${sc.label}): lands, stops on the runway, score ≥ ${FLOOR[key]}`, () => {
     const f = new Flight({ wind: sc, pilot: 'ap', seed: 5 });

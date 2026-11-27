@@ -68,8 +68,11 @@ test('every file the page fetches is in data/, and the loader fetches exactly DA
   const list = js.match(/const DATA_FILES = \[([^\]]*)\]/), have = new Set(dataFiles());
   assert.ok(list, 'DATA_FILES not found in the page script');
   const listed = [...list[1].matchAll(/(['"`])([^'"`]+)\1/g)].map((m) => m[2]);
-  // loadData's get(name, kind) calls (not store.get or map.get) and any fetch of a literal name
-  const got = [...js.matchAll(/(?<![.\w])get\(\s*(['"`])([^'"`$]+)\1\s*,/g)].map((m) => m[2]);
+  // loadData's get(name, kind) calls (not store.get or map.get) and any fetch of a literal name. Read inside loadData
+  // only: since plan B3, acFromCard in 20-flight.js has a get(path, required) of its own for card paths, which are not files
+  const load = js.match(/\nasync function loadData\([^\n]*\{\n[\s\S]*?\n\}\n/)?.[0];
+  assert.ok(load, 'loadData not found in the page script');
+  const got = [...load.matchAll(/(?<![.\w])get\(\s*(['"`])([^'"`$]+)\1\s*,/g)].map((m) => m[2]);
   const fetched = [...js.matchAll(/\bfetch\(\s*(['"`])([^'"`$]+)\1/g)].map((m) => m[2]);
   assert.ok(listed.length >= 4, `${listed.length} names in DATA_FILES`);
   assert.deepEqual([...new Set(got)].sort(), [...new Set(listed)].sort(), 'get() calls and DATA_FILES differ');

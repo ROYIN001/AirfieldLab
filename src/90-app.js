@@ -68,7 +68,8 @@ const app = {
   mode: 'explore', q: store.get('afl-quality', isTouch ? 'balanced' : 'high'),
   view: 'overview', trainCam: 'chase', spot: null,
   wind: { fromDeg: 40, kt: 9 }, visIdx: 5, cloudIdx: 1,
-  train: { state: 'setup', scn: 'xr', dist: 5556, pilot: 'ap', assist: true, autoThr: true, warp: 1, rwy: '03L' },
+  train: { state: 'setup', scn: 'xr', dist: 5556, pilot: 'ap', assist: true, autoThr: true, warp: 1, rwy: '03L', type: 'trainer' },
+  wx: { ...WX_DEFAULT },   // OAT, QNH, dew point of the flights and the briefing (B10 WeatherState will set them)
   input: { x: 0, y: 0, rud: 0, thr: 0.25, brake: 0 }, keys: new KeyState(), pin: new PilotInput(), padIndex: null,
 };
 if (!QUALITY[app.q]) app.q = 'balanced';
@@ -94,7 +95,22 @@ async function main() {
   const sky = new SkySystem(renderer, scene);
   sky.sun.shadow.mapSize.set(Q.shadow, Q.shadow);
   const setMsg = (t) => { const m = $('#loadMsg'); if (m) m.textContent = t; };
+  // the other aircraft types of the training pane (plan C1), fetched beside the scene data and checked at once; this
+  // promise never rejects (a failed card disables its entry), and it is awaited after the trainer is set below
+  const cardsP = loadCards(AIRCRAFT_TYPES.filter((id) => id !== 'trainer'), acFromCard);
   const data = await loadData((f) => setMsg(`กำลังโหลดข้อมูลสนามบินดอนเมือง… ${Math.round(f * 100)}%`));
+  // the aircraft flown (plan B3): AC is empty until this runs, and no Flight or Aircraft exists before it
+  // (acFromCard's English message goes to the console; the page names only the card path in error.path)
+  try { setAircraft(data.aircraft); } catch (e) {
+    console.error(e);
+    throw new Error(`ข้อมูลเครื่องบินใน aircraft/trainer.json ใช้ไม่ได้${e.path ? ` (ค่าที่ขาดหรือผิดรูปแบบ: ${e.path})` : ''}`);
+  }
+  // every type's card and what acFromCard made of it ({ error } for a card that failed); the saved choice (per viewer)
+  // comes back when its card is good, else the trainer
+  const TYPES = { trainer: { card: data.aircraft, ac: acFromCard(data.aircraft) }, ...(await cardsP) };
+  const typeOk = (id) => Object.hasOwn(TYPES, id) && !!TYPES[id].card;
+  app.train.type = store.get('afl-type', 'trainer');
+  if (!typeOk(app.train.type)) app.train.type = 'trainer';
   setMsg('กำลังสร้างสนามบินและเมืองรอบสนาม…');
   await new Promise((r) => requestAnimationFrame(r));
   setPapiSiting(store.get('afl-papi', 'aip'));   // where the PAPI stand: the trainee's last choice (training setup)
@@ -102,6 +118,18 @@ async function main() {
   const city = buildCity(scene, data, field, app.q);
   const lights = buildAirfieldLights(scene, field, city, data);
   const ac3 = buildAircraft(); scene.add(ac3.group);
+  // The one place that switches the aircraft after start (one global AC, 20-flight.js): the card's numbers and the
+  // generic model fitted to it (22-types.js modelSpec). A Flight advances only under the type it was built with:
+  // setMode puts the trainer back for explore and the chosen type for training, and builds a new Flight for it.
+  // setAircraft also re-solves the PAPI siting in use for the new eye and antenna (setPapiSiting; only `ils` moves), so
+  // the housings, the light sprites and the hotspot pin are placed again, as a siting button does.
+  let flownType = 'trainer';   // the type AC holds, named by the PAPI hint of the setup
+  function useType(id) {
+    const T = TYPES[id]; setAircraft(T.card); ac3.fit(modelSpec(id, T.card, AC)); flownType = id;
+    field.placePapi(); lights.placePapi();
+    const sp = SPOTS.find((x) => x.id === 'papi'), P = sp.p(); sp.w = W3(P[0], P[1], P[2]);
+    if (app.spot === 'papi') $('#cardP').textContent = spotText(sp);
+  }
   // points of interest from the scene data
   {
     const hv = data.af.hall.flatMap((h) => h.o); PTS.term = [hv.reduce((s, p) => s + p[0], 0) / hv.length, hv.reduce((s, p) => s + p[1], 0) / hv.length];
@@ -167,9 +195,11 @@ async function main() {
       dock.appendChild(b);
     }
   }
-  const TRAIN_CAM_NAMES = { chase: 'กล้องไล่หลัง', cockpit: 'ห้องนักบินหน้า · HUD', tower: 'มองจากหอบังคับการบิน', side: 'ข้างทางวิ่ง ใกล้จุดแตะพื้น', free: 'หมุนรอบเครื่อง' };
+  const TRAIN_CAM_NAMES = { chase: 'กล้องไล่หลัง', cockpit: 'ห้องนักบิน · HUD', tower: 'มองจากหอบังคับการบิน', side: 'ข้างทางวิ่ง ใกล้จุดแตะพื้น', free: 'หมุนรอบเครื่อง' };
+  // the fictional trainer seats two in tandem and its camera sits in the front seat; the plan C1 types seat side by side
+  const trainCamName = (id) => (id === 'cockpit' && app.train.type === 'trainer' ? 'ห้องนักบินหน้า · HUD' : TRAIN_CAM_NAMES[id]);
   function setTrainCam(id) {
-    app.trainCam = id; $('#viewName').textContent = TRAIN_CAM_NAMES[id]; renderDock();
+    app.trainCam = id; $('#viewName').textContent = trainCamName(id); renderDock();
     controls.enabled = id === 'free';
     if (id === 'free') { controls.target.copy(ac3.group.position); camera.position.copy(ac3.group.position).add(tmpV.set(-18, 7, 14)); }
     chase.init = false;
@@ -239,6 +269,37 @@ async function main() {
   })();
 
   // ── panels: training ──
+  // Aircraft type (plan C1, research round 2 task item 10): the trainer and the six light aircraft of data/aircraft/ in
+  // the order of AIRCRAFT_TYPES (22-types.js). typeInfo writes the Thai text; school names come from the card, so they
+  // are set as text, never as HTML. A card that failed to load shows its Thai error and cannot be chosen.
+  const typeInfoOf = (id) => { const T = TYPES[id] || {}; return typeInfo(id, T.card, T.ac); };
+  for (const id of AIRCRAFT_TYPES) {
+    const T = TYPES[id] || { error: `โหลด aircraft/${id}.json ไม่ได้` }, info = typeInfoOf(id);
+    const b = document.createElement('button'); b.type = 'button'; b.dataset.type = id; b.setAttribute('aria-pressed', 'false');
+    const nm = document.createElement('b'), em = document.createElement('em'), sp = document.createElement('span');
+    nm.textContent = info.name; em.textContent = info.em; sp.textContent = T.card ? info.span : T.error;
+    b.append(nm, em, sp); b.disabled = !T.card;
+    b.onclick = () => selectType(id);
+    $('#typeList').appendChild(b);
+  }
+  // A type is chosen only before a flight (the setup pane); in explore, which always flies the trainer, the choice is
+  // only remembered for the next training flight (window.__app.setType of test/shots.mjs may call it there).
+  function selectType(id) {
+    if (!typeOk(id) || (app.mode === 'train' && app.train.state !== 'setup')) return false;
+    app.train.type = id; store.set('afl-type', id);
+    if (app.mode === 'train') { useType(id); refreshSetup(); previewFlight(); $('#viewName').textContent = trainCamName(app.trainCam); }
+    return true;
+  }
+  // the type's notes as lines of text, then its links (DOM nodes, not HTML built from card data)
+  function writeTypeNote(info) {
+    const el = $('#typeNote'); el.replaceChildren();
+    info.notes.forEach((t, i) => { if (i) el.append(document.createElement('br')); el.append(t); });
+    info.links.forEach((l, i) => {
+      el.append(i ? ' · ' : document.createElement('br'));
+      const a = document.createElement('a'); a.href = l.href; a.target = '_blank'; a.rel = 'noopener'; a.textContent = l.text; el.append(a);
+    });
+    el.hidden = !info.notes.length && !info.links.length;
+  }
   const RWY_INFO = {
     '21R': ['ILS CAT II · IBKK 109.3', '3,700 × 60 ม. · ไฟกึ่งกลางและ TDZ'],
     '21L': ['ILS CAT I · IDMG 110.3', 'หัวทางวิ่งเลื่อน 350 ม. · ระยะลงจอด 3,150 ม.'],
@@ -252,12 +313,14 @@ async function main() {
     $('#rwyList').appendChild(b);
   }
   // PAPI siting (setPapiSiting in 20-flight.js): the housings, the light sprites, the pin and papiSeen move at once
+  // (AC is the type chosen for training, so the hint names it: the eye of a plan C1 card is at its antenna)
   function papiSiteText(id) {
     const E = RWY_END[id], m = FIELD.papiSiting, d = `PAPI ทาง ${id} ห่างหัวทางวิ่ง ${E.papi.toFixed(1)} ม.`, onPath = E.appr.kind === 'ILS' ? 'บน ILS' : 'บนแนวร่อน RNP';
-    if (m === 'ils') return `${d} ค่าประมาณ: วางให้แนว 3° ของ PAPI ทับทางที่ตาของเครื่องฝึกผ่าน (ตาอยู่เหนือแนวร่อน ${eyeAboveBeam(AC, 0, FIELD.gs).toFixed(2)} ม.) เมื่อสายอากาศอยู่บน${E.appr.kind === 'ILS' ? 'แนวร่อน ILS' : 'แนวร่อน RNP 3° (ทางนี้ไม่มี ILS)'} ตามหลักการประสาน PAPI กับ ILS ของ Transport Canada (AC 302-009) ถ้าบินอยู่บนแนวร่อนจะเห็นขาวสองแดงสองจนถึงหัวทางวิ่ง แบบนี้ไม่ใช่การจัดวางตาม AIP`;
+    const who = flownType === 'trainer' ? 'เครื่องฝึก' : ` ${typeInfoOf(flownType).name} `;   // a Latin name between spaces
+    if (m === 'ils') return `${d} ค่าประมาณ: วางให้แนว 3° ของ PAPI ทับทางที่ตาของ${who}ผ่าน (ตาอยู่เหนือแนวร่อน ${eyeAboveBeam(AC, 0, FIELD.gs).toFixed(2)} ม.) เมื่อสายอากาศอยู่บน${E.appr.kind === 'ILS' ? 'แนวร่อน ILS' : 'แนวร่อน RNP 3° (ทางนี้ไม่มี ILS)'} ตามหลักการประสาน PAPI กับ ILS ของ Transport Canada (AC 302-009) ถ้าบินอยู่บนแนวร่อนจะเห็นขาวสองแดงสองจนถึงหัวทางวิ่ง แบบนี้ไม่ใช่การจัดวางตาม AIP`;
     if (m === 'tc') return `${d} ค่าประมาณ: AIP ประกาศ MEHT แต่ไม่ประกาศระยะ แบบนี้ใช้มุม 2°48′ ตาม Transport Canada จึงไกลกว่าแบบตาม AIP ${(E.papi - E.papiSites.aip).toFixed(1)} ม. ${onPath} จะเห็น PAPI ต่ำเร็วกว่าแบบตาม AIP`;
-    const low = E.meht - (E.aim * Math.tan(FIELD.gs * DEG) + eyeAboveBeam(AC, 0, FIELD.gs));   // the trainer's eye over the threshold, below MEHT
-    return `${d} ค่าประมาณ: AIP ประกาศ MEHT แต่ไม่ประกาศระยะ ระยะนี้ทำให้ตาที่ความสูง MEHT เหนือหัวทางวิ่งเห็นดวง 2°50′ ที่มุม 2°50′ พอดี ${onPath} ตาของเครื่องฝึกผ่านหัวทางวิ่งต่ำกว่า MEHT ${low.toFixed(1)} ม. จึงเห็น PAPI ต่ำในช่วงท้าย`;
+    const low = E.meht - (E.aim * Math.tan(FIELD.gs * DEG) + eyeAboveBeam(AC, 0, FIELD.gs));   // the eye of the type flown over the threshold, below MEHT
+    return `${d} ค่าประมาณ: AIP ประกาศ MEHT แต่ไม่ประกาศระยะ ระยะนี้ทำให้ตาที่ความสูง MEHT เหนือหัวทางวิ่งเห็นดวง 2°50′ ที่มุม 2°50′ พอดี ${onPath} ตาของ${who}ผ่านหัวทางวิ่งต่ำกว่า MEHT ${low.toFixed(1)} ม. จึงเห็น PAPI ต่ำในช่วงท้าย`;
   }
   for (const b of $('#segPapi').querySelectorAll('button')) b.onclick = () => {
     store.set('afl-papi', setPapiSiting(b.dataset.papi));
@@ -267,12 +330,16 @@ async function main() {
     refreshSetup();
   };
   const scnKeys = Object.keys(SCENARIOS);
+  // turbulence word from W20 against MIL-F-8785C light 15 / moderate 30 / severe 45 kt (01-flight-physics/08-wind.md §8.1,
+  // §8.17 item 3): xl's 22 kt is light, not moderate
+  const turbWord = (w) => (w >= 45 ? 'ปั่นป่วนรุนแรง' : w >= 30 ? 'ปั่นป่วนปานกลาง' : w > 0 ? 'ปั่นป่วนเล็กน้อย' : '');
   function buildScnCards() {
     $('#scnList').innerHTML = '';
     for (const k of scnKeys) {
       const sc = SCENARIOS[k], from = windFrom(sc); const b = document.createElement('button'); b.type = 'button'; b.dataset.k = k;
       const xw = sc.kt * Math.sin((from - FIELD.rwyHdg) * DEG), hw = sc.kt * Math.cos((from - FIELD.rwyHdg) * DEG);
-      b.innerHTML = `<b>${sc.label}</b><em>${sc.kt ? `${String(from).padStart(3, '0')}°/${sc.kt} kt` : 'สงบ'}</em><span>${sc.kt ? `ลมปะทะหน้า ${Math.round(hw)} kt · ลมขวาง ${Math.abs(Math.round(xw))} kt${sc.turb > 1 ? ' · ปั่นป่วนปานกลาง' : sc.turb > 0 ? ' · ปั่นป่วนเล็กน้อย' : ''}` : 'ไม่มีลม ไม่มีความปั่นป่วน'}</span>`;
+      const tw = turbWord(windW20(sc));
+      b.innerHTML = `<b>${sc.label}</b><em>${sc.kt ? `${String(from).padStart(3, '0')}°/${sc.kt} kt` : 'สงบ'}</em><span>${sc.kt ? `ลมปะทะหน้า ${Math.round(hw)} kt · ลมขวาง ${Math.abs(Math.round(xw))} kt${tw ? ' · ' + tw : ''}` : tw ? `ไม่มีลม · ${tw}` : 'ไม่มีลม ไม่มีความปั่นป่วน'}</span>`;
       b.onclick = () => { app.train.scn = k; refreshSetup(); previewFlight(); };
       $('#scnList').appendChild(b);
     }
@@ -290,6 +357,9 @@ async function main() {
     $('#segTrTime').appendChild(b);
   }
   function refreshSetup() {
+    const info = typeInfoOf(app.train.type);
+    for (const b of $('#typeList').children) b.setAttribute('aria-pressed', String(b.dataset.type === app.train.type));
+    $('#trLede').textContent = info.lede; writeTypeNote(info);
     for (const b of $('#scnList').children) b.setAttribute('aria-pressed', String(b.dataset.k === app.train.scn));
     for (const b of $('#rwyList').children) b.setAttribute('aria-pressed', String(b.dataset.r === app.train.rwy));
     $('#trEyebrow').textContent = `ฝึกร่อนลงจอด · ${FIELD.appr} ทางวิ่ง ${FIELD.rwy} ดอนเมือง`;
@@ -301,10 +371,13 @@ async function main() {
     for (const b of $('#segTrTime').children) b.setAttribute('aria-pressed', String(Math.abs(+b.dataset.min - curMin) < 1));
     const man = app.train.pilot === 'man';
     $('#chkAssist').disabled = !man; $('#chkAt').disabled = !man || !app.train.assist;
-    const sc = SCENARIOS[app.train.scn], oat = 31;
-    const da = densityAltitudeFt(FIELD.elev, oat);
-    $('#brief').innerHTML = [['Vref', `${AC.Vref} kt`], ['Vapp', `${AC.Vapp} kt`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${oat}°C`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
-      .map(([k, v]) => `<div><small>${k}</small><b>${v}</b></div>`).join('');
+    const sc = SCENARIOS[app.train.scn], wx = app.wx, qnh = wx.qnh ?? P0_HPA;   // no QNH = 1013.25 hPa, as in Flight
+    // humid air at the field from QNH (research round 4, 04-weather.md §6.1, ATM-5); the old dry rule read ~420 ft low.
+    // QNH is shown as a METAR gives it, rounded down to a whole hPa (ICAO Annex 3 App. 3)
+    const da = densityAltitudeFt(airDensity(fieldPressure(qnh, FIELD.elev), wx.oatC, wx.dewC));
+    // the card's speeds are kt CAS as acFromCard gives them, not rounded (plan B3): shown to the whole knot
+    $('#brief').innerHTML = [['แบบ', info.name, 2], ['มวล (ค่าประมาณ)', `${fmt(AC.m)} kg`], ['Vref', `${fmt(AC.Vref)} kt`], ['Vapp', `${fmt(AC.Vapp)} kt`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${fmt(wx.oatC)}°C`], ['จุดน้ำค้าง', wx.dewC == null ? '—' : `${fmt(wx.dewC)}°C`], ['QNH', `${Math.floor(qnh)} hPa`], ['ความชื้นสัมพัทธ์', wx.dewC == null ? '—' : `${fmt(relHumidity(wx.oatC, wx.dewC))}%`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
+      .map(([k, v, span]) => `<div${span ? ` style="grid-column: span ${span}"` : ''}><small>${k}</small><b>${v}</b></div>`).join('') + '<div style="grid-column: 1 / -1"><small>ค่าประมาณของวันทั่วไป: QNH เฉลี่ยทั้งปีและจุดน้ำค้างเฉลี่ยเวลา 11:00 น. จากสถิติ METAR ดอนเมือง 2016–2025 (Iowa Environmental Mesonet) · อุณหภูมิเป็นค่าเริ่มต้นของโปรแกรม</small></div>';
   }
   function refreshLive() { for (const b of $('#segWarp').children) b.setAttribute('aria-pressed', String(+b.dataset.w === app.train.warp)); $('#btnTake').textContent = app.flight && app.flight.pilot === 'ap' ? 'รับช่วงบังคับเอง' : 'ให้ออโต้ไพลอตบิน'; }
   function showTrainPane(which) { $('#trSetup').hidden = which !== 'setup'; $('#trLive').hidden = which !== 'fly'; $('#trResult').hidden = which !== 'result'; }
@@ -313,10 +386,10 @@ async function main() {
   let demoFirst = true;
   function newDemo() {
     setActiveRunway(inUse());
-    const f = new Flight({ wind: { fromDeg: app.wind.fromDeg, kt: app.wind.kt, turb: app.wind.kt > 12 ? 1.1 : 0.5 }, pilot: 'ap', dist: demoFirst ? 1700 : 5600, seed: Math.floor(Math.random() * 1e6) });
+    const f = new Flight({ wind: { fromDeg: app.wind.fromDeg, kt: app.wind.kt, turb: app.wind.kt > 12 ? 1.1 : 0.5 }, pilot: 'ap', dist: demoFirst ? 1700 : 5600, seed: Math.floor(Math.random() * 1e6), ...app.wx });
     demoFirst = false; return f;
   }
-  function flightOpts() { const sc = SCENARIOS[app.train.scn]; return { wind: sc, dist: app.train.dist, pilot: app.train.pilot, assist: app.train.assist, autoThr: app.train.autoThr, seed: 7 + Math.floor(Math.random() * 1000), oatC: 31, dh: app.train.pilot === 'man' ? 12 : 0, dtl: app.train.pilot === 'man' ? 40 : 0 }; }
+  function flightOpts() { const sc = SCENARIOS[app.train.scn]; return { wind: sc, dist: app.train.dist, pilot: app.train.pilot, assist: app.train.assist, autoThr: app.train.autoThr, seed: 7 + Math.floor(Math.random() * 1000), oatC: app.wx.oatC, qnh: app.wx.qnh, dewC: app.wx.dewC, dh: app.train.pilot === 'man' ? 12 : 0, dtl: app.train.pilot === 'man' ? 40 : 0 }; }
   function previewFlight() { setActiveRunway(app.train.rwy); app.flight = new Flight(flightOpts()); app.train.state = 'setup'; chase.init = false; }
   function startFlight() {
     if (app.tilt.want && !app.tilt.on) enableTilt();   // the option was kept from an earlier visit; this is a tap
@@ -325,7 +398,9 @@ async function main() {
     Object.assign(app.input, { x: 0, y: 0, rud: 0, thr: app.flight.ac.thr, brake: 0 }); app.pin.reset(); centreTilt(false);
     app.train.state = 'fly'; app.train.warp = 1; app.resultShown = false;
     showTrainPane('fly'); refreshLive(); chase.init = false;
-    $('#liveEyebrow').textContent = app.flight.pilot === 'ap' ? 'ออโต้ไพลอตกำลังบิน' : (app.flight.opts.assist ? 'บินเอง · มีระบบช่วย' : 'บินเอง · ควบคุมตรง');
+    // the type flown, and for a real type the T-LS-11 (ค) label: a light aircraft at Don Mueang is a made-up scene
+    const info = typeInfoOf(app.train.type);
+    $('#liveEyebrow').textContent = (app.flight.pilot === 'ap' ? 'ออโต้ไพลอตกำลังบิน' : (app.flight.opts.assist ? 'บินเอง · มีระบบช่วย' : 'บินเอง · ควบคุมตรง')) + ` · ${info.name}${info.real ? ' · สถานการณ์สมมติ' : ''}`;
     if (app.trainCam === 'free') setTrainCam('chase');
     updateCtlVisibility();
   }
@@ -353,8 +428,8 @@ async function main() {
     $('#paneExplore').hidden = m !== 'explore'; $('#paneTrain').hidden = m !== 'train';
     $('#pins').hidden = m !== 'explore'; $('#card').hidden = m !== 'explore' || !app.spot;
     $('#fma').hidden = m !== 'train'; $('#instr').hidden = m !== 'train';
-    if (m === 'explore') { controls.enabled = true; ac3.helmets[0].visible = true; setView(app.view === 'overview' || PRESETS[app.view] ? app.view : 'overview'); }
-    else { setActiveRunway(app.train.rwy); buildScnCards(); showTrainPane('setup'); refreshSetup(); previewFlight(); setTrainCam(app.trainCam === 'free' ? 'chase' : app.trainCam); }
+    if (m === 'explore') { useType('trainer'); controls.enabled = true; ac3.helmets[0].visible = true; setView(app.view === 'overview' || PRESETS[app.view] ? app.view : 'overview'); }
+    else { useType(app.train.type); setActiveRunway(app.train.rwy); buildScnCards(); showTrainPane('setup'); refreshSetup(); previewFlight(); setTrainCam(app.trainCam === 'free' ? 'chase' : app.trainCam); }
     renderDock(); updateCtlVisibility();
   }
   $('#tabExplore').onclick = () => setMode('explore');
@@ -368,8 +443,11 @@ async function main() {
     if (act === 'pause' && app.train.state === 'fly') { app.train.warp = app.train.warp ? 0 : 1; refreshLive(); }
     if (act === 'restart' && app.train.state !== 'setup') startFlight();
   }
+  // Text fields, sliders and selects keep their keys; a checkbox (the #chkHorn mute in the flight pane) must not
+  // swallow the flight keys after a click leaves focus on it.
   window.addEventListener('keydown', (e) => {
-    if (e.target && /input|select|textarea/i.test(e.target.tagName)) return;
+    const tg = e.target;
+    if (tg && (/^(select|textarea)$/i.test(tg.tagName) || (/^input$/i.test(tg.tagName) && !/^(checkbox|radio)$/i.test(tg.type)))) return;
     const k = app.keys.down(e, { train: app.mode === 'train', flying: app.mode === 'train' && app.train.state === 'fly' });
     if (k.prevent) e.preventDefault();   // arrows, PageUp/PageDown must not scroll the page while flying
     if (!k.fire) return;                 // held keys are tracked by app.keys; toggles fire once per press
@@ -499,6 +577,21 @@ async function main() {
   const bb = $('#btnBrake'); let brakeHeld = false;
   bb.addEventListener('pointerdown', (e) => { brakeHeld = true; bb.classList.add('on'); bb.setPointerCapture(e.pointerId); });
   const brUp = () => { brakeHeld = false; bb.classList.remove('on'); }; bb.addEventListener('pointerup', brUp); bb.addEventListener('pointercancel', brUp);
+  // Auto-pause when the tab is hidden (research 01-flight-physics/09-numerics.md §9.4 and task 1 of §9.12; round 1
+  // task list item 6): rAF stops while hidden [N9, N10], so stop the flight clock as the P key and the หยุด button
+  // do (warp 0), drop the touch stick, brake button and throttle drag (app.keys.clear above drops the keys), and say
+  // so in Thai when the tab shows again. Never resumes by itself: P, ×1 or a tap on the message does (touch screens
+  // have no P key, and full screen covers ×1). The message stays until the flight runs again or ends (frame()); another
+  // message may replace it for its 2.6 s, then frame() puts it back (pauseMsg is the wish, toast._pause what is shown).
+  const PAUSE_MSG = isTouch ? 'หยุดชั่วคราว — แตะข้อความนี้เพื่อบินต่อ' : 'หยุดชั่วคราว — กด P เพื่อบินต่อ';
+  let pauseMsg = false;
+  const showPause = () => { toast(PAUSE_MSG, Infinity); toast._pause = true; $('#toast').classList.add('tap'); };
+  document.addEventListener('visibilitychange', () => {
+    const flying = app.mode === 'train' && app.train.state === 'fly';
+    if (document.hidden) { stickUp(); brUp(); thrDrag = false; if (flying && app.train.warp) { app.train.warp = 0; refreshLive(); } }
+    else if (flying && !app.train.warp) { pauseMsg = true; showPause(); }
+  });
+  $('#toast').addEventListener('click', () => { if (toast._pause && app.train.state === 'fly' && !app.train.warp) { app.train.warp = 1; refreshLive(); } });
   // between flights (setup, replay, result) the gamepad's buttons still act, as C does on the keyboard
   function padButtons() {
     const gp = firstPad(); app.padIndex = gp ? gp.index : null;
@@ -519,6 +612,7 @@ async function main() {
   // ── per-frame aircraft pose from the simulation ──
   const Rm = new Array(9), basis = new THREE.Matrix4(), fwdV = new THREE.Vector3(), upV = new THREE.Vector3(), rtV = new THREE.Vector3();
   let propAngle = 0;
+  const rPose = { p: [0, 0, 0], q: [1, 0, 0, 0], de: 0, da: 0, dr: 0, flaps: 0, gearPos: 0, steer: 0 };   // Flight.renderPose output
   function poseFrom(x, q, surf, dt, running) {
     ned2w(x[0], x[1], x[2], ac3.group.position);
     qToR(q, Rm);
@@ -529,10 +623,81 @@ async function main() {
   }
 
   // ── HUD helpers ──
-  function toast(msg, ms = 2600) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._h); toast._h = setTimeout(() => t.classList.remove('on'), ms); }
+  function toast(msg, ms = 2600) { const t = $('#toast'); toast._pause = false; t.classList.remove('tap'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._h); if (ms < Infinity) toast._h = setTimeout(() => t.classList.remove('on'), ms); }
   let calloutUntil = 0;
   function callout(txt, warn = false, ms = 1100) { const c = $('#callout'); c.textContent = txt; c.classList.toggle('warn', warn); c.classList.add('on'); calloutUntil = performance.now() + ms; }
   const CALL_TXT = { 1000: '1000', 500: '500', 400: '400', 300: '300', 200: 'MINIMUMS', 100: '100', 50: '50', 40: '40', 30: '30', 20: '20', 10: '10' };
+  // ── Stall-warning horn (Web Audio): a continuous tone while f.ev.stallHorn is on. A continuous horn as in the C152
+  //    [LH13] (docs/research/02-light-aircraft/08-handling.md); a visual cue alone is not enough (14 CFR 23.207(b)
+  //    [A22]). Tone, filter and level are estimates (ค่าประมาณ): the research gives no frequency or waveform.
+  //    Browsers start audio only after a user gesture, so the context is made or resumed on the first one in the
+  //    training mode.
+  //    The #chkHorn mute is per viewer (research 01-aero.md §1.6 proposes an off switch for every sound channel);
+  //    14 CFR 23.207(f) allows a mute only on aerobatic types and asks it to re-arm, a certification rule that a
+  //    trainer app does not have to copy. ──
+  const horn = (() => {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    const HZ = 1000, LP_HZ = 2800, LEVEL = 0.14, ATTACK = 0.012, RELEASE = 0.03;   // Hz, Hz, gain, s (time constants)
+    let ctx = null, gain = null, on = false, muted = store.get('afl-horn', '1') === '0';
+    let lastSet = 0, frameDt = 1 / 60, idleSince = null, lastResume = -1e9;
+    // resume() and suspend() return promises that a browser may reject (e.g. resume outside a gesture); the next
+    // gesture retries through unlock(), so a rejection is ignored.
+    const ctxCall = (fn) => { try { const p = ctx[fn](); if (p && p.catch) p.catch(() => {}); } catch (e) { /* ignore */ } };
+    const flying = () => app.mode === 'train' && app.train.state === 'fly' && app.train.warp > 0;   // a paused flight idles too
+    function unlock() {
+      // Only in the training mode: explore never sounds the horn, so it opens no audio device. The click on the start
+      // button (or the R key) is a gesture in the training mode, so the context still starts on one.
+      if (!Ctx || muted || app.mode !== 'train') return;
+      try {
+        if (!ctx) {
+          ctx = new Ctx(); gain = ctx.createGain(); gain.gain.value = 0;
+          const osc = ctx.createOscillator(), lp = ctx.createBiquadFilter();
+          osc.type = 'square'; osc.frequency.value = HZ; lp.type = 'lowpass'; lp.frequency.value = LP_HZ;
+          osc.connect(lp); lp.connect(gain); gain.connect(ctx.destination); osc.start();
+        }
+        if (ctx.state !== 'running' && !document.hidden) ctxCall('resume');
+      } catch (e) { /* no audio: the HUD word still shows */ }
+    }
+    // Called every frame. While the horn is wanted, each call re-issues the attack and arms a release ahead on the
+    // audio clock (2.5 frame intervals, 0.25–1 s), so the horn stays continuous on slow frames (23.207(c): until the
+    // stall) and fades out by itself when frames stop without a visibilitychange (a claude.ai artifact runs in a
+    // cross-origin iframe: scrolled out of view or display:none, rAF stops but the page stays 'visible'); the interval
+    // is the last one measured, so a stop keeps the short fade. Ramps only (setTargetAtTime), so no clicks. Outside a
+    // running flight (a paused one too, warp 0) the context is suspended after 2 s without the horn and resumed when a
+    // flight is running again; P, ×1 and the tap on the pause message resume it inside their gesture through unlock().
+    function set(want) {
+      const nowMs = performance.now(), dtF = (nowMs - lastSet) / 1000; lastSet = nowMs;
+      if (dtF > 0 && dtF < 5) frameDt = dtF;
+      want = !!want && !muted && !document.hidden;
+      if (!ctx) return;
+      const g = gain.gain, t = ctx.currentTime;
+      if (want) { const hold = Math.min(1, Math.max(0.25, 2.5 * frameDt)); g.cancelScheduledValues(t); g.setTargetAtTime(LEVEL, t, ATTACK); g.setTargetAtTime(0, t + hold, RELEASE); }
+      else if (on) g.setTargetAtTime(0, t, RELEASE);
+      on = want;
+      if (want || flying()) {
+        idleSince = null;
+        if (ctx.state === 'suspended' && !muted && !document.hidden && nowMs - lastResume > 1000) { lastResume = nowMs; ctxCall('resume'); }
+      } else if (idleSince == null) idleSince = nowMs;
+      else if (nowMs - idleSince > 2000 && ctx.state === 'running') ctxCall('suspend');
+    }
+    function hide(h) {
+      if (!ctx) return;
+      if (h) {   // ramp down first, then suspend, so hiding the tab does not click
+        on = false; gain.gain.cancelScheduledValues(ctx.currentTime); gain.gain.setTargetAtTime(0, ctx.currentTime, 0.005);
+        setTimeout(() => { if (document.hidden) ctxCall('suspend'); }, 60);
+      } else if (!muted && flying()) ctxCall('resume');
+    }
+    function mute(m) {
+      muted = m; store.set('afl-horn', m ? '0' : '1');
+      if (m) { set(false); if (ctx) setTimeout(() => { if (muted) ctxCall('suspend'); }, 150); }
+      else unlock();   // the checkbox change runs inside the click, so the context may start or resume here
+    }
+    return { unlock, set, hide, mute, get muted() { return muted; } };
+  })();
+  for (const t of ['pointerdown', 'pointerup', 'keydown', 'touchend']) window.addEventListener(t, horn.unlock, { capture: true, passive: true });
+  document.addEventListener('visibilitychange', () => horn.hide(document.hidden));   // rAF stops while hidden: silence it here
+  $('#chkHorn').checked = !horn.muted;
+  $('#chkHorn').onchange = (e) => horn.mute(!e.target.checked);
   function gateRows(el, f, live) {
     const a = f.ac.air, rows = [];
     const g5 = f.ev.gates.g500, g2 = f.ev.gates.g200;
@@ -556,7 +721,7 @@ async function main() {
     } else {
       $('#scTotal').textContent = sc.total; $('#scTotal').style.color = sc.total >= 75 ? 'var(--good)' : sc.total >= 60 ? 'var(--warn)' : 'var(--bad)';
       $('#scGrade').textContent = f.crashed ? 'เครื่องบินเสียหาย' : sc.grade;
-      $('#scSub').textContent = `จาก 100 คะแนน · ${f.pilot === 'ap' && !f._everMan ? 'ออโต้ไพลอต' : 'บินเอง'} · ${SCENARIOS[app.train.scn].label}`;
+      $('#scSub').textContent = `จาก 100 คะแนน · ${f.pilot === 'ap' && !f._everMan ? 'ออโต้ไพลอต' : 'บินเอง'} · ${SCENARIOS[app.train.scn].label} · ${typeInfoOf(app.train.type).name}`;
       const P = Object.fromEntries(sc.parts.map((p) => [p.k, p]));
       const stop = f.ev.stopS != null ? f.ev.stopS - td.s : null;
       const rows = [
@@ -568,7 +733,7 @@ async function main() {
       ];
       $('#scRows').innerHTML = rows.map(([n, v, p]) => `<span>${n}</span><em>${v}</em><i>${Math.max(0, p.pts).toFixed(0)}/${p.max}</i><div class="bar"><div style="width:${Math.max(0, p.pts) / p.max * 100}%"></div></div>`).join('')
         + (stop != null ? `<span>ระยะวิ่งจนหยุด</span><em>${fmt(stop)} ม.</em><i></i>` : '')
-        + f.ev.events.map((e) => `<span style="color:var(--warn)">${{ stall: 'มีสัญญาณเตือนสตอล', excursion: 'ออกนอกทางวิ่ง', wingtip: 'ปลายปีกแตะพื้น', crash: 'กระแทกพื้นแรงเกินไป' }[e.k] || e.k}</span><em></em><i></i>`).join('');
+        + f.ev.events.map((e) => `<span style="color:var(--warn)">${{ stall: 'เกือบ stall: มุมปะทะเข้าใกล้มุม stall', excursion: 'ออกนอกทางวิ่ง', wingtip: 'ปลายปีกแตะพื้น', crash: 'กระแทกพื้นแรงเกินไป' }[e.k] || e.k}</span><em></em><i></i>`).join('');
     }
     gateRows($('#gatesR'), f, false);
     requestAnimationFrame(() => drawDebrief($('#chart'), f));
@@ -597,6 +762,9 @@ async function main() {
     const T = (now - t0) / 1000;
     SU.uTime.value = T;
     const keys = app.keys.frame();   // held keys and taps since the last frame, read every frame so no tap goes stale
+    if (pauseMsg && !(app.mode === 'train' && app.train.state === 'fly' && !app.train.warp)) {   // resumed, restarted or left: drop the pause message
+      pauseMsg = false; if (toast._pause) { toast._pause = false; $('#toast').classList.remove('on', 'tap'); }
+    } else if (pauseMsg && !$('#toast').classList.contains('on')) showPause();   // another message timed out while still paused
     let fl = null, running = true, recF = null;
     if (app.mode === 'explore') {
       const d = app.demo;
@@ -614,7 +782,7 @@ async function main() {
         if (!prevTd && fl.ev.td) { const td = fl.ev.td; toast(`แตะพื้น ${fmt(-td.vsFpm)} fpm · ห่างหัวทางวิ่ง ${fmt(td.s)} ม.`, 3800); }
         if (fl.ev.lastCallout && fl.ev.lastCallout !== prevCall && app.trainCam !== 'free') callout(CALL_TXT[fl.ev.lastCallout.v] || fl.ev.lastCallout.v, false, 900);
         const a = fl.ac.air;
-        if (!a.onGround && a.ias > 40 * KT && a.alpha > (AC.aStall + AC.aStallFlap * fl.ac.flaps - 4) * DEG) callout('STALL', true, 400);
+        if (fl.ev.stallHorn) callout('STALL', true, 400);
         else if (!a.onGround && a.h < 300 && a.vs / FT * 60 < -1200) callout('SINK RATE', true, 400);
         else if (!a.onGround && a.h < 300 && a.h > 15 && a.gsDots < -1.6 && a.s < 0) callout('GLIDESLOPE', true, 400);
         if ((fl.finishedAt != null && fl.ac.t - fl.finishedAt > 2.5) || (fl.crashed && !app.resultShown)) { if (!app.resultShown) { app.resultShown = true; showResult(); } }
@@ -624,14 +792,15 @@ async function main() {
       }
       running = !fl.ev.done || fl.ac.thr > 0.06;
     }
+    horn.set(app.mode === 'train' && app.train.state === 'fly' && app.train.warp > 0 && fl && !fl.crashed && fl.ev.stallHorn);
     // aircraft pose
     if (recF) poseFrom([recF.n, recF.e, recF.d], recF.q, { de: recF.de, da: recF.da, dr: recF.dr, flaps: recF.fl, gearPos: recF.gr, steer: 0 }, dt, true);
-    else if (fl) { const ac = fl.ac; poseFrom(ac.x, [ac.x[6], ac.x[7], ac.x[8], ac.x[9]], { de: ac.de, da: ac.da, dr: ac.dr, flaps: ac.flaps, gearPos: ac.gearPos, steer: ac.steer }, dt, running); }
+    else if (fl) { const r = fl.renderPose(rPose); poseFrom(r.p, r.q, r, dt, running); }   // interpolated pose (T-N-09); the HUD reads fl.ac
     ac3.group.updateMatrixWorld(true);
     const acPos = ac3.group.position;
     // camera
     camera.near = 0.5;
-    ac3.helmets[0].visible = true;
+    ac3.inCockpit(false);
     ac3.discMat.uniforms.uA.value = app.mode === 'train' && app.trainCam === 'cockpit' ? 0.12 : 1;
     if (app.mode === 'explore' || (app.mode === 'train' && app.trainCam === 'free')) {
       if (tween.on) {
@@ -655,7 +824,7 @@ async function main() {
         camera.near = 0.15;
         camera.position.set(AC.eye[0], -AC.eye[2], AC.eye[1]).applyMatrix4(ac3.group.matrixWorld);   // pilot's eye (FRD → model x fwd, y up, z right)
         camera.quaternion.copy(ac3.group.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -Math.PI / 2, 0))).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(-3 * DEG, 0, 0)));
-        camera.fov = 58; ac3.helmets[0].visible = false;
+        camera.fov = 58; ac3.inCockpit(true);   // the trainer hides its front helmet, a fitted type its whole model
       } else if (cam === 'tower') {
         const p = field.towerCab.clone(); p.y += 1.4; const dir = tmpV.copy(acPos).sub(p); const dist = dir.length(); p.addScaledVector(dir.normalize(), 6.5);
         camera.position.copy(p); camera.lookAt(acPos); camera.fov = clamp(2 * Math.atan(16 / Math.max(dist, 1)) * RAD, 2.2, 50);
@@ -686,8 +855,9 @@ async function main() {
     for (const L of floods) L.intensity = 1100 * night;
     nightAmb.intensity = 0.11 * night;
     // windsocks and radar
-    const wsSpec = app.mode === 'train' && app.flight ? app.flight.windSpec : app.wind;
-    const yaw = yawFor(wsSpec.fromDeg + 180), ext = clamp(wsSpec.kt / 15, 0, 1);
+    // the flight's resolved wind: a training scenario spec has rel, not fromDeg (reading the spec gave a NaN yaw)
+    const sockWind = app.mode === 'train' && app.flight ? app.flight.ac.wind : app.wind;
+    const yaw = yawFor(sockWind.fromDeg + 180), ext = clamp(sockWind.kt / 15, 0, 1);
     for (const s of field.dyn.socks) { s.grp.rotation.y = yaw + Math.sin(T * 1.3 + s.grp.position.x) * 0.06 * ext; s.pivot.rotation.z = -(1 - ext) * 72 * DEG + Math.sin(T * 7.0 + s.grp.position.z) * 0.035 * ext; }
     // pins
     if (app.mode === 'explore') {
@@ -731,15 +901,17 @@ async function main() {
       $('#iWind').textContent = wkt < 0.5 ? 'สงบ' : `${String(Math.round(wdir / 10) * 10 % 360).padStart(3, '0')}/${fmt(wkt)}`;
       const ph = fl.phase();
       const fma = fl.pilot === 'ap'
-        ? [['A/P', ''], ph === 'APP' ? ['LOC', ''] : ['', ''], ph === 'APP' ? ['G/S', ''] : ph === 'FLARE' ? ['FLARE', ''] : ['ROLLOUT', ''], ['SPD ' + AC.Vapp, 'c']]
-        : [['MAN', 'w'], [fl.opts.assist ? 'ASSIST' : 'DIRECT', 'a'], [fl.opts.autoThr ? 'A/THR SPD ' + AC.Vapp : `THR ${Math.round(fl.ac.thr * 100)}%`, fl.opts.autoThr ? 'c' : 'w'], ['FD', 'c']];
+        ? [['A/P', ''], ph === 'APP' ? ['LOC', ''] : ['', ''], ph === 'APP' ? ['G/S', ''] : ph === 'FLARE' ? ['FLARE', ''] : ['ROLLOUT', ''], ['SPD ' + fmt(AC.Vapp), 'c']]
+        : [['MAN', 'w'], [fl.opts.assist ? 'ASSIST' : 'DIRECT', 'a'], [fl.opts.autoThr ? 'A/THR SPD ' + fmt(AC.Vapp) : `THR ${Math.round(fl.ac.thr * 100)}%`, fl.opts.autoThr ? 'c' : 'w'], ['FD', 'c']];
       $('#fma').innerHTML = fma.filter(([t]) => t).map(([t, c]) => `<span class="${c}">${t}</span>`).join('');
       if (app.train.state === 'fly') {
         gateRows($('#gates'), fl, true);
         const e = a.eye, pw = papiSeen(e[0], e[1], e[2]);
         const nW = pw.filter((v) => v > 0.5).length;
         // On the ILS the PAPI of Don Mueang reads low near the threshold: its MEHT (AIP AD 2.14) is 3.3 to 5.1 m above the ILS beam over the threshold, while
-        // the trainer's eye is 1.3 m above its glide-slope antenna (research round 3, topic 3.5). Not with the siting matched to the ILS.
+        // the trainer's eye is 1.3 m above its glide-slope antenna (research round 3, topic 3.5) and the light aircraft of
+        // plan C1 have the antenna at the eye (no source gives its place), so they read lower still. Not with the siting
+        // matched to the ILS (it follows the aircraft flown: setAircraft re-solves it).
         const onIls = FIELD.papiSiting !== 'ils' && FIELD.appr === 'ILS' && Math.abs(a.gsDots) < 0.5 && Math.abs(a.locDots) < 1 && nW < 2 && a.s > -1500;
         $('#papiTxt').textContent = pw[0] < 0 ? 'ผ่านตำแหน่ง PAPI แล้ว' : `ขาว ${nW} แดง ${4 - nW} · ${['ต่ำมาก', 'ต่ำเล็กน้อย', 'อยู่บนแนวร่อน', 'สูงเล็กน้อย', 'สูงมาก'][nW]}` + (onIls ? ' · บน ILS ช่วงท้าย PAPI แสดงต่ำได้ ให้ยึด ILS' : '');
         $('#liveTitle').textContent = { APP: `ร่อนเข้าหาทางวิ่ง ${FIELD.rwy}`, FLARE: 'ถอนคันบังคับก่อนแตะพื้น', ROLLOUT: 'วิ่งบนทางวิ่งและเบรก', DONE: 'หยุดเรียบร้อย', STOP: 'หยุดเรียบร้อย', CRASH: 'เครื่องบินกระแทกพื้น' }[ph] || 'กำลังบิน';
@@ -750,7 +922,7 @@ async function main() {
     frames++;
   }
   requestAnimationFrame(frame);
-  window.__app = { app, scene, camera, renderer, sky, field, city, setMode, setView, setTrainCam, startFlight, selectSpot, applyTime, applyWeather, makeDate, localParts, lights, ac3 };
+  window.__app = { app, scene, camera, renderer, sky, field, city, setMode, setView, setTrainCam, startFlight, selectSpot, applyTime, applyWeather, makeDate, localParts, lights, ac3, setType: selectType, TYPES };
 }
 
 main().catch((e) => { console.error(e); const m = $('#loadMsg'); if (m) { m.className = 'err'; m.textContent = `เปิดฉาก 3 มิติไม่ได้: ${e.message || e}`; } });

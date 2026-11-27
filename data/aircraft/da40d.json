@@ -1,0 +1,1024 @@
+{
+ "airframe": {
+  "identity": {
+   "v": {
+    "manufacturer": "Diamond Aircraft Industries (TC holder: Diamond Aircraft Industries Inc., Canada)",
+    "model": "DA 40 D",
+    "variant": "DA 40 D (TDI), MTOM 1150 kg",
+    "engine": "Thielert / Technify TAE 125-01 หรือ TAE 125-02-99 turbo-diesel, FADEC คันเดียว",
+    "propeller": "MT-Propeller MTV-6-A/187-129, 3 ใบ constant speed",
+    "seats": 4,
+    "category": "normal (utility ≤ 980 kg)",
+    "tc_ref": "EASA TCDS EASA.IM.A.022 Issue 24 (Section B); engine EASA E.055"
+   },
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "LD1",
+    "LD5",
+    "LD11",
+    "LS1",
+    "LS18"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "โรงเรียนการบินพลเรือนไทยมี DA 40 D 9 ลำ [LS1][LS18]"
+  },
+  "weights": {
+   "MTOW": {
+    "v": 1150,
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "LD1",
+     "LD5"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "2,535 lb; utility 980 kg [LD1 p.14]"
+   },
+   "training_mass": {
+    "v": {
+     "kg": 1060,
+     "empty_kg": 830,
+     "crew_kg": 170,
+     "fuel_kg": 60,
+     "fuel_l": 75
+    },
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "LD8",
+     "LM19"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ (D3): empty_kg = BEW_typical 830 kg [LD8] + ครูฝึกและศิษย์ 2 × 85 kg + Jet A-1 75 l (60 kg ที่ 0.80 kg/l [LM19], ราว 70 % ของถัง 106 l) = 1,060 kg (2,337 lb)"
+   }
+  },
+  "geometry": {
+   "length": {
+    "v": 8.01,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LD6"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "26 ft 3 in [LD6 p.1-6]"
+   },
+   "eye_pos_FRD": {
+    "v": [
+     0.07,
+     -0.25,
+     -0.75
+    ],
+    "u": "m FRD",
+    "scope": "aircraft",
+    "src": [
+     "LD8",
+     "LD0",
+     "AL:C1"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ตานักบินที่นั่งหน้าซ้าย ที่นั่งหน้า 2.30 m DAT [LD8] ตาอยู่หลังกว่าราว 0.1 m คือ 2.40 m DAT จึง x = 2.47 − 2.40 = +0.07 m หน้า CG อ้างอิง 2.47 m DAT ของบัตร (05-da40.md §05.2) [LD0] [AL:C1]; y −0.25 m ที่นั่งซ้าย, ตาสูงกว่า CG ราว 0.75 m (z −0.75)"
+   },
+   "gsAntenna_pos_FRD": {
+    "v": [
+     0.07,
+     -0.25,
+     -0.75
+    ],
+    "u": "m FRD",
+    "scope": "aircraft",
+    "src": [
+     "LD8",
+     "LD0",
+     "AL:C1"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไม่มีแหล่งใดให้ตำแหน่งเสาอากาศรับ glide slope ของแบบนี้ จึงวางไว้ที่ตำแหน่งตา (airframe.geometry.eye_pos_FRD) ไฟ PAPI และ ILS จึงอ่านที่จุดเดียวกัน (เครื่องฝึกสมมติมีตาสูงกว่าเสาอากาศ 1.3 m) [AL:C1]"
+   }
+  },
+  "inertia": {
+   "Ixx": {
+    "v": 2495,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "LM15",
+     "LM8"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ Roskam radii single_prop × มวลฝึก 1060 kg, b 11.94 m, L 8.01 m (lm_inertia, ±30 %)"
+   },
+   "Iyy": {
+    "v": 2167,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "LM15",
+     "LM8"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: เช่นเดียวกับ Ixx"
+   },
+   "Izz": {
+    "v": 4304,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "LM15",
+     "LM8"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: เช่นเดียวกับ Ixx"
+   },
+   "Ixz": {
+    "v": 0,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "LM15"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไม่ทราบ ตั้ง 0 ตาม lm_card DEFAULTS"
+   },
+   "ref_mass": {
+    "v": 1060,
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "LD6"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "มวลฝึก (ค่าประมาณ) ที่ CG อ้างอิง 2.47 m DAT"
+   }
+  }
+ },
+ "speeds": {
+  "VS0_kt": {
+   "v": 49,
+   "u": "kt IAS",
+   "scope": "aircraft",
+   "src": [
+    "LD8",
+    "LD6"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "แฟลป LDG 1,150 kg; 42 KIAS ที่ 980 kg [LD8][LD6 p.5-8]"
+  },
+  "VAPP_kt": {
+   "v": 66,
+   "u": "kt IAS",
+   "scope": "aircraft",
+   "src": [
+    "LD6",
+    "LD8"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "D1: ที่ training_mass 1,060 kg แฟลป LDG ลมสงบ = speeds.approach_table อ่านเชิงเส้นระหว่าง 63 KIAS (1,000 kg) กับ 67 KIAS (1,092 kg) ได้ 65.6 KIAS [LD6 p.4A-34] (โครงเดียวกัน; handout ให้ 71 KIAS ที่ 1,150 kg ตรงกับ AFM [LD8 p.24]); ≈ 66 KCAS (34 m/s); เท่ากับ VREF; ที่ MTOM 1,150 kg = 71 KIAS"
+  },
+  "VREF_kt": {
+   "v": 66,
+   "u": "kt IAS",
+   "scope": "aircraft",
+   "src": [
+    "LD6",
+    "LD8"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "D1: ที่ training_mass 1,060 kg; handout เรียกความเร็วนี้ว่า VREF (71 KIAS แฟลป LDG, 73 KIAS แฟลป UP ที่ 1,150 kg) [LD8 p.24]"
+  },
+  "ias_cas": {
+   "v": {
+    "UP": [
+     [
+      52,
+      55.9
+     ],
+     [
+      57,
+      60
+     ],
+     [
+      66,
+      66.4
+     ],
+     [
+      79,
+      79
+     ],
+     [
+      178,
+      178
+     ]
+    ],
+    "T/O": [
+     [
+      51,
+      55.2
+     ],
+     [
+      55,
+      59.3
+     ],
+     [
+      64,
+      65.6
+     ],
+     [
+      78,
+      78
+     ],
+     [
+      108,
+      108
+     ]
+    ],
+    "LDG": [
+     [
+      49,
+      53.7
+     ],
+     [
+      55,
+      57.7
+     ],
+     [
+      62,
+      63.9
+     ],
+     [
+      76,
+      76
+     ],
+     [
+      91,
+      91
+     ]
+    ]
+   },
+   "u": "kt IAS -> kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "LD6",
+    "LD8"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ (ld_iascas.mjs): KCAS(0°) = KIAS(60°)/√2 จากตาราง stall ตามมุมเอียงที่ 1,150 kg [LD6 p.5-8] (อ่านค่ามุมเอียงได้ไม่ชัด) → ช่วงใกล้ stall IAS อ่านต่ำกว่า CAS 4–5 kt; ตรวจกับ VREF/1.3 ได้ใกล้เคียง; เหนือ 76–79 KIAS ถือว่า IAS = CAS"
+  }
+ },
+ "propulsion": {
+  "layout": {
+   "v": [
+    {
+     "id": 1,
+     "pos": [
+      2.22,
+      0,
+      0.05
+     ],
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "type": "piston",
+     "model": "TAE 125-02-99",
+     "prop_sense": 1
+    }
+   ],
+   "u": "m FRD",
+   "scope": "aircraft",
+   "src": [
+    "LD1"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ตำแหน่งดุมใช้ของ NG (ค่าประมาณ)"
+  },
+  "legacy": {
+   "v": {
+    "P": 99000,
+    "eta": 1.0061,
+    "T0": 3460,
+    "idle": 0
+   },
+   "u": "W, -, N, -",
+   "scope": "engine",
+   "src": [
+    "LM0",
+    "LD4",
+    "LD6"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ lm_legacy_fit static (da40d): T0 = 1.174 × แรงขับสถิตโมเมนตัม×FM 0.623 (สัดส่วนเดียวกับ iteration ของ NG §05.9) แล้วหา Vc = 28.8 m/s ให้ ROC ตรงเป้า; eta_sim 1.0061 (> 0.95: พารามิเตอร์รูปทรง ดู §05.12)"
+  }
+ },
+ "aero": {
+  "ref": {
+   "S": {
+    "v": 13.54,
+    "u": "m2",
+    "scope": "aircraft",
+    "src": [
+     "LD6"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "พื้นที่อ้างอิง = พื้นที่ปีก AFM รุ่นเดิม"
+   },
+   "b": {
+    "v": 11.94,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LD6"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ช่วงปีกตามแหล่ง [LD6]"
+   },
+   "c": {
+    "v": 1.121,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LD6"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "MAC"
+   }
+  },
+  "flaps": {
+   "detents": {
+    "v": [
+     {
+      "name": "UP",
+      "flap_deg": 0,
+      "VFE_kt": null,
+      "dCL0": 0,
+      "dCD0": 0,
+      "dCm0": 0,
+      "CLmax": 1.562
+     },
+     {
+      "name": "T/O",
+      "flap_deg": 20,
+      "VFE_kt": 108,
+      "dCL0": 0.52,
+      "dCD0": 0.008,
+      "dCm0": -0.06,
+      "CLmax": 1.602
+     },
+     {
+      "name": "LDG",
+      "flap_deg": 42,
+      "VFE_kt": 91,
+      "dCL0": 0.75,
+      "dCD0": 0.035,
+      "dCm0": -0.1,
+      "CLmax": 1.693
+     }
+    ],
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "LD1",
+     "LD6",
+     "LM10"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: มุมแฟลปเท่ากับ NG [LD1 p.7]; VFE รุ่นเดิม 108/91 KIAS; dCL0/dCD0/dCm0 ใช้ของ NG (แฟลปเดียวกัน); CLmax จาก VS รุ่นเดิม (ดู CLmax_target)"
+   }
+  },
+  "derivatives": {
+   "CLq": {
+    "v": {
+     "cruise": 8.365,
+     "approach": 8.323
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "CLadot": {
+    "v": {
+     "cruise": 1.564,
+     "approach": 1.547
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "CLde": {
+    "v": {
+     "cruise": 0.3575,
+     "approach": 0.3559
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "CYb": {
+    "v": {
+     "cruise": -0.5712,
+     "approach": -0.5707
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "CYdr": {
+    "v": {
+     "cruise": 0.1202,
+     "approach": 0.12
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "CYr": {
+    "v": {
+     "cruise": 0.2118,
+     "approach": 0.2109
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Clb": {
+    "v": {
+     "cruise": -0.0535,
+     "approach": -0.0491
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Clp": {
+    "v": {
+     "cruise": -0.552,
+     "approach": -0.5559
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Clr": {
+    "v": {
+     "cruise": 0.0995,
+     "approach": 0.1637
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Clda": {
+    "v": {
+     "cruise": 0.1724,
+     "approach": 0.1745
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Cldr": {
+    "v": {
+     "cruise": 0.0062,
+     "approach": 0.0062
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Cmq": {
+    "v": {
+     "cruise": -24.58,
+     "approach": -24.47
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Cmadot": {
+    "v": {
+     "cruise": -6.451,
+     "approach": -6.384
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Cmde": {
+    "v": {
+     "cruise": -1.475,
+     "approach": -1.468
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Cnb": {
+    "v": {
+     "cruise": 0.0581,
+     "approach": 0.0546
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Cnp": {
+    "v": {
+     "cruise": -0.0742,
+     "approach": -0.1795
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Cnr": {
+    "v": {
+     "cruise": -0.0894,
+     "approach": -0.0932
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Cnda": {
+    "v": {
+     "cruise": -0.0086,
+     "approach": -0.0084
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   },
+   "Cndr": {
+    "v": {
+     "cruise": -0.0453,
+     "approach": -0.0452
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM10",
+     "LM11",
+     "LM12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ lm_derivs (แกนลำตัว, cruise 110 kt CL 0.43 / approach 77 kt CL 0.89); ความแม่นตามตาราง 01.3-3"
+   }
+  },
+  "legacy": {
+   "v": {
+    "CL0": 0.34,
+    "CLa": 5.45,
+    "CLflap": 0.75,
+    "CDflap": 0.035,
+    "CDgear": 0,
+    "Cm0": 0.02,
+    "Cma": -1.6,
+    "Cmflap": -0.1,
+    "aStall": 17.68,
+    "aStallFlap": -6.58,
+    "CD0": 0.06303,
+    "K": 0.0702,
+    "aWarn": 10.02,
+    "aWarnFlap": -7.18,
+    "aWarnHyst": 0.5,
+    "aWarnMinOn": 0.5
+   },
+   "u": "-, 1/rad, deg, deg/f, s",
+   "scope": "aircraft",
+   "src": [
+    "LM0",
+    "LD6",
+    "LD12",
+    "R1:A22",
+    "AL:A5",
+    "AL:C1"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ lm_legacy_fit (da40d): polar ของซิมจากการร่อนของรุ่นนี้; aStall/aStallFlap แก้หาให้ CLmax 1 g = 1.562 (UP) / 1.693 (LDG); ค่าอื่นจาก NG. สัญญาณเตือน stall (ค่าประมาณ): aWarn 10.02° ที่แฟลป 0 และ aWarn + aWarnFlap = 2.84° ที่แฟลปลงจอด LDG (f 1) คือมุมปะทะที่ความเร็ว 1 g สูงกว่าความเร็ว stall 1 g 7.00 kt แก้บนเส้น CL ของซิมเองตามวิธี T-A-07 (trim q̇ = 0, ρ 1.225, มวลฝึก 1,060 kg) ด้วย tools/aircraft/build_cards.mjs [AL:C1]; ทุกขั้นแฟลประหว่างนั้นอยู่ใน 7 ± 0.25 kt; เกณฑ์อย่างน้อย 5 kt ของ 14 CFR 23.207(c) [R1:A22][LD12]; เทียบ alpha_warn_design ของบัตรวิจัย {\"UP\":8.14,\"LDG\":2.76} deg (แบบจำลองของงานวิจัยเอง ไม่ใช่เส้น CL ของซิม); เลิกเตือนเมื่อ α ต่ำกว่า 0.5° และดังมาแล้วอย่างน้อย 0.5 s ตามเครื่องฝึก (plan A5) [AL:A5]"
+  }
+ },
+ "controls": {
+  "surfaces": {
+   "elevator": {
+    "v": {
+     "travel_deg": {
+      "up": 23,
+      "down": 15
+     },
+     "tol": {
+      "up": "±1",
+      "down": "±1"
+     },
+     "rate_dps": null,
+     "actuator_tau_s": null
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "LD1"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "มาตรฐาน; ถังพิสัยไกล 23/16° [LD1 p.14–15]"
+   },
+   "aileron": {
+    "v": {
+     "travel_deg": {
+      "up": 20,
+      "down": 13
+     },
+     "tol": {
+      "up": "±2",
+      "down": "±2"
+     },
+     "rate_dps": null,
+     "actuator_tau_s": null
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "LD1"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "[LD1 p.29] (การจับคู่ค่ากับชื่อพื้นบังคับใน PDF อ่านตามลำดับหัวข้อ ตรงกับ Section A/B)"
+   },
+   "rudder": {
+    "v": {
+     "travel_deg": {
+      "left": 29,
+      "right": 31
+     },
+     "tol": "±1",
+     "rate_dps": null,
+     "actuator_tau_s": null
+    },
+    "u": "deg",
+    "scope": "aircraft",
+    "src": [
+     "LD1"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "มาตรฐาน; ถังพิสัยไกลหรือ rudder ใหญ่ 24/26° [LD1 p.14–15]"
+   }
+  }
+ },
+ "gear": {
+  "layout": {
+   "v": "tricycle_fixed",
+   "u": "-",
+   "scope": "gear",
+   "src": [
+    "LD1"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "fixed tricycle landing gear [LD1 p.26] (รุ่นเดิม Section A p.4, DA 40 D Section B p.12)"
+  },
+  "legacy": {
+   "v": [
+    {
+     "b": [
+      1.344,
+      0,
+      0.88
+     ],
+     "k": 69300.32666666666,
+     "c": 3066.3770678332003,
+     "stroke": 0.08,
+     "steer": true
+    },
+    {
+     "b": [
+      -0.336,
+      -1.485,
+      0.91
+     ],
+     "k": 69300.32666666666,
+     "c": 2710.3200229247223,
+     "stroke": 0.15,
+     "brake": true
+    },
+    {
+     "b": [
+      -0.336,
+      1.485,
+      0.91
+     ],
+     "k": 69300.32666666666,
+     "c": 2710.3200229247223,
+     "stroke": 0.15,
+     "brake": true
+    }
+   ],
+   "u": "m FRD, N/m, N s/m, m",
+   "scope": "gear",
+   "src": [
+    "LD2",
+    "LD0",
+    "AL:C1",
+    "LD6",
+    "LD8",
+    "LM19",
+    "LM0"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: ขาล้อสปริง-แดมเปอร์เชิงเส้น 3 ขาของซิม (ล้อหน้าเลี้ยวได้ ล้อหลักมีเบรก) b ตำแหน่งจุดสัมผัสเมื่อขายืดสุด (m FRD จาก CG), k, c, stroke คำนวณด้วย buildAC (legacyGear) ของ lm_card.mjs [LM0] ที่มวลฝึกจาก gear.geometry.*_contact_body_extended, gear.strut_*.spring และ gear.strut_*.stroke ของบัตรวิจัย: น้ำหนักล้อหน้า N = W·(−x_main)/(x_nose − x_main); k ล้อหน้าจาก N/static_deflection ล้อหลักจาก N/static_deflection; c = 2ζ√(k·N/g) (ล้อหน้า ζ 0.4, ล้อหลัก ζ 0.25) [AL:C1]; ล้อหน้า x +1.344 m และล้อหลัก x −0.336 m: แบ่ง wheelbase 1.68 m [LD2] ให้ล้อหน้ารับน้ำหนักสถิตราว 20 % ตามค่าประมาณของงานวิจัย (gear.tyre_nose.rated_load) [LD0] ซึ่งงานวิจัยได้จากตำแหน่งล้อที่ประมาณจากภาพ 2.80 / 1.12 m DAT ที่ CG 2.47 m (19.6 %, 05-da40.md §05.2) จึงได้ตำแหน่งของงานวิจัย (+1.35 / −0.33 m) กลับมาโดยปัดแล้ว ต่างไม่เกิน 6 mm [AL:C1]"
+  }
+ },
+ "thai_fleet": {
+  "v": {
+   "as_of": "2026-07-09",
+   "default_thai_type": "c172s",
+   "ato_aircraft": 78,
+   "users": [
+    {
+     "name": "สถาบันการบินพลเรือน (CATC / CATI)",
+     "kind": "ato",
+     "n": 7,
+     "base": "หัวหิน",
+     "base_icao": "VTPH",
+     "base_est": false,
+     "variants": []
+    },
+    {
+     "name": "วิทยาลัยการบินนานาชาติ มหาวิทยาลัยนครพนม (IAC-NPU)",
+     "kind": "ato",
+     "n": 2,
+     "base": "นครพนม",
+     "base_icao": "VTUW",
+     "base_est": true,
+     "variants": []
+    }
+   ]
+  },
+  "u": "-",
+  "scope": "environment",
+  "src": [
+   "LS1",
+   "LS2",
+   "LS3",
+   "LS5"
+  ],
+  "conf": "กลาง",
+  "est": true,
+  "note": "จำนวนเครื่องแบบนี้ของโรงเรียนการบินพลเรือน (ATO, kind ato) และชมรมการบิน (kind club) ในไทย 9 ลำใน ATO นับจากทะเบียนอากาศยานของ กพท. ณ 9 ก.ค. 2026 [LS1] เป็นเครื่องที่จดทะเบียน ไม่ใช่เครื่องที่บินได้วันนี้; รุ่นในทะเบียนที่ไม่มีบัตรของตัวเองนับใต้แบบนี้ตาม variants; ato_aircraft คือเครื่องฝึกทั้งหมดของ ATO ในทะเบียน และ default_thai_type คือแบบที่ ATO ใช้มากที่สุด (02-thai-schools.md, common_light.thai_fleet); ฐานฝึกที่ base_est เป็น true เป็นค่าประมาณ (อนุมานจากที่ตั้งเครื่องฝึกจำลองหรือที่อยู่); base ว่างเมื่อแหล่งไม่ระบุสนามบิน"
+ },
+ "_meta": {
+  "id": "da40d",
+  "source": "AirfieldLab plan C1: the round 2 research card da40d in docs/research/02-light-aircraft/params-light.json (topic file 05-da40.md), resolved with its _inherits chain, with the Thai fleet of common_light.thai_fleet (02-thai-schools.md); only the values the simulator reads, the speed table, the flap detents and the type's identity, MTOW, length and gear layout, generated by tools/aircraft/build_cards.mjs; each leaf names its sources in src, listed in _meta.sources",
+  "license": "MIT (LICENSE): the repository's own compilation, fits and estimates; manufacturer, authority and register figures used as cited numbers only (no text, table, figure or document copied; © their owners, see _meta.sources)",
+  "note": "บัตรพารามิเตอร์ของ DA 40 D สำหรับซิม สร้างด้วย tools/aircraft/build_cards.mjs จากบัตรวิจัยรอบที่ 2 ห้ามแก้ไฟล์นี้ด้วยมือ (แก้ params-light.json หรือสคริปต์แล้วสร้างใหม่) ตัวเลขการบินเป็นค่าของเอกสารสาธารณะที่อ้างไว้หรือเป็นค่าประมาณ (est true, ค่าประมาณ ใน note) ใช้เพื่อการฝึกในเกมนี้เท่านั้น ไม่ใช้เพื่อการบินจริง; รูปแบบ leaf {v, u, scope, src, conf, est, note} ตาม docs/research/01-flight-physics/schema.md และ docs/research/02-light-aircraft/schema-ext.md; ความเร็วอ้างอิงเขียนในหน่วยที่แหล่งให้ (ส่วนมาก kt IAS) ซิมแปลง kt IAS เป็น kt CAS ด้วย speeds.ias_cas แถวแฟลปลงจอด; รหัส AL:A5 และ AL:C1 ไม่ใช่รูปแบบรหัสของรอบที่ 2 (lm_lib.validate ของรอบที่ 2 เตือนโดยตั้งใจ เช่นเดียวกับบัตรเครื่องฝึก) บัตรใน data/aircraft อ่านรหัสทุกตัวผ่าน _meta.sources",
+  "sources": {
+   "AL:A5": {
+    "what": "AirfieldLab plan A5 design choice, no outside source: the stall warning goes off only 0.5° below its angle and after at least 0.5 s on, so a gust spike sounds as a short chirp; test/stall.test.mjs checks the behaviour",
+    "link": "test/stall.test.mjs"
+   },
+   "AL:C1": {
+    "what": "AirfieldLab plan C1, this generator's own derivations: the stall-warning angles solved on the simulator's lift curve, the gear struts through round 2's buildAC, the glide-slope antenna at the eye, the DA40 eye point from the seat station and the DA40 wheel stations from the wheelbase, the Thai fleet rows and, for a card without inertia, inertia from class radii",
+    "link": "tools/aircraft/build_cards.mjs"
+   },
+   "LD0": {
+    "what": "สคริปต์ของหัวข้อนี้ scripts/ld_geom.mjs, ld_iascas.mjs, ld_flaps.mjs, ld_tools.mjs, ld_json.mjs, ld_iter.mjs, ld_polar_opts.mjs, ld_tests.mjs, ld_review.mjs (เพิ่มในการตรวจทาน), ld_vx.mjs, ld_clmax.mjs, ld_stickforce.mjs (เพิ่ม 19 พ.ย. 2026) และผลใน scripts/out/ld_ (AirfieldLab research รอบที่ 2, 2026-11-18/19) (reference [LD0] of docs/research/02-light-aircraft/05-da40.md)",
+    "link": "docs/research/02-light-aircraft/05-da40.md"
+   },
+   "LD1": {
+    "what": "EASA, Type-Certificate Data Sheet EASA.IM.A.022 DA 40 series, Issue 24, 22 Apr 2021, 98 หน้า (Section A DA 40 p.3–10, Section B DA 40 D p.10–17, Section D DA 40 NG p.25–32; เลขหน้าตาม \"Page N of 98\") ฉบับ validation ของ EASA เพราะ TC หลักย้ายไป Transport Canada A-224 ตั้งแต่ 15 พ.ย. 2017 [LD5]; ไม่พบฉบับที่ใหม่กว่าในหน้าเว็บ EASA ณ วันตรวจ (ยืนยันไม่ได้ทั้งหมด) (reference [LD1] of docs/research/02-light-aircraft/05-da40.md)",
+    "link": "https://www.easa.europa.eu/en/downloads/44254/en"
+   },
+   "LD11": {
+    "what": "EASA, TCDS E.055 TAE 125 series, Issue 16, 27 Oct 2025 (reference [LD11] of docs/research/02-light-aircraft/05-da40.md)",
+    "link": "https://www.easa.europa.eu/en/downloads/7707/en"
+   },
+   "LD12": {
+    "what": "14 CFR Part 23 ฉบับก่อน Amendment 23-64 (§23.53, §23.73, §23.155, §23.173, §23.207, §23.473, §23.723) ฉบับ 2011 (reference [LD12] of docs/research/02-light-aircraft/05-da40.md)",
+    "link": "https://www.govinfo.gov/content/pkg/CFR-2011-title14-vol1/pdf/CFR-2011-title14-vol1-sec23-473.pdf"
+   },
+   "LD2": {
+    "what": "Diamond Aircraft, DA 40 NG Airplane Flight Manual Doc. 6.01.15-E Rev 3 (1 Jul 2014) บท 1–3 (สำเนาที่บุคคลที่สามเผยแพร่) (reference [LD2] of docs/research/02-light-aircraft/05-da40.md)",
+    "link": "https://skywarriorinc.com/_files/ugd/a08be8_a7f738da7568414dbed5310036245d6f.pdf"
+   },
+   "LD4": {
+    "what": "Diamond Aircraft, หน้า DA40 Tech Specs (DA40 NG และ DA40 XLT, MTOM ISA; ผู้ผลิตระบุว่าเป็นค่าโดยประมาณ) เข้าถึง 2026-11 (reference [LD4] of docs/research/02-light-aircraft/05-da40.md)",
+    "link": "https://www.diamondaircraft.com/en/private-owners/aircraft/da40/tech-specs/"
+   },
+   "LD5": {
+    "what": "Civil Aviation Authority of New Zealand, Type Acceptance Report TAR 3/21B/34 Rev 2 Diamond DA40 series, 12 พ.ย. 2020 (ครอบคลุม DA 40, DA 40 D, DA 40 F, DA 40 NG; TC holder Diamond Aircraft Industries Inc. แคนาดา, Transport Canada A-224) (reference [LD5] of docs/research/02-light-aircraft/05-da40.md)",
+    "link": "https://avsec.govt.nz/assets/aircraft/type-acceptance-reports/Diamond_DA40.pdf"
+   },
+   "LD6": {
+    "what": "Diamond Aircraft, DA 40 Airplane Flight Manual (IO-360-M1A) Doc. 6.01.01-E Rev 8 (1 Dec 2010) สำเนาบน ManualsLib (หน้า viewer 23, 43, 78, 81, 102, 107, 144, 150 (4A-34), 165 (4B-9), 178–191, 230, 239) (reference [LD6] of docs/research/02-light-aircraft/05-da40.md)",
+    "link": "https://www.manualslib.com/manual/1070201/Diamond-Da-40.html"
+   },
+   "LD8": {
+    "what": "P. Schmidleitner, Diamond DA40-TDI G1000 handout v1.1 (reference [LD8] of docs/research/02-light-aircraft/05-da40.md)",
+    "link": "https://aerolocarno.ch/AFMs/Diamond_DA40-TDI-G1000__V1_1_Handout.pdf"
+   },
+   "LM0": {
+    "what": "AirfieldLab research round 2, สคริปต์ของหัวข้อนี้ scripts/lm_lib.mjs, lm_merge.mjs, lm_card.mjs, lm_fixture_trainer_r1.mjs, lm_selftest.mjs, lm_derivs.mjs, lm_inertia.mjs, lm_jsb_inertia.py, lm_polar.mjs, lm_engine.mjs, lm_prop.mjs, lm_legacy_fit.mjs และผลใน scripts/out/lm_ (2026-11-18) (reference [LM0] of docs/research/02-light-aircraft/01-methods.md)",
+    "link": "docs/research/02-light-aircraft/01-methods.md"
+   },
+   "LM10": {
+    "what": "D. E. Hoak และคณะ, USAF Stability and Control DATCOM, รายงานของรัฐบาลสหรัฐฯ, 1960 (ปรับปรุงถึง 1978); ภาพรวม; J. E. Williams และคณะ (McDonnell Douglas Astronautics Co.), The USAF Stability and Control Digital DATCOM, Volume II: Implementation of Datcom Methods, AFFDL-TR-79-3032 Vol. II, April 1979, (\"Approved for public release; distribution unlimited\"; เลขหัวข้อ 4.1.3.2, 4.4.1, 5.x ในตาราง 01.3-1 เป็นเลขหัวข้อของ DATCOM ฉบับพิมพ์ ไม่ใช่ของเล่มนี้) (reference [LM10] of docs/research/02-light-aircraft/01-methods.md)",
+    "link": "https://en.wikipedia.org/wiki/USAF_Stability_and_Control_DATCOM"
+   },
+   "LM11": {
+    "what": "J. Roskam, Airplane Design Part VI: Preliminary Calculation of Aerodynamic, Thrust and Power Characteristics, DARcorporation, ISBN 978-1-884885-52-5 (reference [LM11] of docs/research/02-light-aircraft/01-methods.md)",
+    "link": "https://catalogo.bibliotecas.unlp.edu.ar/Record/dfi.9845"
+   },
+   "LM12": {
+    "what": "D. P. Raymer, Aircraft Design: A Conceptual Approach, 6th ed., AIAA, 2018, ISBN 978-1-62410-490-9 (reference [LM12] of docs/research/02-light-aircraft/01-methods.md)",
+    "link": "https://search.worldcat.org/title/1048659355"
+   },
+   "LM15": {
+    "what": "J. Roskam, Airplane Design Part V: Component Weight Estimation (บทที่ 10 ตารางรัศมีไจเรชันไร้มิติ), DARcorporation, ISBN 978-1-884885-50-1; สูตรนิยามตามที่ schema-ext-r2 §5 อ้าง ผู้วิจัยไม่ได้เปิดตารางต้นฉบับ, ข้อมูลผู้พิมพ์ (reference [LM15] of docs/research/02-light-aircraft/01-methods.md)",
+    "link": "https://www.darcorp.com/wp-content/uploads/2019/05/AAA-Brochure-1.pdf"
+   },
+   "LM19": {
+    "what": "Austro Engine / Diamond Aircraft, AE300 (E4 series) factsheet, พฤษภาคม 2024 (\"illustrative, non-binding\") (reference [LM19] of docs/research/02-light-aircraft/01-methods.md)",
+    "link": "https://diamondaircraft.com/fileadmin/diamondaircraft/products/austro-engine/AE_E4_Series_Factsheet_screen.pdf"
+   },
+   "LM8": {
+    "what": "JSBSim Team, JSBSim 1.3.3 (Python package บน PyPI) และไฟล์แบบจำลองที่มากับแพ็กเกจ aircraft/{c172x,pa28,c310,pc7,t6texan2} และ engine/prop_75in2f.xml (reference [LM8] of docs/research/02-light-aircraft/01-methods.md)",
+    "link": "https://pypi.org/project/jsbsim/1.3.3/"
+   },
+   "LS1": {
+    "what": "Thailand Aircraft Register as at 9th July 2026, สำนักงานการบินพลเรือนแห่งประเทศไทย (กพท.), 2026 (ฉบับก่อนหน้า: as at 14th January 2026 ใช้เทียบใน 02.8 ข้อ 12) (reference [LS1] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.caat.or.th/wp-content/uploads/2026/08/Thailand-Aircraft-Register-as-at-9th-July-2026.pdf"
+   },
+   "LS18": {
+    "what": "EASA TCDSN (noise) EASA.IM.A.022 DA 40 series, Issue 2, 26 มี.ค. 2025 (reference [LS18] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.easa.europa.eu/et/downloads/44276/en"
+   },
+   "LS2": {
+    "what": "FSTD under CAAT Approval as of 24 AUG 2026, กพท., 2026 (reference [LS2] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.caat.or.th/wp-content/uploads/2026/08/FSTD-under-CAAT-Approval_as-of-24AUG2026.pdf"
+   },
+   "LS3": {
+    "what": "Thailand CATC (State presentation), ICAO APAC RTCF WG-3, 2024 (reference [LS3] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.icao.int/sites/default/files/APAC/Meetings/2024/2024%20RTCF%20WG-3/3-State%20Presentations/Thailand-CATC.pdf"
+   },
+   "LS5": {
+    "what": "CAAT Approved Flying Training Organisations, \"Updated 29 March 2022\", กพท. (reference [LS5] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.caat.or.th/en/archives/36105"
+   },
+   "R1:A22": {
+    "what": "14 CFR Part 23 (1 Jan 2016, before Amdt 23-64) §23.207(c): stall warning at least 5 kt above the stall (reference [A22] of the round 1 aero topic)",
+    "link": "docs/research/01-flight-physics/01-aero.md"
+   }
+  }
+ }
+}

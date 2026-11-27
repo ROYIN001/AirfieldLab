@@ -5,7 +5,8 @@
 //   node docs/research/02-light-aircraft/scripts/lm_ci.mjs [--root <dir>] [--out <dir>] [--only id,id] [--keep] [--report-only]
 //
 // Default: take src/ and test/harness.mjs of the commit pinned in sim-snapshot.json (git archive; fetched from origin
-// when the clone lacks it) into a temp folder, set AIRFIELDLAB_ROOT to it and LM_OUT_DIR to a temp out folder, run the
+// when the clone lacks it), and data/aircraft/ when that commit has it (OPTIONAL_PATHS), into a temp folder, set
+// AIRFIELDLAB_ROOT to it and LM_OUT_DIR to a temp out folder, run the
 // steps below, and exit 1 when a step fails or when the run changed a file of the repo (new, deleted or rewritten, ignored
 // files included; the --out folder is exempt when it lies inside the repo). The scripts that fly cards in
 // the simulator (lm_selftest, lh_tests, lo_tests) and the code they copy from it (lm_card.simCLtrim / simTrimDe = stallBlend and the CL and
@@ -60,7 +61,11 @@ function snapshot() {
   return m;
 }
 
-/** Extract `paths` of `commit` into `dest` (fetching the commit from origin when this clone lacks it). */
+// Paths taken from the pinned commit too when it has them: from plan B3 on, test/harness.mjs reads the aircraft card
+// data/aircraft/trainer.json (setAircraft), so a snapshot pinned after B3 needs it beside src/; one pinned before has none.
+export const OPTIONAL_PATHS = ['data/aircraft'];
+
+/** Extract `paths` of `commit`, and the OPTIONAL_PATHS it has, into `dest` (fetching the commit from origin when this clone lacks it). */
 export function materialize(snap, dest) {
   if (!isGit) throw new Error(`${REPO} is not a git work tree; pass --root <dir> with src/ and test/harness.mjs`);
   const have = c => git(['cat-file', '-e', `${c}^{commit}`]).status === 0;
@@ -68,7 +73,8 @@ export function materialize(snap, dest) {
     const f = git(['fetch', '--no-tags', '--depth=1', 'origin', snap.commit], { encoding: 'utf8' });
     if (f.status !== 0 || !have(snap.commit)) throw new Error(`cannot fetch ${snap.commit} from origin:\n${f.stderr}`);
   }
-  const tar = git(['archive', '--format=tar', snap.commit, ...snap.paths]);
+  const optional = OPTIONAL_PATHS.filter(p => !snap.paths.includes(p) && git(['cat-file', '-e', `${snap.commit}:${p}`]).status === 0);
+  const tar = git(['archive', '--format=tar', snap.commit, ...snap.paths, ...optional]);
   if (tar.status !== 0) throw new Error(`git archive ${snap.commit} failed:\n${tar.stderr}`);
   fs.mkdirSync(dest, { recursive: true });
   const x = spawnSync('tar', ['-x', '-C', dest], { input: tar.stdout });

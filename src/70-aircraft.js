@@ -1,5 +1,7 @@
 // ───────────────────────── Generic two-seat turboprop trainer (procedural model) ─────────────────────────
-// Model axes: +X nose, +Y up, +Z right wing; origin at the centre of gravity. Gear points match AC.gear.
+// Model axes: +X nose, +Y up, +Z right wing; origin at the centre of gravity. Gear points match the trainer's AC.gear.
+// The other types of the training pane (plan C1) fly this same model, fitted to their card by fit(spec) (spec from
+// modelSpec in 22-types.js): per-type shapes are later work, and the Thai type note says the picture is generic.
 
 function naca(m, p, t, x) {
   const yt = 5 * t * (0.2969 * Math.sqrt(x) - 0.126 * x - 0.3516 * x * x + 0.2843 * x ** 3 - 0.1036 * x ** 4);
@@ -89,7 +91,11 @@ float paintRough = mix(0.32, 0.85, glare);
 `;
 
 function buildAircraft() {
-  const root = new THREE.Group(); root.name = 'trainer';
+  // group: placed at the CG by the app; body: raised by fit(spec).lift; root: every mesh (hidden in the cockpit view of
+  // a fitted type), with the aircraft's lights beside it in body
+  const group = new THREE.Group(); group.name = 'aircraft';
+  const body = new THREE.Group(); group.add(body);
+  const root = new THREE.Group(); root.name = 'trainer'; body.add(root);
   const paint = physMat({ color: 0xffffff, roughness: 0.32, metalness: 0.0, clearcoat: 0.6, clearcoatRoughness: 0.18 }, {
     key: 'paint', vert: (v) => v.replace('#include <common>', '#include <common>\nvarying vec3 vObj;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvObj = position;'),
     frag: (f) => f.replace('#include <common>', '#include <common>\nvarying vec3 vObj;').replace('#include <map_fragment>', PAINT_FRAG).replace('#include <roughnessmap_fragment>', 'float roughnessFactor = paintRough;'),
@@ -231,26 +237,66 @@ function buildAircraft() {
   LS.add([-1.0, -0.6, 0], { kind: 8, a: [1, 0.08, 0.03], I: 1.6, param: 0.5, cat: 3, day: 1.4 });
   for (const z of [-1.15, 1.15]) LS.add([0.62, -0.30, z], { kind: 9, a: [1, 0.97, 0.9], I: 3.5, cat: 3, day: 0.8 });
   const lmat = makeLightMaterial();
-  const lpts = LS.build(lmat); root.add(lpts);
+  const lpts = LS.build(lmat); body.add(lpts);
   // landing light that actually lights the runway
   const land = new THREE.SpotLight(0xfff4e6, 0, 900, 11 * DEG, 0.55, 2);
   land.position.set(0.7, -0.3, 0); land.target.position.set(60, -5, 0);
-  root.add(land, land.target);
+  body.add(land, land.target);
+
+  // A twin's engines (fit): per engine a nacelle, a spinner, three blades and a blur disc at the card's engine position
+  // (model axes), built once per layout and kept. The nose propeller's blades and disc hide; its spinner stays as the
+  // nose cone (the fuselage is open at the front).
+  const twinCache = new Map();
+  function nacelles(list) {
+    const key = JSON.stringify(list);
+    if (twinCache.has(key)) return twinCache.get(key);
+    const g = new THREE.Group(); g.name = 'nacelles'; const units = [];
+    for (const [x, y, z] of list) {
+      const shell = new THREE.LatheGeometry([[0.05, -2.05], [0.2, -1.8], [0.3, -1.0], [0.3, -0.35], [0.22, -0.05]].map(([r, h]) => new THREE.Vector2(r, h)), 20);
+      shell.rotateZ(-Math.PI / 2); shell.translate(x, y, z); add(shell, M.paint, g);
+      const sp = new THREE.LatheGeometry(Array.from({ length: 8 }, (_, i) => { const u = i / 7; return new THREE.Vector2(0.22 * Math.sqrt(1 - u * u * 0.98), u * 0.3); }), 16);
+      sp.rotateZ(-Math.PI / 2); sp.translate(x - 0.05, y, z); add(sp, M.dark, g);
+      const bl = new THREE.Group(); bl.position.set(x + 0.1, y, z); g.add(bl);
+      for (let i = 0; i < 3; i++) { const b = boxGeo(0.05, 0.85, 0.16, 0, 0.5, 0); b.rotateX((i / 3) * Math.PI * 2); add(b, M.prop, bl); }
+      const d = new THREE.Mesh(new THREE.CircleGeometry(0.93, 48), discMat); d.rotation.y = Math.PI / 2; d.position.set(x + 0.12, y, z); d.renderOrder = 6; g.add(d);
+      units.push({ blades: bl, disc: d });
+    }
+    const t = { group: g, units }; twinCache.set(key, t); return t;
+  }
+  let flapDeg = 38, retract = true, twin = null;
 
   const api = {
-    group: root, parts, surf, gear, blades, disc, discMat, helmets, lights: lpts, lightMat: lmat, land, M,
+    group, body, root, parts, surf, gear, blades, disc, discMat, helmets, lights: lpts, lightMat: lmat, land, M, spec: null,
     pose(state) { // state: {de, da, dr, flaps, gear, steer, prop (rad), rpmVisible}
       const { de = 0, da = 0, dr = 0, flaps = 0, gearPos = 1, steer = 0 } = state;
       // every hinge axis points toward +Z, so +rotation is trailing edge down on both wings
       if (surf.ailR) surf.ailR.rotation.z = -da; if (surf.ailL) surf.ailL.rotation.z = da;
-      const fd = flaps * 38 * DEG; if (surf.flapR) surf.flapR.rotation.z = fd; if (surf.flapL) surf.flapL.rotation.z = fd;
+      const fd = flaps * flapDeg * DEG; if (surf.flapR) surf.flapR.rotation.z = fd; if (surf.flapL) surf.flapL.rotation.z = fd;
       if (surf.elev) surf.elev.rotation.z = de;
       if (surf.rud) surf.rud.rotation.z = -dr;
-      const r = (1 - gearPos) * Math.PI / 2;
+      const r = retract ? (1 - gearPos) * Math.PI / 2 : 0;
       gear.mainR.rotation.x = r; gear.mainL.rotation.x = -r; gear.nose.rotation.z = -r;
       gear.steer.rotation.y = -steer;
     },
-    spin(rad, running) { blades.rotation.x = rad; blades.visible = !running; disc.visible = running; },
+    spin(rad, running) {
+      blades.rotation.x = rad; blades.visible = !running && !twin; disc.visible = running && !twin;
+      if (twin) for (const u of twin.units) { u.blades.rotation.x = rad; u.blades.visible = !running; u.disc.visible = running; }
+    },
+    // Fitted to a type (plan C1): spec { lift, flapDeg, retract, engines, hideInCockpit } from modelSpec, null = the
+    // trainer as built (lift 0, flaps 38°, retracting gear, nose propeller).
+    fit(spec) {
+      api.spec = spec || null;
+      body.position.y = spec ? spec.lift : 0;
+      flapDeg = spec ? spec.flapDeg : 38; retract = spec ? spec.retract : true;
+      if (twin) root.remove(twin.group);
+      twin = spec && spec.engines.length > 1 ? nacelles(spec.engines) : null;
+      if (twin) root.add(twin.group);
+      api.inCockpit(false);
+      return api;
+    },
+    // the cockpit view: the trainer hides its front helmet, a fitted type with hideInCockpit its whole model (the
+    // trainer's canopy and helmets would stand around the card's eye point); the lights stay
+    inCockpit(on) { helmets[0].visible = !on; root.visible = !(on && api.spec && api.spec.hideInCockpit); },
   };
   api.pose({ flaps: 1 });
   return api;

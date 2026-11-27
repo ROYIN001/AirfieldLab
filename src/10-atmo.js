@@ -1,7 +1,8 @@
 // ───────────────────────── Atmosphere, sun and sky radiance (pure) ─────────────────────────
 // atmosphere(): US Standard Atmosphere 1976, ported from Orbitlab src/physics/atmosphere.ts
 // (same layer table, geopotential altitude, R and gamma), with an ISA temperature deviation
-// so a hot Thai afternoon changes density, true airspeed and landing roll.
+// so a hot Thai afternoon changes density, true airspeed and landing roll, a pressure scaled to QNH and humid air
+// from a dew point (research round 4, plan item A8).
 
 const KT = 0.514444, FT = 0.3048, NM = 1852, G0 = 9.80665;
 const DEG = Math.PI / 180, RAD = 180 / Math.PI;
@@ -22,24 +23,50 @@ const USSA_LAYERS = [
   { hb: 71000, Tb: 214.65, L: -0.002, Pb: 3.95642 },
 ];
 
-function atmosphere(hIn, isaDev = 0) {
+// Humid air, field pressure, density and pressure altitude (04-weather.md §6.1, confidence high; tests ATM-1…ATM-10).
+// hPa and °C as in METAR. Sources: e_s Alduchov & Eskridge 1996 (Magnus form); QNH, DA and PA from the ISA of
+// USSA-1976 (NASA NTRS 19770009539); R_d as R_AIR above, R_v 461.495 J/(kg·K). Checked against CIPM-2007
+// (Picard et al. 2008): −0.025 % in ρ (8 ft of DA) at 1008 hPa, 35 °C, Td 26.1 °C (ATM-4).
+const ISA0 = USSA_LAYERS[0], P0_HPA = ISA0.Pb / 100, R_VAP = 461.495, ISA_T0 = ISA0.Tb, ISA_L = -ISA0.L, ISA_N = G0 / (R_AIR * ISA_L);   // 1013.25 hPa, 288.15 K, 0.0065 K/m, 5.25588 (research: 5.255877)
+const satVap = (tC) => 6.1094 * Math.exp((17.625 * tC) / (tC + 243.04));            // e_s(T) hPa
+const relHumidity = (tC, tdC) => 100 * satVap(Math.min(tdC, tC)) / satVap(tC);       // RH %, at most 100 (Td > T read as saturated)
+const dewPoint = (tC, rh) => { const g = Math.log(rh / 100) + (17.625 * tC) / (tC + 243.04); return (243.04 * g) / (17.625 - g); };   // inverse Magnus
+const fieldPressure = (qnh, elevM) => qnh * Math.pow(1 - (ISA_L * elevM) / ISA_T0, ISA_N);   // hPa at elevM (QNH by ISA)
+// ρ (kg/m³) from pressure p (hPa), temperature and dew point (°C); tdC null = dry air (e = 0); e capped at e_s(T) as in atmosphere()
+function airDensity(p, tC, tdC = null) {
+  const e = tdC == null ? 0 : satVap(Math.min(tdC, tC)), T = tC + 273.15;
+  return 100 * ((p - e) / (R_AIR * T) + e / (R_VAP * T));
+}
+
+// QNH and dew point (research round 4, docs/research/04-weather.md §6.1, §6.2, §13 item 1): the pressure profile is
+// the ISA one scaled to QNH (exact in the troposphere: p(h) = QNH·(1 − L·h/T0)^(g0/(R·L)), the ISA definition of QNH),
+// the temperature keeps the ISA lapse rate plus isaDev ("same pressure, different temperature", as before), and the
+// vapour pressure e follows a constant mixing ratio from the dew point measured at height hDew (e ∝ p), capped at
+// saturation e_s(T(h)) above the cloud base (§6.1, ค่าประมาณ, enough for 0–3,000 m). dewC null = dry air.
+// atmosphere(h) and atmosphere(h, isaDev) are unchanged: QNH 1013.25 hPa, dry.
+function atmosphere(hIn, isaDev = 0, qnh = P0_HPA, dewC = null, hDew = 0) {
   const h = clamp(hIn, 0, 86000);
   const hg = (R_EARTH_USSA * h) / (R_EARTH_USSA + h);
   let layer = USSA_LAYERS[0];
   for (let i = USSA_LAYERS.length - 1; i >= 0; i--) if (hg >= USSA_LAYERS[i].hb) { layer = USSA_LAYERS[i]; break; }
   const dh = hg - layer.hb;
   const Tstd = layer.Tb + layer.L * dh;
-  const p = Math.abs(layer.L) < 1e-12
+  const p = (Math.abs(layer.L) < 1e-12
     ? layer.Pb * Math.exp((-G0 * dh) / (R_AIR * layer.Tb))
-    : layer.Pb * Math.pow(layer.Tb / Tstd, G0 / (R_AIR * layer.L));
+    : layer.Pb * Math.pow(layer.Tb / Tstd, G0 / (R_AIR * layer.L))) * (qnh / P0_HPA);
   const T = Tstd + isaDev;           // non-standard day: same pressure, different temperature
-  const rho = p / (R_AIR * T);
-  return { T, p, rho, a: Math.sqrt(GAMMA_AIR * R_AIR * T) };
+  const e = dewC == null ? 0 : Math.min(satVap(dewC) * p / fieldPressure(qnh, hDew), satVap(T - 273.15) * 100);   // Pa
+  const rho = (p - e) / (R_AIR * T) + e / (R_VAP * T);
+  return { T, p, e, rho, a: Math.sqrt(GAMMA_AIR * R_AIR * T) };
 }
 const RHO0 = 1.225;
 
-// Density altitude (ft) for a pressure altitude and temperature — shown in the briefing
-function densityAltitudeFt(elevM, oatC) {
+// density altitude (ft) of a density, pressure altitude (ft) of a pressure in hPa (ISA troposphere)
+const densityAltitudeFt = (rho) => (ISA_T0 / ISA_L) * (1 - Math.pow(rho / RHO0, 1 / (ISA_N - 1))) / FT;
+const pressureAltitudeFt = (p) => (ISA_T0 / ISA_L) * (1 - Math.pow(p / P0_HPA, 1 / ISA_N)) / FT;
+// The briefing's old rule of thumb (dry air, QNH 1013.25): elevation + 118.8 ft/K above ISA. 04-weather.md §1 finds it
+// 300–420 ft low in Bangkok; kept only as the ATM-7 regression (2,481.8 ft at 35.8 °C, 2.65 m).
+function densityAltitudeDryFt(elevM, oatC) {
   const isaT = 15 - 0.0065 * elevM;
   return (elevM / FT) + 118.8 * (oatC - isaT);
 }

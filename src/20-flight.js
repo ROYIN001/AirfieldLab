@@ -3,6 +3,11 @@
 // body FRD (x nose, y right wing, z down). Quaternion q = [w,x,y,z] maps body → NED.
 // RK4 at 240 Hz, the same integration scheme Orbitlab uses for its rigid-body ascent.
 
+// Ground: physics keeps flat ground at d = 0 at FIELD.elev 2.65 m (AIP AD 2.2, AIRAC 14 MAY 2026; AIRAC 29 OCT 2026
+// prints 3 m, kept). The real ground inside the aerodrome is 1.5–2.0 m above MSL (EGM2008; Copernicus DEM GLO-30,
+// airport-edited zone median 1.50 m, ARP 1.95 m). The aerodrome elevation is the highest point of the landing area,
+// not the ground at the ARP, and relief within 10 km is smaller than the DEM's accuracy (LE90 1.69–1.91 m) [I2][I12],
+// so no DEM mesh (research round 5, 05-airport-city/5c-city.md §9 "สิ่งที่ Claude Code ควรทำ" item 7).
 const FIELD = {
   name: 'ท่าอากาศยานดอนเมือง (VTBD)', lat: ARP.lat, lon: ARP.lon, tzH: 7, elev: ARP.elev,
   rwy: '21R', rwyHdg: 209, rwyLen: 3700, rwyWid: 60,
@@ -12,8 +17,18 @@ const FIELD = {
   locDot: 0.75,      // degrees per dot (2 dots full scale), set per runway from the localizer distance
   gsDot: 0.36,       // degrees per dot: 0.12 θ for θ = 3° (ICAO Annex 10 glide-path sensitivity, 2 dots full scale)
   appr: 'ILS', ident: 'IBKK',
-  papiSiting: 'aip', // where the PAPI of every runway end stands: one of PAPI_SITINGS (setPapiSiting, below AC)
+  papiSiting: 'aip', // where the PAPI of every runway end stands: one of PAPI_SITINGS (setPapiSiting, below setAircraft)
 };
+// Default weather of a Flight when nothing else sets it (B10 WeatherState will): VTBD METAR statistics 2016–2025 from
+// the Iowa Environmental Mesonet METAR archive (https://mesonet.agron.iastate.edu, summary numbers only, 04-weather.md
+// §2.1 and §11), in docs/research/data/vtbd-metar-climo.json (04-weather.md §13 item 15; owner's decision
+// OD-WX-DEFAULTS in the development plan). OAT 31 °C is the earlier code default (04-weather.md §5.6). ค่าประมาณ:
+// a typical day, not a measured one. QNH = annual mean of the 174,872 routine reports (monthly qnh_mean weighted by
+// n: 1009.3 hPa; monthly 1006.6–1012.4); dew point = annual mean at 11 LT (hourly.Td_mean weighted by n: 22.8 °C),
+// the hour whose annual mean temperature (31.4 °C) is nearest the default OAT 31 °C (04-weather.md §5.6) and the
+// training's "กลางวัน" time. new Flight({ qnh: 1013.25, dewC: null }) gives the old dry ISA air; qnh null
+// = 1013.25 hPa (e.g. a METAR without a Q group), dewC null = dry air; a left-out option takes WX_DEFAULT.
+const WX_DEFAULT = { oatC: 31, qnh: 1009.3, dewC: 22.8 };
 // Active landing runway frame (NED): unit vector along the landing direction, right normal, threshold.
 const RWY_U = [1, 0, 0];
 const RWY_R = [0, 1, 0];
@@ -70,24 +85,51 @@ function makeRng(seed) {
 }
 function gauss(r) { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); }
 
-// ── Wind: mean wind with a 1/7-power profile (shear on final) + Dryden turbulence,
-//    MIL-F-8785C low-altitude form (σw = 0.1·W20, length scales from height). ──
+// ── Wind: mean wind with a log-law profile (shear on final) + Dryden turbulence, MIL-F-8785C low-altitude form
+//    (σw = 0.1·W20, length scales from height), its intensity W20 set apart from the mean wind. ──
+// Mean wind (plan A9; research round 4, 04-weather.md §6.3, §9.1, §13 item 3; round 1 R1-19, 01-flight-physics/08-wind.md
+// §8.7, §8.13 wind.meanProfile): neutral log law U(h) = U10·ln(h/z0)/ln(10/z0) from the reported wind at 10 m (zRef,
+// WMO-No. 8 §5.9, conf. low), clipped to z0 … 300 m (profileTop_m, ค่าประมาณ). z0 = 0.05 m (ค่าประมาณ, round 1
+// z0_default_VTBD_m; 04-weather.md §9.1 keeps it so there is one value; MIL-F-8785C Cat. C 0.046 m, WMO class 3 grass
+// 0.03 m). The old 1/7-power rule (law 'power', 1/7 ≡ log law at z0 = 10·e⁻⁷ = 0.009 m, §8.7) stays for WND-5.
+const WIND_PROFILE = { z0: 0.05, zRef: 10, top: 300 };
+function logLaw(h, z0, d = 0, zRef = WIND_PROFILE.zRef) { return Math.log((h - d) / z0) / Math.log((zRef - d) / z0); }
+// Turbulence intensity W20 (kt): the MIL-F-8785C wind at 20 ft, light 15 · moderate 30 · severe 45 kt (04-weather.md §6.4,
+// 08-wind.md §8.3), given apart from the mean wind so calm air can be turbulent (WND-10; round 1 §8.17 item 1). A wind
+// with no W20 keeps the old coupling, turb × the 1/7-law wind at 6.1 m = turb·0.932·kt (08-wind.md §8.1).
+const W20_PER_KT_LEGACY = Math.pow(0.61, 1 / 7);
+// the W20 a wind spec stands for: its own W20 (0 included; null or absent = none given), else the old coupling
+const windW20 = ({ W20 = null, turb = 0, kt = 0 } = {}) => W20 ?? (turb || 0) * (kt || 0) * W20_PER_KT_LEGACY;
+// 3 s gust over the 10 min mean at 10 m by exposure (04-weather.md §6.4 and §9 wind.gustFactor_3s_10min, Harper, Kepert &
+// Ginger AMS 2008 draft, later WMO/TD-1555; conf. medium, a draft; WND-7). Nothing reads it yet: for B10/B11's METAR gusts.
+const GUST_FACTOR_3S = { inLand: 1.66, offLand: 1.52, offSea: 1.38, atSea: 1.23 };
 class Wind {
-  constructor({ fromDeg = 0, kt = 0, turb = 0, seed = 7 } = {}) {
-    this.fromDeg = fromDeg; this.kt = kt; this.turb = turb;
+  constructor({ fromDeg = 0, kt = 0, W20 = null, turb = 0, seed = 7, z0 = null, law = 'log' } = {}) {
+    // z0 null or absent = the default (as qnh and W20); outside 0 < z0 < zRef the log law gives NaN, ∞ or a negative wind
+    this.z0 = z0 ?? WIND_PROFILE.z0;
+    if (!(this.z0 > 0 && this.z0 < WIND_PROFILE.zRef)) throw new RangeError(`Wind z0 ${z0} m outside (0, ${WIND_PROFILE.zRef})`);
+    this.fromDeg = fromDeg; this.kt = kt; this.law = law;
+    this.W20 = windW20({ W20, turb, kt });
+    // the old turb that gives this W20 (0 with no mean wind), kept only for scripts that rebuild a Wind from w.turb
+    // (01-flight-physics/scripts/s9_turbclock.mjs); nothing in src reads it
+    this.turb = kt > 0 ? this.W20 / (kt * W20_PER_KT_LEGACY) : 0;
     this.rng = makeRng(seed); this.g = [0, 0, 0];
   }
-  speedAt(h) { const W10 = this.kt * KT; return W10 * Math.pow(clamp(h, 0.3, 300) / 10, 1 / 7); }
+  speedAt(h) {
+    const W10 = this.kt * KT;
+    return this.law === 'power' ? W10 * Math.pow(clamp(h, 0.3, 300) / 10, 1 / 7) : W10 * logLaw(clamp(h, this.z0, WIND_PROFILE.top), this.z0);
+  }
   mean(h) { const w = this.speedAt(h), a = this.fromDeg * DEG; return [-w * Math.cos(a), -w * Math.sin(a), 0]; }
+  // MIL-F-8785C low altitude (08-wind.md §8.3; WND-8, WND-9): h in ft clipped to 10…1000, W20 in kt → σ m/s, L m
+  static lowAlt(hft, W20) {
+    const h = clamp(hft, 10, 1000), k = 0.177 + 0.000823 * h, sw = 0.1 * W20 * KT;
+    return { sw, su: sw / Math.pow(k, 0.4), Lw: h * FT, Lu: h / Math.pow(k, 1.2) * FT };
+  }
   update(dt, h, V, hdg) {
-    if (this.turb <= 0 || this.kt <= 0) { this.g[0] = this.g[1] = this.g[2] = 0; return; }
-    const hft = clamp(h / FT, 10, 1000);
-    const W20 = this.speedAt(6.1) / FT;
-    const sw = 0.1 * W20 * this.turb, su = sw / Math.pow(0.177 + 0.000823 * hft, 0.4);
-    const Lw = hft * FT, Lu = (hft / Math.pow(0.177 + 0.000823 * hft, 1.2)) * FT;
-    const Vt = Math.max(V, 10);
-    const step = (x, sig, L) => { const a = Math.exp(-Vt * dt / L); return x * a + sig * FT * Math.sqrt(1 - a * a) * gauss(this.rng); };
-    this.g[0] = step(this.g[0], su, Lu); this.g[1] = step(this.g[1], su, Lu); this.g[2] = step(this.g[2], sw, Lw);
+    if (!(this.W20 > 0)) { this.g[0] = this.g[1] = this.g[2] = 0; return; }
+    const P = Wind.lowAlt(h / FT, this.W20), Vt = Math.max(V, 10);
+    const step = (x, sig, L) => { const a = Math.exp(-Vt * dt / L); return x * a + sig * Math.sqrt(1 - a * a) * gauss(this.rng); };
+    this.g[0] = step(this.g[0], P.su, P.Lu); this.g[1] = step(this.g[1], P.su, P.Lu); this.g[2] = step(this.g[2], P.sw, P.Lw);
     this.hdg = hdg;
   }
   at(h) {
@@ -97,41 +139,213 @@ class Wind {
   }
 }
 
-// ── Generic two-seat turboprop trainer. Non-dimensional derivatives follow textbook light-aircraft
-//    data (Nelson, Flight Stability and Automatic Control, App. B, scaled); mass and engine are
-//    typical of the class. A fictional aircraft, not any manufacturer's type. ──
-const AC = {
-  m: 2250, Ixx: 2600, Iyy: 7300, Izz: 9200, Ixz: 120,
-  S: 16.3, b: 10.2, c: 1.65,
-  CL0: 0.25, CLa: 4.8, CLq: 7.5, CLadot: 1.6, CLde: 0.35, CLflap: 0.55,
-  CD0: 0.024, K: 0.062, CDflap: 0.050, CDgear: 0.020,
-  CYb: -0.60, CYdr: 0.15, CYr: 0.20,
-  Clb: -0.085, Clp: -0.47, Clr: 0.11, Clda: 0.16, Cldr: 0.012,
-  Cm0: 0.045, Cma: -0.72, Cmq: -12.5, Cmadot: -4.5, Cmde: -1.15, Cmflap: -0.10,
-  Cnb: 0.075, Cnp: -0.055, Cnr: -0.14, Cnda: -0.010, Cndr: -0.072,
-  aStall: 17.0, aStallFlap: -2.5,   // blend centre; effective CLmax ≈ 3° below it
-  P: 700e3, eta: 0.80, T0: 11500, idle: 0.045,
-  deUp: 22 * DEG, deDn: 15 * DEG, daMax: 20 * DEG, drMax: 25 * DEG,
-  gear: [
-    { b: [2.30, 0, 1.36], k: 5.2e4, c: 5.0e3, stroke: 0.22, steer: true },
-    { b: [-0.35, -1.55, 1.38], k: 1.25e5, c: 1.25e4, stroke: 0.25, brake: true },
-    { b: [-0.35, 1.55, 1.38], k: 1.25e5, c: 1.25e4, stroke: 0.25, brake: true },
-  ],
-  Vref: 88, Vapp: 95, Vs0: 71,   // knots IAS, landing flaps
-  // Body points (FRD, m from the CG). The eye matches the cockpit camera; the glide-slope antenna sits in the lower
-  // nose. Both are estimates for this fictional type. ILS deviations use the antenna and PAPI uses the eye
-  // (research round 3, topic 3.5): eye 1.3 m above the antenna, close to the ATR 72 (0.9 m) and 737-800 (1.4 m).
-  eye: [0.95, 0, -1.0], gsAnt: [2.6, 0, 0.3],
-};
-(() => { // inverse inertia tensor (FRD, Ixz product)
-  const { Ixx, Iyy, Izz, Ixz } = AC, G = Ixx * Izz - Ixz * Ixz;
-  AC.Iinv = [Izz / G, 0, Ixz / G, 0, 1 / Iyy, 0, Ixz / G, 0, Ixx / G];
-})();
+// ── The aircraft being flown (plan B3; research round 1 task list item 8, 01-flight-physics/12-other-sims.md §12.14
+//    task 3, 05-turbofan.md task 1; round 3 conflict C8 names the folder). Its numbers are data, not code: one card per
+//    type in data/aircraft/<id>.json, today data/aircraft/trainer.json, the fictional two-seat turboprop trainer (not any
+//    manufacturer's type; every value an estimate, each leaf {v, u, scope, src, conf, est, note} with its sources, as in
+//    01-flight-physics/schema.md and 02-light-aircraft/schema-ext.md). setAircraft(card) fills AC from a card: the page
+//    loads the file with the other data (48-data.js) and calls it before any Aircraft exists, test/harness.mjs reads it
+//    from disk. AC is empty until then and stays the same object for the life of the page (the harness and the oracle
+//    hold it). Fields: m, Ixx…Ixz, S, b, c, the linear aero derivatives (CL0 … Cndr), the stall blend centre aStall +
+//    aStallFlap·f (deg; effective CLmax ≈ 3° below it), the stall warning (aWarn + aWarnFlap·f deg, released aWarnHyst
+//    deg below it after aWarnMinOn s; research T-A-07 and plan A5), P, eta, T0, idle, control travel deUp, deDn, daMax,
+//    drMax (rad), gear (3 struts), Vref, Vapp, Vs0 (kt), the body points eye and gsAnt (FRD, m from the CG), engines
+//    [{ pos, dir }] (FRD) and Iinv. acFromCard says which card path each comes from.
+const AC = {};
+
+// Tables in the manner of JSBSim's FGTable: linear between the points, clamped at the ends, never extrapolated
+// (12-other-sims.md §12.2 [S3], T-S-07; the same functions as scripts/s12/s12_table_expected.mjs). X, R and C ascend;
+// table2 interpolates each row of D (D[i] belongs to R[i], D[i][j] to C[j]) in c, then between the rows in r.
+function table1(X, Y, x) {
+  const n = X.length; if (x <= X[0]) return Y[0]; if (x >= X[n - 1]) return Y[n - 1];
+  let i = 1; while (X[i] < x) i++;
+  const f = (x - X[i - 1]) / (X[i] - X[i - 1]); return Y[i - 1] + f * (Y[i] - Y[i - 1]);
+}
+function table2(R, C, D, r, c) {
+  const row = (i) => table1(C, D[i], c); const n = R.length; if (r <= R[0]) return row(0); if (r >= R[n - 1]) return row(n - 1);
+  let i = 1; while (R[i] < r) i++;
+  const f = (r - R[i - 1]) / (R[i] - R[i - 1]); return row(i - 1) + f * (row(i) - row(i - 1));
+}
+
+// Inverse of the inertia tensor [[Ixx, 0, −Ixz], [0, Iyy, 0], [−Ixz, 0, Izz]] (FRD, Ixz product), as deriv uses it
+function inertiaInverse({ Ixx, Iyy, Izz, Ixz }) {
+  const G = Ixx * Izz - Ixz * Ixz;
+  return [Izz / G, 0, Ixz / G, 0, 1 / Iyy, 0, Ixz / G, 0, Ixx / G];
+}
+
+// Every AC field (Iinv aside) from an aircraft card, read from the card's direct paths: airframe.weights.training_mass
+// (kg, or {kg}), airframe.inertia.Ixx/Iyy/Izz/Ixz (× m/ref_mass when the card gives ref_mass), aero.ref.S/b/c,
+// aero.legacy (CL0, CLa, CLflap, CD0, K, CDflap, CDgear, Cm0, Cma, Cmflap, aStall, aStallFlap, aWarn, aWarnFlap,
+// aWarnHyst, aWarnMinOn), aero.derivatives.*, propulsion.legacy (P, eta, T0, idle),
+// controls.surfaces.<elevator|aileron|rudder>.travel_deg (deUp = up, deDn = down, daMax = ½(up + down),
+// drMax = min(left, right), deg → rad), gear.legacy (3 struts), speeds.VS0_kt/VREF_kt/VAPP_kt (kt CAS, see below),
+// airframe.geometry.eye_pos_FRD and gsAntenna_pos_FRD, and propulsion.layout (each engine's pos and axis, the axis made
+// a unit vector dir). A path runs through the card's branches to a leaf (an object with v) and on into its value:
+// 'aero.legacy.CL0' is CL0 in the v of the leaf aero.legacy. A missing or non-numeric value throws an Error that names
+// its path (also as error.path); every other leaf is ignored (the round 2–3 cards carry many more; plan C4 extends this
+// reader for the airliners).
+// Plan C1 (research round 2 task item 10) reads the light-aircraft cards as the research writes them:
+//  - Speeds: a 'kt CAS' speed is taken as written (no rounding). A 'kt IAS' speed (the POH figure) goes to kt CAS
+//    through the landing detent's row of speeds.ias_cas with table1 (linear, clamped at the row's ends, never
+//    extrapolated): VS0, VREF and VAPP are all landing-configuration speeds, and the landing detent is the entry of
+//    aero.flaps.detents with the largest flap_deg. speeds.ias_cas is { <detent name>: [[KIAS, KCAS], …] } or round 2
+//    lm_lib's { axes: { flap: [names], KIAS: [kt] }, data: [[KCAS per KIAS] per flap] }; the row needs 2 pairs or more
+//    with KIAS strictly ascending. Any other unit throws.
+//  - Derivatives: aero.derivatives.<name> is a number or an object of numbers per configuration; the first numeric
+//    entry of [opts.config, 'approach', 'landing', 'cruise', 'clean'], else the first numeric key, is taken (with no
+//    opts, the same pick as buildAC's).
+// Against round 2's lm_card.mjs buildAC: the same numbers on the paths it reads directly (its 'ตรง' rule), so every
+// card in data/aircraft gives the same fields as buildAC(prepare(id)), its research card after the generator's
+// provenance fixes (tools/aircraft/build_cards.mjs; they move the DA40 eye and wheels), but not buildAC's other
+// rules. buildAC rounds the speeds to whole knots and converts kt IAS with lm_lib.iasCas, which extrapolates past a
+// row's ends and falls back to the first row for an unknown detent; acFromCard does neither. buildAC takes a missing
+// Ixz as 0; here it is required.
+function acFromCard(card, opts = {}) {
+  const isObj = (o) => o !== null && typeof o === 'object' && !Array.isArray(o);
+  const NONE = {};
+  const fail = (path, what) => Object.assign(new Error(`aircraft card: ${path} ${what}`), { path });
+  // { v, leaf }: the value at path and the leaf it is in (undefined when absent and not needed)
+  const walk = (path, need = true) => {
+    let o = card, leaf = null;
+    for (const k of path.split('.')) {
+      if (!leaf && isObj(o) && 'v' in o) { leaf = o; o = o.v; }   // a leaf before the path ends: go on in its value
+      o = o !== null && typeof o === 'object' && Object.hasOwn(o, k) ? o[k] : NONE;
+      if (o === NONE) { if (need) throw fail(path, 'is missing'); return undefined; }
+    }
+    if (!leaf && isObj(o) && 'v' in o) { leaf = o; o = o.v; }
+    if (!leaf) throw fail(path, 'is not a leaf {v, u, scope, src, conf, est, note}');
+    return { v: o, leaf };
+  };
+  const get = (path, need = true) => { const r = walk(path, need); return r && r.v; };
+  const num = (path, v = get(path)) => {
+    if (typeof v !== 'number' || !Number.isFinite(v)) throw fail(path, `is not a number (${JSON.stringify(v)})`);
+    return v;
+  };
+  const vec3 = (path) => {
+    const v = get(path);
+    if (!Array.isArray(v) || v.length !== 3) throw fail(path, `is not a vector of 3 numbers (${JSON.stringify(v)})`);
+    return v.map((x, i) => num(`${path}.${i}`, x));
+  };
+  const list = (path) => {
+    const v = get(path);
+    if (!Array.isArray(v) || !v.length) throw fail(path, `is not a list (${JSON.stringify(v)})`);
+    return v;
+  };
+  let iasRow = null;   // the landing detent's [KIAS[], KCAS[]] of speeds.ias_cas, read at the first kt IAS speed
+  const landingRow = () => {
+    const tab = get('speeds.ias_cas');
+    const dets = get('aero.flaps.detents');
+    if (!Array.isArray(dets) || !dets.length || !dets.every((d) => isObj(d) && typeof d.flap_deg === 'number' && Number.isFinite(d.flap_deg))) {
+      throw fail('aero.flaps.detents', `has no list of detents with flap_deg (${JSON.stringify(dets)})`);
+    }
+    const name = String(dets.reduce((a, d) => (d.flap_deg > a.flap_deg ? d : a)).name), p = `speeds.ias_cas.${name}`;
+    let pairs;
+    if (isObj(tab) && isObj(tab.axes) && Array.isArray(tab.data)) {   // lm_lib's { axes: { flap, KIAS }, data } form
+      const fl = tab.axes.flap || tab.axes.flaps, ki = tab.axes.KIAS || tab.axes.kias || tab.axes.ias;
+      const j = Array.isArray(fl) ? fl.map(String).indexOf(name) : -1;
+      const row = j < 0 ? undefined : Array.isArray(tab.data[0]) ? tab.data[j] : fl.length === 1 ? tab.data : undefined;
+      pairs = Array.isArray(ki) && Array.isArray(row) && row.length === ki.length ? ki.map((k, i) => [k, row[i]]) : undefined;
+    } else if (isObj(tab)) pairs = Object.hasOwn(tab, name) ? tab[name] : undefined;
+    if (!Array.isArray(pairs)) throw fail(p, 'is missing (the landing detent\'s row of KIAS → KCAS)');
+    const ok = pairs.length >= 2 && pairs.every((q, i) => Array.isArray(q) && q.length === 2 && q.every((x) => typeof x === 'number' && Number.isFinite(x)) && (i === 0 || q[0] > pairs[i - 1][0]));
+    if (!ok) throw fail(p, `is not a row of 2 or more [KIAS, KCAS] pairs with KIAS strictly ascending (${JSON.stringify(pairs)})`);
+    return [pairs.map((q) => q[0]), pairs.map((q) => q[1])];
+  };
+  const kcas = (path) => {   // the sim's IAS is EAS ≈ CAS below 200 kt: a speed in any other unit would be misread
+    const { v, leaf } = walk(path);
+    if (leaf.u === 'kt CAS') return num(path, v);
+    if (leaf.u !== 'kt IAS') throw fail(path, `is in ${JSON.stringify(leaf.u)}, not kt CAS or kt IAS`);
+    const kias = num(path, v);
+    iasRow = iasRow || landingRow();
+    return table1(iasRow[0], iasRow[1], kias);
+  };
+  const CFG = [opts.config, 'approach', 'landing', 'cruise', 'clean'];
+  const deriv = (path) => {   // a number, or one number per configuration (the first of CFG, else the first numeric key)
+    const v = get(path);
+    if (!isObj(v)) return num(path, v);
+    const isNum = (x) => typeof x === 'number' && Number.isFinite(x);
+    const k = CFG.find((c) => c != null && Object.hasOwn(v, c) && isNum(v[c])) ?? Object.keys(v).find((c) => isNum(v[c]));
+    if (k === undefined) throw fail(path, `has no numeric configuration (${JSON.stringify(v)})`);
+    return v[k];
+  };
+  const travel = (s, a, b) => {   // deg; a plain number is a symmetric travel (schema-ext D2)
+    const p = `controls.surfaces.${s}.travel_deg`, t = get(p);
+    return typeof t === 'number' ? [num(p), num(p)] : [num(`${p}.${a}`), num(`${p}.${b}`)];
+  };
+  const ac = {};
+  ac.m = isObj(get('airframe.weights.training_mass')) ? num('airframe.weights.training_mass.kg') : num('airframe.weights.training_mass');
+  const refMass = get('airframe.inertia.ref_mass', false);
+  const inertia = (k) => (refMass === undefined ? num('airframe.inertia.' + k) : num('airframe.inertia.' + k) * (ac.m / num('airframe.inertia.ref_mass')));
+  for (const k of ['Ixx', 'Iyy', 'Izz', 'Ixz']) ac[k] = inertia(k);
+  for (const k of ['S', 'b', 'c']) ac[k] = num('aero.ref.' + k);
+  const LEG = ['CL0', 'CLa', 'CLflap', 'CD0', 'K', 'CDflap', 'CDgear', 'Cm0', 'Cma', 'Cmflap', 'aStall', 'aStallFlap', 'aWarn', 'aWarnFlap', 'aWarnHyst', 'aWarnMinOn'];
+  const DER = ['CLq', 'CLadot', 'CLde', 'CYb', 'CYdr', 'CYr', 'Clb', 'Clp', 'Clr', 'Clda', 'Cldr', 'Cmq', 'Cmadot', 'Cmde', 'Cnb', 'Cnp', 'Cnr', 'Cnda', 'Cndr'];
+  for (const k of LEG) ac[k] = num('aero.legacy.' + k);
+  for (const k of DER) ac[k] = deriv('aero.derivatives.' + k);
+  for (const k of ['P', 'eta', 'T0', 'idle']) ac[k] = num('propulsion.legacy.' + k);
+  const [eUp, eDn] = travel('elevator', 'up', 'down'), [aUp, aDn] = travel('aileron', 'up', 'down'), [rL, rR] = travel('rudder', 'left', 'right');
+  ac.deUp = eUp * DEG; ac.deDn = eDn * DEG; ac.daMax = 0.5 * (aUp + aDn) * DEG; ac.drMax = Math.min(rL, rR) * DEG;
+  const struts = list('gear.legacy');
+  if (struts.length !== 3) throw fail('gear.legacy', `has ${struts.length} struts, the gear model needs 3 (nose, left main, right main)`);
+  ac.gear = struts.map((g, i) => {
+    const p = `gear.legacy.${i}`, o = { b: vec3(p + '.b'), k: num(p + '.k'), c: num(p + '.c'), stroke: num(p + '.stroke') };
+    if (g.steer) o.steer = true;
+    if (g.brake) o.brake = true;
+    return o;
+  });
+  ac.Vref = kcas('speeds.VREF_kt'); ac.Vapp = kcas('speeds.VAPP_kt'); ac.Vs0 = kcas('speeds.VS0_kt');
+  ac.eye = vec3('airframe.geometry.eye_pos_FRD'); ac.gsAnt = vec3('airframe.geometry.gsAntenna_pos_FRD');
+  ac.engines = list('propulsion.layout').map((e, i) => {
+    const pos = vec3(`propulsion.layout.${i}.pos`), ax = vec3(`propulsion.layout.${i}.axis`), n = Math.hypot(ax[0], ax[1], ax[2]);
+    if (!(n > 0)) throw fail(`propulsion.layout.${i}.axis`, 'has no direction');
+    return { pos, dir: [ax[0] / n, ax[1] / n, ax[2] / n] };
+  });
+  return ac;
+}
+
+// Makes the card's aircraft the one flown: AC keeps no field of the old one and takes the card's (acFromCard throws
+// before AC changes), with Iinv rebuilt. Returns AC (the same object as before). An Aircraft built before keeps its
+// state but flies the new numbers from its next step. A field the card does not give is deleted, one AC has is
+// overwritten and a new one defined: V8 turns an object with more than a few fields added by computed key
+// (Object.assign, obj[k] = v) into a slow dictionary, and a deleted field does the same, which made Aircraft.step
+// about 40 % slower; defined this way AC keeps fast properties, as the object literal it was before plan B3 did. opts
+// goes to acFromCard (opts.config picks the derivatives' configuration; the page passes none).
+function setAircraft(card, opts = {}) {
+  const next = acFromCard(card, opts);
+  next.Iinv = inertiaInverse(next);
+  for (const k of Object.keys(AC)) if (!Object.hasOwn(next, k)) delete AC[k];
+  for (const k of Object.keys(next)) {
+    if (Object.hasOwn(AC, k)) AC[k] = next[k];
+    else Object.defineProperty(AC, k, { value: next[k], writable: true, enumerable: true, configurable: true });
+  }
+  setPapiSiting(FIELD.papiSiting);   // the ils siting follows this aircraft's eye and antenna (the others do not move)
+  return AC;
+}
+
+// Force and moment of the engines on the airframe, body axes (FRD) about the CG: F = Σ Tᵢ·dirᵢ, M = Σ posᵢ × (Tᵢ·dirᵢ),
+// thrusts[i] the thrust of engine i in N (0 for an engine out, negative in reverse). With the right engine alone
+// (pos y > 0) the yaw moment N = M[2] is negative, nose left (T-F-15). The sums start at −0, the additive identity of
+// floating point (x + (−0) is x for every x), so one engine along body +x gives F[0] exactly its thrust, F[1] = F[2] = 0
+// and, with its thrust line through the CG (pos y = z = 0), M exactly 0. out is reused when given (deriv runs it 5 times
+// a step).
+function engineLoads(engines, thrusts, out = { F: [0, 0, 0], M: [0, 0, 0] }) {
+  const F = out.F, Mo = out.M;
+  F[0] = F[1] = F[2] = Mo[0] = Mo[1] = Mo[2] = -0;
+  for (let i = 0; i < engines.length; i++) {
+    const p = engines[i].pos, d = engines[i].dir, t = thrusts[i];
+    const fx = t * d[0], fy = t * d[1], fz = t * d[2];
+    F[0] += fx; F[1] += fy; F[2] += fz;
+    Mo[0] += p[1] * fz - p[2] * fy; Mo[1] += p[2] * fx - p[0] * fz; Mo[2] += p[0] * fy - p[1] * fx;
+  }
+  return out;
+}
 
 // Height of the pilot's eye above the glide path, at the eye's own place along the track, when the glide-slope antenna
 // is on the path: wings level at pitch θ, d = eye − antenna in body FRD, so d sits `along` ahead of the antenna and `up`
-// above it, and the path is higher by −along·tan(gs) where the eye is. Today's AC: 1.3 − 1.65·tan 3° = 1.2135 m at
-// θ = 0. The trimmed calm approach flies at about −1.3° pitch (measured 2026-11-26), where it is about 0.04 m more:
+// above it, and the path is higher by −along·tan(gs) where the eye is. The trainer (data/aircraft/trainer.json):
+// 1.3 − 1.65·tan 3° = 1.2135 m at θ = 0; the plan C1 cards put the antenna at the eye (no source gives its place), so 0
+// for them, and their ils siting stands 12.2 m short of the glide-path origin ((0 − PAPI_GEOM.h) / tan 3°). The
+// trainer's trimmed calm approach flies at about −1.3° pitch (measured 2026-11-26), where it is about 0.04 m more:
 // 0.7 m of PAPI distance and 0.007° at the threshold, far inside the ±10′ on-slope band, so the matched siting uses 0.
 function eyeAboveBeam(ac = AC, pitchDeg = 0, gsDeg = 3) {
   const dx = ac.eye[0] - ac.gsAnt[0], dz = ac.eye[2] - ac.gsAnt[2], c = Math.cos(pitchDeg * DEG), sn = Math.sin(pitchDeg * DEG);
@@ -140,22 +354,27 @@ function eyeAboveBeam(ac = AC, pitchDeg = 0, gsDeg = 3) {
 // PAPI siting, a trainee's choice (research round 3, docs/research/03-airliners/05-airport-geometry.md §3.5.8, conflicts
 // 2 and 3, task R3-7; AIP AD 2.14 gives MEHT but no distance, so every siting is an estimate):
 //   aip (default) and tc: solved from the AIP MEHT at 2°50′ and 2°48′ (papiFromMEHT and PAPI_MEHT_ANG in 15-geo.js)
-//   ils: the PAPI's 3° line from the light centre (PAPI_GEOM.h high) runs along the trainer's eye path when its
-//     antenna is on the glide path: D = aim + (H2 − h) / tan 3°, H2 = eyeAboveBeam(AC, 0), so 10.9 to 11.0 m beyond
-//     the glide-path origin. This is the eye-to-antenna harmonisation of Transport Canada AC 302-009 [D23] (harmonise
-//     the PAPI with the ILS for the height of the eye above the antenna). FAA, Order JO 6850.2B Visual Guidance
-//     Lighting Systems (20 Aug 2010), ¶502 and Table 5-1, https://www.faa.gov/documentLibrary/media/Order/
-//     FAA_Order_6850.2B.pdf [D22], puts the PAPI at the distance of the GS virtual source ±30 ft (±10 m), adding
-//     300 ft only for height group 4: this siting stands about 11 m beyond that. Not the published configuration of
-//     VTBD. 03R has no ILS: its aim is TCH / tan 3°, so the PAPI matches the synthetic RNP 3° path the sim flies there.
-//     The match is solved in the vertical plane along the track, while the units stand 37.5 to 72 m beside it: over the
-//     threshold an eye on its path sees the 2°50′ unit 6.7′ to 7.3′ above its setting and the 3°10′ unit 11.9′ to
-//     12.4′ below (21R: 6.7′ and 12.4′), against 10′ and 10′ far out; still 2 white.
+//   ils: the PAPI's 3° line from the light centre (PAPI_GEOM.h high) runs along the eye path of the aircraft flown
+//     (AC) when its antenna is on the glide path: D = aim + (H2 − h) / tan 3°, H2 = eyeAboveBeam(AC, 0), so for the
+//     trainer 10.9 to 11.0 m beyond the glide-path origin (12.2 m short of it for the plan C1 cards). This is the
+//     eye-to-antenna harmonisation of Transport Canada AC 302-009 [D23] (harmonise the PAPI with the ILS for the
+//     height of the eye above the antenna). FAA, Order JO 6850.2B Visual Guidance Lighting Systems (20 Aug 2010),
+//     ¶502 and Table 5-1, https://www.faa.gov/documentLibrary/media/Order/FAA_Order_6850.2B.pdf [D22], puts the PAPI
+//     at the distance of the GS virtual source ±30 ft (±10 m), adding 300 ft only for height group 4: for the trainer
+//     this siting stands about 11 m beyond that (the C1 cards about 12 m short of the virtual source, 2 m outside
+//     the −10 m). Not the published configuration of VTBD. 03R has no ILS: its aim is TCH / tan 3°, so the PAPI
+//     matches the synthetic RNP 3° path the sim flies there. The match is solved in the vertical plane along the
+//     track, while the units stand 37.5 to 72 m beside it: over the threshold an eye on its path sees the 2°50′ unit
+//     6.7′ to 7.3′ above its setting and the 3°10′ unit 11.9′ to 12.4′ below (21R: 6.7′ and 12.4′), against 10′ and
+//     10′ far out; still 2 white.
 const PAPI_SITINGS = ['aip', 'tc', 'ils'];
 function setPapiSiting(mode) {
   if (!PAPI_SITINGS.includes(mode)) mode = 'aip';
+  // recomputed on every call: setAircraft calls it for each new type. AC is empty until the first setAircraft (plan B3),
+  // so there is no top-level call: until then RWY_END[id].papi is the aip siting 15-geo.js set and papiSites has no ils.
+  if (!AC.eye || !AC.gsAnt) throw new Error('setPapiSiting: no aircraft yet (call setAircraft first)');
   FIELD.papiSiting = mode;
-  const h2 = eyeAboveBeam(AC, 0, FIELD.gs), tg = Math.tan(FIELD.gs * DEG);   // recomputed on every call (aircraft type)
+  const h2 = eyeAboveBeam(AC, 0, FIELD.gs), tg = Math.tan(FIELD.gs * DEG);
   for (const E of Object.values(RWY_END)) {
     E.papiSites.ils = Math.round((E.aim + (h2 - PAPI_GEOM.h) / tg) * 10) / 10;
     E.papi = E.papiSites[mode];
@@ -163,7 +382,6 @@ function setPapiSiting(mode) {
   PAPI.s = RWY_END[FIELD.rwy].papi;
   return mode;
 }
-setPapiSiting(FIELD.papiSiting);
 
 // ── small vector / quaternion helpers ──
 function qToR(q, R) {
@@ -184,7 +402,49 @@ function qToEuler(q) {
   const R = qToR(q, new Array(9));
   return [Math.atan2(R[7], R[8]), -Math.asin(clamp(R[6], -1, 1)), Math.atan2(R[3], R[0])];
 }
+const qMul = (a, b) => [a[0] * b[0] - a[1] * b[1] - a[2] * b[2] - a[3] * b[3], a[0] * b[1] + a[1] * b[0] + a[2] * b[3] - a[3] * b[2],
+  a[0] * b[2] - a[1] * b[3] + a[2] * b[0] + a[3] * b[1], a[0] * b[3] + a[1] * b[2] - a[2] * b[1] + a[3] * b[0]];
 
+// ── Newton–Raphson for n equations in n unknowns (plan B2; research round 1 task list item 11,
+// 01-flight-physics/12-other-sims.md §12.14 task 6 and scripts/s12/s12_solver_proto.mjs; JSBSim's FGTrim and YASim's
+// solver also drive the derivatives to zero numerically). Forward-difference Jacobian (step h·max(1, |x_j|)), Gaussian
+// elimination with partial pivoting, and the step halved (at most 7 times) while the largest residual does not drop.
+// Returns { x, r, rn: max |r_i|, it, ok: rn ≤ tol }. Aircraft.trim uses it, and so can a solver for new types (T-S-06).
+function solveLin(A, b) {
+  const n = b.length, W = A.map((row, i) => [...row, b[i]]);
+  for (let k = 0; k < n; k++) {
+    let p = k; for (let i = k + 1; i < n; i++) if (Math.abs(W[i][k]) > Math.abs(W[p][k])) p = i;
+    if (!(Math.abs(W[p][k]) > 1e-300)) return null;
+    [W[k], W[p]] = [W[p], W[k]];
+    for (let i = k + 1; i < n; i++) { const f = W[i][k] / W[k][k]; for (let j = k; j <= n; j++) W[i][j] -= f * W[k][j]; }
+  }
+  const x = new Array(n).fill(0);
+  for (let i = n - 1; i >= 0; i--) { let s = W[i][n]; for (let j = i + 1; j < n; j++) s -= W[i][j] * x[j]; x[i] = s / W[i][i]; }
+  return x;
+}
+function newtonSolve(f, x0, { tol = 1e-9, maxIt = 40, h = 1e-6 } = {}) {
+  const n = x0.length, norm = (r) => r.reduce((m, v) => Math.max(m, Math.abs(v)), 0);
+  let x = x0.slice(), r = f(x), rn = norm(r), it = 0;
+  for (; it < maxIt && rn > tol; it++) {
+    const J = Array.from({ length: n }, () => new Array(n));
+    for (let j = 0; j < n; j++) {
+      const xp = x.slice(), d = h * Math.max(1, Math.abs(x[j])); xp[j] += d;
+      const rp = f(xp); for (let i = 0; i < n; i++) J[i][j] = (rp[i] - r[i]) / d;
+    }
+    const dx = solveLin(J, r.map((v) => -v));
+    if (!dx || !dx.every(Number.isFinite)) break;
+    let lam = 1, xn = x, rnew = r, nn = Infinity;
+    for (let k = 0; k < 8; k++, lam /= 2) { xn = x.map((v, i) => v + lam * dx[i]); rnew = f(xn); nn = norm(rnew); if (nn < rn) break; }
+    if (!(nn < rn)) break;   // no descent along the Newton step: stop (ok false unless already within tol)
+    x = xn; r = rnew; rn = nn;
+  }
+  return { x, r, rn, it, ok: rn <= tol };
+}
+
+// Thrust from TAS only, so humid air and QNH (A8) reach it through V at a given IAS. No ρ term yet: shaft power is flat
+// rated to 37 °C (01-flight-physics/04-turboprop.md), and the static term (AC.T0 is the BEM value at ρ 1.160, dry 31 °C;
+// ≈ρ^(1/3) by momentum theory, steeper in the BEM of 03-propeller.md §3.2 and T-P-02: −0.5 % to −1.8 % in WX_DEFAULT)
+// waits for the propeller model (01-flight-physics.md task list), which takes its air from Aircraft.atm(h).
 function thrustAvail(V) { const Vc = AC.eta * AC.P / AC.T0; return AC.T0 * Vc / Math.sqrt(V * V + Vc * Vc); }
 function stallBlend(a, a0) { // Beard & McLain blending: 0 attached flow, 1 separated
   const M = 55, e1 = Math.exp(-M * (a - a0)), e2 = Math.exp(M * (a + a0));
@@ -200,10 +460,14 @@ class Aircraft {
     this.cmd = { de: 0, da: 0, dr: 0, flaps: 1, gear: 1, thr: 0.3, brake: 0, steer: 0 };
     this.adot = 0; this.aPrev = null; this.t = 0;
     this.wow = [false, false, false]; this.gearLoad = [0, 0, 0];
-    this.isaDev = 0; this.wind = new Wind();
+    this.isaDev = 0; this.qnh = P0_HPA; this.dewC = null; this.wind = new Wind();   // ISA, dry, until a Flight sets the weather
     this.k = [0, 1, 2, 3].map(() => new Float64Array(13)); this.tmp = new Float64Array(13);
+    this.engT = []; this.engLoads = { F: [0, 0, 0], M: [0, 0, 0] };   // per-engine thrust and engine loads (deriv scratch)
     this.air = {};
   }
+
+  // air at height h above the field: QNH, ISA lapse + isaDev, dew point measured at the field (04-weather.md §6.1–6.2)
+  atm(h) { return atmosphere(FIELD.elev + h, this.isaDev, this.qnh, this.dewC, FIELD.elev); }
 
   // all forces / moments for state vector s; fills out with derivatives
   deriv(s, out, diag) {
@@ -214,7 +478,7 @@ class Aircraft {
     const vab = mulRT(R, [s[3] - wind[0], s[4] - wind[1], s[5] - wind[2]]);
     const V = Math.max(Math.hypot(vab[0], vab[1], vab[2]), 0.1);
     const alpha = Math.atan2(vab[2], vab[0]), beta = Math.asin(clamp(vab[1] / V, -1, 1));
-    const atm = atmosphere(FIELD.elev + h, this.isaDev);
+    const atm = this.atm(h);
     const qbar = 0.5 * atm.rho * V * V;
     const f = this.flaps;
     const hw = Math.max(0.2, h - 0.35);                       // wing height above ground
@@ -238,9 +502,13 @@ class Aircraft {
     const wh = [vab[0] / V, vab[1] / V, vab[2] / V];
     let lv = cross([0, 1, 0], wh); const ll = Math.hypot(lv[0], lv[1], lv[2]) || 1; lv = [lv[0] / ll, lv[1] / ll, lv[2] / ll];
     const L = qbar * AC.S * CL, D = qbar * AC.S * CD, Y = qbar * AC.S * CY;
-    const T = this.thr * thrustAvail(V);
-    const Fb = [L * lv[0] - D * wh[0] + T, L * lv[1] - D * wh[1] + Y, L * lv[2] - D * wh[2]];
-    const Mb = [qbar * AC.S * AC.b * Cl, qbar * AC.S * AC.c * Cm, qbar * AC.S * AC.b * Cn];
+    // thrust: thr·thrustAvail(V) shared equally among AC.engines (per-engine models come with plans F3, I2, K3), each
+    // along its axis from its point (engineLoads); the trainer's one engine adds exactly T to the x force, no moment
+    const T = this.thr * thrustAvail(V), eng = AC.engines, th = this.engT;
+    const ne = eng.length; for (let i = 0; i < ne; i++) th[i] = T / ne;   // th may keep stale entries past ne: unused
+    const E = engineLoads(eng, th, this.engLoads);
+    const Fb = [L * lv[0] - D * wh[0] + E.F[0], L * lv[1] - D * wh[1] + Y + E.F[1], L * lv[2] - D * wh[2] + E.F[2]];
+    const Mb = [qbar * AC.S * AC.b * Cl + E.M[0], qbar * AC.S * AC.c * Cm + E.M[1], qbar * AC.S * AC.b * Cn + E.M[2]];
 
     let Fn = mulR(R, Fb);
     // landing gear: spring-damper struts with rolling, braking and side friction
@@ -336,7 +604,15 @@ class Aircraft {
     a.antS = ant.s; a.antH = -(x[2] + pAnt[2]);
     a.eye = [x[0] + pEye[0], x[1] + pEye[1], -(x[2] + pEye[2])];   // n, e, height of the pilot's eye
     a.p = x[10]; a.q = x[11]; a.r = x[12];
-    a.nz = 0;
+    // Load factor from the specific force in body axes (aero + thrust + gear, no gravity): f_NED = v̇ − [0, 0, g]
+    // from the derivative just computed, nz = −(Rᵀf)_z / g (cos θ cos φ in unaccelerated flight, ≈ 1 near level;
+    // 1 parked), ny = (Rᵀf)_y / g (+ = to the right, the ball goes left). Research round 1 task list item 5,
+    // 06-controls.md §6.7.4 note 4, T-C-01. On the ground both carry gear-model artefacts: the linear gear damper
+    // makes nz peak at first contact (07-gear.md §7.0, T-G-06), so it is not yet a hard-landing measure, and ny
+    // carries the velocity-based tyre side force (07-gear.md §7.0, §7.12 task 3), 0.2–0.4 g at a crosswind
+    // touchdown, so a HUD ball or side-load use on the ground waits for that tyre model too.
+    const fb = mulRT(R, [this.tmp[3], this.tmp[4], this.tmp[5] - G0]);
+    a.nz = -fb[2] / G0; a.ny = fb[1] / G0;
   }
 
   // Trimmed, wings-level state on the extended centre line of runway 03
@@ -344,7 +620,7 @@ class Aircraft {
     const s = -dist, h = Math.max(30, gpHeight(s) + dh);
     const [n, e] = rwyToNED(s, dt);
     this.flaps = this.cmd.flaps = flaps; this.gearPos = gearDown ? 1 : 0; this.cmd.gear = gearDown ? 1 : 0;
-    const atm = atmosphere(FIELD.elev + h, this.isaDev);
+    const atm = this.atm(h);
     const tas = ias * KT / Math.sqrt(atm.rho / RHO0);
     const wind = this.wind.mean(h);
     const crs = FIELD.rwyHdg * DEG;
@@ -357,33 +633,93 @@ class Aircraft {
       vg = vh * Math.cos(psi - crs) + wAlong;
       gammaA = -Math.asin(clamp(vg * Math.tan(FIELD.gs * DEG) / tas, -0.5, 0.5));
     }
-    const qbar = 0.5 * atm.rho * tas * tas, W = AC.m * G0;
-    const CLreq = W * Math.cos(gammaA) / (qbar * AC.S);
-    const hw = Math.max(0.2, h - 0.35), ge = (16 * hw / AC.b) ** 2, phiGE = ge / (1 + ge);
-    const CLa = AC.CLa * (1 + 0.12 * (1 - phiGE)), c0 = AC.CL0 + AC.CLflap * flaps, m0 = AC.Cm0 + AC.Cmflap * flaps - 0.06 * (1 - phiGE);
-    const det = CLa * AC.Cmde - AC.CLde * AC.Cma;
-    const alpha = ((CLreq - c0) * AC.Cmde - AC.CLde * (-m0)) / det;
-    const de = (CLa * (-m0) - AC.Cma * (CLreq - c0)) / det;
-    const CD = AC.CD0 + AC.CDflap * Math.pow(flaps, 1.5) + AC.CDgear * this.gearPos + AC.K * phiGE * (CLreq - 0.15) ** 2;
-    const T = qbar * AC.S * CD + W * Math.sin(gammaA);
-    const thr = clamp(T / thrustAvail(tas), AC.idle, 1);
-    const th = alpha + gammaA;
-    const q = eulerToQ(0, th, psi);
-    const vAir = [tas * Math.cos(gammaA) * Math.cos(psi), tas * Math.cos(gammaA) * Math.sin(psi), -tas * Math.sin(gammaA)];
-    const x = this.x;
-    x.set([n, e, -h, vAir[0] + wind[0], vAir[1] + wind[1], vAir[2] + wind[2], q[0], q[1], q[2], q[3], 0, 0, 0]);
-    this.de = this.cmd.de = de; this.da = this.cmd.da = 0; this.dr = this.cmd.dr = 0;
-    this.thr = this.cmd.thr = thr; this.brake = this.cmd.brake = 0; this.steer = 0;
-    this.adot = 0; this.aPrev = null; this.t = 0;
-    this.updateAir(0);
-    return { alpha, de, thr, th, psi };
+    // the kinematics above (crab into the mean wind, air-path angle for a 3° path over the ground) stay analytic;
+    // the force and moment balance is the numerical trim (plan B2), which replaced the linear formula here
+    this.brake = this.cmd.brake = 0; this.steer = 0; this.t = 0;
+    return this.trim({ h, n, e, tas, gammaA, chi: psi });
+  }
+
+  // Numerical trim (plan B2; research round 1 task list item 11, 12-other-sims.md §12.14 task 6, T-S-04): Newton
+  // (newtonSolve) on the body-axis accelerations u̇, ẇ and q̇ with unknowns α, δe and throttle, at TAS `tas`, air-path
+  // angle `gammaA` and air heading `chi`, wings level with β = 0 and no rotation, so whatever deriv() holds (stall
+  // blend, ground effect, thrust along the body axis, and later tables and the propeller) is in balance, not only a
+  // linear formula (the old one in setApproach left |a| 0.027 m/s² at the default start, the lift of T·sin α). If the
+  // throttle needed is outside idle…1 it is held at that limit and γa becomes the unknown (`limited` 'idle' or 'max';
+  // the path then leaves the requested angle). If v̇, ṗ or ṙ are not zero there (asymmetric thrust: propeller torque,
+  // P-factor, slipstream, plan F3), a second Newton adds the bank about the velocity μ, aileron and rudder with β held
+  // at 0 (a design choice: no source says which of β or bank a trimmed propeller aircraft holds), and the throttle
+  // limits are checked again after it; today v̇, ṗ, ṙ are zero by symmetry and that solve is skipped, so the trim stays
+  // exactly symmetric. Trims in the mean wind (the Dryden gust state is set aside for the solve and put back). Sets the
+  // state, surfaces and throttle and bumps gen (a jump: Flight.renderPose restarts its interpolation, §9.7); flaps and
+  // gear are taken as they are. ok is false (why names the reasons) when no root is found, or the root is outside the
+  // surface limits, on the wheels or past CLmax; limited and gammaA mean something only when ok. it counts the Newton
+  // iterations of every solve.
+  trim({ h, n = this.x[0], e = this.x[1], tas, gammaA = 0, chi = 0 }) {
+    const wind = this.wind.mean(h), gSave = this.wind.g.slice(), out = new Float64Array(13), R = new Array(9);
+    const s = new Float64Array(13);
+    // x = [α, δe, thr or γa, μ, δa, δr]; with the throttle held, x[2] is γa
+    const thrFix = { v: null };
+    const setState = (x) => {
+      const al = x[0], gam = thrFix.v == null ? gammaA : x[2], mu = x[3] || 0;
+      const q = qMul(eulerToQ(mu, gam, chi), [Math.cos(al / 2), 0, Math.sin(al / 2), 0]);   // wind axes, then α up
+      const cg = Math.cos(gam);
+      s.set([n, e, -h, tas * cg * Math.cos(chi) + wind[0], tas * cg * Math.sin(chi) + wind[1], -tas * Math.sin(gam) + wind[2], q[0], q[1], q[2], q[3], 0, 0, 0]);
+      this.de = x[1]; this.thr = thrFix.v == null ? x[2] : thrFix.v; this.da = x[4] || 0; this.dr = x[5] || 0;
+      return q;
+    };
+    const resid = (x) => {
+      const q = setState(x); this.deriv(s, out); qToR(q, R);
+      const ab = mulRT(R, [out[3], out[4], out[5]]);   // body accelerations (ω = 0)
+      return [ab[0], ab[2], out[11], ab[1], out[10], out[12]];
+    };
+    // start on the attached-flow branch: linear lift and pitch balance, throttle 0.3
+    const atm = this.atm(h), qS = 0.5 * atm.rho * tas * tas * AC.S, f = this.flaps;
+    const a0 = (AC.m * G0 * Math.cos(gammaA) / qS - AC.CL0 - AC.CLflap * f) / AC.CLa;
+    const x0 = [a0, -(AC.Cm0 + AC.Cmflap * f + AC.Cma * a0) / AC.Cmde, 0.3];
+    const lon = (x) => resid(x).slice(0, 3), latOff = (r) => Math.max(Math.abs(r[3]), Math.abs(r[4]), Math.abs(r[5])) > 1e-12;
+    const outOfRange = (t) => t < AC.idle || t > 1;
+    const holdThrottle = (t) => { limited = t < AC.idle ? 'idle' : 'max'; thrFix.v = limited === 'idle' ? AC.idle : 1; };
+    let limited = null, it = 0, sol, x, r;
+    const run = (fn, start) => { sol = newtonSolve(fn, start); it += sol.it; return sol.x; };
+    this.wind.g[0] = this.wind.g[1] = this.wind.g[2] = 0; this.adot = 0; this.aPrev = null;
+    // a converged root is a trim only inside the control limits, with the wheels clear of the ground and on the
+    // attached side of the lift curve (dCL/dα > 0): below the stall Newton can otherwise land on a post-stall root
+    // or one held up by the nose wheel (review of B2). why lists what failed; [] when ok.
+    const why = [], diag = { wow: [], load: [] };
+    let q;
+    try {
+      x = run(lon, x0);
+      if (outOfRange(x[2])) { holdThrottle(x[2]); x = run(lon, [x[0], x[1], gammaA]); }
+      x = [...x, 0, 0, 0]; r = resid(x);
+      if (latOff(r)) {
+        x = run(resid, x);
+        // the lateral solve moves the throttle too (asymmetric thrust scales with it): check the limits again
+        if (thrFix.v == null && outOfRange(x[2])) { holdThrottle(x[2]); x[2] = gammaA; x = run(resid, x); }
+        r = resid(x);
+      }
+      const cl = (d) => { setState([x[0] + d, ...x.slice(1)]); this.deriv(s, out, diag); return diag.CL; };
+      const slope = cl(1e-4) - cl(-1e-4);
+      q = setState(x); this.deriv(s, out, diag);
+      if (!sol.ok) why.push('residual');
+      if (this.de < -AC.deUp || this.de > AC.deDn) why.push('elevator');
+      if (Math.abs(this.da) > AC.daMax) why.push('aileron');
+      if (Math.abs(this.dr) > AC.drMax) why.push('rudder');
+      if (diag.wow.some(Boolean)) why.push('ground');
+      if (!(slope > 0)) why.push('stalled');
+    } finally { this.wind.g[0] = gSave[0]; this.wind.g[1] = gSave[1]; this.wind.g[2] = gSave[2]; }
+    this.x.set(s);
+    this.cmd.de = this.de; this.cmd.da = this.da; this.cmd.dr = this.dr; this.cmd.thr = this.thr;
+    this.updateAir(0); this.gen = (this.gen || 0) + 1;
+    const [phi, th, psiE] = qToEuler(q), psi = chi + wrapPi(psiE - chi);   // heading on chi's branch, as before B2
+    return { alpha: x[0], de: this.de, thr: this.thr, th, psi, phi, mu: x[3], da: this.da, dr: this.dr,
+      gammaA: thrFix.v == null ? gammaA : x[2], limited, residual: Math.max(...r.map(Math.abs)), it, ok: why.length === 0, why };
   }
 
   // Parked on the ground (used for apron aircraft and resets)
   setParked(n, e, psi) {
     const x = this.x; const q = eulerToQ(0, 0.5 * DEG, psi);
     x.set([n, e, -1.30, 0, 0, 0, q[0], q[1], q[2], q[3], 0, 0, 0]);
-    this.thr = this.cmd.thr = 0; this.brake = this.cmd.brake = 1; this.updateAir(0);
+    this.thr = this.cmd.thr = 0; this.brake = this.cmd.brake = 1; this.updateAir(0); this.gen = (this.gen || 0) + 1;
   }
 }
 
@@ -524,11 +860,22 @@ class PilotLaws {
   }
 }
 
+// Stall-warning angle of attack (rad) at flap position f (0…1), from AC.aWarn / AC.aWarnFlap. The one definition the
+// Evaluator uses and test/stall.test.mjs checks (T-A-07, 14 CFR 23.207 [A22]). The trainer's 10.71° clean and 6.87°
+// with landing flaps are the research round 1 design values (01-flight-physics/01-aero.md §1.6, scripts/expected.mjs),
+// about 7 kt above the 1-g stall (6.8–7.3 kt trimmed in this model); §23.207(c) asks for at least 5 kt. Set by α, so
+// V_warn/Vs is the same at any weight and load factor; the knot margin scales with √(n·W) (below about 0.54 W clean or
+// 0.47 W with flaps it would drop under 5 kt; plan J1 re-checks per type). The Evaluator releases it only aWarnHyst
+// below and after aWarnMinOn s on (plan A5 design choice, no source), so a gust spike sounds as a short chirp instead
+// of a click; onset is immediate, so the margin and the lead time in a fast pull are kept.
+const aWarnAt = (f) => (AC.aWarn + AC.aWarnFlap * f) * DEG;
+
 // ── Landing evaluation: stabilized-approach gates, touchdown, rollout ──
 class Evaluator {
   constructor() {
     this.gates = {}; this.td = null; this.events = []; this.maxT = 0; this.stopS = null; this.callouts = []; this.done = false;
     this.lastH = Infinity; this.stallWarn = false; this.unstable = false;
+    this.stallHorn = false; this.hornOnT = 0;   // stall warning, every step (horn + HUD); stallWarn latches the debrief stall event
   }
   gateCheck(ac, name) {
     const a = ac.air;
@@ -550,6 +897,13 @@ class Evaluator {
     }
     this.lastRa = a.hWheel / FT;
     this.lastH = hft;
+    // Stall warning for the horn and the HUD (14 CFR 23.207 [A22]): on at once at α ≥ α_warn(flaps); off only below
+    // α_warn − aWarnHyst and after aWarnMinOn s; off on the ground and at 40 kt or less. Not latched and not logged:
+    // the debrief 'stall' event below keeps its own criterion (about 1 kt above the stall).
+    const aW = aWarnAt(ac.flaps);
+    if (a.onGround || a.ias <= 40 * KT) this.stallHorn = false;
+    else if (a.alpha >= aW) { if (!this.stallHorn) this.hornOnT = ac.t; this.stallHorn = true; }
+    else if (this.stallHorn && a.alpha < aW - AC.aWarnHyst * DEG && ac.t - this.hornOnT >= AC.aWarnMinOn) this.stallHorn = false;
     if (!a.onGround && a.ias > 40 * KT && (a.stall > 0.25 || a.alpha > (AC.aStall + AC.aStallFlap * ac.flaps - 4) * DEG)) { if (!this.stallWarn) this.events.push({ t: ac.t, k: 'stall' }); this.stallWarn = true; }
     if (!this.td && (a.wow[1] || a.wow[2] || a.wow[0])) {
       const crs = FIELD.rwyHdg * DEG;
@@ -591,6 +945,13 @@ class Evaluator {
   }
 }
 
+// Quaternion nlerp on the shorter arc: a[ia..ia+3] → b[ib..ib+3] at u, into out (replay and render interpolation)
+const qNlerp = (a, ia, b, ib, u, out) => {
+  const s = a[ia] * b[ib] + a[ia + 1] * b[ib + 1] + a[ia + 2] * b[ib + 2] + a[ia + 3] * b[ib + 3] < 0 ? -1 : 1;
+  for (let i = 0; i < 4; i++) out[i] = a[ia + i] + (s * b[ib + i] - a[ia + i]) * u;
+  const l = Math.hypot(out[0], out[1], out[2], out[3]); for (let i = 0; i < 4; i++) out[i] /= l;
+  return out;
+};
 // ── Recorder for replay and the debrief charts (10 Hz) ──
 class Recorder {
   constructor() { this.f = []; this.next = 0; }
@@ -610,30 +971,35 @@ class Recorder {
     let lo = 0, hi = f.length - 1;
     while (hi - lo > 1) { const m = (lo + hi) >> 1; if (f[m].t <= t) lo = m; else hi = m; }
     const A = f[lo], B = f[hi], u = (t - A.t) / (B.t - A.t);
-    let qb = B.q; if (A.q[0] * qb[0] + A.q[1] * qb[1] + A.q[2] * qb[2] + A.q[3] * qb[3] < 0) qb = qb.map((v) => -v);
-    const q = A.q.map((v, i) => lerp(v, qb[i], u)); const ql = Math.hypot(...q);
     const o = {};
     for (const k in A) if (typeof A[k] === 'number') o[k] = lerp(A[k], B[k], u);
-    o.q = q.map((v) => v / ql);
+    o.q = qNlerp(A.q, 0, B.q, 0, u, [0, 0, 0, 0]);
     return o;
   }
 }
 
 // ── A flight: aircraft + wind + autopilot / pilot laws + evaluation + recording ──
 // Winds are given relative to the landing runway (rel 0 = straight down the runway, +90 from the right).
+// W20 (kt, turbulence intensity, plan A9): the old turb 0 / 0.6 / 0.8 / 1.6 × the 1/7-law wind at 20 ft (calm 0, head
+// 5.59, xr 7.45, xl 22.36 kt: all light, under 30; round 1 §8.1 and §8.17 item 3), so the turbulence is unchanged: σ
+// matches the old ft/s path to rounding (≤ 1 ulp, the product is formed in another order), and with law 'power' the
+// seed-5 autolands match the pre-A9 code to about 1e-12 with the same scores. Kept by choice, not because the research
+// is silent: §6.4's daytime light-wind row (§9 byRegime_W20_kt_ESTIMATE.dayLightWind max(U10, 5), ค่าประมาณ) would give
+// head and xr 10 kt; they stay at 5.59 and 7.45 kt so the scores stay comparable, and per-regime W20 waits for B10's
+// weather (owner to choose). A Flight's own W20 option overrides it (null or absent = the scenario's).
 const SCENARIOS = {
-  calm: { label: 'ลมสงบ', rel: 0, kt: 0, turb: 0 },
-  head: { label: 'ลมสวน 10 kt', rel: 0, kt: 10, turb: 0.6 },
-  xr: { label: 'ลมขวาง 10 kt จากขวา', rel: 90, kt: 10, turb: 0.8 },
-  xl: { label: 'ลมขวาง 15 kt จากซ้าย + กระโชก', rel: -90, kt: 15, turb: 1.6 },
+  calm: { label: 'ลมสงบ', rel: 0, kt: 0, W20: 0 },
+  head: { label: 'ลมสวน 10 kt', rel: 0, kt: 10, W20: 0.6 * 10 * W20_PER_KT_LEGACY },
+  xr: { label: 'ลมขวาง 10 kt จากขวา', rel: 90, kt: 10, W20: 0.8 * 10 * W20_PER_KT_LEGACY },
+  xl: { label: 'ลมขวาง 15 kt จากซ้าย + กระโชก', rel: -90, kt: 15, W20: 1.6 * 15 * W20_PER_KT_LEGACY },
 };
 const windFrom = (sc) => (sc.fromDeg != null ? sc.fromDeg : Math.round(wrap360(FIELD.rwyHdg + sc.rel)));
 
 class Flight {
-  constructor({ wind = SCENARIOS.calm, oatC = 31, dist = 5500, pilot = 'ap', assist = true, autoThr = true, seed = 11, dh = 0, dtl = 0 } = {}) {
+  constructor({ wind = SCENARIOS.calm, W20 = null, oatC = WX_DEFAULT.oatC, qnh = WX_DEFAULT.qnh, dewC = WX_DEFAULT.dewC, dist = 5500, pilot = 'ap', assist = true, autoThr = true, seed = 11, dh = 0, dtl = 0 } = {}) {
     this.ac = new Aircraft();
-    this.ac.isaDev = oatC - (15 - 0.0065 * FIELD.elev);
-    this.ac.wind = new Wind({ fromDeg: windFrom(wind), kt: wind.kt, turb: wind.turb, seed });
+    qnh = qnh ?? P0_HPA; this.ac.isaDev = oatC - (15 - 0.0065 * FIELD.elev); this.ac.qnh = qnh; this.ac.dewC = dewC;
+    this.ac.wind = new Wind({ fromDeg: windFrom(wind), kt: wind.kt, W20: W20 ?? windW20(wind), seed }); this.W20 = this.ac.wind.W20;
     const trim = this.ac.setApproach({ dist, dh, dt: dtl });
     this.trim = trim;
     this.ap = new Autopilot(this.ac, trim);
@@ -642,8 +1008,9 @@ class Flight {
     this.rec = new Recorder();
     this.pilot = pilot; this.opts = { assist, autoThr };
     this.input = { x: 0, y: 0, rud: 0, thr: trim.thr, brake: 0 };
-    this.acc = 0; this.dt = 1 / 240; this.finishedAt = null; this.oatC = oatC; this.windSpec = wind;
+    this.acc = 0; this.dt = 1 / 240; this.finishedAt = null; this.oatC = oatC; this.qnh = qnh; this.dewC = dewC;
     this.crashed = false;
+    this.xPrev = new Float64Array(13); this.sPrev = new Float64Array(6); this.keepPrev();   // state before the last tick (render interpolation)
   }
   setPilot(p) {
     if (p === this.pilot) return;
@@ -657,13 +1024,43 @@ class Flight {
     }
     this.pilot = p;
   }
+  // Fixed-step accumulator (research 01-flight-physics/09-numerics.md §9.4 and §9.12 task 1; round 1 task list item 6;
+  // T-N-07, T-N-08): ε = 1e-9 s (ค่าประมาณ, §9.8 accumulatorEpsilon) snaps frame times that land one ulp under a whole
+  // number of steps (ideal float ms timestamps k·1000/f at 120 Hz gave 1/2/3 steps; browser rAF times, rounded to
+  // 0.1 ms, still mix 3/4/5 at 60 Hz and renderPose hides it), at most ceil(0.1/dt) = 24 steps per frame, any backlog
+  // beyond one step dropped at the cap, a negative frame time ignored. Returns the number of steps taken.
   advance(realDt) {
-    this.acc += Math.min(realDt, 0.1);
+    const h = this.dt, maxN = Math.ceil(0.1 / h);
+    this.acc += Math.min(Math.max(realDt, 0), 0.1);
     let n = 0;
-    while (this.acc >= this.dt && n < 60) { this.tick(this.dt); this.acc -= this.dt; n++; }
+    while (this.acc >= h - 1e-9 && n < maxN) { this.tick(h); this.acc -= h; n++; }
+    if (n === maxN) this.acc = Math.min(this.acc, h);
+    if (this.acc < 0) this.acc = 0;
+    return n;
+  }
+  // The constructor and tick() call it, and renderPose() too when ac.setApproach or ac.setParked has run since (ac.gen),
+  // so a new Flight (start, R restart, a new demo) or a reset on a live one draws the new state at once, also with no
+  // tick (paused, setup preview) (09-numerics.md §9.7: xPrev = x right after setApproach or setParked).
+  keepPrev() {
+    const a = this.ac, s = this.sPrev; this._gen = a.gen;
+    this.xPrev.set(a.x); s[0] = a.de; s[1] = a.da; s[2] = a.dr; s[3] = a.flaps; s[4] = a.gearPos; s[5] = a.steer;
+  }
+  // Pose to draw (09-numerics.md §9.12 task 2; round 1 task list item 7; T-N-09): between the state before the last tick
+  // and the current one at α = acc/dt, so the picture moves with the frame clock and lags the physics by at most one
+  // step, 1/240 s (Fiedler [N8]). Position and surfaces by lerp, attitude by nlerp on the shorter arc (≤ 1° per step,
+  // as Recorder.at; §9.7). The HUD keeps the latest state.
+  renderPose(out = { p: [0, 0, 0], q: [1, 0, 0, 0], de: 0, da: 0, dr: 0, flaps: 0, gearPos: 0, steer: 0 }) {
+    if (this.ac.gen !== this._gen) this.keepPrev();
+    const u = clamp(this.acc / this.dt, 0, 1), A = this.xPrev, B = this.ac.x, S = this.sPrev, a = this.ac;
+    for (let i = 0; i < 3; i++) out.p[i] = A[i] + (B[i] - A[i]) * u;
+    qNlerp(A, 6, B, 6, u, out.q);
+    out.de = lerp(S[0], a.de, u); out.da = lerp(S[1], a.da, u); out.dr = lerp(S[2], a.dr, u);
+    out.flaps = lerp(S[3], a.flaps, u); out.gearPos = lerp(S[4], a.gearPos, u); out.steer = lerp(S[5], a.steer, u);
+    return out;
   }
   tick(dt) {
     const ac = this.ac;
+    this.keepPrev();             // before the crash check, so a frozen flight draws still; direct tick() callers too
     if (this.crashed) return;
     const apC = this.ap.guidance();
     if (this.pilot === 'ap') this.ap.update(dt);

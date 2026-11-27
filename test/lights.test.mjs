@@ -257,7 +257,10 @@ test('the whole layout runs on the real data: PAPI, beacon, obstruction, road an
 // three.js stand-in (with a stand-in material); every place is read back in the end's own frame, worked out here.
 test('PAPI siting: the housings and the PAPI lights of every end move together, the light 0.55 m before its housing, no other light', () => {
   const THREE2 = { ...THREE_STUB, ShaderMaterial: class { constructor(o) { Object.assign(this, o); } }, AdditiveBlending: 2 };
-  const W = new Function('plSample', 'THREE', 'SU', 'HAZE_GLSL', `"use strict";\n${PURE}\nreturn { ${NAMES}, setPapiSiting };`)(() => {}, THREE2, { uBeta: {}, uHazeH: {} }, '');
+  const W = new Function('plSample', 'THREE', 'SU', 'HAZE_GLSL', `"use strict";\n${PURE}\nreturn { ${NAMES}, setPapiSiting, setAircraft };`)(() => {}, THREE2, { uBeta: {}, uHazeH: {} }, '');
+  // AC is empty until setAircraft (plan B3, PR #21), and the ils siting needs the eye and antenna: the trainer, as the
+  // page loads it before buildAirfield (setAircraft also applies the siting in use, aip)
+  W.setAircraft(JSON.parse(fs.readFileSync(new URL('../data/aircraft/trainer.json', import.meta.url), 'utf8')));
   // what 50-airfield.js does with them: housings built at the threshold, the group and papiPos moved by the helpers
   const af = live('50-airfield.js');
   assert.ok(af.includes('const t = sd * (E.w / 2 + PAPI_GEOM.off[i]), ang = PAPI_GEOM.ang[i], [x, z] = at(0, t);'), 'housings built at the threshold, at(0, t)');

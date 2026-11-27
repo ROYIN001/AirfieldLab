@@ -1,0 +1,1044 @@
+{
+ "airframe": {
+  "identity": {
+   "v": {
+    "manufacturer": "Cessna Aircraft Company (Textron Aviation จาก s/n 172S11615)",
+    "model": "172S",
+    "variant": "Skyhawk SP (รวม NAV III G1000 / G1000 NXi)",
+    "engine": "Lycoming IO-360-L2A 180 hp @ 2,700 rpm",
+    "propeller": "McCauley 1A170E/JHA7660 fixed pitch 2 ใบ 75–76 in",
+    "seats": 4,
+    "category": "normal / utility (spin อนุญาตเฉพาะ utility)",
+    "tc_ref": "FAA TCDS 3A12 Section XII; EASA TCDS IM.A.051 Section 2"
+   },
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "LC6",
+    "LC3",
+    "LC1",
+    "LS1"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "ทะเบียนไทย: C172S 34 ใน 44 ลำ C172 ของ ATO (LS1); FNPT ของ BATC เป็น \"C172S Glass Cockpit\" จึงน่าจะมี G1000 ในฝูง (อนุมาน: ทะเบียนไม่บอก avionics)"
+  },
+  "weights": {
+   "MTOW": {
+    "v": 1156.66,
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "LC6",
+     "LC3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "2,550 lb normal; utility 2,200 lb (997.9 kg)"
+   },
+   "training_mass": {
+    "v": {
+     "kg": 1009.6,
+     "empty_kg": 754.3,
+     "crew_kg": 160,
+     "fuel_kg": 95.3,
+     "fuel_l": 132.5
+    },
+    "u": "kg (fuel_l: L)",
+    "scope": "aircraft",
+    "src": [
+     "LC0",
+     "LC1"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: empty_kg = BEW_typical 754.3 kg (POH p1-7) + ครู 85 kg + ศิษย์ 75 kg + เชื้อเพลิง 35 US gal (132.5 L, 95.3 kg ที่ 6 lb/gal) = 1009.6 kg (2,226 lb); การเทียบ POH ใช้ --mass 1156.66"
+   }
+  },
+  "inertia": {
+   "Ixx": {
+    "v": 1925,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "LM5",
+     "LC0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: รัศมีไจเรชันที่วัดจริงของเครื่องคลาส C172 ใน NASA TM-80163 (Rx 0.235) × MTOW, b 11.0 m; ไม่รวมผลเชื้อเพลิงในปีก (+~577 kg m2 ถ้าถังเต็ม)"
+   },
+   "Iyy": {
+    "v": 2046,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "LM5",
+     "LC0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: Ry 0.324 × MTOW, L 8.205 m (JSBSim c172x ให้ Ry 0.325)"
+   },
+   "Izz": {
+    "v": 3539,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "LM5",
+     "LC0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: Rz 0.364 ที่วัดจาก TM-80163 × MTOW, (b+L)/2 = 9.60 m (สูตร Roskam); ไม่รวมเชื้อเพลิงในปีก (+~577 kg m2 ถ้าถังเต็ม)"
+   },
+   "Ixz": {
+    "v": 170,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "LM5",
+     "LC0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: 123 kg m2 ของ TM-80163 × มวล"
+   },
+   "ref_mass": {
+    "v": 1156.66,
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "LC0"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "inertia สเกลตามมวลด้วยรัศมีคงที่"
+   }
+  },
+  "geometry": {
+   "length": {
+    "v": 8.20522,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LC3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "26.92 ft (Wikipedia 27 ft 2 in)"
+   },
+   "eye_pos_FRD": {
+    "v": [
+     0.127,
+     -0.25,
+     -0.3
+    ],
+    "u": "m FRD",
+    "scope": "aircraft",
+    "src": [
+     "LB3",
+     "LC0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: x จาก EYEPOINT ของ JSBSim c172r (37 in DAT), y ที่นั่งซ้าย, z เหนือ CG 0.30 m"
+   },
+   "gsAntenna_pos_FRD": {
+    "v": [
+     0.127,
+     -0.25,
+     -0.3
+    ],
+    "u": "m FRD",
+    "scope": "aircraft",
+    "src": [
+     "LB3",
+     "LC0",
+     "AL:C1"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไม่มีแหล่งใดให้ตำแหน่งเสาอากาศรับ glide slope ของแบบนี้ จึงวางไว้ที่ตำแหน่งตา (airframe.geometry.eye_pos_FRD) ไฟ PAPI และ ILS จึงอ่านที่จุดเดียวกัน (เครื่องฝึกสมมติมีตาสูงกว่าเสาอากาศ 1.3 m) [AL:C1]"
+   }
+  }
+ },
+ "aero": {
+  "ref": {
+   "S": {
+    "v": 16.165,
+    "u": "m2",
+    "scope": "aircraft",
+    "src": [
+     "LC1"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "174 ft2"
+   },
+   "b": {
+    "v": 10.9982,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LC3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ช่วงปีกตามแหล่ง [LC3]"
+   },
+   "c": {
+    "v": 1.4935,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "LC6"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "MAC 58.8 in"
+   }
+  },
+  "derivatives": {
+   "CLq": {
+    "v": {
+     "cruise": 6.0121,
+     "approach": 5.98
+    },
+    "u": "1/rad (c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "LM0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ประมาณจากรูปทรงในบัตรด้วย lm_derivs (สูตร DATCOM/Roskam ของหัวข้อ 01)"
+   },
+   "CLadot": {
+    "v": {
+     "cruise": 1.3752,
+     "approach": 1.3597
+    },
+    "u": "1/rad (c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "LM0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ประมาณจากรูปทรงในบัตรด้วย lm_derivs (สูตร DATCOM/Roskam ของหัวข้อ 01)"
+   },
+   "CLde": {
+    "v": 0.42,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM5"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "บินจริง TM-80163 (ML 40.7 m/s); lm_derivs 0.414"
+   },
+   "CYb": {
+    "v": -0.57,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM5"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "TM-80163 Table X CL 0.6; lm_derivs -0.461"
+   },
+   "CYdr": {
+    "v": {
+     "cruise": 0.1502,
+     "approach": 0.1493
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LM5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ประมาณจากรูปทรงในบัตรด้วย lm_derivs (สูตร DATCOM/Roskam ของหัวข้อ 01); ผลบินทดสอบ TM-80163 Table X (fit, แฟลป 0) ≈ 0.11 / 0.14 / 0.17 ที่ CL 0.3 / 0.6 / 1.0 (อ่านจาก OCR)"
+   },
+   "CYr": {
+    "v": {
+     "cruise": 0.1663,
+     "approach": 0.1665
+    },
+    "u": "1/rad (b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "LM0"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ประมาณจากรูปทรงในบัตรด้วย lm_derivs (สูตร DATCOM/Roskam ของหัวข้อ 01)"
+   },
+   "Clb": {
+    "v": -0.07,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM5"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "TM-80163"
+   },
+   "Clp": {
+    "v": -0.45,
+    "u": "1/rad (b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "LM5"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "TM-80163 Table X linear fit ที่ CL 0.6 (แฟลป 0)"
+   },
+   "Clr": {
+    "v": {
+     "cruise": 0.0925,
+     "approach": 0.2142
+    },
+    "u": "1/rad (b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LM5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ประมาณจากรูปทรงในบัตรด้วย lm_derivs (สูตร DATCOM/Roskam ของหัวข้อ 01) (ขึ้นกับ CL); TM-80163 Table X (fit, แฟลป 0) ≈ 0.07 / 0.095 / 0.13 ที่ CL 0.3 / 0.6 / 1.0 (อ่านจาก OCR) ค่า approach ของบัตรสูงกว่า 65 % ดู §04.9"
+   },
+   "Clda": {
+    "v": 0.204,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM5"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "TM-80163 Table X CL 0.6: −0.102 ต่อ δa = δซ้าย − δขวา (ผลต่างสองข้าง) → |−0.102| × 2 = +0.204 ต่อมุมเฉลี่ยตามเครื่องหมาย AC (da+ = ม้วนขวา)"
+   },
+   "Cldr": {
+    "v": {
+     "cruise": 0.0137,
+     "approach": 0.0136
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LM5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ประมาณจากรูปทรงในบัตรด้วย lm_derivs (สูตร DATCOM/Roskam ของหัวข้อ 01); TM-80163 Table X ≈ 0.006–0.0095 (อ่านจาก OCR)"
+   },
+   "Cmq": {
+    "v": -14.85,
+    "u": "1/rad (c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "LM5"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "TM-80163 (ระบุโดยตรึง Cmα̇ = −4.0)"
+   },
+   "Cmadot": {
+    "v": {
+     "cruise": -3.9816,
+     "approach": -3.9368
+    },
+    "u": "1/rad (c/2V)",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LM5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ประมาณจากรูปทรงในบัตรด้วย lm_derivs (สูตร DATCOM/Roskam ของหัวข้อ 01); TM-80163 ตรึงไว้ที่ −4.0 ไม่ได้ระบุจากข้อมูล"
+   },
+   "Cmde": {
+    "v": -1.23,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM5"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "TM-80163 Table IV เฉลี่ยสองรัน (−1.24, −1.21) ที่ 40.7 m/s; δe บวก = ขอบท้ายลง ตรงกับ AC (รายการสัญลักษณ์ของรายงานเรียก δe ว่า stabilator แต่ Table II เรียก elevator)"
+   },
+   "Cnb": {
+    "v": 0.042,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM5"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "TM-80163; lm_derivs 0.034"
+   },
+   "Cnp": {
+    "v": {
+     "cruise": -0.0568,
+     "approach": -0.1627
+    },
+    "u": "1/rad (b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LM5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ประมาณจากรูปทรงในบัตรด้วย lm_derivs (สูตร DATCOM/Roskam ของหัวข้อ 01) (ขึ้นกับ CL); TM-80163 Table X (fit, แฟลป 0) ≈ −0.05 / −0.078 / −0.115 ที่ CL 0.3 / 0.6 / 1.0 (อ่านจาก OCR) ดู §04.9"
+   },
+   "Cnr": {
+    "v": -0.11,
+    "u": "1/rad (b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "LM5"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "TM-80163 Table X linear fit ที่ CL 0.6 (−0.10 / −0.125 ที่ CL 0.3 / 1.0)"
+   },
+   "Cnda": {
+    "v": {
+     "cruise": -0.0114,
+     "approach": -0.0255
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM0",
+     "LM5"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ประมาณจากรูปทรงในบัตรด้วย lm_derivs (สูตร DATCOM/Roskam ของหัวข้อ 01) (K_n −0.20); TM-80163 ให้ proverse +0.008 (แยกค่าจาก Cnp ไม่ได้) ดู §04.12"
+   },
+   "Cndr": {
+    "v": -0.058,
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "LM5"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "TM-80163"
+   }
+  },
+  "flaps": {
+   "detents": {
+    "v": [
+     {
+      "name": "0",
+      "flap_deg": 0,
+      "dCL0": 0,
+      "dCD0": 0,
+      "dCm0": 0,
+      "CLmax": 1.464,
+      "f_lift": 0
+     },
+     {
+      "name": "10",
+      "flap_deg": 10,
+      "VFE_kt": 110,
+      "dCL0": 0.117,
+      "dCD0": 0.0069,
+      "dCm0": -0.0518,
+      "CLmax": 1.581,
+      "f_lift": 0.3645
+     },
+     {
+      "name": "20",
+      "flap_deg": 20,
+      "VFE_kt": 85,
+      "dCL0": 0.253,
+      "dCD0": 0.0124,
+      "dCm0": -0.0762,
+      "CLmax": 1.717,
+      "f_lift": 0.7882
+     },
+     {
+      "name": "30",
+      "flap_deg": 30,
+      "VFE_kt": 85,
+      "dCL0": 0.321,
+      "dCD0": 0.0193,
+      "dCm0": -0.0864,
+      "CLmax": 1.785,
+      "f_lift": 1
+     }
+    ],
+    "u": "-, deg, kt IAS",
+    "scope": "aircraft",
+    "src": [
+     "LC2",
+     "LC6",
+     "LC9",
+     "LC0",
+     "LB3"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: CLmax จาก POH (20° ค่าประมาณ); dCL0 = ΔCLmax; dCD0/dCm0 จาก JSBSim c172r; f_lift = AC.flaps ของแต่ละขั้น"
+   }
+  },
+  "legacy": {
+   "v": {
+    "CD0": 0.05899,
+    "K": 0.07077,
+    "CL0": 0.25,
+    "CLa": 5.17,
+    "CLflap": 0.321,
+    "CDflap": 0.0193,
+    "CDgear": 0,
+    "Cm0": -0.0206,
+    "Cma": -0.942,
+    "Cmflap": -0.0864,
+    "aStall": 18.3,
+    "aStallFlap": 0.57,
+    "aWarn": 10.5,
+    "aWarnFlap": -0.92,
+    "aWarnHyst": 0.5,
+    "aWarnMinOn": 0.5
+   },
+   "u": "-, 1/rad, deg, deg/f, s",
+   "scope": "aircraft",
+   "src": [
+    "LM0",
+    "LC0",
+    "LB3",
+    "LM3",
+    "LC2",
+    "R1:A22",
+    "AL:A5",
+    "AL:C1"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: lm_legacy_fit (lc_fit.mjs โหมด static): polar รูปแบบซิมจาก glide 68 KIAS L/D 9.11; aStall/aStallFlap แก้หาให้ CLmax 1 g ตรง POH; ค่าอื่นจากบัตร (AC.flaps 0–1 = 0–30°); CDflap 0.0193 และ Cmflap −0.0864 คือ dCD0 และ dCm0 ของแฟลป 30° ใน aero.flaps.detents ซึ่งเป็นตัวเลขที่อ่านจากโมเดล JSBSim c172r [LB3]. สัญญาณเตือน stall (ค่าประมาณ): aWarn 10.5° ที่แฟลป 0 และ aWarn + aWarnFlap = 9.58° ที่แฟลปลงจอด 30 (f 1) คือมุมปะทะที่ความเร็ว 1 g สูงกว่าความเร็ว stall 1 g 7.00 kt แก้บนเส้น CL ของซิมเองตามวิธี T-A-07 (trim q̇ = 0, ρ 1.225, มวลฝึก 1,009.6 kg) ด้วย tools/aircraft/build_cards.mjs [AL:C1]; ทุกขั้นแฟลประหว่างนั้นอยู่ใน 7 ± 0.25 kt; เกณฑ์อย่างน้อย 5 kt ของ 14 CFR 23.207(c) [R1:A22][LM3][LC2]; เทียบ alpha_warn_design ของบัตรวิจัย {\"0\":10.14,\"30\":9.28} deg (แบบจำลองของงานวิจัยเอง ไม่ใช่เส้น CL ของซิม); เลิกเตือนเมื่อ α ต่ำกว่า 0.5° และดังมาแล้วอย่างน้อย 0.5 s ตามเครื่องฝึก (plan A5) [AL:A5]"
+  }
+ },
+ "speeds": {
+  "VS0_kt": {
+   "v": 48,
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "LC2",
+    "LC1"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "แฟลป 30 power off 2,550 lb CG หน้า (Fig 5-3: 40 KIAS; POH หมายเหตุว่าค่า KIAS เป็นค่าโดยประมาณ)"
+  },
+  "VAPP_kt": {
+   "v": 65,
+   "u": "kt IAS",
+   "scope": "aircraft",
+   "src": [
+    "LC1"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "D1 (บัตรเป็นเจ้าของ; 08 ops.final และ 09 Vapp อ้างค่านี้): normal approach แฟลป 30 60–70 KIAS (POH p4-5) ใช้กลางช่วง 65 KIAS ≈ 67 KCAS (34.5 m/s); POH บอกว่าความเร็วในหัวข้อ 4 อิงน้ำหนักสูงสุด 2,550 lb และใช้ได้กับทุกน้ำหนักที่ต่ำกว่า จึงเป็นค่าเดียวกันที่ training_mass 1,009.6 kg; VAPP ≥ VREF 61 KIAS; แฟลปขึ้น 65–75 KIAS"
+  },
+  "VREF_kt": {
+   "v": 61,
+   "u": "kt IAS",
+   "scope": "aircraft",
+   "src": [
+    "LC2",
+    "LC1"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "D1: POH ไม่ใช้คำว่า VREF; ใช้ความเร็วที่ 50 ft ของ short field landing 61 KIAS = 63.9 KCAS (32.9 m/s) ≈ 1.33 VS0 (48 KCAS) ที่ 2,550 lb (Fig 5-11, p4-5) และใช้ค่าเดียวกันที่ training_mass 1,009.6 kg ตามที่ POH ให้ใช้กับทุกน้ำหนักที่ต่ำกว่า; ข้อมูลประกอบ: 1.3 VS0 ที่ 1,009.6 kg (VS0 × √(m/MTOW)) = 58.3 KCAS"
+  },
+  "ias_cas": {
+   "v": {
+    "0": [
+     [
+      50,
+      56
+     ],
+     [
+      60,
+      62
+     ],
+     [
+      70,
+      70
+     ],
+     [
+      80,
+      78
+     ],
+     [
+      90,
+      87
+     ],
+     [
+      100,
+      97
+     ],
+     [
+      110,
+      107
+     ],
+     [
+      120,
+      117
+     ],
+     [
+      130,
+      127
+     ],
+     [
+      140,
+      137
+     ],
+     [
+      150,
+      147
+     ],
+     [
+      160,
+      157
+     ]
+    ],
+    "10": [
+     [
+      40,
+      51
+     ],
+     [
+      50,
+      57
+     ],
+     [
+      60,
+      63
+     ],
+     [
+      70,
+      71
+     ],
+     [
+      80,
+      80
+     ],
+     [
+      90,
+      89
+     ]
+    ],
+    "30": [
+     [
+      40,
+      50
+     ],
+     [
+      50,
+      56
+     ],
+     [
+      60,
+      63
+     ],
+     [
+      70,
+      72
+     ],
+     [
+      80,
+      81
+     ],
+     [
+      85,
+      86
+     ]
+    ]
+   },
+   "u": "KIAS → KCAS",
+   "scope": "aircraft",
+   "src": [
+    "LC2"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "Fig 5-1 normal static source, power for level flight (p5-9); อ่านจาก OCR การจับคู่บางช่องอนุมาน; ต่ำกว่า 40/50 KIAS ไม่มีข้อมูล"
+  }
+ },
+ "propulsion": {
+  "layout": {
+   "v": [
+    {
+     "id": 1,
+     "pos": [
+      1.905,
+      0,
+      0
+     ],
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "type": "piston",
+     "model": "Lycoming IO-360-L2A",
+     "prop_sense": 1
+    }
+   ],
+   "u": "m FRD",
+   "scope": "aircraft",
+   "src": [
+    "LC6",
+    "LC8",
+    "LC0"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "ค่าประมาณ: ระนาบใบพัด ~33 in หน้า datum บนแนว CG; prop_sense 1 ตาม PHAK p5-31 (หมุนตามเข็มนาฬิกามองจากที่นั่งนักบิน)"
+  },
+  "legacy": {
+   "v": {
+    "P": 134230,
+    "eta": 0.883,
+    "T0": 3538,
+    "idle": 0
+   },
+   "u": "W, -, N, -",
+   "scope": "aircraft",
+   "src": [
+    "LM0",
+    "LC0"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "ค่าประมาณ: lc_fit.mjs (lm_legacy_fit โหมด static) ใช้ T0 3538 N จาก BEM ของ lc_calc (lm_prop ใบ fixed_76x60 ปรับคอร์ดให้รอบสถิต 2,350 rpm) แล้ว fit η ให้ ROC สูงสุด 730 fpm ที่ SL; ถ้าใช้ T0 จากทฤษฎีโมเมนตัม FM 0.55 (3,094 N) ต้องใช้ η 1.035 ซึ่งเป็นไปไม่ได้; idle 0 เพราะ polar จาก glide รวมแรงต้านใบพัดแล้ว"
+  }
+ },
+ "controls": {
+  "surfaces": {
+   "elevator": {
+    "v": {
+     "travel_deg": {
+      "up": 28,
+      "down": 23
+     },
+     "rate_dps": 70,
+     "actuator_tau_s": 0
+    },
+    "u": "deg, deg/s, s",
+    "scope": "aircraft",
+    "src": [
+     "LC6",
+     "LC3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "travel_deg อ่านตรงจาก TCDS (up 28° +1/−0, down 23° +1/−0) ไม่ใช่ค่าประมาณ; rate_dps 70 เป็นค่าสมมติของรอบที่ 1 สำหรับมือคน (ค่าเดียวกับ controls.pitch.rate_limit ที่ติด est); actuator_tau_s 0 เพราะต่อด้วยสลิงตรง"
+   },
+   "aileron": {
+    "v": {
+     "travel_deg": {
+      "up": 20,
+      "down": 15
+     },
+     "rate_dps": 80,
+     "actuator_tau_s": 0
+    },
+    "u": "deg, deg/s, s",
+    "scope": "aircraft",
+    "src": [
+     "LC6"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "up 20° ±1, down 15° ±1 (differential) ⇒ daMax 17.5°"
+   },
+   "rudder": {
+    "v": {
+     "travel_deg": {
+      "left": 17.73,
+      "right": 17.73
+     },
+     "rate_dps": 60,
+     "actuator_tau_s": 0
+    },
+    "u": "deg, deg/s, s",
+    "scope": "aircraft",
+    "src": [
+     "LC3",
+     "LC6"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "17°44′ ±1° วัดตั้งฉากกับ hinge; 16°10′ ±1° วัดขนาน WL (ทั้ง FAA 3A12 และ EASA IM.A.051 ให้สองค่านี้)"
+   }
+  }
+ },
+ "gear": {
+  "layout": {
+   "v": "tricycle_fixed",
+   "u": "-",
+   "scope": "gear",
+   "src": [
+    "LC2"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "POH p7-14"
+  },
+  "legacy": {
+   "v": [
+    {
+     "b": [
+      1.24,
+      0,
+      1.3
+     ],
+     "k": 26269,
+     "c": 3083.365874995868,
+     "stroke": 0.12,
+     "steer": true
+    },
+    {
+     "b": [
+      -0.411,
+      -1.092,
+      1.3
+     ],
+     "k": 78807,
+     "c": 2733.0613528734702,
+     "stroke": 0.15,
+     "brake": true
+    },
+    {
+     "b": [
+      -0.411,
+      1.092,
+      1.3
+     ],
+     "k": 78807,
+     "c": 2733.0613528734702,
+     "stroke": 0.15,
+     "brake": true
+    }
+   ],
+   "u": "m FRD, N/m, N s/m, m",
+   "scope": "gear",
+   "src": [
+    "LB3",
+    "LC1",
+    "LC0",
+    "LM0",
+    "AL:C1"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: ขาล้อสปริง-แดมเปอร์เชิงเส้น 3 ขาของซิม (ล้อหน้าเลี้ยวได้ ล้อหลักมีเบรก) b ตำแหน่งจุดสัมผัสเมื่อขายืดสุด (m FRD จาก CG), k, c, stroke คำนวณด้วย buildAC (legacyGear) ของ lm_card.mjs [LM0] ที่มวลฝึกจาก gear.geometry.*_contact_body_extended, gear.strut_*.spring และ gear.strut_*.stroke ของบัตรวิจัย: น้ำหนักล้อหน้า N = W·(−x_main)/(x_nose − x_main); k ล้อหน้าจาก k_vertical ล้อหลักจาก k_vertical; c = 2ζ√(k·N/g) (ล้อหน้า ζ 0.6, ล้อหลัก ζ 0.25) [AL:C1]"
+  }
+ },
+ "thai_fleet": {
+  "v": {
+   "as_of": "2026-07-09",
+   "default_thai_type": "c172s",
+   "ato_aircraft": 78,
+   "users": [
+    {
+     "name": "Bangkok Aviation Center (BAC)",
+     "kind": "ato",
+     "n": 21,
+     "base": "นครราชสีมา",
+     "base_icao": "VTUQ",
+     "base_est": true,
+     "variants": []
+    },
+    {
+     "name": "Bangkok Air Aviation Training Center (BATC)",
+     "kind": "ato",
+     "n": 7,
+     "base": "สุโขทัย",
+     "base_icao": "VTPO",
+     "base_est": true,
+     "variants": []
+    },
+    {
+     "name": "Asia Aviation and Technology (AAT)",
+     "kind": "ato",
+     "n": 2,
+     "base": "ชุมพร",
+     "base_icao": "VTSE",
+     "base_est": true,
+     "variants": []
+    },
+    {
+     "name": "Thai Inter Flying (TIF)",
+     "kind": "ato",
+     "n": 2,
+     "base": "พิษณุโลก",
+     "base_icao": "VTPP",
+     "base_est": false,
+     "variants": []
+    },
+    {
+     "name": "Thai Aviation Co. (Thai Aviation Academy)",
+     "kind": "ato",
+     "n": 1,
+     "base": "ร้อยเอ็ด",
+     "base_icao": "VTUV",
+     "base_est": false,
+     "variants": []
+    },
+    {
+     "name": "D-0507 Flight Training",
+     "kind": "ato",
+     "n": 1,
+     "base": null,
+     "base_icao": null,
+     "base_est": false,
+     "variants": []
+    },
+    {
+     "name": "Phoenix Aero Club",
+     "kind": "club",
+     "n": 1,
+     "base": null,
+     "base_icao": null,
+     "base_est": false,
+     "variants": []
+    }
+   ]
+  },
+  "u": "-",
+  "scope": "environment",
+  "src": [
+   "LS1",
+   "LS2",
+   "LS9",
+   "LS10",
+   "LS12",
+   "LS5",
+   "LS13",
+   "LS4"
+  ],
+  "conf": "ต่ำ",
+  "est": true,
+  "note": "จำนวนเครื่องแบบนี้ของโรงเรียนการบินพลเรือน (ATO, kind ato) และชมรมการบิน (kind club) ในไทย 34 ลำใน ATO นับจากทะเบียนอากาศยานของ กพท. ณ 9 ก.ค. 2026 [LS1] เป็นเครื่องที่จดทะเบียน ไม่ใช่เครื่องที่บินได้วันนี้; รุ่นในทะเบียนที่ไม่มีบัตรของตัวเองนับใต้แบบนี้ตาม variants; ato_aircraft คือเครื่องฝึกทั้งหมดของ ATO ในทะเบียน และ default_thai_type คือแบบที่ ATO ใช้มากที่สุด (02-thai-schools.md, common_light.thai_fleet); ฐานฝึกที่ base_est เป็น true เป็นค่าประมาณ (อนุมานจากที่ตั้งเครื่องฝึกจำลองหรือที่อยู่); base ว่างเมื่อแหล่งไม่ระบุสนามบิน"
+ },
+ "_meta": {
+  "id": "c172s",
+  "source": "AirfieldLab plan C1: the round 2 research card c172s in docs/research/02-light-aircraft/params-light.json (topic file 04-c172s.md), resolved with its _inherits chain, with the Thai fleet of common_light.thai_fleet (02-thai-schools.md); only the values the simulator reads, the speed table, the flap detents and the type's identity, MTOW, length and gear layout, generated by tools/aircraft/build_cards.mjs; each leaf names its sources in src, listed in _meta.sources",
+  "license": "MIT (LICENSE): the repository's own compilation, fits and estimates; manufacturer, authority and register figures used as cited numbers only (no text, table, figure or document copied; © their owners, see _meta.sources); a few C172 dimensions, the eye point, the gear spring rates and the flap drag and pitch increments are numbers read from the JSBSim c172r model (LB3), cited, no file or text copied",
+  "note": "บัตรพารามิเตอร์ของ 172S สำหรับซิม สร้างด้วย tools/aircraft/build_cards.mjs จากบัตรวิจัยรอบที่ 2 ห้ามแก้ไฟล์นี้ด้วยมือ (แก้ params-light.json หรือสคริปต์แล้วสร้างใหม่) ตัวเลขการบินเป็นค่าของเอกสารสาธารณะที่อ้างไว้หรือเป็นค่าประมาณ (est true, ค่าประมาณ ใน note) ใช้เพื่อการฝึกในเกมนี้เท่านั้น ไม่ใช้เพื่อการบินจริง; รูปแบบ leaf {v, u, scope, src, conf, est, note} ตาม docs/research/01-flight-physics/schema.md และ docs/research/02-light-aircraft/schema-ext.md; ความเร็วอ้างอิงเขียนในหน่วยที่แหล่งให้ (ส่วนมาก kt IAS) ซิมแปลง kt IAS เป็น kt CAS ด้วย speeds.ias_cas แถวแฟลปลงจอด; รหัส AL:A5 และ AL:C1 ไม่ใช่รูปแบบรหัสของรอบที่ 2 (lm_lib.validate ของรอบที่ 2 เตือนโดยตั้งใจ เช่นเดียวกับบัตรเครื่องฝึก) บัตรใน data/aircraft อ่านรหัสทุกตัวผ่าน _meta.sources",
+  "sources": {
+   "AL:A5": {
+    "what": "AirfieldLab plan A5 design choice, no outside source: the stall warning goes off only 0.5° below its angle and after at least 0.5 s on, so a gust spike sounds as a short chirp; test/stall.test.mjs checks the behaviour",
+    "link": "test/stall.test.mjs"
+   },
+   "AL:C1": {
+    "what": "AirfieldLab plan C1, this generator's own derivations: the stall-warning angles solved on the simulator's lift curve, the gear struts through round 2's buildAC, the glide-slope antenna at the eye, the DA40 eye point from the seat station and the DA40 wheel stations from the wheelbase, the Thai fleet rows and, for a card without inertia, inertia from class radii",
+    "link": "tools/aircraft/build_cards.mjs"
+   },
+   "LB3": {
+    "what": "JSBSim Team, aircraft/c172r/c172r.xml (\"Cessna C-172r\", $Id 1.20, 2012), v1.3.3. (reference [LB3] of docs/research/02-light-aircraft/03-open-models.md)",
+    "link": "https://github.com/JSBSim-Team/jsbsim/blob/v1.3.3/aircraft/c172r/c172r.xml"
+   },
+   "LC0": {
+    "what": "สคริปต์ของหัวข้อนี้ scripts/lc_calc.mjs, lc_json.mjs, lc_fit.mjs, lc_tests.mjs, lc_cardfix.mjs (เพิ่ม 19 พ.ย. 2026) และผลใน scripts/out/lc_ (AirfieldLab research รอบที่ 2, 2026-11-18) (reference [LC0] of docs/research/02-light-aircraft/04-c172s.md)",
+    "link": "docs/research/02-light-aircraft/04-c172s.md"
+   },
+   "LC1": {
+    "what": "Cessna Aircraft Co., Model 172S Skyhawk SP Information Manual 172SIM Revision 5 (19 Jul 2004; ฉบับแรก 8 Jul 1998) ซึ่งอิง POH/AFM 172SPHUS05 อ้างหน้า p ii, 1-2 ถึง 1-7, 2-4 ถึง 2-11, 3-3, 4-5 (ตรวจทานเปิดอ่านแล้ว 2026-11-18) (reference [LC1] of docs/research/02-light-aircraft/04-c172s.md)",
+    "link": "https://www.touringmachine.com/PDFs-Txt/Cessna172/aero-atlanta-c172sp-poh.pdf"
+   },
+   "LC2": {
+    "what": "Cessna, 172S Pilot's Operating Handbook ส่วนที่ 2–8 (สำเนาบน ManualsLib ชื่อ \"172SPHUSR05\" 498 หน้า ท้ายหน้าที่อ้างพิมพ์ Revision 4 / Jul 8/98 / May 30/00; หน้า viewer 84, 143, 146, 148, 151, 157, 196–198, 255) อ้าง Fig 5-1 (p5-9), 5-3, 5-5 (p5-14), 5-6 (p5-17), 5-11 (p5-23), p7-12 ถึง 7-14, p8-21 (reference [LC2] of docs/research/02-light-aircraft/04-c172s.md)",
+    "link": "https://www.manualslib.com/manual/1418033/Cessna-172s.html"
+   },
+   "LC3": {
+    "what": "EASA, Type-Certificate Data Sheet IM.A.051 Cessna 172 series, Issue 11, 17 Nov 2025 (Section 2 = 172S; p16–22) (reference [LC3] of docs/research/02-light-aircraft/04-c172s.md)",
+    "link": "https://www.easa.europa.eu/es/downloads/7423/en"
+   },
+   "LC6": {
+    "what": "FAA, Type Certificate Data Sheet 3A12 Rev 84, 29 Jul 2015 (Section XII Model 172S) สำเนาบน Univair (reference [LC6] of docs/research/02-light-aircraft/04-c172s.md)",
+    "link": "https://dyzz9obi78pm5.cloudfront.net/app/image/id/615b6a6626e5f007327b23d1/n/3a12-rev-84.pdf"
+   },
+   "LC8": {
+    "what": "FAA, Pilot's Handbook of Aeronautical Knowledge FAA-H-8083-25, Chapter 5 p5-31 (ทิศหมุนใบพัด) (reference [LC8] of docs/research/02-light-aircraft/04-c172s.md)",
+    "link": "https://www.faa.gov/sites/faa.gov/files/07_phak_ch5_0.pdf"
+   },
+   "LC9": {
+    "what": "หัวข้อ 03 ของรอบนี้ (03-open-models.md, scripts/out/lb_.json) ที่รัน JSBSim 1.3.3 กับโมเดล c172p, c172r, c172x (reference [LC9] of docs/research/02-light-aircraft/04-c172s.md)",
+    "link": "https://github.com/JSBSim-Team/jsbsim"
+   },
+   "LM0": {
+    "what": "AirfieldLab research round 2, สคริปต์ของหัวข้อนี้ scripts/lm_lib.mjs, lm_merge.mjs, lm_card.mjs, lm_fixture_trainer_r1.mjs, lm_selftest.mjs, lm_derivs.mjs, lm_inertia.mjs, lm_jsb_inertia.py, lm_polar.mjs, lm_engine.mjs, lm_prop.mjs, lm_legacy_fit.mjs และผลใน scripts/out/lm_ (2026-11-18) (reference [LM0] of docs/research/02-light-aircraft/01-methods.md)",
+    "link": "docs/research/02-light-aircraft/01-methods.md"
+   },
+   "LM3": {
+    "what": "14 CFR Part 23 (ฉบับปัจจุบันหลัง Amendment 23-64 §23.2110 Stall speed; ฉบับเดิม §23.49 และ §23.201 นิยามการทดสอบ stall), eCFR, ฉบับเดิม (CFR 2011 edition, Title 14 Vol. 1 Part 23) p. 200–201 (§23.49(a): \"VSO and VS1 are the stalling speeds or the minimum steady flight speeds, in knots (CAS)\" ที่เครื่องลูกสูบ idle throttle ปิด) (reference [LM3] of docs/research/02-light-aircraft/01-methods.md)",
+    "link": "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-C/part-23"
+   },
+   "LM5": {
+    "what": "W. T. Suit, R. L. Cannaday, Comparison of Stability and Control Parameters for a Light, Single-Engine, High-Winged Aircraft Using Different Flight Test and Parameter Estimation Techniques, NASA TM-80163, NASA Langley, September 1979, (รายการสัญลักษณ์ δa/δe/δr; Table I มวลและ inertia; Table IV ML ตามยาวที่ 31.6/40.7/54.2 m/s; Table VII ML lateral รายเคส; Table X เทียบ lateral กับ linear fit ที่ $C_L$ 0.3/0.6/1.0; ข้อความเป็น OCR) (reference [LM5] of docs/research/02-light-aircraft/01-methods.md)",
+    "link": "https://ntrs.nasa.gov/api/citations/19800001985/downloads/19800001985.pdf"
+   },
+   "LS1": {
+    "what": "Thailand Aircraft Register as at 9th July 2026, สำนักงานการบินพลเรือนแห่งประเทศไทย (กพท.), 2026 (ฉบับก่อนหน้า: as at 14th January 2026 ใช้เทียบใน 02.8 ข้อ 12) (reference [LS1] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.caat.or.th/wp-content/uploads/2026/08/Thailand-Aircraft-Register-as-at-9th-July-2026.pdf"
+   },
+   "LS10": {
+    "what": "ข่าว BAC Academy ที่สนามบินนครราชสีมา, ฐานเศรษฐกิจ, 28 ม.ค. 2017 (reference [LS10] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.thansettakij.com/content/126726"
+   },
+   "LS12": {
+    "what": "Thai Inter Flying School Selects FlightLogger…, FlightLogger, 20 ส.ค. 2026 (reference [LS12] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.flightlogger.net/blog/thai-inter-flying-school-selects-flightlogger-to-drive-digital-transformation-and-easa-aligned-training-in-thailand"
+   },
+   "LS13": {
+    "what": "Thai Aviation Academy chooses Tecnam (press release), Tecnam ผ่าน AviationPros, 3 ก.ค. 2018; Aviation Week \"Thai Aviation To Add Three Tecnam Aircraft For Training\" (reference [LS13] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.aviationpros.com/education-training/press-release/12419115/tecnam-thai-aviation-choose-tecnam"
+   },
+   "LS2": {
+    "what": "FSTD under CAAT Approval as of 24 AUG 2026, กพท., 2026 (reference [LS2] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.caat.or.th/wp-content/uploads/2026/08/FSTD-under-CAAT-Approval_as-of-24AUG2026.pdf"
+   },
+   "LS4": {
+    "what": "รายชื่อสถาบันฝึกอบรมด้านการบินที่ได้รับการรับรอง (FTO) หน้าภาษาไทย, กพท., ไม่ระบุวันที่ (วันหมดอายุของใบรับรองอยู่ระหว่างปี 2024–2026 หลายแห่งหมดแล้ว ดู 02.8 ข้อ 13) (reference [LS4] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.caat.or.th/?p=42095"
+   },
+   "LS5": {
+    "what": "CAAT Approved Flying Training Organisations, \"Updated 29 March 2022\", กพท. (reference [LS5] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.caat.or.th/en/archives/36105"
+   },
+   "LS9": {
+    "what": "ข่าว BAC ลงทุนสถาบันฝึกนครราชสีมา สั่ง Cessna 50 ลำ, ฐานเศรษฐกิจ, 21 ต.ค. 2017 (reference [LS9] of docs/research/02-light-aircraft/02-thai-schools.md)",
+    "link": "https://www.thansettakij.com/content/220542"
+   },
+   "R1:A22": {
+    "what": "14 CFR Part 23 (1 Jan 2016, before Amdt 23-64) §23.207(c): stall warning at least 5 kt above the stall (reference [A22] of the round 1 aero topic)",
+    "link": "docs/research/01-flight-physics/01-aero.md"
+   }
+  }
+ }
+}

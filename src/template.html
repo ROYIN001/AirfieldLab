@@ -81,6 +81,7 @@ input[type=date], select { background: var(--ink); border: 1px solid var(--line)
 .cards button span { font-size: 12px; color: var(--muted); grid-column: 1 / -1; }
 .cards button em { font-style: normal; font-family: var(--f-mono); font-size: 11.5px; color: var(--cyan); }
 .cards button[aria-pressed="true"] { border-color: var(--cyan); background: rgba(86, 211, 234, 0.07); }
+.cards button:disabled { opacity: .5; cursor: not-allowed; }
 .toggle { display: flex; align-items: center; gap: 10px; font-size: 13.5px; }
 .toggle input { width: 18px; height: 18px; accent-color: var(--good); }
 .brief { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
@@ -92,6 +93,7 @@ input[type=date], select { background: var(--ink); border: 1px solid var(--line)
 .ghost { border: 1px solid var(--line-2); border-radius: 10px; padding: 10px 14px; background: transparent; color: var(--text); font-weight: 500; }
 .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .hint { margin: 0; font-size: 12.5px; color: var(--dim); }
+.hint a { color: var(--muted); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 2px; }
 .hint kbd { font-family: var(--f-mono); font-size: 11px; border: 1px solid var(--line-2); border-radius: 4px; padding: 0 4px; color: var(--muted); }
 .gates { display: grid; gap: 4px; }
 .gate { display: grid; grid-template-columns: 18px 1fr auto; gap: 8px; align-items: center; font-size: 13.5px; }
@@ -163,6 +165,7 @@ canvas.chart { width: 100%; height: 230px; display: block; background: var(--ink
 .brk button.on { background: var(--warn); color: #1d1300; }
 .toast { left: 50%; top: 56px; transform: translateX(-50%); background: rgba(9, 14, 21, 0.9); border: 1px solid var(--line-2); border-radius: 10px; padding: 7px 14px; font-size: 13.5px; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: calc(100% - 24px); text-align: center; }
 .toast.on { opacity: 1; }
+.toast.on.tap { pointer-events: auto; cursor: pointer; z-index: 6; }   /* the pause message takes taps: above the strip (.instr) and the rotate hint, below .loading */
 .loading { inset: 0; display: grid; place-items: center; background: var(--ink); z-index: 10; font-size: 14px; color: var(--muted); transition: opacity 0.5s; }
 .loading.done { opacity: 0; pointer-events: none; }
 .loading .err { color: var(--bad); max-width: 420px; text-align: center; padding: 0 20px; }
@@ -271,7 +274,8 @@ canvas.chart { width: 100%; height: 230px; display: block; background: var(--ink
       </section>
       <section class="pane" id="paneTrain" hidden>
         <div id="trSetup" class="pane" style="padding:0">
-          <header class="ph"><p class="eyebrow" id="trEyebrow">ฝึกร่อนลงจอด · ดอนเมือง</p><h1>ตั้งค่าเที่ยวบิน</h1><p class="lede">เครื่องฝึกใบพัดเทอร์โบสองที่นั่ง (แบบสมมติ) เริ่มบนแนวร่อน 3° ใส่ล้อและแฟลปลงจอดแล้ว</p></header>
+          <header class="ph"><p class="eyebrow" id="trEyebrow">ฝึกร่อนลงจอด · ดอนเมือง</p><h1>ตั้งค่าเที่ยวบิน</h1><p class="lede" id="trLede">เครื่องฝึกใบพัดเทอร์โบสองที่นั่ง (แบบสมมติ) เริ่มบนแนวร่อน 3° ใส่ล้อและแฟลปลงจอดแล้ว</p></header>
+          <div class="blk"><h2>แบบเครื่องบิน</h2><div class="cards" id="typeList"></div><p class="hint" id="typeNote"></p></div>
           <div class="blk"><h2>ทางวิ่ง</h2><div class="cards" id="rwyList"></div></div>
           <div class="blk"><h2>ลม</h2><div class="cards" id="scnList"></div></div>
           <div class="blk"><h2>เริ่มห่างหัวทางวิ่ง</h2><div class="seg" id="segDist"><button type="button" data-d="3704">2 nm</button><button type="button" data-d="5556">3 nm</button><button type="button" data-d="7408">4 nm</button></div></div>
@@ -300,6 +304,7 @@ canvas.chart { width: 100%; height: 230px; display: block; background: var(--ink
           <div class="blk"><h2>PAPI ที่นักบินเห็น</h2><p class="hint" id="papiTxt">—</p></div>
           <div class="btns"><button class="ghost" id="btnTake" type="button">รับช่วงบังคับเอง</button><button class="ghost" id="btnRestart" type="button">เริ่มใหม่</button></div>
           <div class="row"><span class="hint">ความเร็วเวลา</span><div class="seg" id="segWarp"><button type="button" data-w="1">×1</button><button type="button" data-w="2">×2</button><button type="button" data-w="0">หยุด</button></div></div>
+          <label class="toggle"><input type="checkbox" id="chkHorn" checked>เสียงเตือน stall (แตรเตือนก่อน stall ราว 7 kt)</label>
         </div>
         <div id="trResult" class="pane" style="padding:0" hidden>
           <header class="ph"><p class="eyebrow">ผลการร่อนลงจอด</p><div class="score"><b id="scTotal">—</b><div><span id="scGrade">—</span><br><small id="scSub">จาก 100 คะแนน</small></div></div></header>
