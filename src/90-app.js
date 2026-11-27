@@ -35,13 +35,19 @@ const PRESETS = {
   cargo: { name: 'คลังสินค้าด้านใต้', p: () => RE('03L', 80, -140, 90), t: () => RE('03L', 480, -430, 6), fov: 50 },
   bts: { name: 'รถไฟฟ้าบนถนนพหลโยธิน', p: () => [PTS.bts[0] - 250, PTS.bts[1] - 200, 80], t: () => [PTS.bts[0], PTS.bts[1], 12], fov: 50 },
 };
+// the last sentence of the PAPI hotspot, one per siting (setPapiSiting in 20-flight.js; research round 3, task R3-7)
+const PAPI_SPOT_T = {
+  aip: 'ตอนนี้วางตาม AIP: คำนวณจาก MEHT ที่ AIP ประกาศ ซึ่งเหนือหัวทางวิ่งสูงกว่าแนวร่อน 3.3 ถึง 5.1 ม. เครื่องฝึกที่บินตาม ILS จึงเห็น PAPI แสดงต่ำในช่วงท้ายของการร่อน และเมื่อผ่านหัวทางวิ่งอาจเห็นแดงทั้งสี่ดวง',
+  tc: 'ตอนนี้วางแบบ Transport Canada: คำนวณจาก MEHT ที่มุม 2°48′ (มุมของดวง 2°50′ ลบ 2′) PAPI จึงอยู่ไกลออกไปอีกราว 5 ม. และเครื่องฝึกที่บินตาม ILS เห็น PAPI ต่ำเร็วกว่าแบบตาม AIP',
+  ils: 'ตอนนี้วางให้ตรงกับ ILS: แนว 3° ของ PAPI ทับทางที่ตาของเครื่องฝึกผ่านเมื่อสายอากาศอยู่บนแนวร่อน ตามหลักการประสาน PAPI กับ ILS ของ Transport Canada (AC 302-009) ที่เผื่อความสูงของตาเหนือสายอากาศ จึงอยู่เลยจุดกำเนิดแนวร่อนไปราว 11 ม. (FAA วาง PAPI ที่จุดกำเนิดแนวร่อน ±10 ม.) ถ้าบินอยู่บนแนวร่อนจะเห็นขาวสองแดงสองจนถึงหัวทางวิ่ง แต่ไม่ใช่การจัดวางตาม MEHT ที่ AIP ของดอนเมืองประกาศ',
+};
 const SPOTS = [
   { id: 'rwyL', n: 'ทางวิ่ง 03L/21R', p: () => RE('03L', 1850, 0, 0.5), v: 'overview', t: 'ทางวิ่งฝั่งตะวันตกติดอาคารผู้โดยสาร ยาว 3,700 ม. กว้าง 60 ม. ทิศจริง 029° และ 209° มีไฟกึ่งกลางทุก 30 ม. ตลอดความยาว ปลายทั้งสองด้านเป็นผิวคอนกรีต (217 ม. ด้าน 03L และ 122 ม. ด้าน 21R) ส่วนกลางเป็นแอสฟัลต์', f: ['3,700 × 60 ม.', 'ILS CAT II ทาง 21R', 'ILS CAT I ทาง 03L'] },
   { id: 'rwyR', n: 'ทางวิ่ง 03R/21L', p: () => RE('03R', 1750, 0, 0.5), v: 'overview', t: 'ทางวิ่งฝั่งตะวันออก ยาว 3,500 ม. กว้าง 45 ม. แนวกลางห่างจากทางวิ่ง 03L/21R ราว 394 ม. (คำนวณจากพิกัดหัวทางวิ่ง) ทาง 21L มี ILS CAT I ส่วนทาง 03R ใช้การร่อนแบบ RNP ทางวิ่งนี้ไม่มีไฟกึ่งกลาง', f: ['3,500 × 45 ม.', 'ILS ทาง 21L', 'RNP ทาง 03R'] },
   { id: 'disp', n: 'หัวทางวิ่ง 21L ที่เลื่อนเข้ามา', p: () => RE('21L', -175, 0, 0.5), v: 'disp', t: 'หัวทางวิ่ง 21L อยู่ลึกจากปลายผิวทาง 350 ม. เครื่องที่ลงทาง 21L จึงมีระยะลงจอด 3,150 ม. ช่วงก่อนหัวทางวิ่งใช้วิ่งขึ้นได้แต่ห้ามแตะพื้น ทาสีลูกศรชี้ไปยังเส้นหัวทางวิ่ง และไฟขอบช่วงนี้เป็นสีแดงเมื่อมองจากทิศที่ร่อนเข้า', f: ['เลื่อน 350 ม.', 'ระยะลงจอด 3,150 ม.', 'ไฟขอบสีแดง'] },
   { id: 'thr', n: 'เครื่องหมายหัวทางวิ่ง 21R', p: () => RE('21R', 25, 0, 0.5), v: 'runway', t: 'ทางวิ่งกว้าง 60 ม. ใช้แถบหัวทางวิ่ง 16 แถบ (ทางวิ่งกว้าง 45 ม. ใช้ 12 แถบ) ถัดมาเป็นตัวอักษร R ที่บอกว่าเป็นทางวิ่งด้านขวาของคู่ขนาน แล้วจึงเป็นเลข 21 ที่มาจากทิศ 209°', f: ['16 แถบ', 'R = ด้านขวา', 'เลขสูง 9 ม.'] },
   { id: 'aim', n: 'จุดเล็งและพื้นที่แตะพื้น', p: () => RE('21R', 425, -13, 0.5), v: 'runway', t: 'แถบใหญ่สองแถบเริ่มที่ 400 ม. จากหัวทางวิ่ง แถบคู่ทุก 150 ม. ลดจำนวนลง 3-3-2-2-1-1 จนถึง 1,050 ม. ทาง 21R ยังมีไฟฝังพื้นในพื้นที่แตะพื้นยาว 900 ม. ตาม AIP', f: ['จุดเล็ง 400 ม.', '3-3-2-2-1-1', 'ไฟ TDZ 900 ม.'] },
-  { id: 'papi', n: 'ไฟ PAPI', p: () => RE('21R', RWY_END['21R'].papi, -58, 1.6), v: 'papi', t: 'ไฟ 4 ดวงทั้งสองข้างทางวิ่ง ตั้งมุม 2°30′ 2°50′ 3°10′ 3°30′ เห็นขาวสองแดงสองแปลว่าอยู่บนแนวร่อน 3° ระยะจากหัวทางวิ่งคำนวณจากความสูงตาเหนือหัวทางวิ่ง (MEHT) ใน AIP ซึ่งตั้งไว้สำหรับเครื่องบินใหญ่ที่ตานักบินอยู่สูงกว่าสายอากาศ ILS หลายเมตร เครื่องฝึกที่บินตาม ILS จึงเห็น PAPI ต่ำกว่าเล็กน้อย สีในภาพคำนวณจากมุมที่กล้องมองจริง', f: ['สองข้างทางวิ่ง', 'แนวร่อน 3°', 'MEHT 65.42 ft (21R)'] },
+  { id: 'papi', n: 'ไฟ PAPI', p: () => RE('21R', RWY_END['21R'].papi, -58, 1.6), v: 'papi', t: () => 'ไฟ 4 ดวงทั้งสองข้างทางวิ่ง ตั้งมุม 2°30′ 2°50′ 3°10′ 3°30′ เห็นขาวสองแดงสองแปลว่าอยู่บนแนวร่อน 3° สีในภาพคำนวณจากมุมที่กล้องมองจริง AIP ประกาศความสูงตาเหนือหัวทางวิ่ง (MEHT) แต่ไม่ประกาศระยะจากหัวทางวิ่ง ระยะในฉากจึงเป็นค่าประมาณ และเลือกได้สามแบบในหน้าตั้งค่าการฝึก ' + PAPI_SPOT_T[FIELD.papiSiting], f: ['สองข้างทางวิ่ง', 'แนวร่อน 3°', 'MEHT 65.42 ft (21R)'] },
   { id: 'als', n: 'ไฟนำร่อน CAT II', p: () => RE('21R', -450, 0, 6), v: 'als', t: 'ทาง 21R มีไฟนำร่อนยาว 900 ม. แถบไฟขวางที่ 150 และ 300 ม. แถวไฟแดงสองข้างช่วงใกล้หัวทางวิ่ง และไฟกะพริบวิ่งเข้าหาทางวิ่ง ทาง 21L ยาว 900 ม. แบบ CAT I ส่วน 03L และ 03R เป็นแบบสั้น 420 และ 300 ม. ลองตั้งเวลาเป็นกลางคืนเพื่อดู', f: ['900 ม. (21R/21L)', 'ไฟกะพริบนำทาง', 'SALS 420/300 ม.'] },
   { id: 'loc', n: 'Localizer IBKK', p: () => { const l = llToNE(...RWY_END['21R'].appr.loc); return [l[1], l[0], 4]; }, v: 'ils', t: 'แถวสายอากาศ Localizer ของ ILS ทาง 21R ตั้งเลยปลายทางวิ่งด้าน 03L ออกไปราว 300 ม. ส่งสัญญาณแนวกลางทางวิ่งที่ความถี่ 109.3 MHz', f: ['IBKK 109.3 MHz', 'ILS CAT II'] },
   { id: 'gs', n: 'เสา Glide path 21R', p: () => RE('21R', 333, -120, 15.5), v: 'gs', t: 'เสาสายอากาศแนวร่อน 3° ห่างหัวทางวิ่ง 21R 333 ม. และเยื้องจากแนวกลาง 120 ม. ตาม AIP ความสูงของแนวร่อนเมื่อผ่านหัวทางวิ่ง (RDH) 54 ฟุต', f: ['GP 332.0 MHz', 'RDH 54 ft'] },
@@ -124,6 +130,7 @@ async function main() {
   if (!typeOk(app.train.type)) app.train.type = 'trainer';
   setMsg('กำลังสร้างสนามบินและเมืองรอบสนาม…');
   await new Promise((r) => requestAnimationFrame(r));
+  setPapiSiting(store.get('afl-papi', 'aip'));   // where the PAPI stand: the trainee's last choice (training setup)
   const field = buildAirfield(scene, renderer, data, app.q);
   const city = buildCity(scene, data, field, app.q);
   const lights = buildAirfieldLights(scene, field, city, data);
@@ -131,7 +138,17 @@ async function main() {
   // The one place that switches the aircraft after start (one global AC, 20-flight.js): the card's numbers and the
   // generic model fitted to it (22-types.js modelSpec). A Flight advances only under the type it was built with:
   // setMode puts the trainer back for explore and the chosen type for training, and builds a new Flight for it.
-  function useType(id) { const T = TYPES[id]; setAircraft(T.card, typeOpts(id)); ac3.fit(modelSpec(id, T.card, AC)); }
+  // setAircraft also re-solves the PAPI siting in use for the new eye and antenna (setPapiSiting; only `ils` moves), so
+  // the housings, the light sprites and the hotspot pin are placed again, as a siting button does. An airliner's mass
+  // and rating (chooseOpt) come here too; they do not move its eye or antenna (acFromCard reads both from the card's
+  // geometry alone), so the PAPI stays where it was.
+  let flownType = 'trainer';   // the type AC holds, named by the PAPI hint of the setup
+  function useType(id) {
+    const T = TYPES[id]; setAircraft(T.card, typeOpts(id)); ac3.fit(modelSpec(id, T.card, AC)); flownType = id;
+    field.placePapi(); lights.placePapi();
+    const sp = SPOTS.find((x) => x.id === 'papi'), P = sp.p(); sp.w = W3(P[0], P[1], P[2]);
+    if (app.spot === 'papi') $('#cardP').textContent = spotText(sp);
+  }
   // points of interest from the scene data
   {
     const hv = data.af.hall.flatMap((h) => h.o); PTS.term = [hv.reduce((s, p) => s + p[0], 0) / hv.length, hv.reduce((s, p) => s + p[1], 0) / hv.length];
@@ -215,13 +232,14 @@ async function main() {
     $('#pins').appendChild(b); const P = sp.p(); sp.w = W3(P[0], P[1], P[2]); return b;
   });
   SPOTS.forEach((sp, i) => { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = `<i>${String(i + 1).padStart(2, '0')}</i>${sp.n}`; b.setAttribute('aria-pressed', 'false'); b.onclick = () => selectSpot(sp.id, true); $('#spotList').appendChild(b); sp.li = b; });
+  function spotText(sp) { return typeof sp.t === 'function' ? sp.t() : sp.t; }   // a spot's text may follow a setting (PAPI)
   function selectSpot(id, fly) {
     app.spot = id;
     SPOTS.forEach((sp, i) => { const on = sp.id === id; pinEls[i].setAttribute('aria-pressed', String(on)); sp.li.setAttribute('aria-pressed', String(on)); });
     const sp = SPOTS.find((x) => x.id === id);
     const card = $('#card');
     if (!sp) { card.hidden = true; return; }
-    $('#cardT').textContent = sp.n; $('#cardP').textContent = sp.t;
+    $('#cardT').textContent = sp.n; $('#cardP').textContent = spotText(sp);
     $('#cardF').innerHTML = sp.f.map((x) => `<span>${x}</span>`).join('');
     card.hidden = false;
     if (fly) setView(sp.v);
@@ -350,6 +368,24 @@ async function main() {
     b.onclick = () => { app.train.rwy = id; setActiveRunway(id); buildScnCards(); refreshSetup(); previewFlight(); };
     $('#rwyList').appendChild(b);
   }
+  // PAPI siting (setPapiSiting in 20-flight.js): the housings, the light sprites, the pin and papiSeen move at once
+  // (AC is the type chosen for training, so the hint names it: the eye of a plan C1 card is at its antenna, an airliner's
+  // (plan C7) 1.00 to 2.79 m above it at 0° pitch, so 0.89 to 2.79 m above the beam when the antenna is on it)
+  function papiSiteText(id) {
+    const E = RWY_END[id], m = FIELD.papiSiting, d = `PAPI ทาง ${id} ห่างหัวทางวิ่ง ${E.papi.toFixed(1)} ม.`, onPath = E.appr.kind === 'ILS' ? 'บน ILS' : 'บนแนวร่อน RNP';
+    const who = flownType === 'trainer' ? 'เครื่องฝึก' : ` ${typeInfoOf(flownType).name} `;   // a Latin name between spaces
+    if (m === 'ils') return `${d} ค่าประมาณ: วางให้แนว 3° ของ PAPI ทับทางที่ตาของ${who}ผ่าน (ตาอยู่เหนือแนวร่อน ${eyeAboveBeam(AC, 0, FIELD.gs).toFixed(2)} ม.) เมื่อสายอากาศอยู่บน${E.appr.kind === 'ILS' ? 'แนวร่อน ILS' : 'แนวร่อน RNP 3° (ทางนี้ไม่มี ILS)'} ตามหลักการประสาน PAPI กับ ILS ของ Transport Canada (AC 302-009) ถ้าบินอยู่บนแนวร่อนจะเห็นขาวสองแดงสองจนถึงหัวทางวิ่ง ระยะนี้คำนวณใหม่ทุกครั้งที่เปลี่ยนแบบเครื่องบิน เครื่องบินโดยสารรุ่นทดลองก็ใช้ตาและสายอากาศของแบบนั้น (มวลและ rating ไม่ทำให้ระยะเปลี่ยน) แบบนี้ไม่ใช่การจัดวางตาม AIP`;
+    if (m === 'tc') return `${d} ค่าประมาณ: AIP ประกาศ MEHT แต่ไม่ประกาศระยะ แบบนี้ใช้มุม 2°48′ ตาม Transport Canada จึงไกลกว่าแบบตาม AIP ${(E.papi - E.papiSites.aip).toFixed(1)} ม. ${onPath} จะเห็น PAPI ต่ำเร็วกว่าแบบตาม AIP`;
+    const low = E.meht - (E.aim * Math.tan(FIELD.gs * DEG) + eyeAboveBeam(AC, 0, FIELD.gs));   // the eye of the type flown over the threshold, below MEHT
+    return `${d} ค่าประมาณ: AIP ประกาศ MEHT แต่ไม่ประกาศระยะ ระยะนี้ทำให้ตาที่ความสูง MEHT เหนือหัวทางวิ่งเห็นดวง 2°50′ ที่มุม 2°50′ พอดี ${onPath} ตาของ${who}ผ่านหัวทางวิ่งต่ำกว่า MEHT ${low.toFixed(1)} ม. จึงเห็น PAPI ต่ำในช่วงท้าย`;
+  }
+  for (const b of $('#segPapi').querySelectorAll('button')) b.onclick = () => {
+    store.set('afl-papi', setPapiSiting(b.dataset.papi));
+    field.placePapi(); lights.placePapi();
+    const sp = SPOTS.find((x) => x.id === 'papi'), P = sp.p(); sp.w = W3(P[0], P[1], P[2]);
+    if (app.spot === 'papi') $('#cardP').textContent = spotText(sp);
+    refreshSetup();
+  };
   const scnKeys = Object.keys(SCENARIOS);
   // turbulence word from W20 against MIL-F-8785C light 15 / moderate 30 / severe 45 kt (01-flight-physics/08-wind.md §8.1,
   // §8.17 item 3): xl's 22 kt is light, not moderate
@@ -386,6 +422,8 @@ async function main() {
     for (const b of $('#rwyList').children) b.setAttribute('aria-pressed', String(b.dataset.r === app.train.rwy));
     $('#trEyebrow').textContent = `ฝึกร่อนลงจอด · ${FIELD.appr} ทางวิ่ง ${FIELD.rwy} ดอนเมือง`;
     for (const b of $('#segDist').children) b.setAttribute('aria-pressed', String(+b.dataset.d === app.train.dist));
+    for (const b of $('#segPapi').children) b.setAttribute('aria-pressed', String(b.dataset.papi === FIELD.papiSiting));
+    $('#papiSiteTxt').textContent = papiSiteText(app.train.rwy);
     for (const b of $('#segPilot').children) b.setAttribute('aria-pressed', String(b.dataset.p === app.train.pilot));
     const curMin = localParts(app.date).min;
     for (const b of $('#segTrTime').children) b.setAttribute('aria-pressed', String(Math.abs(+b.dataset.min - curMin) < 1));
@@ -935,8 +973,9 @@ async function main() {
         // On the ILS the PAPI of Don Mueang reads low near the threshold: its MEHT (AIP AD 2.14) is 3.3 to 5.1 m above the ILS beam over the threshold, while
         // the trainer's eye is 1.3 m above its glide-slope antenna (research round 3, topic 3.5), each airliner's by its
         // manufacturer's H2 (0.9–2.8 m on the path, plan C7: tools/aircraft/build_airliners.mjs eyeAntenna), and the light
-        // aircraft of plan C1 have the antenna at the eye (no source gives its place), so they read lower still.
-        const onIls = FIELD.appr === 'ILS' && Math.abs(a.gsDots) < 0.5 && Math.abs(a.locDots) < 1 && nW < 2 && a.s > -1500;
+        // aircraft of plan C1 have the antenna at the eye (no source gives its place), so they read lower still. Not with
+        // the siting matched to the ILS (it follows the aircraft flown, airliners included: setAircraft re-solves it).
+        const onIls = FIELD.papiSiting !== 'ils' && FIELD.appr === 'ILS' && Math.abs(a.gsDots) < 0.5 && Math.abs(a.locDots) < 1 && nW < 2 && a.s > -1500;
         $('#papiTxt').textContent = pw[0] < 0 ? 'ผ่านตำแหน่ง PAPI แล้ว' : `ขาว ${nW} แดง ${4 - nW} · ${['ต่ำมาก', 'ต่ำเล็กน้อย', 'อยู่บนแนวร่อน', 'สูงเล็กน้อย', 'สูงมาก'][nW]}` + (onIls ? ' · บน ILS ช่วงท้าย PAPI แสดงต่ำได้ ให้ยึด ILS' : '');
         $('#liveTitle').textContent = { APP: `ร่อนเข้าหาทางวิ่ง ${FIELD.rwy}`, FLARE: 'ถอนคันบังคับก่อนแตะพื้น', ROLLOUT: 'วิ่งบนทางวิ่งและเบรก', DONE: 'หยุดเรียบร้อย', STOP: 'หยุดเรียบร้อย', CRASH: 'เครื่องบินกระแทกพื้น' }[ph] || 'กำลังบิน';
         $('#liveLede').textContent = fl.pilot === 'ap' ? 'ออโต้ไพลอตบินตามสัญญาณ ILS ถอนคันบังคับที่ราว 20 ฟุต จัดหัวให้ตรงทางวิ่งก่อนแตะพื้น แล้วเบรกจนหยุด' : (app.tilt.on ? `บังคับด้วยการเอียงโทรศัพท์: ${TILT_BANK[app.tilt.stick.grip]} เอียงขอบบนเข้าหาตัวเพื่อเงยหัว ออกจากตัวเพื่อกดหัว กดค้างที่วงกลมเพื่อตั้งศูนย์ใหม่` : isTouch ? 'ลากคันบังคับซ้ายล่าง: ซ้าย/ขวาเพื่อเอียง ลงเพื่อเงยหัว ขึ้นเพื่อกดหัว' : 'ใช้ลูกศรบังคับ ↑ กดหัว ↓ เงยหัว ←/→ เอียง') + ' · พาวงกลมเส้นทางบินไปทับวงกลมสีชมพูในมุมห้องนักบิน';

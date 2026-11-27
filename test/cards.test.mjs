@@ -455,8 +455,11 @@ test('page wiring: cards load with the scene data, AC is switched only by useTyp
   assert.ok(at('setAircraft(data.aircraft)') < at('await cardsP') && at('await cardsP') < at('new Flight('), 'the cards are awaited after the trainer is set and before any Flight');
   // one switch: the trainer at load and useType after it; useType fits the model too
   assert.equal(APP.match(/setAircraft\(/g).length, 2);
-  // (plan C4: with the options of typeOpts, {} for every type but an airliner, whose mass and rating the viewer chose)
-  assert.match(APP, /function useType\(id\) \{ const T = TYPES\[id\]; setAircraft\(T\.card, typeOpts\(id\)\); ac3\.fit\(modelSpec\(id, T\.card, AC\)\); \}/);
+  // (plan C4: with the options of typeOpts, {} for every type but an airliner, whose mass and rating the viewer chose;
+  // merge of main's PAPI siting, PR #22: setAircraft re-solves the siting for the new eye and antenna, so useType then
+  // places the PAPI housings, lights and hotspot pin again, the same three steps as a siting button; a mass or rating
+  // choice goes through useType too)
+  assert.match(APP, /function useType\(id\) \{\s*const T = TYPES\[id\]; setAircraft\(T\.card, typeOpts\(id\)\); ac3\.fit\(modelSpec\(id, T\.card, AC\)\); flownType = id;\s*field\.placePapi\(\); lights\.placePapi\(\);\s*const sp = SPOTS\.find\(\(x\) => x\.id === 'papi'\), P = sp\.p\(\); sp\.w = W3\(P\[0\], P\[1\], P\[2\]\);\s*if \(app\.spot === 'papi'\) \$\('#cardP'\)\.textContent = spotText\(sp\);\s*\}/);
   assert.match(APP, /const typeOpts = \(id\) => \{\s*const o = \(isLiner\(id\) && app\.train\.opts\[id\]\) \|\| \{\};/);
   // the saved choice, kept only when its card is good
   assert.match(APP, /app\.train\.type = store\.get\('afl-type', 'trainer'\);\s*if \(!typeOk\(app\.train\.type\)\) app\.train\.type = 'trainer';/);

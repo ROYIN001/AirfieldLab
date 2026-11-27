@@ -22,10 +22,13 @@ The scripts open no window, so `opencv-python-headless` is enough. Some steps ar
 ## Weather climatology (`climo/`)
 
 `climo/metar-climo.mjs` builds a VTBD surface climatology (wind rose by runway, visibility, present weather,
-ceilings, density altitude) from the IEM METAR archive. Node ≥ 18, no dependencies; downloads are cached in
+ceilings, density altitude) from the IEM METAR archive. It decodes the reports with the page's own decoder,
+`src/21-metar.js` (loaded with `new Function`, as the tests do), through a small view that keeps the statistics of
+the old tool-local parser (whole-knot speeds, dropped `///` layers, VV/// = ceiling 0), so the committed numbers
+stay valid. Node ≥ 22, no dependencies; downloads are cached in
 `.cache/climo/` (git-ignored). Used by `docs/research/04-weather.md`.
 
-    node tools/climo/metar-climo.mjs --test                  # parser self-test, no network
+    node tools/climo/metar-climo.mjs --test                  # decoder self-test (10 checks), no network
     node tools/climo/metar-climo.mjs --from 2016 --to 2025 --out docs/research/data/vtbd-metar-climo.json
 
 Commit only the derived summary, not the raw METAR downloads.
@@ -81,3 +84,11 @@ bindings at the top level.
 `jsbsim/run_cases.py` regenerates `test/fixtures/jsbsim_trainer_doublet.json`, which `test/oracle.test.mjs` checks
 our flight model against (research round 1 §12.8, plan item B1). Offline, Python with `jsbsim==1.3.3`; see
 `jsbsim/README.md`.
+
+## AIRAC, SUP/AIC and aircraft register watch (`watch/`)
+
+`watch/watch.mjs` (plan A10) tells when AIP Thailand AD 2 VTBD, the AIP supplements and circulars, or the CAAT aircraft
+register change. It needs the network, so it is not run in CI. See `watch/README.md` (Thai).
+
+    node tools/watch/watch.mjs aip        # eAIP editions newer than test/fixtures/aip_vtbd_current.json, SUP/AIC
+    node tools/watch/watch.mjs due        # next AIRAC dates and recheck dates, no network

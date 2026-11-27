@@ -290,6 +290,10 @@ canvas.chart { width: 100%; height: 230px; display: block; background: var(--ink
             <label class="toggle" id="tiltRow" hidden><input type="checkbox" id="chkTilt">บังคับด้วยการเอียงโทรศัพท์ แทนจอยบนจอ</label>
             <p class="hint" id="tiltTxt" hidden>ถือโทรศัพท์แนวนอนในท่าที่สบาย ตอนเริ่มบินท่านั้นจะเป็นจุดกลาง ถ้าถือตั้งขึ้น (ยกจอขึ้นจากแนวราบ 40° ขึ้นไป) ให้หมุนโทรศัพท์แบบหมุนพวงมาลัยเพื่อเอียงเครื่อง ถ้าถือเกือบราบ ให้กดขอบซ้ายหรือขวาลงแทน เอียงขอบบนเข้าหาตัวเพื่อเงยหัว ออกจากตัวเพื่อกดหัว กดค้างที่วงกลมบนจอเพื่อตั้งศูนย์ใหม่ ถ้าจอหมุนเองระหว่างบิน ทิศการบังคับยังเหมือนเดิม จัดท่าถือให้สบายแล้วกดค้างที่วงกลมเพื่อตั้งศูนย์ใหม่</p>
           </div>
+          <div class="blk"><h2>ตำแหน่งไฟ PAPI</h2>
+            <div class="seg" id="segPapi"><button type="button" data-papi="aip">ตาม AIP</button><button type="button" data-papi="tc">มุม 2°48′</button><button type="button" data-papi="ils">ตรงกับ ILS</button></div>
+            <p class="hint" id="papiSiteTxt"></p>
+          </div>
           <div class="brief" id="brief"></div>
           <button class="primary" id="btnStart" type="button">เริ่มบิน</button>
           <p class="foot">ฟิสิกส์: บรรยากาศมาตรฐาน US 1976 ที่ยกมาจาก Orbitlab · พลศาสตร์ 6 องศาอิสระ อินทิเกรต RK4 ที่ 240 Hz · ลมเฉือนตามความสูงและความปั่นป่วนแบบ Dryden · ผลของพื้นต่อแรงยก (ground effect) · ล้อและโช้คแบบสปริง-แดมเปอร์</p>

@@ -18,7 +18,7 @@ const THREE_STUB = {
   BufferAttribute: class { constructor(array, itemSize) { this.array = array; this.itemSize = itemSize; } },
   Points: class { constructor(geometry, material) { this.geometry = geometry; this.material = material; } },
 };
-const NAMES = 'RUNWAYS, RWY_END, rwyST, rwyEN, ALS, ALS_LANE, RWY_PAD, TWY_W, SITE_GAP, SiteIndex, TDZ_T, EDGE_OUT, TWY_EDGE, APRON_EDGE, SFL_FLASH, alsArms, alsStandH, alsLightY, alsStands, taxiEdgeLights, decodeLights, LC, airfieldLights, LightSet, buildAirfieldLights';
+const NAMES = 'RUNWAYS, RWY_END, rwyST, rwyEN, ALS, ALS_LANE, RWY_PAD, TWY_W, SITE_GAP, SiteIndex, TDZ_T, EDGE_OUT, TWY_EDGE, APRON_EDGE, SFL_FLASH, alsArms, alsStandH, alsLightY, alsStands, taxiEdgeLights, decodeLights, LC, airfieldLights, LightSet, buildAirfieldLights, papiOffset, papiPlace, papiLightAt';
 const M = new Function('plSample', 'THREE', `"use strict";\n${PURE}\nreturn { ${NAMES} };`)(() => {}, THREE_STUB);
 const SET = M.airfieldLights({ papiPos: [], towerTop: null, masts: [], sockPos: [] }, { af: { tw: [], tollway: [], rail: [], phahon: [] }, lights: new ArrayBuffer(0) });
 const { LC } = M, ENDS = Object.values(M.RWY_END);
@@ -248,6 +248,64 @@ test('the whole layout runs on the real data: PAPI, beacon, obstruction, road an
   assert.equal(7244 + 36224 + 18046, street, 'one light per street-light record');
   // the lights are drawn whatever the camera frames (no bounds are worked out for them), late in the frame
   assert.ok(live('60-lights.js').includes('const pts = new THREE.Points(g, mat); pts.frustumCulled = false; pts.renderOrder = 20;'));
+});
+
+// The PAPI siting choice (setPapiSiting in 20-flight.js, research round 3 task R3-7) moves the PAPI of every end with no
+// reload. buildAirfield builds each end's housings at the threshold (at(0, t)) into a group of their own, and its
+// placePapi moves the group by papiOffset(E) and the entries of papiPos by papiPlace (both in 60-lights.js, evaluated
+// here); then the lights' placePapi rewrites the PAPI entries of the drawn positions. buildAirfieldLights runs on the
+// three.js stand-in (with a stand-in material); every place is read back in the end's own frame, worked out here.
+test('PAPI siting: the housings and the PAPI lights of every end move together, the light 0.55 m before its housing, no other light', () => {
+  const THREE2 = { ...THREE_STUB, ShaderMaterial: class { constructor(o) { Object.assign(this, o); } }, AdditiveBlending: 2 };
+  const W = new Function('plSample', 'THREE', 'SU', 'HAZE_GLSL', `"use strict";\n${PURE}\nreturn { ${NAMES}, setPapiSiting, setAircraft };`)(() => {}, THREE2, { uBeta: {}, uHazeH: {} }, '');
+  // AC is empty until setAircraft (plan B3, PR #21), and the ils siting needs the eye and antenna: the trainer, as the
+  // page loads it before buildAirfield (setAircraft also applies the siting in use, aip)
+  W.setAircraft(JSON.parse(fs.readFileSync(new URL('../data/aircraft/trainer.json', import.meta.url), 'utf8')));
+  // what 50-airfield.js does with them: housings built at the threshold, the group and papiPos moved by the helpers
+  const af = live('50-airfield.js');
+  assert.ok(af.includes('const t = sd * (E.w / 2 + PAPI_GEOM.off[i]), ang = PAPI_GEOM.ang[i], [x, z] = at(0, t);'), 'housings built at the threshold, at(0, t)');
+  assert.ok(af.includes('geo.rotateY(yaw); geo.translate(x, 0, -z); pb.add(mat, geo);') && af.includes('out.papiPos.push({ id: E.id, t, e: x, n: z, u: [ue, un], ang });'), 'each housing and its papiPos entry at at(0, t)');
+  assert.ok(af.includes('const pg = new THREE.Group(); pg.name = `papi ${E.id}`; pb.build(pg); root.add(pg); papiGroups.push({ id: E.id, pg });'), 'one group per end');
+  assert.ok(af.includes('out.placePapi = () => {\n    for (const { id, pg } of papiGroups) pg.position.set(...papiOffset(RWY_END[id]));\n    out.papiPos.forEach(papiPlace);\n  };\n  out.placePapi();'), 'placePapi moves each group by papiOffset and papiPos by papiPlace, and runs once at build');
+  assert.ok(live('90-app.js').includes('field.placePapi(); lights.placePapi();'), 'the training setup moves both');
+  // four units each side of every end, 15, 24, 33 and 42 m outside the edge, as buildAirfield lists them (at the threshold)
+  const papiPos = ENDS.flatMap((E) => [-1, 1].flatMap((sd) => [15, 24, 33, 42].map((o, i) => {
+    const t = sd * (E.w / 2 + o);
+    return { id: E.id, t, e: E.thr[1] + E.r[1] * t, n: E.thr[0] + E.r[0] * t, u: [E.u[1], E.u[0]], ang: [3.5, 3 + 10 / 60, 2 + 50 / 60, 2.5][i] };
+  })));
+  const built = papiPos.map((pp) => [pp.e, 0, -pp.n]);   // render place of each housing in its group, at(0, t)
+  papiPos.forEach(W.papiPlace);
+  const added = [], field = { papiPos, towerTop: null, masts: [], sockPos: [] };
+  const lights = W.buildAirfieldLights({ add: (o) => added.push(o) }, field, null, { af: { tw: [], tollway: [], rail: [], phahon: [] }, lights: new ArrayBuffer(0) });
+  assert.equal(added[0], lights.pts, 'drawn');
+  const g = lights.pts.geometry.attributes, pos = g.position, start = Float32Array.from(pos.array);
+  const papi = [...g.aKind.array.keys()].filter((i) => g.aKind.array[i] === 3);
+  assert.equal(papi.length, 32, 'eight units at each of the four ends');
+  // a render place in the end's own frame: s along the landing direction, t to the right, y up
+  const endST = (E, p) => { const dn = -p[2] - E.thr[0], de = p[0] - E.thr[1]; return [dn * E.u[0] + de * E.u[1], dn * E.r[0] + de * E.r[1]]; };
+  for (const m of ['tc', 'ils', 'aip']) {
+    W.setPapiSiting(m); papiPos.forEach(W.papiPlace); pos.needsUpdate = false;
+    lights.placePapi();
+    assert.equal(pos.needsUpdate, true, `${m}: three.js is told`);
+    papi.forEach((i, k) => {
+      const pp = papiPos[k], E = W.RWY_END[pp.id], off = W.papiOffset(E), at = `${m} ${pp.id} unit ${k % 8}`;
+      assert.equal(off[1], 0, `${at}: the group stays on the ground`);
+      // the housing: where it was built in its group plus the group's offset, at E.papi along the centre line, and the
+      // papiPos entry at the same place
+      const H = built[k].map((v, j) => v + off[j]), [hs, ht] = endST(E, H);
+      near(hs, E.papiSites[m], 1e-9, `${at}: housing s`); near(ht, pp.t, 1e-9, `${at}: housing t`);
+      near(pp.e, H[0], 1e-9, `${at}: papiPos e is the housing's`); near(-pp.n, H[2], 1e-9, `${at}: papiPos n is the housing's`);
+      // the light: 0.55 m before its housing toward the approach, on the same line across, PAPI_GEOM.h high
+      const p = [...pos.array.slice(i * 3, i * 3 + 3)], [s, t] = endST(E, p);
+      near(s, hs - 0.55, 2e-3, `${at}: light s`); near(t, ht, 2e-3, `${at}: light t`); near(p[1], 0.64, 1e-6, `${at}: light height`);
+      assert.deepEqual(W.papiLightAt(pp).map(Math.fround), p, `${at}: the drawn place is papiLightAt's`);
+      assert.equal(g.aP.array[i * 4 + 1], Math.fround(pp.ang), 'its own angle');
+    });
+    const others = [...pos.array].filter((v, j) => !papi.includes(Math.floor(j / 3)));
+    assert.deepEqual(others, [...start].filter((v, j) => !papi.includes(Math.floor(j / 3))), `${m}: no other light moves`);
+  }
+  assert.deepEqual([...pos.array], [...start], 'back to aip: where the lights started');
+  near(papiPos.find((pp) => pp.id === '21R').e, W.RWY_END['21R'].thr[1] + W.RWY_END['21R'].u[1] * 384.8 + W.RWY_END['21R'].r[1] * -45, 1e-9, '21R aip at 384.8 m');
 });
 
 test('taxiway edge lights: on every taxiway (AIP AD 2.15), at the edge, never on pavement, none missing without a cause', () => {

@@ -16,13 +16,25 @@ function neToLL(n, e) { return [ARP.lat + n / GEO.M * RAD, ARP.lon + e / (GEO.N 
 
 // PAPI (ICAO Annex 14 §5.3.5, 3° setting): four units on the left of each landing threshold, the inner one 15 m outside
 // the runway edge and 9 m apart, light centre PAPI_GEOM.h above the ground (the light sprites in 60-lights.js use it).
-// Settings from the inner unit outward: 3°30′, 3°10′, 2°50′, 2°30′.
+// Settings from the inner unit outward: 3°30′, 3°10′, 2°50′, 2°30′. How far past the threshold they stand is
+// RWY_END[id].papi, one of three sitings (below and setPapiSiting in 20-flight.js).
 const PAPI_GEOM = { h: 0.64, off: [15, 24, 33, 42], ang: [3.5, 3 + 10 / 60, 2 + 50 / 60, 2.5] };
-// AIP AD 2.14 publishes MEHT but not the PAPI distance, so the distance is an estimate solved from MEHT in the same
-// geometry the sim draws and colours: an eye on the centre line at MEHT over the threshold sits exactly on the lower
-// edge of the on-slope signal, i.e. sees the 2°50′ unit (33 m outside the edge, light at h) at 2°50′.
-function papiFromMEHT(ft, w) {
-  const r = (ft * FT - PAPI_GEOM.h) / Math.tan(PAPI_GEOM.ang[2] * DEG), t = w / 2 + PAPI_GEOM.off[2];
+// AIP AD 2.14 publishes MEHT but not the PAPI distance, so the distance is an estimate (ค่าประมาณ) solved from MEHT in
+// the same geometry the sim draws and colours: an eye on the centre line at MEHT over the threshold sees the 2°50′ unit
+// (33 m outside the edge, light at h) at the angle `ang`. Which angle is a siting choice (research round 3,
+// docs/research/03-airliners/05-airport-geometry.md §3.5.8, conflicts 2 and 3, task R3-7; setPapiSiting in 20-flight.js):
+//   aip (default) 2°50′, the angle of unit B itself: the eye sits on the lower edge of the on-slope signal. DGAC/STAC,
+//     Guide technique PAPI (Jan 2017) §5.4.4: "(θ-10') est l'angle de calage de l'unité B" [D24].
+//   tc 2°48′ = B − 2′: Transport Canada, AC 302-009 Precision Approach Path Indicator Harmonization with Instrument
+//     Landing System, Issue 01 (29 Oct 2010), https://tc.canada.ca/sites/default/files/migrated/ac_302_009.pdf [D23]:
+//     "D = (EWH + WTH)/tan(M)", "the angle M is B minus 2 minutes of arc"; its worked example, 20 m / tan M = 408.9 m,
+//     reproduces only with 2°48′. The PAPI stands 4.6 to 5.2 m farther from the threshold than with 2°50′. This is
+//     the research's conflict 2 (which angle sets the distance from MEHT). Research test T-D-07 is a separate check:
+//     the distance fixed and the lower edge of the on-slope moved from 2°50′ to 2°48′ (test/papi.test.mjs P-11).
+//   ils (the PAPI's 3° line on the trainer's eye path) needs the aircraft, so it is solved in 20-flight.js.
+const PAPI_MEHT_ANG = { aip: 2 + 50 / 60, tc: 2 + 48 / 60 };
+function papiFromMEHT(ft, w, ang = PAPI_GEOM.ang[2]) {
+  const r = (ft * FT - PAPI_GEOM.h) / Math.tan(ang * DEG), t = w / 2 + PAPI_GEOM.off[2];
   return Math.round(Math.sqrt(r * r - t * t) * 10) / 10;
 }
 
@@ -76,9 +88,12 @@ RWY_DATA.forEach((r, ri) => r.ends.forEach((E, k) => {
     aim = (a.tchFt * FT) / Math.tan(3 * DEG);
     locDist = lda + 300;   // virtual lateral reference for the RNP final segment
   }
+  // PAPI distance from the threshold: `papi` is the one in use (setPapiSiting in 20-flight.js sets it and adds `ils`),
+  // `papiSites` holds each siting
+  const papiSites = { aip: papiFromMEHT(E.mehtFt, R.w, PAPI_MEHT_ANG.aip), tc: papiFromMEHT(E.mehtFt, R.w, PAPI_MEHT_ANG.tc) };
   RWY_END[E.id] = {
     id: E.id, rwy: R, ri, k, u, r: [-u[1], u[0]], thr, far, lda, w: R.w, hdg: wrap360(Math.atan2(u[1], u[0]) * RAD),
-    disp: E.disp || 0, als: E.als, tdz: E.tdz, papi: papiFromMEHT(E.mehtFt, R.w), meht: E.mehtFt * FT, appr: a, aim, locDist,
+    disp: E.disp || 0, als: E.als, tdz: E.tdz, papi: papiSites.aip, papiSites, meht: E.mehtFt * FT, appr: a, aim, locDist,
     gpAntenna: a.gp ? along(llToNE(...a.gp)) : null,
   };
 }));
