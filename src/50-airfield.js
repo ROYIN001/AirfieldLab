@@ -460,6 +460,7 @@ function buildAirfield(scene, renderer, data, quality) {
   out.towerCab = twS.cab; out.towerTop = twS.top; out.towers = [twS, twN];
 
   // ── navaids: ILS localizer arrays, glide-path masts, PAPI units, approach-light stands, windsocks ──
+  const papiGroups = [];
   for (const E of Object.values(RWY_END)) {
     const thrE = E.thr[1], thrN = E.thr[0], ue = E.u[1], un = E.u[0], re = E.r[1], rn = E.r[0];
     const at = (s, t) => [thrE + ue * s + re * t, thrN + un * s + rn * t];
@@ -485,13 +486,16 @@ function buildAirfield(scene, renderer, data, quality) {
       put(M.white, boxGeo(3, 2.6, 2.4, 0, 1.3, 0), gpS, gpT + Math.sign(gpT) * 6);
       out.gpPos = out.gpPos || {}; out.gpPos[E.id] = at(gpS, gpT);
     }
-    // PAPI: four units each side of the runway
+    // PAPI: four units each side of the runway. The trainee's siting choice moves them (setPapiSiting in 20-flight.js),
+    // so each end's housings are built at the threshold (s = 0) into a group of their own that out.placePapi slides
+    // along u to E.papi (papiOffset in 60-lights.js); papiPos (the light sprites) follows the same way (papiPlace).
+    const pb = new Batch();
     for (const sd of [-1, 1]) for (let i = 0; i < 4; i++) {
-      const t = sd * (E.w / 2 + PAPI_GEOM.off[i]), ang = PAPI_GEOM.ang[i];
-      put(M.dark, boxGeo(1.2, 0.9, 0.9, 0, 0.45, 0), E.papi, t);
-      put(M.grey, boxGeo(1.4, 0.15, 1.1, 0, 0.08, 0), E.papi, t);
-      out.papiPos.push({ e: at(E.papi, t)[0], n: at(E.papi, t)[1], u: [ue, un], ang });
+      const t = sd * (E.w / 2 + PAPI_GEOM.off[i]), ang = PAPI_GEOM.ang[i], [x, z] = at(0, t);
+      for (const [mat, geo] of [[M.dark, boxGeo(1.2, 0.9, 0.9, 0, 0.45, 0)], [M.grey, boxGeo(1.4, 0.15, 1.1, 0, 0.08, 0)]]) { geo.rotateY(yaw); geo.translate(x, 0, -z); pb.add(mat, geo); }
+      out.papiPos.push({ id: E.id, t, e: x, n: z, u: [ue, un], ang });
     }
+    const pg = new THREE.Group(); pg.name = `papi ${E.id}`; pb.build(pg); root.add(pg); papiGroups.push({ id: E.id, pg });
     // approach-light stands beyond the pavement (alsStands in 60-lights.js; lights over pavement are inset): for
     // each group of lights a cross-arm as wide as the group on a pole, with two more poles under a crossbar
     for (const { s, hgt, arms } of alsStands(E)) for (const { tc, half, poles } of arms) {
@@ -499,6 +503,13 @@ function buildAirfield(scene, renderer, data, quality) {
       put(M.grey, boxGeo(0.12, 0.12, 2 * half + 0.6, 0, hgt, 0), -s, tc);
     }
   }
+  // move every end's PAPI to the distance in use, RWY_END[id].papi: the housings and the places in papiPos (call
+  // lights.placePapi() after it for the light sprites)
+  out.placePapi = () => {
+    for (const { id, pg } of papiGroups) pg.position.set(...papiOffset(RWY_END[id]));
+    out.papiPos.forEach(papiPlace);
+  };
+  out.placePapi();
   // windsocks (AIP AD 2.15): WDI 1 375 m from THR 21R and 179 m from its centre line between the runways; WDI 2 left of THR 21L
   const sockTex = canvasTex(256, 32, (g, w, h) => { for (let i = 0; i < 5; i++) { g.fillStyle = i % 2 ? '#f2f2ee' : '#ec5b13'; g.fillRect(i * w / 5, 0, w / 5, h); } });
   const sockMat = stdMat({ map: sockTex, roughness: 0.8, side: THREE.DoubleSide });
