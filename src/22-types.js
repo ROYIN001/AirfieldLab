@@ -26,7 +26,7 @@ const TYPE_TEXT = {
 // tools/aircraft/build_airliners.mjs, in its order: by the number of each type based at Don Mueang (03-airliners.md).
 // The explore mode always flies the trainer.
 const AIRLINER_TYPES = ['a320ceo', 'b737_800', 'a320neo', 'a330_300', 'a321neo', 'atr72_600', 'a321ceo'];
-// ap: what the trainer's Autopilot does with the type (measured, test/r3cards.test.mjs AIRLINER_AUTOLAND; plan C6 tunes it)
+// ap: what the trainer's Autopilot does with the type (measured, test/r3cards.test.mjs AIRLINER_AUTOLAND; phase M of the plan, the AFCS and the flare law per type, tunes it)
 const AP_CALM = 'ออโต้ไพลอตของเครื่องฝึกพาแบบนี้กระแทกพื้นแรงเกินไปแม้ลมสงบ ทุกทางวิ่ง ให้บินเอง';
 const AP_WIND = 'ออโต้ไพลอตของเครื่องฝึกพาแบบนี้กระแทกพื้นแรงเกินไปในลมบางแบบ';
 const AIRLINER_TEXT = {

@@ -385,7 +385,9 @@ const DEFER_RULES = [
   ['gear.*', 'งานวิจัยรอบที่ 3 ข้อ 40 (ล้อของเครื่องบินโดยสาร)'],
   ['numerics.*', 'งานวิจัยรอบที่ 3 ข้อ 40 (แบบจำลองแรงเสียดทานของล้อ)'],
   ['wind.*', 'งานลมของรอบที่ 1 (01-flight-physics/08-wind.md: discrete gust, wake)'],
-  ['validation.*', 'plan C6 (trim ในท่าลงจอดเป็น regression lock) และงานวิจัยรอบที่ 3 ข้อ 4'],
+  // plan C6 trims every type against validation.trim_targets of the research file (test/airliner.test.mjs); what stays
+  // missing under validation.* is the MIL-F-8785C class of a type, which the per-type mode checks need (plan N4)
+  ['validation.*', 'plan N4 (ตรวจโหมดพลวัตและสมรรถนะรายแบบ ซึ่งใช้ class และ category ของ MIL-F-8785C) และงานวิจัยรอบที่ 3 ข้อ 42 และ 43'],
   ['input.*', 'งานวิจัยรอบที่ 3 ข้อ 26 และรอบที่ 1 ข้อ 1 (คีย์แฟลปและ trim)'],
 ];
 

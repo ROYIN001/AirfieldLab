@@ -1317,7 +1317,7 @@
     ]
    },
    "validation.*": {
-    "item": "plan C6 (trim ในท่าลงจอดเป็น regression lock) และงานวิจัยรอบที่ 3 ข้อ 4",
+    "item": "plan N4 (ตรวจโหมดพลวัตและสมรรถนะรายแบบ ซึ่งใช้ class และ category ของ MIL-F-8785C) และงานวิจัยรอบที่ 3 ข้อ 42 และ 43",
     "paths": [
      "validation.classification.hqClassCategory"
     ]

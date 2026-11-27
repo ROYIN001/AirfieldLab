@@ -159,7 +159,26 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   pure `SPD` functions and the `Approach` of a flight: T-B-01…T-B-03, T-B-24, T-K-01…T-K-06, T-R-05, T-R-06, T-R-21, T-R-29,
   T-L-04…T-L-06, T-H-01…T-H-04, OD-737-VREF, OD-WIND-ADDITIVE both caps, OD-A321NEO-CLMAX; the trainer and the six light
   cards on `kind: 'fixed'`, to the bit; a 737, an ATR and an Airbus flight; the Autopilot, PilotLaws and Evaluator reading
-  the flight's `appr`; the HUD and page wiring is in `cards`), `page` (parses the
+  the flight's `appr`; the HUD and page wiring is in `cards`), `airliner` (plan C6, research R3-4; under 1 s: every
+  airliner card trimmed in the landing configuration on a 3° path (wings level, no wind, 300 m, the research's speed as
+  EAS, flaps through the card's `aero.legacy.flapMap`) by `Aircraft.trim` (the page's trim, which reports `ok`, `why`
+  and `limited`), with `test/lib/fstd.mjs` `trim()` solved beside it and held to the same root (1e-6); the conditions
+  and centres read from each research `params-<type>.json`'s `validation.trim_targets`. Passing: T-R-12 (ATR θ −1.59°, α 1.41°),
+  T-R-10/11 through the thrust behind the torque (15.03 kN against the research model's 15.04 kN, 0.233 of itself per
+  degree; the torque reading waits for plan K4, the model has no shaft or propeller), T-B-08…10 (737 θ 2.27/1.18°, α
+  5.27°, 36.9 kN = 15.8 % of the static thrust), T-L-07…09 at the research's own expectations (A320ceo θ 1.24°,
+  CONF 3 3.16°, A321ceo 1.24°), T-L-10 on the card's table (137.0 kt), T-L-11 (VS1g 95.6 kt), T-H-05 α, θ and the trimmed state's sink rate. `UNREAD`
+  names the readings the model lacks (T-R-10/11's torque, plan K4, whose own test list holds neither id yet: it must gain
+  them) and closes itself: the ATR test fails once `AC`, an `Aircraft` or its air data has a field starting `tq`, `torque`,
+  `np` or `rpm`. CG: the research's rows are at 30 % (T-L-07), 22 % (T-L-11) and 25–28 % (T-H-05); the cards stand for 25 %
+  with no CG term; plan O4 (R3-48) adds a CG choice for the A330, none names one for the A320 family yet.
+  Known gaps (`GAPS`, research value in `t.diagnostic`, cause and plan item, value pinned): OD-A320-PITCH's 2.5° ± 1.0°
+  (ค่าประมาณ) on T-L-07, 08 (4.25°) and 09: the legacy A320-family sets are fitted to D-AIRE's 1.5°, K1; T-L-10 on the
+  sim's lift curve 141.0 kt (one flap position per detent cannot give CONF 3 both its lift increment and its CLmax),
+  K1; T-H-05 thrust 99.7 kN against 133 ± 15 (legacy polar L/D 9.3 against 7.99), K1. `LOCK`: every card at every
+  `mass_options` mass at the `Approach` speed of plan C5 (α, θ, δe, throttle, thrust; 1.5 %, floor 0.02° on angles and
+  0.002 on the throttle), each a trim inside its limits with α ≥ 5° under the warning angle.
+  `AIRLINER_LOCK_PRINT=1 node --test test/airliner.test.mjs` prints `LOCK` and the gap pins), `page` (parses the
   assembled page module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
   types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview` command
   line), `shots` (no machine paths under `test/`; the pinned three.js matches the import map and covers every file the
@@ -312,7 +331,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   of the ATR (wind factor: its 03L `head` 69 → 88, 414 → 244 m) and of the Airbus types (ground speed mini), and the 21R `xl` rows by
   at most about a point and a metre (a scenario's wind direction is a whole degree, which leaves ≈ 0.1 kt of headwind in a
   "crosswind"); calm and `xr` are as before. Each type's Thai note
-  says so (`AP_CALM`, `AP_WIND`, the A330's: fly it by hand); plan C6 tunes the Autopilot and moves the table again. Gear:
+  says so (`AP_CALM`, `AP_WIND`, the A330's: fly it by hand); phase M of the plan (AFCS M1, flare law per type M2,
+  A/THR M5) tunes the Autopilot and moves the table again (plan C6 is the trim lock, `test/airliner.test.mjs`). Gear:
   `gear.legacy` is built once at the card's default mass (the research's strut k and c, or where it gives none k from
   the static deflection and c from ζ 0.6), and the struts
   do not follow a mass chosen in the setup pane (only the inertia does; a Thai note says so; research item 2 asks for
@@ -352,7 +372,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   card's CG ≥ 25 % table (1.23 VS1g, an estimate, where a CONF has no column); the ground speed mini adds
   k·max(0, headwind now − headwind at the tower) while the autothrottle flies (k 1 on A320ceo and A321ceo, 0.33 on the neo
   types, and on the A330 from 1 to 0.33 over 25 s below 400 ft: a linear blend, an estimate; it reads the mean wind, so the
-  Dryden gusts are not compensated by it, a simplification the research does not make: plan C6). **ATR** VAPP = max(VmHB30 +
+  Dryden gusts are not compensated by it, a simplification the research does not make: plan M5, the A/THR). **ATR** VAPP = max(VmHB30 +
   WF, VMCL), WF = min(15, max(headwind / 3, gust)), VmHB30 = VREF = max(1.23 VSR30, VMCL 98 kt): the table's rows, except
   between 16,000 and 18,000 kg where the definition is used (the floor ends at 17,124 kg). ICAO approach category from Vat (A < 91, B < 121, C < 141, D < 166, E < 211 kt);
   V2min = 1.13 VS1g. `OD-A321NEO-CLMAX`: CLmax FULL 3.05 (category C at MLW). The scenarios give no reported gust, so
@@ -361,6 +381,12 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `VLS` (Airbus) or `Vref` and the approach speed (`VAPP` on an Airbus, `Vapp` otherwise) under it, in the HUD, the brief and the type card; the brief, the FMA and the gate row use the same `Approach`;
   mass changes follow (`setAircraft` with a mass). The light cards have no mass option on the page, so their `fixed`
   speeds do not follow a mass.
+- Airliner trims (plan C6, research round 3 task item 4, R3-4; `test/airliner.test.mjs`): every airliner trims in the
+  landing configuration on a 3° path at every mass the page offers, inside its control limits, throttle 0.15–0.34, θ
+  −0.28° (ATR) to 2.54° (A330). Against the research: the ATR, the 737 and the A330's attitude pass; the A320 family sits
+  at 1.2–1.3° at the research's masses (0.4–1.3° across the offered masses; the research's 1.5 −1.0/+2.0 passes,
+  owner decision OD-A320-PITCH's temporary 2.5° ± 1.0° does not: K1 retunes it); the A330's thrust is a quarter low (legacy polar, K1). The airliner cards' `_deferred` `validation.*`
+  (only `validation.classification.hqClassCategory`, the MIL-F-8785C class) now points at plan N4.
 - KIAS (plan C3, research round 2 task item 12, R2-12): the sim flies CAS (`air.ias` is EAS, equal to CAS to 0.1 % below
   3,000 ft and 200 kt); the HUD, the instrument strip, the brief, the debrief, the Recorder and the Evaluator use the
   KIAS a real indicator reads. `AC.kias` (a property that is not enumerable, so `Object.keys(AC)`, JSON and `{...AC}` are
@@ -754,10 +780,12 @@ Pages deploys only `main`, so the owner tries a pull request on a private claude
    the same artifact (same file path in the same conversation, or its URL as `url` in a later one).
 
 ## Publishing
-- Live as a claude.ai artifact (multi-file: index.html + every file in `data/` at its path, now 13 files: the four
+- Live as a claude.ai artifact (multi-file: index.html + every file in `data/` at its path, now 19 files: the four
   OSM data files `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json`, `aircraft/trainer.json` (plan B3: the page
   does not start without it), the six plan C1 cards `aircraft/c172s.json`, `c172r.json`, `da42ng.json`,
-  `da42_tae125.json`, `da40d.json`, `da40_180.json` (a missing one only disables its entry), and `LICENSE-DATA.md`), title "Airfield Lab ดอนเมือง VTBD", slug f3207a70-5bd7-43d8-a606-a2b9b946413a, `downloads`
+  `da42_tae125.json`, `da40d.json`, `da40_180.json` (a missing one only disables its entry), the seven plan C4 airliner
+  cards `aircraft/a320ceo.json`, `b737_800.json`, `a320neo.json`, `a330_300.json`, `a321neo.json`, `atr72_600.json`,
+  `a321ceo.json` (loaded only once รุ่นทดลอง is on), and `LICENSE-DATA.md`), title "Airfield Lab ดอนเมือง VTBD", slug f3207a70-5bd7-43d8-a606-a2b9b946413a, `downloads`
   capability declared for the PNG snapshot button.
 - The earlier fictional-airfield prototype is a separate artifact (827d3f8b-1c74-4a51-b9e5-6ef7ea33b59c).
 - Pull request previews are separate private artifacts titled "พรีวิว PR #n · Airfield Lab ดอนเมือง VTBD". The live

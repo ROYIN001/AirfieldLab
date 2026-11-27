@@ -357,7 +357,7 @@ class Approach {
   // against the tower's. Only the Airbus cards carry it; for every other kind this does nothing. Simplification (known gap):
   // it reads the mean wind (shear profile) only, not the Dryden gusts, so the ground speed mini compensates for the change of
   // the steady headwind with height but not for gusts, which research 10-fctm-technique.md gives it to do ("gust ไม่บวกใน VAPP
-  // แต่ชดเชยด้วย GS mini"); a filtered instantaneous headwind is for plan C6 with the Autopilot tuning.
+  // แต่ชดเชยด้วย GS mini"); a filtered instantaneous headwind waits for the A/THR of phase M (plan M5; plan C6 only trims).
   update(ac, dt) {
     const g = this.gs;
     if (!g) return;

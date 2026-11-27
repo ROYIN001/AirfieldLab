@@ -5,7 +5,7 @@
 // T-R-25 (ATR 72-600), T-J-19 (thrust lapse), T-K-27 (ops paths); the r3_merge.mjs --coverage gaps against each card's
 // _na and _deferred; the Thai label รุ่นทดลอง. That the trainer and the six light cards did not move is the bit-identity
 // script of the plan (AC JSON without K_CL_offset), test/types.test.mjs (LOCK, AUTOLAND) and every older test.
-// (The name avoids test/airliner.test.mjs, which research item 4 / plan C6 reserves for the trimmed approaches.)
+// (The name avoids test/airliner.test.mjs, which holds research item 4 / plan C6, the trimmed approaches.)
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -191,10 +191,11 @@ test('every airliner loads, trims on a 3° glide at its Vapp (flaps 1, gear down
   }
 });
 
-// ───────────────────────── the trainer's Autopilot on the airliners (known gap, plans C5/C6) ─────────────────────────
+// ───────────────────────── the trainer's Autopilot on the airliners (known gap, phase M) ─────────────────────────
 // The Autopilot and the flare are tuned for the trainer; plan C4 does not tune them. This table pins what they do with
-// each card at its default mass and rating, so that plans C5/C6 can show what they improve (and move these rows on
-// purpose, with the reason). Seed 5, the A8 default weather, as test/types.test.mjs AUTOLAND: calm on [21R, 21L, 03L,
+// each card at its default mass and rating, so that a later plan can show what it improves (and move these rows on
+// purpose, with the reason): the AFCS and the flare law per type are phase M of the plan (M1, M2, M5); plan C6 is the
+// trim lock of test/airliner.test.mjs and moves nothing here. Seed 5, the A8 default weather, as test/types.test.mjs AUTOLAND: calm on [21R, 21L, 03L,
 // 03R], then 03L `head`, 03L `xr` and 21R `xl`. A row is [crashed (1/0), score, touchdown or impact point (m from the
 // threshold), the Evaluator's events]. Calm has no turbulence, so the calm rows do not depend on the seed. Bands: the
 // crash flag and the events exact, score ± 7, point ± 4 m in calm and ± 8 m in wind (types.test.mjs's). Measured
@@ -221,7 +222,7 @@ const AIRLINER_AUTOLAND = {
   a321ceo: [[1, 35, 146.3, 'crash'], [1, 35, 140.7, 'crash'], [1, 35, 151.6, 'crash'], [1, 35, 124.9, 'crash'], [1, 84, 132.0, 'crash'], [1, 35, 141.8, 'crash'], [1, 35, 117.1, 'crash']],
 };
 const AL_RUNS = [['21R', 'calm'], ['21L', 'calm'], ['03L', 'calm'], ['03R', 'calm'], ['03L', 'head'], ['03L', 'xr'], ['21R', 'xl']];
-test('known gap: the trainer\'s Autopilot on each airliner, seed 5, calm on all four ends and three winds (regression table for plans C5/C6; the Thai note follows it)', (t) => {
+test('known gap: the trainer\'s Autopilot on each airliner, seed 5, calm on all four ends and three winds (regression table for phase M; the Thai note follows it)', (t) => {
   const { Flight, SCENARIOS, setActiveRunway } = M;
   assert.deepEqual(Object.keys(AIRLINER_AUTOLAND), AIRLINER_IDS);
   const printed = [];
