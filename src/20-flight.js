@@ -17,6 +17,7 @@ const FIELD = {
   locDot: 0.75,      // degrees per dot (2 dots full scale), set per runway from the localizer distance
   gsDot: 0.36,       // degrees per dot: 0.12 θ for θ = 3° (ICAO Annex 10 glide-path sensitivity, 2 dots full scale)
   appr: 'ILS', ident: 'IBKK',
+  papiSiting: 'aip', // where the PAPI of every runway end stands: one of PAPI_SITINGS (setPapiSiting, below setAircraft)
 };
 // Default weather of a Flight when nothing else sets it (B10 WeatherState will): VTBD METAR statistics 2016–2025 from
 // the Iowa Environmental Mesonet METAR archive (https://mesonet.agron.iastate.edu, summary numbers only, 04-weather.md
@@ -32,7 +33,8 @@ const WX_DEFAULT = { oatC: 31, qnh: 1009.3, dewC: 22.8 };
 const RWY_U = [1, 0, 0];
 const RWY_R = [0, 1, 0];
 const THR03 = [0, 0, 0];
-// PAPI on both sides of the landing threshold (geometry PAPI_GEOM in 15-geo.js; the left bank drives the widget).
+// PAPI on both sides of the landing threshold (geometry PAPI_GEOM in 15-geo.js; the left bank drives the widget), PAPI.s
+// metres past the threshold of the active runway: the siting in use (setPapiSiting).
 const PAPI = { s: 400, h: PAPI_GEOM.h, units: [] };
 function setActiveRunway(id) {
   const E = RWY_END[id] || RWY_END['21R'];
@@ -316,6 +318,7 @@ function setAircraft(card, opts = {}) {
     if (Object.hasOwn(AC, k)) AC[k] = next[k];
     else Object.defineProperty(AC, k, { value: next[k], writable: true, enumerable: true, configurable: true });
   }
+  setPapiSiting(FIELD.papiSiting);   // the ils siting follows this aircraft's eye and antenna (the others do not move)
   return AC;
 }
 
@@ -335,6 +338,49 @@ function engineLoads(engines, thrusts, out = { F: [0, 0, 0], M: [0, 0, 0] }) {
     Mo[0] += p[1] * fz - p[2] * fy; Mo[1] += p[2] * fx - p[0] * fz; Mo[2] += p[0] * fy - p[1] * fx;
   }
   return out;
+}
+
+// Height of the pilot's eye above the glide path, at the eye's own place along the track, when the glide-slope antenna
+// is on the path: wings level at pitch θ, d = eye − antenna in body FRD, so d sits `along` ahead of the antenna and `up`
+// above it, and the path is higher by −along·tan(gs) where the eye is. The trainer (data/aircraft/trainer.json):
+// 1.3 − 1.65·tan 3° = 1.2135 m at θ = 0; the plan C1 cards put the antenna at the eye (no source gives its place), so 0
+// for them, and their ils siting stands 12.2 m short of the glide-path origin ((0 − PAPI_GEOM.h) / tan 3°). The
+// trainer's trimmed calm approach flies at about −1.3° pitch (measured 2026-11-26), where it is about 0.04 m more:
+// 0.7 m of PAPI distance and 0.007° at the threshold, far inside the ±10′ on-slope band, so the matched siting uses 0.
+function eyeAboveBeam(ac = AC, pitchDeg = 0, gsDeg = 3) {
+  const dx = ac.eye[0] - ac.gsAnt[0], dz = ac.eye[2] - ac.gsAnt[2], c = Math.cos(pitchDeg * DEG), sn = Math.sin(pitchDeg * DEG);
+  return (dx * sn - dz * c) + (dx * c + dz * sn) * Math.tan(gsDeg * DEG);
+}
+// PAPI siting, a trainee's choice (research round 3, docs/research/03-airliners/05-airport-geometry.md §3.5.8, conflicts
+// 2 and 3, task R3-7; AIP AD 2.14 gives MEHT but no distance, so every siting is an estimate):
+//   aip (default) and tc: solved from the AIP MEHT at 2°50′ and 2°48′ (papiFromMEHT and PAPI_MEHT_ANG in 15-geo.js)
+//   ils: the PAPI's 3° line from the light centre (PAPI_GEOM.h high) runs along the eye path of the aircraft flown
+//     (AC) when its antenna is on the glide path: D = aim + (H2 − h) / tan 3°, H2 = eyeAboveBeam(AC, 0), so for the
+//     trainer 10.9 to 11.0 m beyond the glide-path origin (12.2 m short of it for the plan C1 cards). This is the
+//     eye-to-antenna harmonisation of Transport Canada AC 302-009 [D23] (harmonise the PAPI with the ILS for the
+//     height of the eye above the antenna). FAA, Order JO 6850.2B Visual Guidance Lighting Systems (20 Aug 2010),
+//     ¶502 and Table 5-1, https://www.faa.gov/documentLibrary/media/Order/FAA_Order_6850.2B.pdf [D22], puts the PAPI
+//     at the distance of the GS virtual source ±30 ft (±10 m), adding 300 ft only for height group 4: for the trainer
+//     this siting stands about 11 m beyond that (the C1 cards about 12 m short of the virtual source, 2 m outside
+//     the −10 m). Not the published configuration of VTBD. 03R has no ILS: its aim is TCH / tan 3°, so the PAPI
+//     matches the synthetic RNP 3° path the sim flies there. The match is solved in the vertical plane along the
+//     track, while the units stand 37.5 to 72 m beside it: over the threshold an eye on its path sees the 2°50′ unit
+//     6.7′ to 7.3′ above its setting and the 3°10′ unit 11.9′ to 12.4′ below (21R: 6.7′ and 12.4′), against 10′ and
+//     10′ far out; still 2 white.
+const PAPI_SITINGS = ['aip', 'tc', 'ils'];
+function setPapiSiting(mode) {
+  if (!PAPI_SITINGS.includes(mode)) mode = 'aip';
+  // recomputed on every call: setAircraft calls it for each new type. AC is empty until the first setAircraft (plan B3),
+  // so there is no top-level call: until then RWY_END[id].papi is the aip siting 15-geo.js set and papiSites has no ils.
+  if (!AC.eye || !AC.gsAnt) throw new Error('setPapiSiting: no aircraft yet (call setAircraft first)');
+  FIELD.papiSiting = mode;
+  const h2 = eyeAboveBeam(AC, 0, FIELD.gs), tg = Math.tan(FIELD.gs * DEG);
+  for (const E of Object.values(RWY_END)) {
+    E.papiSites.ils = Math.round((E.aim + (h2 - PAPI_GEOM.h) / tg) * 10) / 10;
+    E.papi = E.papiSites[mode];
+  }
+  PAPI.s = RWY_END[FIELD.rwy].papi;
+  return mode;
 }
 
 // ── small vector / quaternion helpers ──

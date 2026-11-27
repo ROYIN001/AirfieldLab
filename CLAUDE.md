@@ -47,7 +47,12 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `src/90-app.js`), `modes` (trim, linearise and MIL-F-8785C Level 1 modes with regression bands, research
   T-V-01…T-V-06), `keys` (keyboard map and key handling,
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `papi` (PAPI distance from MEHT, colour
-  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `controls` (`air.nz`/`air.ny`,
+  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5; the three PAPI sitings, research
+  T-D-01, T-D-02, T-D-07, T-D-26: tc distances and the 2°48′ seen from MEHT, the eye height above the path each
+  siting needs and the trainer's `eyeAboveBeam`, the ils siting on the eye path, the Transport Canada AC 302-009
+  example and a 737-800W leaving the on-slope on the 21R ILS through `papiSeen`, what the eye sees on a calm autoland
+  with each siting, that `src/90-app.js` applies the siting, and that `setAircraft` re-solves it for a new type's eye
+  and antenna (only `ils` moves; P-13)), `controls` (`air.nz`/`air.ny`,
   research T-C-01: trimmed 95 kt glide nz 1.00 ± 0.02, parked nz 1, level turn nz ≈ 1/cos φ at 30° and 45°,
   elevator pull-up Δnz 1.00 ± 0.15 as in T-C-06, a rudder step whose sideslip gives ny < 0, and nz/ny against finite
   differences of the velocity), `numerics` (fixed-step accumulator and render interpolation, research T-N-07…T-N-09:
@@ -135,7 +140,14 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   no GPL/LGPL text or JSBSim model outside the owner's allowlist: research round 5 §11 T-K01…T-K05 and §12 P3-9, round 1
   §12 T-S-11, policy in `test/fixtures/license_policy.json`), `oracle` (our model against JSBSim 1.3.3 flying the same
   elevator, aileron and rudder doublets from the trimmed approach with a model built from our own `AC` numbers,
-  research round 1 §12.8 T-S-01…T-S-03 and T-S-05, fixture `test/fixtures/jsbsim_trainer_doublet.json`),
+  research round 1 §12.8 T-S-01…T-S-03 and T-S-05, fixture `test/fixtures/jsbsim_trainer_doublet.json`), `watch` (the
+  pure parts of `tools/watch/`: eAIP index, cover, SUP/AIC and amendment-list parsers, the AIRAC cycle, AD 2 sections
+  compared after dropping only amendment marks and page noise, every fixture value found in its AD 2 section of a
+  synthetic page and a changed one named, title classes, `tools/watch/reviewed.json` against its schema and the
+  military-name rule, and the command line run end to end on synthetic pages with no network), `register` (the
+  register text in both layouts, the selection of school and club aeroplanes, the diff, `registerDue`, `runRegister`
+  on a synthetic file, and that `ls_fleet.mjs --register` rebuilds the committed §02.6 block without touching
+  `scripts/out/`),
   `page` (parses the assembled page
   module and checks the element ids the scripts use; a build holds index.html and every data file the page fetches, in
   types and sizes the artifact host serves; the preview page only adds its title and badge; the `--preview` command
@@ -157,7 +169,11 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   table of every steady light; every taxiway edge light tried with separate geometry code, every place without one
   held to a cause, every free corner of a junction lit, no bare edge dark over 54 m, and the same places with every
   line drawn the other way round; the stands of
-  `alsStands` against the real pavements; every flash seen at 20, 30 and 60 frames a second).
+  `alsStands` against the real pavements; every flash seen at 20, 30 and 60 frames a second; with each PAPI siting
+  the housings of every end (built at the threshold, moved by `papiOffset`) and the PAPI lights (`papiPlace`, then
+  `placePapi`) stand together, each light 0.55 m before its housing, and no other light moves),
+  `metar` (`parseMetar` and its helpers in `21-metar.js`: MET-1…MET-4 and MET-6…MET-8 of research round 4 §10.5, every
+  report printed in §3.2, edge forms, a seeded fuzz, and that `tools/climo` uses the page's decoder).
   Autoland score floors sit at or just under the values measured on 2026-11-19 and re-measured for A8 on
   2026-11-23 and for A9 and B2 on 2026-11-25 (the assist robot's floor is a loose 50); touchdown points and every mode
   value have regression bands.
@@ -180,17 +196,18 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   after and passed both times; run it that way again after a change to the card or to `acFromCard` that should keep
   the numbers. Its JavaScript side is `test/lib/oracle.mjs`; its `withParams` builds `Iinv` with the page's
   `inertiaInverse`.
-  `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 25-input.js` with
+  `test/harness.mjs` evaluates `10-atmo.js + 15-geo.js + 18-keys.js + 20-flight.js + 21-metar.js + 25-input.js` with
   `new Function` in strict mode, reads `data/aircraft/trainer.json` from disk (`AIRCRAFT_CARD`) and calls
   `setAircraft` with it before any test runs, `test/keys.test.mjs` evaluates `18-keys.js`, `test/siting.test.mjs` `17-siting.js`,
-  `test/licenses.test.mjs` `85-shot.js` and `test/cards.test.mjs` `22-types.js` the same way, so those eight files must
+  `test/licenses.test.mjs` `85-shot.js` and `test/cards.test.mjs` `22-types.js` the same way, so those nine files must
   stay DOM-free. The siting and lights tests also evaluate `48-data.js` and `60-lights.js`:
   these two may use three.js and the DOM inside their functions, never at the top level. `test/lib/png.mjs` reads the
   land-use PNGs (8-bit greyscale) with `node:zlib`. `build.mjs` exports `assemble()`, `build()`, `dataFiles()`,
   `checkPr()` and `previewHtml()` for the page test. `M` from `test/harness.mjs` also includes `Evaluator`, `aWarnAt`,
   `Recorder`, `qNlerp`, `WX_DEFAULT`, `Wind`, `logLaw`, `WIND_PROFILE`, `W20_PER_KT_LEGACY`, `windW20`,
   `GUST_FACTOR_3S`, `newtonSolve`, `qMul`, `setAircraft`, `acFromCard`, `table1`, `table2`, `inertiaInverse`,
-  `engineLoads` and the humid-air functions of `10-atmo.js`.
+  `engineLoads`, the humid-air functions of `10-atmo.js`, the PAPI siting (`papiFromMEHT`, `PAPI_MEHT_ANG`,
+  `PAPI_SITINGS`, `eyeAboveBeam`, `setPapiSiting`) and the METAR decoder of `21-metar.js`.
   Since plan B3 `AC` is empty until `setAircraft` runs, so a script that evaluates `src/*.js` itself with
   `new Function` instead of importing `test/harness.mjs` (several in `docs/research/01-flight-physics/scripts/`, e.g.
   `e4_autoland.mjs`) stops in `Aircraft.deriv` on `AC.engines`: have it return `setAircraft` too and call
@@ -209,24 +226,32 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   (with the base's pin) for pull requests that touch `src/`, `data/` or the harness, and keeps them as the Actions
   artifact `shots-pr-<n>` (`before/`, `after/`); a push to main that changes the pin refreshes the three.js cache for
   all PRs. SwiftShader draws on the CPU: compare the images by eye, never time them.
+- Watch (plan A10, network, not in CI; `tools/watch/README.md`): `node tools/watch/watch.mjs aip` compares AD 2 VTBD of
+  every eAIP edition newer than the fixture's with the one before it, checks every fixture value in each, and lists the
+  SUPs and AICs not yet in `tools/watch/reviewed.json`; `due` (offline) gives the next AIRAC dates, the recheck date
+  (it warns from the day that package is published, 42 days ahead) and the register's; `register --pdf <file>` reads a
+  CAAT aircraft register (the site blocks scripts, so the owner downloads it) and compares it with the committed rows.
+  Exit 0 nothing to do, 1 action needed, 2 could not decide. Reports and cached pages go to `.cache/watch/` (AIP text,
+  never committed).
 
 ## Source layout (concatenated in this order into the `/*__APP__*/` marker of `src/template.html`)
 | file | role |
 |---|---|
 | 00-head.js | three.js imports (OrbitControls, BufferGeometryUtils) |
 | 10-atmo.js | pure: constants (KT, FT, NM, DEG, RAD, G0), USSA-1976 `atmosphere(h, isaDev, qnh, dewC, hDew)`, humid air (`satVap`, `relHumidity`, `dewPoint`, `fieldPressure`, `airDensity`, `densityAltitudeFt(ρ)`, `pressureAltitudeFt`; old rule `densityAltitudeDryFt`), NOAA sun position, sky radiance, MOR visibility (`morBeta`, `hazeDepth`, `hazeDepthUp`, `skyHazeBeta`, `sunHazeT`) |
-| 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
+| 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `PAPI_GEOM`, `papiFromMEHT` and `PAPI_MEHT_ANG`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
 | 17-siting.js | pure: where something tall may stand: obstacle limitation surfaces `olsHeight(e, n)`, approach light lanes `alsLaneOf`, `ALS` (length and spacing per system), `RWY_PAD`, `TWY_W`, `SiteIndex` (clearances from buildings, decks, aprons, taxiways, water; the land-use class under a point), `STATIONS` and `stationSites(af)`, `mappedSite`, `placeTrees`, `siteBuildings` (`buildingProblem`, `groundShare`); also `rwyST`, `rwyEN`, `onAnyRunway`, `pointInPoly`, `nearestOnLine`, `lineLength`, `pointAlong` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions + `frame()` with sub-frame taps; `app.keys`) |
-| 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC` (empty until `setAircraft(card)` fills it from an aircraft card; `acFromCard`, `inertiaInverse`), `table1`/`table2` (clamped tables), `engineLoads`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
+| 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `PAPI` and `papiSeen`, `Wind` (shear + Dryden), `AC` (empty until `setAircraft(card)` fills it from an aircraft card; `acFromCard`, `inertiaInverse`), `table1`/`table2` (clamped tables), `engineLoads`, `eyeAboveBeam`, `PAPI_SITINGS` + `setPapiSiting(mode)` (called by `setAircraft`, so the `ils` siting follows the type flown), `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
+| 21-metar.js | pure: METAR/SPECI decoder `parseMetar` (research round 4 §3, OD-METAR: our own decoder; TAF not read), and the helpers `metarCeilingFt`, `metarRvrFor`, `metarGustSigmaKt`, `metarRainMmh`, `metarRunway`, `metarIssuedMs`; not wired to the weather yet (lane B10) |
 | 22-types.js | pure: `AIRCRAFT_TYPES` (selector order), `typeInfo` (Thai card, lede, notes from the card's `thai_fleet`), `modelSpec` (generic model fit) |
 | 25-input.js | pure: `INPUT_CFG` (estimates from research §11), calibration and dead-zone helpers, `shapeAxis` / `shapeLever`, `keyRamp` + `KeyAxis`, `readPad` (W3C standard gamepad), `Arbiter` (last-moved source wins) + `InputAxis` (no jump on a switch), `TiltStick` (phone tilt), `PilotInput` (one frame from keys, pad, touch and tilt; `app.pin`) |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()` (fog = MOR haze, `HAZE_GLSL`), `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
 | 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` and the aircraft card `aircraft/trainer.json` (90-app.js hands it to `setAircraft`); progress stops at the first failed file, whose Thai error names it; `loadCards` (the other types' cards, beside `loadData`; never rejects, a failed card disables its entry) |
-| 50-airfield.js | land-use bake on the GPU + ground shader, runway marking shader (per runway), taxiways, aprons, hold lines, terminal, towers, navaids, approach light stands, windsocks, masts |
+| 50-airfield.js | land-use bake on the GPU + ground shader, runway marking shader (per runway), taxiways, aprons, hold lines, terminal, towers, navaids, PAPI housings (one group per end, moved by `placePapi`), approach light stands, windsocks, masts |
 | 55-city.js | instanced city buildings (those that pass `siteBuildings`), OSM footprints, tollway / SRT viaduct / BTS (`VIADUCT` deck sizes) + stations from `stationSites`, trees from `placeTrees`, parked airliners |
-| 60-lights.js | point-sprite lights with directional colour (`LightSet`); `airfieldLights(field, data)` is the whole lighting layout as data, `alsStands(E)` the approach light stands, `taxiEdgeLights(af)` the places of the taxiway edge lights, `buildAirfieldLights` draws the lights |
+| 60-lights.js | point-sprite lights with directional colour (`LightSet`); `airfieldLights(field, data)` is the whole lighting layout as data, `alsStands(E)` the approach light stands, `taxiEdgeLights(af)` the places of the taxiway edge lights, `papiOffset(E)` and `papiPlace(pp)` where an end's PAPI housings stand, `papiLightAt(pp)` where a PAPI light stands, `buildAirfieldLights` draws the lights (its `placePapi` moves the PAPI lights) |
 | 70-aircraft.js | trainer model, control-surface and gear animation; `fit(spec)` fits it to another type (raised to the card's wheels, flap angle, fixed gear, twin nacelles), `inCockpit` |
 | 80-hud.js | conformal HUD, ILS/PAPI widget, debrief charts |
 | 85-shot.js | pure: `SHOT_CREDIT` and `stampCredit(g, w, h)`, the credit drawn into the PNG snapshot (ODbL 4.3 and 4.6) |
@@ -237,15 +262,17 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   quaternion body→NED, SI units internally.
 - Render: x = east, y = up, z = −north. Data JSON coordinates are `[e, n]` metres from the ARP.
 - `RWY_END[id]`: `thr` [n,e], `u` landing direction, `r` right normal, `lda`, `aim` (GP origin = RDH / tan 3°),
-  `papi` (estimated distance solved from the AIP MEHT in the drawn geometry: `PAPI_GEOM` light height 0.64 m,
-  2°50′ unit 33 m outside the edge), `locDist`, `appr.kind` ILS or RNP (03R is RNP with a synthetic 3° path).
+  `papi` (the PAPI distance in use, an estimate: one of `papiSites` { aip, tc, ils }, the three sitings, see "PAPI
+  siting" below; `aip` is solved from the AIP MEHT in the drawn geometry: `PAPI_GEOM` light height 0.64 m, 2°50′ unit
+  33 m outside the edge), `locDist`, `appr.kind` ILS or RNP (03R is RNP with a synthetic 3° path).
 - Body points (FRD from the CG, estimates, card `airframe.geometry`): `AC.eye` (cockpit camera, PAPI colours) and
   `AC.gsAnt` (ILS receiver).
   ILS deviations and the autopilot use the antenna, PAPI uses the eye. LOC 1 dot = atan(105 m / locDist) / 2
-  per runway (0.75° on 21R/03L, 0.89° on 21L), G/S 1 dot 0.36°. On the ILS the trainer sees the PAPI read low in
-  the last ~0.7 km because DMK's MEHT is 3.3–5.1 m above the beam over the threshold (real, AIP-derived). The trainer's
-  eye is 1.3 m above its antenna; the plan C1 cards put the antenna at the eye (no source gives its place), so their
-  PAPI reads lower still.
+  per runway (0.75° on 21R/03L, 0.89° on 21L), G/S 1 dot 0.36°. With the `aip` siting the trainer on the ILS sees
+  the PAPI read low in the last 0.7 km (21R/21L) to 1.3 km (03L) because DMK's MEHT is 3.3–5.1 m above the beam over
+  the threshold (real, AIP-derived); earlier with `tc`; not with `ils`, which puts the PAPI's 3° line on the
+  eye path of the aircraft flown. The trainer's eye is 1.3 m above its antenna; the plan C1 cards put the antenna at
+  the eye (no source gives its place), so with `aip` or `tc` their PAPI reads lower still.
 
 ## Flight model (current state)
 - Generic two-seat turboprop trainer (fictional): m 2250 kg, S 16.3 m², b 10.2 m, P 700 kW, static thrust 11.5 kN.
@@ -474,6 +501,39 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   taken 23 m wide (AIP AD 2.8 gives 23 to 50 m), and the positions of the three stations carry no recorded source
   (research round 5, `5c-city.md`, has the Red Line station 656 m from the one drawn: to be checked).
 
+## PAPI siting (current)
+- AIP AD 2.14 gives MEHT but no PAPI distance, so where the PAPI stand is a trainee's choice in the training setup
+  ("ตำแหน่งไฟ PAPI", stored as `afl-papi`; research round 3, `03-airliners/05-airport-geometry.md` §3.5.8, conflicts
+  2 and 3, task R3-7). `setPapiSiting(mode)` in `20-flight.js` sets `FIELD.papiSiting`, every `RWY_END[id].papi` and
+  `PAPI.s`; the page then calls `field.placePapi()` (each end's housings are a group of their own, built at the
+  threshold) and `lights.placePapi()` (rewrites the PAPI entries of the light positions), with no reload.
+  - `aip` (default, "ตาม AIP"): the eye at MEHT over the threshold sees the 2°50′ unit at 2°50′ (`PAPI_MEHT_ANG.aip`;
+    STAC uses θ − 10′ = 2°50′ too): 424.9 / 384.8 / 373.1 / 376.0 m (03L/21R/03R/21L).
+  - `tc` ("มุม 2°48′"): the same solve at M = B − 2′ = 2°48′ (Transport Canada AC 302-009, whose worked example
+    reproduces only with 2°48′): 430.1 / 389.6 / 377.7 / 380.6 m. This is the research's conflict 2 (which angle sets
+    the distance from MEHT). Research T-D-07 is a separate check (`papi` P-11): the distance fixed at 405 m and the
+    lower edge of the on-slope moved from 2°50′ to 2°48′, a 737-800W on the 21R ILS leaves it 738 and 548 m out.
+  - `ils` ("ตรงกับ ILS"): D = aim + (H2 − 0.64 m) / tan 3°, H2 = `eyeAboveBeam(AC, 0)` = 1.2135 m, the eye's height
+    above the path at its own place when the antenna is on it: 330.8 / 325.0 / 301.7 / 319.2 m, 10.9 to 11.0 m beyond
+    the glide-path origin, for the trainer; recomputed at every call. `AC` is empty until the first `setAircraft`
+    (plan B3), so `20-flight.js` has no top-level call: `setAircraft` calls `setPapiSiting(FIELD.papiSiting)`, and the
+    page's `useType` then places the housings, the lights and the hotspot pin again. This is the eye-to-antenna
+    harmonisation of Transport Canada AC 302-009; FAA JO 6850.2B ¶502 puts the PAPI at the distance of the GS virtual
+    source ±30 ft (±10 m), adding 300 ft only for height group 4, so for the trainer this siting stands about 11 m
+    beyond FAA's placement. The plan C1 cards put the antenna at the eye (H2 = 0), so with them `ils` stands 12.2 m
+    short of the glide-path origin (21R 301.8 m), about 2 m short of FAA's −10 m. Not the published
+    configuration (the UI says so); on 03R it matches the synthetic RNP path. It is solved in the vertical plane along
+    the track, so over the threshold an eye on its path sees the 2°50′ unit 6.7′ to 7.3′ above its setting and the
+    3°10′ unit 11.9′ to 12.4′ below (21R: 6.7′ and 12.4′; 10′ and 10′ far out), still 2 white.
+- Measured on calm autolands of the trainer, seed 5 (2026-11-26, on main before the physics stack of PR #21):
+  fewer than 2 white from 710 / 663 / 1,273 / 917 m out (21R/21L/03L/03R) with `aip`, from 788 / 735 / 1,361 / 994 m
+  with `tc`, and with `ils` 2 white to 111–132 m out, where the autopilot, slowing from Vapp to Vref, is 1.06–1.09 m
+  under the beam (an eye on its path sees 2 white to the threshold). Re-measured on the physics stack (humid air and
+  QNH, log-law wind; 2026-11-27): the same except 03L `aip` 1,274 m and `ils` 110–132 m (21R 116, 03L 110), with the
+  antenna 1.06–1.08 m under the beam; the P-06 bands did not move. `papi` P-06 pins for `ils` only 2 white from 2 NM to 200 m out and, whenever fewer show, the antenna more
+  than 0.9 m under the beam, not how the autopilot flies the last 200 m. The live hint
+  "บน ILS ช่วงท้าย PAPI แสดงต่ำได้ ให้ยึด ILS" shows only when the siting is not `ils`.
+
 ## Controls (current)
 - Keyboard (physical keys, `KeyboardEvent.code`, so a Thai layout works; map in `src/18-keys.js`): W/S or ↑/↓
   pitch, A/D or ←/→ roll, Q/E rudder, = / - (or PageUp/PageDown, Numpad 9/3) throttle, B brake, C camera,
@@ -584,10 +644,12 @@ Suggested order, each with a Node test before tuning by feel in the browser:
 
 ## Data provenance (data/)
 - Runways, lights, navaids: AIP Thailand AD 2 VTBD, AIRAC 29 OCT 2026 (AMDT 11/26, https://aip.caat.or.th). The values
-  are unchanged since AIRAC 14 MAY 2026 and in the 26 NOV and 24 DEC 2026 cycles (research round 5 §1 and 5D); check
-  again before AIRAC 21 JAN 2027. `test/fixtures/aip_vtbd_current.json` holds the published values (numbers only,
-  © CAAT): `test/aip.test.mjs` checks `RWY_DATA` against it, and `test/licenses.test.mjs` (T-K05) checks that the
-  footer, the source comment of `src/15-geo.js` and this line cite its cycle. For a new cycle, update the fixture first.
+  are unchanged since AIRAC 14 MAY 2026 and in the 26 NOV and 24 DEC 2026 cycles (research round 5 §1 and 5D, and
+  `tools/watch` on 2026-11-26); check again before AIRAC 21 JAN 2027 (published about 10 DEC 2026) with
+  `node tools/watch/watch.mjs aip`, and record each SUP and AIC read in `tools/watch/reviewed.json`.
+  `test/fixtures/aip_vtbd_current.json` holds the published values (numbers only, © CAAT): `test/aip.test.mjs` checks
+  `RWY_DATA` against it, and `test/licenses.test.mjs` (T-K05) checks that the footer, the source comment of
+  `src/15-geo.js` and this line cite its cycle. For a new cycle, update the fixture first.
 - Taxiways, aprons, buildings, water, golf course, land use: OpenStreetMap map renders captured and vectorised,
   mostly by the scripts in `tools/` (the source captures and a few steps are not included, see the "made by" column
   of `data/LICENSE-DATA.md`; regenerate only if the layout must change).
@@ -620,11 +682,12 @@ Suggested order, each with a Node test before tuning by feel in the browser:
   cited only to LB19, which its own note's derivation does not give.
 - Licences: `vtbd_af.json`, `land_in.png`, `land_out.png` and `city.json` are derived from OpenStreetMap and
   available under the ODbL 1.0 (`data/LICENSE-DATA.md`, which `node build.mjs` copies into `dist/` with them).
-  `vtbd_af.json` and `city.json` predate the `source`/`license` field rule (`legacy_data_without_fields` in the
-  policy); a regenerated file gets the fields and leaves that list. The code (every script, those in `docs/research/`
-  included) and the repo's own text are under MIT (`LICENSE`, the owner's choice on 2026-11-25); the files in `data/`
-  follow `data/LICENSE-DATA.md`, data files and quoted material in `docs/research/` that state their own licence
-  (ODbL, CC BY 4.0, Copernicus) keep it, and AIP values are used as numbers with CAAT cited.
+  Both JSON files carry top-level `source` and `license` fields (added on 2026-11-26; `tools/assemble.py` writes
+  them into `vtbd_af.json`, the packer of `city.json` is not kept), so `legacy_data_without_fields` in the policy is
+  empty. The code (every script, those in `docs/research/` included) and the repo's own text are under MIT
+  (`LICENSE`, the owner's choice on 2026-11-25); the files in `data/` follow `data/LICENSE-DATA.md`, data files and
+  quoted material in `docs/research/` that state their own licence (ODbL, CC BY 4.0, Copernicus) keep it, and AIP
+  values are used as numbers with CAAT cited.
 
 ## Working in the cloud (Claude Code on the web)
 - The owner works from the cloud so their computer can stay off. The GitHub Pages site shows `main`; a pull request

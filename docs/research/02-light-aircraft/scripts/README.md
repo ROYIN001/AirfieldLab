@@ -75,6 +75,7 @@ node docs/research/02-light-aircraft/scripts/lm_ci.mjs --root .   # ซิมข
 
 - ตารางเทสต์ที่ไม่อยู่ใน CI สร้างตารางที่วางในรายงานพร้อมผลของซิมวันนี้ บางตัวต้องรันสคริปต์อื่นก่อน (ดูหัวไฟล์) และบางแถวไม่ผ่านโดยตั้งใจเพราะเป็นข้อค้นพบ
 - สคริปต์ Python `lb_*.py` และ `lm_jsb_inertia.py` ใช้ `jsbsim==1.3.3` จาก PyPI (LGPL-2.1) ที่ผู้พัฒนาติดตั้งเอง รันด้วย `python3 -I` ไม่อยู่ใน CI และไม่เป็น dependency ของ repo
+- `ls_fleet.mjs --register <ไฟล์> [--out <โฟลเดอร์>]` อ่านแถวทะเบียนจากไฟล์อื่น (รูปแบบเดียวกับ `out/ls_register_*.json`, วันที่จากชื่อไฟล์) และเขียน `ls_fleet_summary.json` กับ `ls_thai_fleet_block.json` ลงโฟลเดอร์นั้น (หรือ `$LM_OUT_DIR`) แทน `out/`; ไม่ใส่ตัวเลือกใดเลยก็ทำเหมือนเดิมทุกอย่าง ใช้โดย `tools/watch/register.mjs`
 - `ls_fleet.mjs --check` ทำงานออฟไลน์ (เทียบบล็อก §02.6 กับบล็อกที่สร้างจาก `out/ls_register_*.json`) ส่วน `ls_aip_check.mjs` และ `lo_aip_check.mjs` ต้องใช้เครือข่ายจึงไม่อยู่ใน CI ให้รันเมื่อ AIRAC เปลี่ยน (งานข้อ 9)
 - `lm_fixture_trainer_r1.json` คือ `AC` ของซิมรอบที่ 1 (ฐาน resolve `trainer_r1`), `r1-pertype-paths.json` และ `r1-pertype-leaves.txt` คือ path ต่อแบบ 384 ตัวของรอบที่ 1 ที่ใช้นับ coverage และ `sim-snapshot.json` คือ commit ของซิมที่ `lm_ci.mjs` ใช้
 
