@@ -1091,7 +1091,7 @@
    ],
    "conf": "กลาง",
    "est": true,
-   "note": "ค่าประมาณ: Vapp ในลมสงบ = Vref + 5 kt ค่าต่ำสุดของ wind additive ใน ops.speed_additive (min 2.572 m/s) ตามมวล; ลมยังไม่เพิ่ม (plan C5) [AL:C4]"
+   "note": "ค่าประมาณ: Vapp ในลมสงบ = Vref + 5 kt ค่าต่ำสุดของ wind additive ใน ops.speed_additive (min 2.572 m/s) ตามมวล; ส่วนเพิ่มจากลมคิดในแต่ละเที่ยวบินจาก speeds.approach_rule (SPD และ Approach ของ plan C5) [AL:C4]"
   },
   "approach_rule": {
    "v": {

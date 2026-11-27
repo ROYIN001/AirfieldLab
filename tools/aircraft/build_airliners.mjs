@@ -148,7 +148,7 @@ function speedLeaves(id, card) {
     } else {
       const add = leaf(card, 'ops.speed_additive');
       out.VAPP_kt = mk(tableAt({ v: vls }, 'VAPP', null, 5), 'kt CAS', 'aircraft', [...l.src, ...(vapp ? vapp.src : []), ...(add ? add.src : []), 'AL:C4'],
-        `Vapp ในลมสงบตามกฎ ${JSON.stringify(vapp ? vapp.v.rule : 'VLS + 5')} ของบัตรวิจัย: VLS CONF FULL + 5 kt (ค่าต่ำสุดของ APPR COR เมื่อใช้ A/THR) ตามมวล; ลมยังไม่เพิ่ม (plan C5) [AL:C4]`, { conf: l.conf });
+        `Vapp ในลมสงบตามกฎ ${JSON.stringify(vapp ? vapp.v.rule : 'VLS + 5')} ของบัตรวิจัย: VLS CONF FULL + 5 kt (ค่าต่ำสุดของ APPR COR เมื่อใช้ A/THR) ตามมวล; ส่วนเพิ่มจากลมคิดในแต่ละเที่ยวบินจาก speeds.approach_rule (SPD และ Approach ของ plan C5) [AL:C4]`, { conf: l.conf });
     }
   } else {
     const vr = leaf(card, 'speeds.VREF_kt');
@@ -157,11 +157,11 @@ function speedLeaves(id, card) {
     if (id === 'b737_800') {
       const add = leaf(card, 'ops.speed_additive');
       out.VAPP_kt = mk(tableAt({ v: t }, 'VAPP', null, 5), 'kt CAS', 'aircraft', [...vr.src, ...add.src, 'AL:C4'],
-        `Vapp ในลมสงบ = Vref + 5 kt ค่าต่ำสุดของ wind additive ใน ops.speed_additive (min 2.572 m/s) ตามมวล; ลมยังไม่เพิ่ม (plan C5) [AL:C4]`, { conf: vr.conf });
+        `Vapp ในลมสงบ = Vref + 5 kt ค่าต่ำสุดของ wind additive ใน ops.speed_additive (min 2.572 m/s) ตามมวล; ส่วนเพิ่มจากลมคิดในแต่ละเที่ยวบินจาก speeds.approach_rule (SPD และ Approach ของ plan C5) [AL:C4]`, { conf: vr.conf });
     } else {
       const rule = leaf(card, 'speeds.VAPP_rule');
       out.VAPP_kt = mk(t, 'kt CAS', 'aircraft', [...vr.src, ...rule.src, 'AL:C4'],
-        `Vapp ในลมสงบตามกฎ speeds.VAPP_rule ของบัตรวิจัย (VAPP = max(VmHB30 + WF, VMCL), ลมสงบ WF = 0) จึงเท่ากับ Vref (VmHB30) ตามมวล; ลมยังไม่เพิ่ม (plan C5) [AL:C4]`, { conf: vr.conf });
+        `Vapp ในลมสงบตามกฎ speeds.VAPP_rule ของบัตรวิจัย (VAPP = max(VmHB30 + WF, VMCL), ลมสงบ WF = 0) จึงเท่ากับ Vref (VmHB30) ตามมวล; ส่วนเพิ่มจากลมคิดในแต่ละเที่ยวบินจาก speeds.approach_rule (SPD และ Approach ของ plan C5) [AL:C4]`, { conf: vr.conf });
     }
   }
   out.approach_rule = approachRule(id, card);
@@ -366,7 +366,8 @@ function lemacFix(id, doc) {
     Object.assign(l, { v: r4(700.85 * 0.0254), u: 'm DAT', src: uniq([...a320.src, 'D14', 'AL:C4']), conf: 'ต่ำ', est: true,
       note: `${EST} (OD-LEMAC): LEMAC Sta 700.85 in = 17.8016 m จาก datum ตาม FAA TCDS A28NM ซึ่งให้ MAC และ LEMAC ชุดเดียวใน "DATA PERTINENT TO ALL MODELS" รวม A321 [L3][D14];`
         + ' แทนค่าประมาณ 19.53 m STA (LEMAC ของ A320 + ส่วนต่อหน้าปีก 4.27 m) ของหัวข้อ 3.3; datum ของ A320 อยู่หน้าจมูก 100 in แต่ของ A321 ยังไม่ยืนยัน (03-airliners.md ความขัดแย้งข้อ 5) จึงให้เป็น m DAT'
-        + ' และความเชื่อมั่นต่ำ; ตำแหน่ง FRD ของตา ล้อ และเครื่องยนต์ในบัตรเป็นของงานวิจัย (วัดจาก CG ที่ 25 % MAC) ไม่ได้เลื่อนตามค่านี้ (plan C7 ตรวจเรขาคณิต) [AL:C4]' });
+        + ' และความเชื่อมั่นต่ำ; ซิมไม่ได้อ่านค่านี้: ตำแหน่ง FRD ของล้อและเครื่องยนต์ และ x, y ของตาในบัตรเป็นของงานวิจัย (วัดจาก CG ที่ 25 % MAC บน LEMAC 19.53 m STA ของงานวิจัย) ไม่ได้เลื่อนตามค่านี้'
+        + ' ส่วน z ของตาตั้งใหม่ใน plan C7 จาก H1 (ดู eye_pos_FRD); การเลื่อนตำแหน่งเหล่านี้ตาม LEMAC ของ TCDS ยังเปิดอยู่จนกว่า datum ของ A321 จะยืนยัน (ความขัดแย้งข้อ 5) และยังไม่มี plan item ใดรับ [AL:C4]' });
   }
   if (id === 'b737_800') {
     Object.assign(l, { conf: 'ต่ำ', est: true, src: uniq([...l.src, 'AL:C4']),

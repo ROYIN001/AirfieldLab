@@ -234,7 +234,8 @@ const kiasOf = (ac) => casToIas(AC.kias, ac.flaps, ac.air.ias / KT);
 // page offers no other) is kind 'fixed': Vref, Vapp and Vs0 are AC's own numbers whatever the mass, so nothing moves
 // for them (the bit-identity check of plan C5 flies them again). Boeing's wind additive: A/T engaged Vref + 5 kt; A/T
 // off Vref + max(5, ½ steady headwind + full gust), commanded at most Vref + cap (cap 20 kt, FCTM 2013, the default)
-// and VFE − 5 kt; the steady part is bled off in the flare, the gust part kept to touchdown (`keep`). Owner decision
+// and VFE − 5 kt; the FCTM bleeds the steady part off in the flare and keeps the gust part to touchdown (`keep`); see
+// Approach.target for what the sim does (known gap). Owner decision
 // OD-WIND-ADDITIVE: the cap of 15 kt that Boeing's 2018 study proposed (no revised FCTM seen: unconfirmed) is the
 // option `cap: SPD.capOption(S)`. Airbus: VAPP = VLS + APPR COR, APPR COR = ⅓ of the tower headwind between 5 and 15 kt,
 // gust left to the ground speed mini (target = VAPP + k·max(0, headwind now − tower headwind), k from ops.gs_mini; the
@@ -367,7 +368,16 @@ class Approach {
     this.extra = this.atOn ? SPD.gsMini(SPD.gsK(g, a.h / FT, this.tBelow), this.hwTower, hwNow) : 0;
   }
   // the speed commanded at wheel height h (m), kt CAS: the approach speed (with the ground speed mini) far out, Vref plus
-  // the gust allowance at the threshold (the steady additive is bled off between 61 and 15 m)
+  // the gust allowance at the threshold: the whole additive is bled off between 61 and 15 m (200 to 49 ft) of wheel height,
+  // the trainer's rule for its POH speeds (Vref at 50 ft), applied unchanged to every kind. Known gap on the rule cards
+  // (review of plans C3–C7): that is before the flare (the Autopilot flares at 4.5–9 m), so the airliners cross 50 ft at
+  // Vref (Boeing; VLS on an Airbus, VmHB30 on the ATR) where the research keeps Vref + 5 at least until the flare starts
+  // (Boeing FCTM [K9][K67], the steady part bled off in the flare [K28]; 10-fctm-technique.md) and the Airbus target is
+  // VAPP + the ground speed mini. Holding VAPP to the flare alone was tried and makes things worse while the trainer's flare
+  // loses only about 2 kt where the research expects 5 to 8: in the calm 21R autoland at the cards' default
+  // masses the 737 then touches down at Vref + 3.5 kt and the A320ceo at 132.1 kt, outside the touchdown speeds of T-K-07
+  // (Vref − 5 to + 2) and T-K-08 (125 to 131 kt), which they meet today (Vref − 1.5, 126.9 kt).
+  // The hold and the flare's thrust retard belong together: plan M2 (flare law per type) and M5 (A/THR).
   target(hWheel) { return lerp(this.vref + this.keep, this.vapp + this.extra, smoothstep(15, 61, hWheel)); }
   // the approach speed commanded now, in the HUD's unit (the FMA's SPD)
   get cmd() { return this.Vapp + this.extra; }
@@ -1338,7 +1348,15 @@ class Flight {
     // the approach speeds of this flight (plan C5): the autopilot's autothrottle is always on, a hand flight has the
     // autothrottle only when autoThr is set (the 737's additive depends on it)
     this.appr = new Approach({ wind, gust, atOn: pilot === 'ap' || autoThr, cap: windCap });
-    const trim = this.ac.setApproach({ dist, dh, dt: dtl, ias: this.appr.vapp });
+    let trim = this.ac.setApproach({ dist, dh, dt: dtl, ias: this.appr.vapp });
+    // the ground speed mini of an Airbus card is part of the speed it commands from the first tick, so the flight starts
+    // trimmed at VAPP plus the mini at the start height, not about 6 kt below its own target in a headwind (review of
+    // plans C3–C7). appr.update reads only the height and the mean wind there, which the second trim leaves as they were.
+    // The other cards carry no mini (appr.gs null): one trim, as before.
+    if (this.appr.gs) {
+      this.appr.update(this.ac, 0);
+      if (this.appr.extra > 0) trim = this.ac.setApproach({ dist, dh, dt: dtl, ias: this.appr.vapp + this.appr.extra });
+    }
     this.trim = trim;
     this.ap = new Autopilot(this.ac, trim, this.appr);
     this.laws = new PilotLaws(this.ac, trim, this.appr);

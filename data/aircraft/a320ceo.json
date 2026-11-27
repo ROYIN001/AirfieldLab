@@ -991,7 +991,7 @@
    ],
    "conf": "กลาง",
    "est": true,
-   "note": "ค่าประมาณ: Vapp ในลมสงบตามกฎ \"VLS + clamp(HW/3, 5, 15)\" ของบัตรวิจัย: VLS CONF FULL + 5 kt (ค่าต่ำสุดของ APPR COR เมื่อใช้ A/THR) ตามมวล; ลมยังไม่เพิ่ม (plan C5) [AL:C4]"
+   "note": "ค่าประมาณ: Vapp ในลมสงบตามกฎ \"VLS + clamp(HW/3, 5, 15)\" ของบัตรวิจัย: VLS CONF FULL + 5 kt (ค่าต่ำสุดของ APPR COR เมื่อใช้ A/THR) ตามมวล; ส่วนเพิ่มจากลมคิดในแต่ละเที่ยวบินจาก speeds.approach_rule (SPD และ Approach ของ plan C5) [AL:C4]"
   },
   "approach_rule": {
    "v": {

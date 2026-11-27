@@ -99,21 +99,24 @@ function vs1gModel(f) {
 }
 
 // ───────────────────────── known gaps ─────────────────────────
-// [what misses, the cause, the plan item that should close it (docs of the plan: phases K and L), the pinned value, band]
-const OD_PITCH = { theta: 2.5, tol: 1.0 };   // OD-A320-PITCH: 2.5° ± 1.0° (the research's tolerance below its anchor), ค่าประมาณ
+// [what misses, the cause, the plan item that should close it (docs of the plan: phases K and L), the pinned value, band].
+// Plan K1's own test list (T-R-07, T-R-08, T-B-04…07, T-B-12, T-L-01…03, T-H-05, T-H-07, T-D-10) holds T-H-05 but not
+// T-L-07…T-L-10, which only plan C6's list names, so K1 must gain them, as K4 must gain T-R-10/11 (UNREAD below; review
+// of plans C3–C7).
+const OD_PITCH = { theta: 2.5, tol: 1.0 };   // OD-A320-PITCH's temporary 2.5° (ค่าประมาณ); the ± 1.0° is ours (the research's tolerance below its anchor), not the decision's
 const GAPS = {
   'T-L-07': ['A320ceo θ 1.24° against OD-A320-PITCH 2.5 ± 1.0° (the research\'s own 1.5 −1.0/+2.0 passes)',
     'the legacy CL0 FULL, α* and Cm0/Cmflap of the A320 family are tied to the D-AIRE pitch of 1.5° (03-a320-a321.md, the reviewer\'s open point 1; l_aero_modes.mjs, l_legacy.mjs), so the trim sits near it; raising θ needs less lift at a given α in CONF FULL, a per-CONF CL0',
-    'K1 (per-CONF aero tables; OD-A320-PITCH is retuned there, or in its own PR once a source is found)', 1.239, 0.02],
+    'K1 (per-CONF aero tables; OD-A320-PITCH is retuned there, or in its own PR once a source is found; K1\'s test list must gain T-L-07)', 1.239, 0.02],
   'T-L-08': ['A320ceo CONF 3 θ 3.16° against OD-A320-PITCH 2.5° + the research\'s 1.75° = 4.25 ± 1.0° (the research\'s own 3.25 ± 1.0 passes)',
     'the same fit as T-L-07: CONF 3 is the legacy line at f 0.647, so it follows the FULL anchor',
-    'K1', 3.163, 0.02],
+    'K1 (its test list must gain T-L-08)', 3.163, 0.02],
   'T-L-09': ['A321ceo θ 1.24° against OD-A320-PITCH 2.5 ± 1.0° (the research\'s own 1.5 −1.0/+2.0 passes)',
     'the A321 legacy set is anchored to the same D-AIRE 1.5° (it is the A321ceo of [L35])',
-    'K1', 1.240, 0.02],
+    'K1 (its test list must gain T-L-09)', 1.240, 0.02],
   'T-L-10': ['1.13 VS1g of the sim\'s lift curve at 73.69 t CONF 3 is 141.0 kt against 138 ± 2 (the card\'s VS0_kt table gives 137.0 and passes)',
     'the legacy flap line is one f per detent: aero.legacy.flapMap gives CONF 3 the lift increment (f 0.647), and so the CLmax of the blend at f 0.647 is 2.336 where the research\'s CONF 3 CLmax is 2.447 (flapMap_byCLmax 0.717); one f cannot give both',
-    'K1', 140.99, 0.2],
+    'K1 (its test list must gain T-L-10)', 140.99, 0.2],
   'T-H-05': ['A330 thrust 99.7 kN (0.054 W) against 133 ± 15 kN (0.073 ± 0.008 W); α, θ and the sink rate pass',
     'the legacy polar of the A330 (CD0 0.022 + CDflap 0.05 + CDgear 0.014 + K (CL − 0.15)², K 0.041) gives L/D 9.3 at the trim CL (CL 1.499: CD 0.161, L/D 9.33) where the research\'s CONF FULL polar gives CD 0.189, L/D 7.99',
     'K1 (per-CONF ΔCD0 and K; plan O4 holds T-H-05 again for the A330 as the last type)', 99.66, 1.5],

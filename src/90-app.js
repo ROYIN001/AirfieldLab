@@ -728,7 +728,7 @@ async function main() {
       rows.push(['ล้อลงและแฟลปลงจอด', f.ac.gearPos > 0.98 && f.ac.flaps > 0.95 ? 'ok' : 'bad', 'ครบ']);
       rows.push(['แนวกลาง (LOC)', Math.abs(a.locDots) <= 1 ? 'ok' : 'bad', `${a.locDots >= 0 ? '+' : ''}${a.locDots.toFixed(1)} จุด`]);
       rows.push(['แนวร่อน (G/S)', a.s > FIELD.aim - 50 ? '' : Math.abs(a.gsDots) <= 1 ? 'ok' : 'bad', a.s > FIELD.aim - 50 ? '—' : `${a.gsDots >= 0 ? '+' : ''}${a.gsDots.toFixed(1)} จุด`]);
-      rows.push(['ความเร็ว Vref −5/+20', Math.abs(f.ac.kias() - f.appr.Vref - 7.5) <= 12.5 ? 'ok' : 'bad', `${fmt(f.ac.kias())} ${spdUnit()}`]);
+      rows.push([`ความเร็ว ${f.appr.label} −5/+20`, Math.abs(f.ac.kias() - f.appr.Vref - 7.5) <= 12.5 ? 'ok' : 'bad', `${fmt(f.ac.kias())} ${spdUnit()}`]);
       rows.push(['อัตราจม ≤ 1,000 fpm', a.vs / FT * 60 >= -1000 ? 'ok' : 'bad', `${fmt(a.vs / FT * 60)}`]);
     }
     rows.push(['ผ่าน 500 ft แบบเสถียร', st(g5), g5 ? (g5.ok ? 'ผ่าน' : 'ไม่ผ่าน') : 'ยังไม่ถึง']);
@@ -915,7 +915,9 @@ async function main() {
     if (uiT > 0.1 && app.mode === 'train' && fl) {
       uiT = 0;
       const a = fl.ac.air, ias = fl.ac.kias(), V = fl.appr;   // KIAS and the flight's approach speeds in the HUD's unit (plan C3, C5)
-      const iasEl = $('#iIas'); iasEl.textContent = fmt(ias); iasEl.className = Math.abs(ias - V.cmd) < 8 || (a.hWheel < 15 && ias > V.Vref - 6) ? 'ok' : 'am';
+      const iasEl = $('#iIas'); iasEl.textContent = fmt(ias);
+      // the tile's unit follows spdUnit (review of plans C3–C7): an airliner's kias() is KCAS, so its label reads CAS
+      const iasLbl = iasEl.previousElementSibling, iasTxt = spdUnit() === 'KCAS' ? 'CAS kt' : 'IAS kt'; if (iasLbl.textContent !== iasTxt) iasLbl.textContent = iasTxt; iasEl.className = Math.abs(ias - V.cmd) < 8 || (a.hWheel < 15 && ias > V.Vref - 6) ? 'ok' : 'am';
       $('#iAlt').textContent = fmt(Math.max(0, a.hWheel / FT)); $('#iVs').textContent = `${a.vs >= 0 ? '+' : ''}${fmt(a.vs / FT * 60)}`;
       $('#iHdg').textContent = String(Math.round(wrap360(a.psi * RAD))).padStart(3, '0');
       $('#iDist').textContent = a.s < 0 ? `${(-a.s / NM).toFixed(1)} nm` : `+${fmt(a.s)} ม.`;

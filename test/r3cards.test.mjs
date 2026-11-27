@@ -201,7 +201,8 @@ test('every airliner loads, trims on a 3° glide at its Vapp (flaps 1, gear down
 // crash flag and the events exact, score ± 7, point ± 4 m in calm and ± 8 m in wind (types.test.mjs's). Measured
 // 2026-11-27 on 8bfcd48 (the C4 review: the commit said only "some 737 and A321ceo runs crash in wind"). The 737-800
 // and the A321ceo hit too hard in calm air on every end; the A320neo, the A321neo and the ATR in some winds; the A330
-// stalls about 29 s after the start, 3.3 km before the threshold; the A320ceo lands everywhere but at 135–165 m, short
+// stalls about 22 s after the start, 3.8 km before the threshold, and hits the ground at about 29 s, 3.3 km out (the
+// first wording of this note gave the ground-hit time and place as the stall's; review of plans C3–C7); the A320ceo lands everywhere but at 135–165 m, short
 // of the 300 m window (score 55–63).
 // Plan C5 moved the rows that have a wind along the runway, on purpose: the approach speed now follows the wind rule of
 // the type (src/20-flight.js SPD, Approach): the ATR's wind factor adds a third of the 10 kt headwind of `head` (3.3 kt;
@@ -225,20 +226,28 @@ test('every airliner loads, trims on a 3° glide at its Vapp (flaps 1, gear down
 // and the Autopilot pitches it down to −5.9°, so it touches nose first at 728 fpm (sink 0 of 40), 181 m further on;
 // the near-stall event comes in the bounce after that touchdown (α 12.3° at 103 s), then the crash. So the main-wheels-
 // first check below asks only for a near-stall event before the touchdown, and pins this one row in NOSE_FIRST. The A330
-// still stalls, now about 2.7 km before the threshold in calm air (2.96, 3.18 and 3.30 km in `head`, `xr` and `xl`;
-// before C7 3.30 km in calm air, 3.11, 3.31 and 3.26 km in the winds): the trainer's Autopilot pitches up harder to
+// still stalls: its near-stall event comes about 3.2 km before the threshold in calm air, 168 m up (3.4, 3.9 and 3.8 km
+// in `head`, `xr` and `xl`), and it hits the ground about 2.7 km out (2.96, 3.18 and 3.30 km); before C7 the event came
+// about 3.8 km out (4.0, 3.8 and 3.8 km) and it hit the ground at 3.30 km (3.11, 3.31 and 3.26 km). (The C7 text gave
+// the ground-hit points as the stall's; corrected in the review of plans C3–C7.) the trainer's Autopilot pitches up harder to
 // hold the antenna, 2.8 m below the eye, on the beam. Measured 2026-11-27 on the C7 tree. The Thai notes did not change
 // (AP_CALM on the 737 and the A321ceo, AP_WIND on the A320neo, the A321neo and the ATR, the stall note on the A330).
 // Where no near-stall event comes before the touchdown, the main wheels touch first, except in NOSE_FIRST.
+// The review of plans C3–C7 moved the `head` rows of the Airbus cards on purpose: a flight now starts trimmed at VAPP plus
+// the ground speed mini at its start height (Flight constructor), where it used to start at VAPP, about 6 kt under the speed
+// it commanded from the first tick, and the autothrottle stepped up. A320ceo 59 → 60 (180.6 → 181.2 m), A320neo 60 → 61
+// (195.0 → 195.1 m), A321ceo 61 → 81 (177.7 → 189.4 m; it still lands), A321neo crashes at 113.7 m (was 125.9), the A330
+// still stalls (its event 3.34 km out, was 3.44) but comes down at 1.53 km, 55 s after the start (was 2.96 km, 35 s).
+// No other row moved (calm, `xr` and `xl` give no mini, or under 0.1 kt in `xl`). Measured 2026-11-27.
 const NOSE_FIRST = new Set(['atr72_600 21R xl']);
 const AIRLINER_AUTOLAND = {
-  a320ceo: [[0, 55, 190.7, ''], [0, 57, 185.0, ''], [0, 57, 196.7, ''], [0, 57, 167.6, ''], [0, 59, 180.6, ''], [0, 58, 194.7, ''], [0, 60, 185.4, '']],
+  a320ceo: [[0, 55, 190.7, ''], [0, 57, 185.0, ''], [0, 57, 196.7, ''], [0, 57, 167.6, ''], [0, 60, 181.2, ''], [0, 58, 194.7, ''], [0, 60, 185.4, '']],
   b737_800: [[1, 72, 223.5, 'crash'], [1, 64, 217.7, 'crash'], [1, 72, 229.3, 'crash'], [1, 64, 200.2, 'crash'], [1, 79, 230.0, 'crash'], [1, 73, 228.1, 'crash'], [0, 68, 214.3, '']],
-  a320neo: [[0, 56, 189.7, ''], [0, 56, 183.9, ''], [0, 56, 195.5, ''], [0, 56, 166.4, ''], [0, 60, 195.0, ''], [0, 56, 189.9, ''], [1, 35, 173.2, 'crash']],
-  a330_300: [[1, 20, -2700.5, 'stall,crash'], [1, 20, -2701.1, 'stall,crash'], [1, 20, -2699.9, 'stall,crash'], [1, 20, -2702.4, 'stall,crash'], [1, 20, -2956.1, 'stall,crash'], [1, 20, -3176.6, 'stall,crash'], [1, 8, -3299.8, 'stall,crash']],
-  a321neo: [[0, 35, 192.7, ''], [0, 35, 187.1, ''], [0, 35, 197.9, ''], [0, 35, 171.1, ''], [1, 35, 125.9, 'crash'], [0, 35, 192.2, ''], [0, 35, 182.4, '']],
+  a320neo: [[0, 56, 189.7, ''], [0, 56, 183.9, ''], [0, 56, 195.5, ''], [0, 56, 166.4, ''], [0, 61, 195.1, ''], [0, 56, 189.9, ''], [1, 35, 173.2, 'crash']],
+  a330_300: [[1, 20, -2700.5, 'stall,crash'], [1, 20, -2701.1, 'stall,crash'], [1, 20, -2699.9, 'stall,crash'], [1, 20, -2702.4, 'stall,crash'], [1, 19, -1534.6, 'stall,crash'], [1, 20, -3176.6, 'stall,crash'], [1, 8, -3299.8, 'stall,crash']],
+  a321neo: [[0, 35, 192.7, ''], [0, 35, 187.1, ''], [0, 35, 197.9, ''], [0, 35, 171.1, ''], [1, 35, 113.7, 'crash'], [0, 35, 192.2, ''], [0, 35, 182.4, '']],
   atr72_600: [[0, 86, 283.4, ''], [0, 86, 277.7, ''], [0, 86, 289.2, ''], [0, 86, 260.3, ''], [0, 86, 259.8, ''], [0, 77, 287.4, ''], [1, 35, 462.9, 'stall,crash']],
-  a321ceo: [[1, 35, 186.5, 'crash'], [1, 35, 181.0, 'crash'], [1, 35, 192.4, 'crash'], [1, 35, 163.9, 'crash'], [0, 61, 177.7, ''], [1, 55, 185.6, 'crash'], [1, 35, 159.3, 'crash']],
+  a321ceo: [[1, 35, 186.5, 'crash'], [1, 35, 181.0, 'crash'], [1, 35, 192.4, 'crash'], [1, 35, 163.9, 'crash'], [0, 81, 189.4, ''], [1, 55, 185.6, 'crash'], [1, 35, 159.3, 'crash']],
 };
 const AL_RUNS = [['21R', 'calm'], ['21L', 'calm'], ['03L', 'calm'], ['03R', 'calm'], ['03L', 'head'], ['03L', 'xr'], ['21R', 'xl']];
 test('known gap: the trainer\'s Autopilot on each airliner, seed 5, calm on all four ends and three winds (regression table for phase M; the Thai note follows it)', (t) => {

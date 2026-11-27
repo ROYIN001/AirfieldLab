@@ -481,7 +481,9 @@ test('page wiring: cards load with the scene data, AC is switched only by useTyp
   // airliner. No speed on a training screen carries a unit of its own.)
   assert.match(APP, /const spdUnit = \(id = app\.train\.type\) => \(isLiner\(id\) \? 'KCAS' : 'KIAS'\);/);
   assert.match(APP, /\['แบบ', info\.name, 2\], \['มวล \(ค่าประมาณ\)', `\$\{fmt\(AC\.m\)\} kg`\], \[V\.label, `\$\{fmt\(V\.Vref\)\} \$\{spdUnit\(\)\}`\], \[V\.kind === 'airbus' \? 'VAPP' : 'Vapp', `\$\{fmt\(V\.Vapp\)\} \$\{spdUnit\(\)\}`\]/);
-  assert.match(APP, /\['ความเร็ว Vref −5\/\+20', [^\n]*`\$\{fmt\(f\.ac\.kias\(\)\)\} \$\{spdUnit\(\)\}`\]\);/);
+  assert.match(APP, /\[`ความเร็ว \$\{f\.appr\.label\} −5\/\+20`, [^\n]*`\$\{fmt\(f\.ac\.kias\(\)\)\} \$\{spdUnit\(\)\}`\]\);/);
+  // the instrument strip's speed tile names the unit spdUnit gives (CAS kt on an airliner, IAS kt otherwise)
+  assert.match(APP, /iasTxt = spdUnit\(\) === 'KCAS' \? 'CAS kt' : 'IAS kt'; if \(iasLbl\.textContent !== iasTxt\) iasLbl\.textContent = iasTxt;/);
   assert.match(APP, /\['ความเร็วตอนแตะพื้น', `\$\{fmt\(td\.ias\)\} \$\{spdUnit\(\)\}`, P\.spd\]/);
   assert.doesNotMatch(APP, /\} K[IC]AS`/, 'a speed shown with a fixed unit');
   // plan C5: the brief, the FMA, the speed colour, the gate row and the HUD read the flight's Approach (src/20-flight.js: the

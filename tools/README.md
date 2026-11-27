@@ -70,7 +70,10 @@ keeps the research's leaves, adds generated ones with source code `AL:C4` (train
 Vref/Vapp/VS0 mass tables, surface limits, `gear.legacy`, the stall-warning angles, the ratings offered, the A330's
 lateral derivatives in body axes, the OD-LEMAC fixes), the research's `_na` plus the generator's rules, and `_deferred`
 (paths for later plans). Plan C5 adds source code `AL:C5`: `speeds.approach_rule` (the Boeing, Airbus or ATR approach
-speed rule, read by `SPD` in `src/20-flight.js`) and every column of `speeds.VREF_kt` and `speeds.VS0_kt`. `build_airliners.mjs` and `build_cards.mjs` import each other: neither may use the other's
+speed rule, read by `SPD` in `src/20-flight.js`) and every column of `speeds.VREF_kt` and `speeds.VS0_kt`. Plan C7 adds source code `AL:C7`: `eyeAntenna` sets
+`airframe.geometry.gsAntenna_pos_FRD` on every airliner from the manufacturers' approach distances (H2 under the eye's
+path) and, on the Airbus cards only, refits the eye's z so that H1 matches Airbus at the reference attitude (the 737 and
+ATR eyes and the Airbus eye's x and y stay the research's); it also copies `airframe.geometry.approach_visual` into the cards. `build_airliners.mjs` and `build_cards.mjs` import each other: neither may use the other's
 bindings at the top level.
 
 ## JSBSim oracle (`jsbsim/`)

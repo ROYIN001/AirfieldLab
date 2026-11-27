@@ -33,7 +33,7 @@ const AIRLINER_TEXT = {
   a320ceo: { name: 'Airbus A320ceo', desc: 'Airbus A320ceo เจ็ตลำตัวแคบสองเครื่องยนต์ (CFM56-5B)' },
   b737_800: { name: 'Boeing 737-800', desc: 'Boeing 737-800 เจ็ตลำตัวแคบสองเครื่องยนต์ (CFM56-7B)', note: 'flat rating ของ CFM56-7B 30 °C ทุก rating (ซิมยังไม่ลดแรงขับตามอุณหภูมิอากาศ)', ap: AP_CALM },
   a320neo: { name: 'Airbus A320neo', desc: 'Airbus A320neo เจ็ตลำตัวแคบสองเครื่องยนต์ (LEAP-1A)', ap: AP_WIND },
-  a330_300: { name: 'Airbus A330-300', desc: 'Airbus A330-300 เจ็ตลำตัวกว้างสองเครื่องยนต์ (Trent 772B)', note: 'derivative ด้านข้างของ A330 แปลงจากแกน stability เป็นแกนตัวเครื่อง (ค่าประมาณ) ระยะ aileron และ rudder ยังไม่พบในแหล่งสาธารณะ', ap: 'ออโต้ไพลอตของเครื่องฝึกพาแบบนี้ stall ระหว่างร่อน (ราววินาทีที่ 29) ทุกทางวิ่งและทุกลม ให้บินเอง' },
+  a330_300: { name: 'Airbus A330-300', desc: 'Airbus A330-300 เจ็ตลำตัวกว้างสองเครื่องยนต์ (Trent 772B)', note: 'derivative ด้านข้างของ A330 แปลงจากแกน stability เป็นแกนตัวเครื่อง (ค่าประมาณ) ระยะ aileron และ rudder ยังไม่พบในแหล่งสาธารณะ', ap: 'ออโต้ไพลอตของเครื่องฝึกพาแบบนี้ stall ระหว่างร่อน ทุกทางวิ่งและทุกลม ให้บินเอง' },
   a321neo: { name: 'Airbus A321neo', desc: 'Airbus A321neo เจ็ตลำตัวแคบสองเครื่องยนต์ (LEAP-1A)', note: 'LEMAC ของ A321 จาก FAA TCDS A28NM ความเชื่อมั่นต่ำ', ap: AP_WIND },
   atr72_600: { name: 'ATR 72-600', desc: 'ATR 72-600 ใบพัดเทอร์โบสองเครื่องยนต์ ปีกสูง', note: 'ซิมยังไม่จำลองใบพัดสองข้าง แรงบิด และ governor ของ ATR', ap: AP_WIND },
   a321ceo: { name: 'Airbus A321ceo', desc: 'Airbus A321ceo เจ็ตลำตัวแคบสองเครื่องยนต์ (CFM56-5B)', note: 'LEMAC ของ A321 จาก FAA TCDS A28NM ความเชื่อมั่นต่ำ', ap: AP_CALM },
@@ -110,7 +110,7 @@ function airlinerInfo(id, T, card, ac, out) {
   out.notes.push(...EXP_NOTES);
   if (T.note) out.notes.push(T.note);
   if (T.ap) out.notes.push(T.ap);
-  out.notes.push(`HUD แสดงความเร็วเป็น KCAS เพราะบัตรไม่มีตาราง IAS–CAS ของแบบนี้ (Vref ${Math.round(ac.Vref)} KCAS ที่มวล ${Math.round(ac.m).toLocaleString('en-US')} kg)`);
+  out.notes.push(`HUD แสดงความเร็วเป็น KCAS เพราะบัตรไม่มีตาราง IAS–CAS ของแบบนี้ (${bus ? 'VLS' : 'Vref'} ${Math.round(ac.Vref)} KCAS ที่มวล ${Math.round(ac.m).toLocaleString('en-US')} kg)`);
   out.notes.push(`ตัวเลขทุกตัวพร้อมที่มาอยู่ใน aircraft/${id}.json`, MODEL_NOTE);
   out.links.push({ text: `aircraft/${id}.json`, href: `aircraft/${id}.json` });
   return out;
