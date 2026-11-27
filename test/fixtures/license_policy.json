@@ -20,8 +20,8 @@
   "forbidden_extensions_in_repo": [".tif", ".tiff", ".pdf", ".jp2"],
   "odbl_derived_files": ["data/vtbd_af.json", "data/city.json", "data/land_in.png", "data/land_out.png", "data/city_v2.json", "data/vtbd_stands.json", "data/vtbd_buildings.json"],
   "odbl_derived_files_note": "§11 lists the JSON files; data/land_in.png and data/land_out.png are added here because tools/landclass.py classifies them from OpenStreetMap renders (src/48-data.js credits them to OpenStreetMap contributors). A data JSON file whose source names OpenStreetMap or OSM, or whose license names ODbL, must be on this list, so that README and data/LICENSE-DATA.md list it too.",
-  "legacy_data_without_fields": ["data/vtbd_af.json", "data/city.json"],
-  "legacy_data_without_fields_note": "§11 item 3 asks for top-level source and license fields in every new JSON file under data/ (or in _meta, where a parameter card whose leaves follow {v, u, scope, ...} keeps its metadata). These two predate the rule and are documented in data/LICENSE-DATA.md and README.md instead; a regenerated file gets the fields and leaves this list.",
+  "legacy_data_without_fields": [],
+  "legacy_data_without_fields_note": "§11 item 3 asks for top-level source and license fields in every new JSON file under data/ (or in _meta, where a parameter card whose leaves follow {v, u, scope, ...} keeps its metadata). data/vtbd_af.json and data/city.json predate the rule and received the fields on 2026-11-26; the list stays, empty, for any future file that cannot carry them.",
   "gpl_guard_allowlist": {
    "docs/research/01-flight-physics/11-input.md": {"why": "research text: quotes the FlightGear licence names", "patterns": ["gpl", "spdx"]},
    "docs/research/01-flight-physics/12-other-sims.md": {"why": "research text: defines T-S-11 and quotes its patterns", "patterns": ["jsbsim_model", "license_name", "gpl", "lgpl"]},

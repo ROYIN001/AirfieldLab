@@ -96,5 +96,7 @@ infra=json.load(open('infra_lines.json'))
 out['tollway']=infra['motor'][0]
 out['rail']=infra['rail'][0]
 out['phahon']=infra['primary'][0]
+out=dict(source='OpenStreetMap contributors (map renders vectorised by tools/); building heights are estimates',
+         license='ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/)',**out)   # the two fields come first
 json.dump(out,open('/home/claude/data/out/vtbd_af.json','w'),separators=(',',':'))
 import os; print('json KB',os.path.getsize('/home/claude/data/out/vtbd_af.json')//1024)
