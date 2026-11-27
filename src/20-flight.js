@@ -220,6 +220,21 @@ const speedsKias = () => AC.kias || AC;
 // an Aircraft work too (Aircraft.kias, the Evaluator and the Recorder all call it)
 const kiasOf = (ac) => casToIas(AC.kias, ac.flaps, ac.air.ias / KT);
 
+// ── Units and balance arms of the research cards (plan C4, research round 3 task item 1, R3-1) ──
+// Round 3 writes each value in the unit its source gives (03-airliners.md, "แกนและหน่วย"): lb and lbf from the TCDS and
+// the engine sheets, in from the Boeing balance arms, slug ft² from the JSBSim inertias. toSI(x, u) turns a number in one
+// of these units into SI (exact factors: lb 0.45359237 kg and in 0.0254 m by definition, ft 0.3048 m, lbf = lb·g0,
+// slug ft² = 14.593903 kg·0.3048² m² (slug = lbf s²/ft); kt is KT of 10-atmo.js, 0.514444 m/s as everywhere in the sim)
+// and throws on a unit it does not know. pctMAC(x, lemac, mac): the %MAC of a balance arm x, with LEMAC and MAC in the
+// same length unit as x (research T-B-22, BA 658.26 in = 20 %MAC of the 737-800); armAtPctMAC its inverse.
+const UNIT_SI = { kg: 1, lb: 0.45359237, m: 1, in: 0.0254, ft: FT, N: 1, lbf: 0.45359237 * G0, 'kg m2': 1, 'slug ft2': 14.593902937206364 * FT * FT, 'm/s': 1, kt: KT };
+function toSI(x, u) {
+  if (!Object.hasOwn(UNIT_SI, u)) throw new Error(`toSI: unknown unit ${JSON.stringify(u)} (known: ${Object.keys(UNIT_SI).join(', ')})`);
+  return x * UNIT_SI[u];
+}
+const pctMAC = (x, lemac, mac) => 100 * (x - lemac) / mac;
+const armAtPctMAC = (pct, lemac, mac) => lemac + pct / 100 * mac;
+
 // Inverse of the inertia tensor [[Ixx, 0, −Ixz], [0, Iyy, 0], [−Ixz, 0, Izz]] (FRD, Ixz product), as deriv uses it
 function inertiaInverse({ Ixx, Iyy, Izz, Ixz }) {
   const G = Ixx * Izz - Ixz * Ixz;
@@ -254,12 +269,30 @@ function inertiaInverse({ Ixx, Iyy, Izz, Ixz }) {
 // rules. buildAC rounds the speeds to whole knots and converts kt IAS with lm_lib.iasCas, which extrapolates past a
 // row's ends and falls back to the first row for an unknown detent; acFromCard does neither. buildAC takes a missing
 // Ixz as 0; here it is required.
+// Plan C4 (research round 3 task items 1, 2 and 39: R3-1, R3-2, R3-39) reads the airliner cards of
+// tools/aircraft/build_airliners.mjs in legacy mode, on today's equations (aero.legacy and propulsion.legacy):
+//  - K_CL_offset: the CL of minimum drag in the polar K·(CL − K_CL_offset)², aero.legacy.K_CL_offset when the card gives
+//    it, else 0.15, the number the code held before (03-airliners.md item 2: the ATR and the 737 set 0, the A320 family
+//    and the A330 fit their legacy polar with 0.15). The trainer and the six light cards have none, so they keep 0.15.
+//  - _na: a path the card's _na leaf marks not applicable ("turbofan.*", or a path and everything under it) is read as
+//    absent; a path the reader needs then throws "marked not applicable".
+//  - opts.mass (kg): the mass flown instead of airframe.weights.training_mass (the inertia follows it by m/ref_mass, as
+//    for every card). A kt CAS speed may be a mass table { axes: { mass_kg: [...], flap?: [names] }, data }, read at that
+//    mass with table1 (linear, clamped at the ends, never extrapolated), in the landing detent's column when the table
+//    has a flap axis (round 3's table form; the airliner cards' VREF_kt, VAPP_kt and VS0_kt).
+//  - opts.rating: an engine class of turbofan.engines (the UI's rating choice, owner decision OD-RATINGS). The legacy
+//    thrust was fitted for turbofan.engine_default, so T0 and P are scaled by F00(rating)/F00(default): the same lapse
+//    shape (Vc = eta·P/T0 unchanged), a different static thrust. Without opts.rating no turbofan path is read.
 function acFromCard(card, opts = {}) {
   const isObj = (o) => o !== null && typeof o === 'object' && !Array.isArray(o);
   const NONE = {};
   const fail = (path, what) => Object.assign(new Error(`aircraft card: ${path} ${what}`), { path });
+  // the card's _na patterns (plan C4): "a.b.*" or "a.b" mark a.b and every path under it not applicable
+  const naList = isObj(card) && isObj(card._na) && Array.isArray(card._na.v) ? card._na.v.filter((x) => typeof x === 'string') : [];
+  const isNA = (path) => naList.some((p) => { const q = p.endsWith('.*') ? p.slice(0, -2) : p; return path === q || path.startsWith(q + '.'); });
   // { v, leaf }: the value at path and the leaf it is in (undefined when absent and not needed)
   const walk = (path, need = true) => {
+    if (isNA(path)) { if (need) throw fail(path, 'is marked not applicable (_na)'); return undefined; }
     let o = card, leaf = null;
     for (const k of path.split('.')) {
       if (!leaf && isObj(o) && 'v' in o) { leaf = o; o = o.v; }   // a leaf before the path ends: go on in its value
@@ -322,9 +355,23 @@ function acFromCard(card, opts = {}) {
     return [pairs.map((q) => q[0]), pairs.map((q) => q[1])];
   };
   let iasRow = null;   // the landing detent's [KIAS[], KCAS[]], read at the first kt IAS speed
+  // a round 3 mass table { axes: { mass_kg, flap? }, data } at ac.m, in the landing detent's column (plan C4)
+  const atMass = (path, v) => {
+    const ms = v.axes.mass_kg, fl = v.axes.flap, D = v.data;
+    const okAxis = Array.isArray(ms) && ms.length >= 2 && ms.every((x, i) => typeof x === 'number' && Number.isFinite(x) && (i === 0 || x > ms[i - 1]));
+    if (!okAxis || !Array.isArray(D) || D.length !== ms.length) throw fail(path, `is not a mass table { axes: { mass_kg: [ascending] }, data } (${JSON.stringify(v).slice(0, 200)})`);
+    let col = D;
+    if (fl !== undefined) {
+      const name = String(detentsF().full.name), j = Array.isArray(fl) ? fl.map(String).indexOf(name) : -1;
+      if (j < 0) throw fail(`${path}.axes.flap`, `has no column for the landing detent ${name} (${JSON.stringify(fl)})`);
+      col = D.map((row) => (Array.isArray(row) ? row[j] : NaN));
+    }
+    col.forEach((x, i) => num(`${path}.data.${i}`, x));
+    return table1(ms, col, ac.m);
+  };
   const kcas = (path) => {   // the sim's IAS is EAS ≈ CAS below 200 kt: a speed in any other unit would be misread
     const { v, leaf } = walk(path);
-    if (leaf.u === 'kt CAS') return num(path, v);
+    if (leaf.u === 'kt CAS') return isObj(v) && isObj(v.axes) ? atMass(path, v) : num(path, v);
     if (leaf.u !== 'kt IAS') throw fail(path, `is in ${JSON.stringify(leaf.u)}, not kt CAS or kt IAS`);
     const kias = num(path, v);
     iasRow = iasRow || landingRow();
@@ -345,6 +392,10 @@ function acFromCard(card, opts = {}) {
   };
   const ac = {};
   ac.m = isObj(get('airframe.weights.training_mass')) ? num('airframe.weights.training_mass.kg') : num('airframe.weights.training_mass');
+  if (opts.mass !== undefined) {
+    if (typeof opts.mass !== 'number' || !(opts.mass > 0) || !Number.isFinite(opts.mass)) throw fail('opts.mass', `is not a mass in kg (${JSON.stringify(opts.mass)})`);
+    ac.m = opts.mass;
+  }
   const refMass = get('airframe.inertia.ref_mass', false);
   const inertia = (k) => (refMass === undefined ? num('airframe.inertia.' + k) : num('airframe.inertia.' + k) * (ac.m / num('airframe.inertia.ref_mass')));
   for (const k of ['Ixx', 'Iyy', 'Izz', 'Ixz']) ac[k] = inertia(k);
@@ -352,8 +403,17 @@ function acFromCard(card, opts = {}) {
   const LEG = ['CL0', 'CLa', 'CLflap', 'CD0', 'K', 'CDflap', 'CDgear', 'Cm0', 'Cma', 'Cmflap', 'aStall', 'aStallFlap', 'aWarn', 'aWarnFlap', 'aWarnHyst', 'aWarnMinOn'];
   const DER = ['CLq', 'CLadot', 'CLde', 'CYb', 'CYdr', 'CYr', 'Clb', 'Clp', 'Clr', 'Clda', 'Cldr', 'Cmq', 'Cmadot', 'Cmde', 'Cnb', 'Cnp', 'Cnr', 'Cnda', 'Cndr'];
   for (const k of LEG) ac[k] = num('aero.legacy.' + k);
+  const off = get('aero.legacy.K_CL_offset', false);
+  ac.K_CL_offset = off === undefined ? 0.15 : num('aero.legacy.K_CL_offset', off);
   for (const k of DER) ac[k] = deriv('aero.derivatives.' + k);
   for (const k of ['P', 'eta', 'T0', 'idle']) ac[k] = num('propulsion.legacy.' + k);
+  if (opts.rating !== undefined) {   // OD-RATINGS: another engine rating of the same legacy thrust curve
+    const def = get('turbofan.engine_default'), F00 = (c) => num(`turbofan.engines.${c}.F00`);
+    if (typeof def !== 'string') throw fail('turbofan.engine_default', `is not an engine class name (${JSON.stringify(def)})`);
+    if (typeof opts.rating !== 'string' || get(`turbofan.engines.${opts.rating}.F00`, false) === undefined) throw fail(`turbofan.engines.${opts.rating}.F00`, 'is missing (opts.rating names no engine class of the card)');
+    const r = F00(opts.rating) / F00(def);
+    ac.T0 *= r; ac.P *= r;
+  }
   const [eUp, eDn] = travel('elevator', 'up', 'down'), [aUp, aDn] = travel('aileron', 'up', 'down'), [rL, rR] = travel('rudder', 'left', 'right');
   ac.deUp = eUp * DEG; ac.deDn = eDn * DEG; ac.daMax = 0.5 * (aUp + aDn) * DEG; ac.drMax = Math.min(rL, rR) * DEG;
   const struts = list('gear.legacy');
@@ -535,7 +595,7 @@ class Aircraft {
     const CLlin = AC.CL0 + AC.CLflap * f + AC.CLa * (1 + 0.12 * (1 - phiGE)) * alpha + AC.CLq * qh + AC.CLadot * adh + AC.CLde * this.de;
     const sa = Math.sin(alpha), ca = Math.cos(alpha);
     const CL = (1 - sig) * CLlin + sig * 2 * Math.sign(alpha) * sa * sa * ca;
-    const CDlin = AC.CD0 + AC.CDflap * Math.pow(f, 1.5) + AC.CDgear * this.gearPos + AC.K * phiGE * (CLlin - 0.15) ** 2 + 0.25 * beta * beta;
+    const CDlin = AC.CD0 + AC.CDflap * Math.pow(f, 1.5) + AC.CDgear * this.gearPos + AC.K * phiGE * (CLlin - AC.K_CL_offset) ** 2 + 0.25 * beta * beta;
     const CD = (1 - sig) * CDlin + sig * (AC.CD0 + 1.6 * sa * sa);
     const CY = AC.CYb * beta + AC.CYdr * this.dr + AC.CYr * rh;
     const Cl = AC.Clb * beta + AC.Clp * ph + AC.Clr * rh + AC.Clda * this.da + AC.Cldr * this.dr;

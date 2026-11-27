@@ -25,7 +25,7 @@ const card = (id) => JSON.parse(fs.readFileSync(path.join(DIR, `${id}.json`), 'u
 const trainer = () => JSON.parse(fs.readFileSync(AIRCRAFT_CARD, 'utf8'));
 after(() => setAircraft(trainer()));
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
-const TY = new Function('"use strict";\n' + read('src/22-types.js') + '\nreturn { AIRCRAFT_TYPES, typeInfo, modelSpec, MODEL_WHEEL_Z, SCENARIO_NOTE };')();
+const TY = new Function('"use strict";\n' + read('src/22-types.js') + '\nreturn { AIRCRAFT_TYPES, AIRLINER_TYPES, typeInfo, modelSpec, MODEL_WHEEL_Z, SCENARIO_NOTE };')();
 const APP = read('src/90-app.js'), HUD = read('src/80-hud.js'), TPL = read('src/template.html');
 const infoOf = (id) => { const c = card(id); return TY.typeInfo(id, c, acFromCard(c)); };
 
@@ -35,13 +35,15 @@ test('tools/aircraft/build_cards.mjs --check: every card is what the generator w
   assert.equal(r.status, 0, `--check exit ${r.status}\n${r.stdout}\n${r.stderr}`);
 });
 
-test('data/aircraft holds the trainer and the six types; the selector (AIRCRAFT_TYPES) lists them in the order of owner decision OD-TYPES', () => {
+test('data/aircraft holds the trainer, the six types and the seven experimental airliners of plan C4; the selector (AIRCRAFT_TYPES) lists the light types in the order of owner decision OD-TYPES', () => {
   // OD-TYPES (plan C1): the selector lists the trainer, then these six
   assert.deepEqual(TYPE_IDS, ['c172s', 'c172r', 'da42ng', 'da42_tae125', 'da40d', 'da40_180']);
   assert.ok(!TYPE_IDS.includes('trainer'), 'the generator never writes the trainer card');
   assert.deepEqual(TY.AIRCRAFT_TYPES, ['trainer', ...TYPE_IDS]);
   const files = fs.readdirSync(DIR).filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -5)).sort();
-  assert.deepEqual(files, [...TY.AIRCRAFT_TYPES].sort());
+  // plan C4: the airliners (test/r3cards.test.mjs) are listed apart, behind the switch รุ่นทดลอง
+  assert.deepEqual(files, [...TY.AIRCRAFT_TYPES, ...TY.AIRLINER_TYPES].sort());
+  assert.ok(TY.AIRLINER_TYPES.every((id) => !TY.AIRCRAFT_TYPES.includes(id)));
 });
 
 // ───────────────────────── reader: speeds ─────────────────────────
@@ -314,7 +316,8 @@ test('typeInfo: the name, speeds (KIAS, whole knots) and Thai civil-school line 
     assert.equal(i.real, id !== 'trainer', id);
   }
   // a card that failed to load: the name only (the page shows the error in its place)
-  assert.deepEqual(TY.typeInfo('da42ng', null, null), { name: 'Diamond DA42 NG', em: '', span: '', lede: '', notes: [], links: [], real: true });
+  // (exp: plan C4's experimental airliners set it; a light type is not one)
+  assert.deepEqual(TY.typeInfo('da42ng', null, null), { name: 'Diamond DA42 NG', em: '', span: '', lede: '', notes: [], links: [], real: true, exp: false });
 });
 
 test('typeInfo: the setup lede and the notes of each type, from the card\'s thai_fleet', () => {
@@ -367,7 +370,8 @@ test('T-LS-11: c172s is the first real type; the DA40 entries are the DA40 D and
   assert.ok(!TY.typeInfo('trainer', trainer(), acFromCard(trainer())).notes.includes(TY.SCENARIO_NOTE));
   assert.match(APP, /function writeTypeNote\(info\) \{\s*const el = \$\('#typeNote'\);[^\n]*\n\s*info\.notes\.forEach/);
   assert.match(APP, /function refreshSetup\(\) \{\s*const info = typeInfoOf\(app\.train\.type\);[\s\S]{0,200}writeTypeNote\(info\);/);
-  assert.match(APP, /\$\('#liveEyebrow'\)\.textContent = [^\n]* · \$\{info\.name\}\$\{info\.real \? ' · สถานการณ์สมมติ' : ''\}`;/);
+  // (plan C4: an experimental airliner is labelled รุ่นทดลอง instead; airliners do land at Don Mueang)
+  assert.match(APP, /\$\('#liveEyebrow'\)\.textContent = [^\n]* · \$\{info\.name\}\$\{info\.exp \? ' · รุ่นทดลอง' : info\.real \? ' · สถานการณ์สมมติ' : ''\}`;/);
 });
 
 // ───────────────────────── owner rule: no military user (design §3.2) ─────────────────────────
@@ -451,10 +455,13 @@ test('page wiring: cards load with the scene data, AC is switched only by useTyp
   assert.ok(at('setAircraft(data.aircraft)') < at('await cardsP') && at('await cardsP') < at('new Flight('), 'the cards are awaited after the trainer is set and before any Flight');
   // one switch: the trainer at load and useType after it; useType fits the model too
   assert.equal(APP.match(/setAircraft\(/g).length, 2);
-  assert.match(APP, /function useType\(id\) \{ const T = TYPES\[id\]; setAircraft\(T\.card\); ac3\.fit\(modelSpec\(id, T\.card, AC\)\); \}/);
+  // (plan C4: with the options of typeOpts, {} for every type but an airliner, whose mass and rating the viewer chose)
+  assert.match(APP, /function useType\(id\) \{ const T = TYPES\[id\]; setAircraft\(T\.card, typeOpts\(id\)\); ac3\.fit\(modelSpec\(id, T\.card, AC\)\); \}/);
+  assert.match(APP, /const typeOpts = \(id\) => \{\s*const o = \(isLiner\(id\) && app\.train\.opts\[id\]\) \|\| \{\};/);
   // the saved choice, kept only when its card is good
   assert.match(APP, /app\.train\.type = store\.get\('afl-type', 'trainer'\);\s*if \(!typeOk\(app\.train\.type\)\) app\.train\.type = 'trainer';/);
-  assert.match(APP, /const typeOk = \(id\) => Object\.hasOwn\(TYPES, id\) && !!TYPES\[id\]\.card;/);
+  // (plan C4: an airliner only while the switch รุ่นทดลอง is on)
+  assert.match(APP, /const typeOk = \(id\) => Object\.hasOwn\(TYPES, id\) && !!TYPES\[id\]\.card && \(!isLiner\(id\) \|\| app\.train\.exp\);/);
   // modes: explore always flies the trainer; training sets the chosen type before its preview Flight
   const sm = APP.slice(at('function setMode('), at("$('#tabExplore').onclick"));
   assert.match(sm, /if \(m === 'explore'\) \{ useType\('trainer'\);/);
@@ -469,7 +476,8 @@ test('page wiring: cards load with the scene data, AC is switched only by useTyp
   assert.match(APP, /b\.disabled = !T\.card;/);
   assert.match(APP, /sp\.textContent = T\.card \? info\.span : T\.error;/);
   // the brief, the FMA and the HUD show the card's speeds in KIAS (plan C3: speedsKias, the HUD's speed is Aircraft.kias), rounded for display
-  assert.match(APP, /\['แบบ', info\.name, 2\], \['มวล \(ค่าประมาณ\)', `\$\{fmt\(AC\.m\)\} kg`\], \['Vref', `\$\{fmt\(V\.Vref\)\} KIAS`\], \['Vapp', `\$\{fmt\(V\.Vapp\)\} KIAS`\]/);
+  // (plan C4: an airliner has no IAS–CAS table, its speeds are KCAS and are labelled so)
+  assert.match(APP, /\['แบบ', info\.name, 2\], \['มวล \(ค่าประมาณ\)', `\$\{fmt\(AC\.m\)\} kg`\], \['Vref', `\$\{fmt\(V\.Vref\)\} \$\{info\.exp \? 'KCAS' : 'KIAS'\}`\], \['Vapp', `\$\{fmt\(V\.Vapp\)\} \$\{info\.exp \? 'KCAS' : 'KIAS'\}`\]/);
   assert.match(APP, /\['SPD ' \+ fmt\(V\.Vapp\), 'c'\]/);
   assert.match(APP, /'A\/THR SPD ' \+ fmt\(V\.Vapp\)/);
   assert.match(APP, /const V = speedsKias\(\);\s*\$\('#brief'\)/);

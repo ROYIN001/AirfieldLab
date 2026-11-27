@@ -61,6 +61,17 @@ workflow (`pages.yml`, every pull request into `main`) fails on a stale card, al
 depend on it, but it reads it through `test/harness.mjs` at import, so a broken trainer card stops the script too. The
 cards are never edited by hand.
 
+Plan C4: the same command also writes the seven airliner cards `data/aircraft/{a320ceo,b737_800,a320neo,a330_300,
+a321neo,atr72_600,a321ceo}.json` (shown only behind the training pane's switch รุ่นทดลอง) through
+`aircraft/build_airliners.mjs`, and `--check` and `--only` cover all thirteen. Inputs: round 3's
+`docs/research/03-airliners/params-<type>.json` and `params-common-airliner.json` (read only; a value the reader cannot
+use is fixed in the generator, never in the research data) and the reference rows of `03-airliners/0x-*.md`. Each card
+keeps the research's leaves, adds generated ones with source code `AL:C4` (training mass and the masses offered,
+Vref/Vapp/VS0 mass tables, surface limits, `gear.legacy`, the stall-warning angles, the ratings offered, the A330's
+lateral derivatives in body axes, the OD-LEMAC fixes), the research's `_na` plus the generator's rules, and `_deferred`
+(paths for later plans). `build_airliners.mjs` and `build_cards.mjs` import each other: neither may use the other's
+bindings at the top level.
+
 ## JSBSim oracle (`jsbsim/`)
 
 `jsbsim/run_cases.py` regenerates `test/fixtures/jsbsim_trainer_doublet.json`, which `test/oracle.test.mjs` checks

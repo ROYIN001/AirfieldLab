@@ -1,0 +1,1842 @@
+{
+ "airframe": {
+  "identity": {
+   "v": {
+    "manufacturer": "The Boeing Company",
+    "model": "737-800",
+    "variant": "Next-Generation 737; -800 (ไม่มี winglets) และ -800W (blended winglets)",
+    "engine": "CFM56-7B24 ถึง 7B27 (ตาม thrust rating)",
+    "icao": "B738",
+    "seats": {
+     "two_class": 160,
+     "all_economy": 184,
+     "max_certified": 189
+    },
+    "operatorsDMK": [
+     {
+      "name": "Thai Lion Air",
+      "code": "SL/TLM",
+      "fleet": 20,
+      "seats": 189,
+      "related": "737-900ER 8 ลำ",
+      "asOf": "2025-08"
+     },
+     {
+      "name": "Nok Air",
+      "code": "DD/NOK",
+      "fleet": 10,
+      "seats": 189,
+      "related": "737 MAX 8 สั่ง 6 ลำ",
+      "asOf": "2025-08"
+     }
+    ]
+   },
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "B1",
+    "B3",
+    "B25",
+    "B33",
+    "B34"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "ฝูงบินตาม Wikipedia ส.ค. 2025 ตรวจซ้ำ 18 พ.ย. 2026; รุ่นแรงขับและตัวเลือก MTOW ของสายการบินไทยไม่พบในแหล่งสาธารณะ"
+  },
+  "weights": {
+   "MTOW": {
+    "v": {
+     "opt1": 70533,
+     "opt2": 78244,
+     "opt3": 79015
+    },
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "B1",
+     "B3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "155,500/172,500/174,200 lb"
+   },
+   "MLW": {
+    "v": {
+     "opt1": 65317,
+     "opt2": 65317,
+     "opt3": 66360
+    },
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "B1",
+     "B3"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "144,000/144,000/146,300 lb"
+   },
+   "default_sim": {
+    "v": {
+     "MTW": 79333,
+     "MTOW": 79015,
+     "MLW": 66360,
+     "MZFW": 62731
+    },
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "B1",
+     "B3"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ค่าที่เลือก: ตัวเลือกน้ำหนักสูงสุดตาม TCDS เพราะไม่พบตัวเลือกของ Thai Lion Air / Nok Air"
+   },
+   "training_mass": {
+    "v": 66360,
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "B1",
+     "B3",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: มวลตั้งต้นของซิม = MLW ใน airframe.weights.default_sim ของบัตรวิจัย 66360 kg (ลงจอดที่มวลลงจอดสูงสุด) ผู้ใช้เลือกมวลอื่นในหน้าตั้งค่าได้ (OD-RATINGS) [AL:C4]"
+   },
+   "mass_options": {
+    "v": [
+     66360,
+     65317,
+     59700,
+     53100
+    ],
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "B1",
+     "B3",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: มวลที่หน้าตั้งค่าให้เลือก: มวลตั้งต้น 66360 kg, MLW ของ weight variant อื่นที่ไม่เกินมวลนั้น และ 90 % กับ 80 % ของมวลตั้งต้น ปัดเป็น 100 kg (มวลลงจอดของสายการบินจริงไม่เผยแพร่) [AL:C4]"
+   }
+  },
+  "cg": {
+   "LEMAC_x": {
+    "v": 15.928,
+    "u": "m DAT",
+    "scope": "aircraft",
+    "src": [
+     "B9",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ (OD-LEMAC): LEMAC ที่ BA 627.1 in = 15.928 m ตามรายงาน W&B [B9] (MAC 155.8 in); หัวข้อ 3.5 ใช้ LEMAC หลังจมูก 695.05 in จากโมเดลอื่น ถ้าทั้งสองถูก จมูกอยู่ที่ BA ราว −68 in ซึ่งยังไม่ยืนยัน (03-airliners.md ความขัดแย้งข้อ 6) จึงลดความเชื่อมั่นเป็นต่ำ; %MAC = (BA − 627.1)/155.8 [AL:C4]"
+   },
+   "MAC": {
+    "v": 3.958,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "B3",
+     "B9"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "155.81 in (TCDS) ใช้แปลง %MAC; c̄ ของสัมประสิทธิ์ใช้ 4.17 m ใน aero.ref.c"
+   },
+   "ref_pctMAC": {
+    "v": 25,
+    "u": "%MAC",
+    "scope": "aircraft",
+    "src": [
+     "B9"
+    ],
+    "conf": "สูง",
+    "est": true,
+    "note": "ค่าประมาณ: ข้อตกลงรอบที่ 3; BA 666.05 in"
+   }
+  },
+  "inertia": {
+   "ref_mass": {
+    "v": 66361,
+    "u": "kg",
+    "scope": "aircraft",
+    "src": [
+     "B10"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: MLW"
+   },
+   "Ixx": {
+    "v": 2132340,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "B10"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: m (Rx b/2)², Rx 0.330 จาก Wolfram dry; b_mass_modes.mjs"
+   },
+   "Iyy": {
+    "v": 3878047,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "B10"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: m (Ry L/2)², Ry 0.387"
+   },
+   "Izz": {
+    "v": 5822929,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "B10"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: m (Rz e/2)², Rz 0.508, e = (b+L)/2"
+   },
+   "Ixz": {
+    "v": 170362,
+    "u": "kg m2",
+    "scope": "aircraft",
+    "src": [
+     "B10"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: Ixz Wolfram × m/58,094; ตรวจเครื่องหมายกับนิยาม FRD ของ AC.Iinv"
+   },
+   "radii": {
+    "v": {
+     "Rx": 0.33,
+     "Ry": 0.387,
+     "Rz": 0.508
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "B10",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: Roskam: R̄x = 2kx/b, R̄y = 2ky/L, R̄z = 2kz/e; JSBSim (เรขาคณิต Classic) ได้ 0.312/0.436/0.531"
+   }
+  },
+  "geometry": {
+   "length": {
+    "v": 39.47,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D1"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "129 ft 6 in (ACAPS 1.3)"
+   },
+   "eye_pos_FRD": {
+    "v": [
+     16.154,
+     -0.508,
+     -0.945
+    ],
+    "u": "m FRD",
+    "scope": "aircraft",
+    "src": [
+     "D28",
+     "D3"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: x,y จากโมเดล; z ตั้งให้ตาสูงกว่าล้อหลักต่ำสุด (โช้คยืด) 3.84 m ตามที่ถอดจาก [D3]; โมเดลเดิม z −1.427 (สูงเกิน 0.48 m)"
+   },
+   "eye_to_gsAntenna_vertical": {
+    "v": 1.433,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D3"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "ระยะทางเดิน H2 = 4.7 ft (eye path ถึง ILS beam); จุดต่อจุด H4 − H3 = 4.9 ft (1.49 m)"
+   },
+   "gsAntenna_pos_FRD": {
+    "v": [
+     16.154,
+     -0.508,
+     -0.945
+    ],
+    "u": "m FRD",
+    "scope": "aircraft",
+    "src": [
+     "D28",
+     "D3",
+     "AL:C4"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: ไว้ที่ตำแหน่งตา (airframe.geometry.eye_pos_FRD) ไฟ PAPI และ ILS จึงอ่านที่จุดเดียวกัน; plan C7 จะวางเสาอากาศตาม airframe.geometry.eye_to_gsAntenna_vertical [AL:C4]"
+   }
+  }
+ },
+ "aero": {
+  "ref": {
+   "S": {
+    "v": 124.6,
+    "u": "m2",
+    "scope": "aircraft",
+    "src": [
+     "B12"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ค่าตามแหล่ง [B12]"
+   },
+   "b": {
+    "v": 34.32,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "B4"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ใช้ 34.32 m ทั้งสองรุ่นเพื่อให้สัมประสิทธิ์เดียวกัน; winglet ใส่ผ่าน polar.winglet_K_factor"
+   },
+   "c": {
+    "v": 4.17,
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "B11"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "MAC เรขาคณิตที่ใช้คำนวณ derivative; %MAC ของ CG ใช้ 3.96 m"
+   }
+  },
+  "flaps": {
+   "detents": {
+    "v": [
+     {
+      "name": "0",
+      "flap_deg": 0,
+      "slat": "retracted",
+      "VFE_kt": null,
+      "dCL0": 0,
+      "dCD0": 0,
+      "dCm0": null,
+      "CLmax": 1.262
+     },
+     {
+      "name": "1",
+      "flap_deg": 1,
+      "slat": "extend",
+      "VFE_kt": 250,
+      "dCL0": 0.095,
+      "dCD0": 0.003,
+      "dCm0": null,
+      "CLmax": 1.554
+     },
+     {
+      "name": "2",
+      "flap_deg": 2,
+      "slat": "extend",
+      "VFE_kt": 250,
+      "dCL0": 0.142,
+      "dCD0": 0.0032,
+      "dCm0": null,
+      "CLmax": 1.656
+     },
+     {
+      "name": "5",
+      "flap_deg": 5,
+      "slat": "extend",
+      "VFE_kt": 250,
+      "dCL0": 0.256,
+      "dCD0": 0.0041,
+      "dCm0": null,
+      "CLmax": 1.962
+     },
+     {
+      "name": "10",
+      "flap_deg": 10,
+      "slat": "full_extend",
+      "VFE_kt": 210,
+      "dCL0": 0.379,
+      "dCD0": 0.0073,
+      "dCm0": null,
+      "CLmax": 2.095
+     },
+     {
+      "name": "15",
+      "flap_deg": 15,
+      "slat": "full_extend",
+      "VFE_kt": 200,
+      "dCL0": 0.492,
+      "dCD0": 0.0126,
+      "dCm0": null,
+      "CLmax": 2.228
+     },
+     {
+      "name": "25",
+      "flap_deg": 25,
+      "slat": "full_extend",
+      "VFE_kt": 190,
+      "dCL0": 0.644,
+      "dCD0": 0.0285,
+      "dCm0": null,
+      "CLmax": 2.307
+     },
+     {
+      "name": "30",
+      "flap_deg": 30,
+      "slat": "full_extend",
+      "VFE_kt": 175,
+      "dCL0": 0.748,
+      "dCD0": 0.0387,
+      "dCm0": null,
+      "CLmax": 2.346
+     },
+     {
+      "name": "40",
+      "flap_deg": 40,
+      "slat": "full_extend",
+      "VFE_kt": 162,
+      "dCL0": 0.947,
+      "dCD0": 0.062,
+      "dCm0": null,
+      "CLmax": 2.526
+     }
+    ],
+    "u": "deg, kt, -",
+    "scope": "aircraft",
+    "src": [
+     "B26",
+     "B13",
+     "B17",
+     "B18",
+     "B28"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "VFE กลาง (แหล่งรอง); ค่า aero เป็นค่าประมาณ; slat ตามความรู้ทั่วไปของระบบ NG (ไม่ได้อ่าน FCOM); dCm0 ไม่พบ"
+   }
+  },
+  "derivatives": {
+   "CLq": {
+    "v": {
+     "cruise": 8,
+     "approach": 8
+    },
+    "u": "1/rad (ไร้มิติด้วย c/2V หรือ b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "B11"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45"
+   },
+   "CLadot": {
+    "v": {
+     "cruise": 2.9,
+     "approach": 2.2
+    },
+    "u": "1/rad (ไร้มิติด้วย c/2V หรือ b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "B11"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45"
+   },
+   "CLde": {
+    "v": {
+     "cruise": 0.38,
+     "approach": 0.38
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) 0.2"
+   },
+   "CYb": {
+    "v": {
+     "cruise": -0.87,
+     "approach": -0.87
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) -1"
+   },
+   "CYdr": {
+    "v": {
+     "cruise": 0.23,
+     "approach": 0.23
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "B11"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45"
+   },
+   "CYr": {
+    "v": {
+     "cruise": 0.43,
+     "approach": 0.43
+    },
+    "u": "1/rad (ไร้มิติด้วย c/2V หรือ b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "B11"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45"
+   },
+   "Clb": {
+    "v": {
+     "cruise": -0.157,
+     "approach": -0.247
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) -0.09"
+   },
+   "Clp": {
+    "v": {
+     "cruise": -0.5,
+     "approach": -0.5
+    },
+    "u": "1/rad (ไร้มิติด้วย c/2V หรือ b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) -0.4"
+   },
+   "Clr": {
+    "v": {
+     "cruise": 0.145,
+     "approach": 0.383
+    },
+    "u": "1/rad (ไร้มิติด้วย c/2V หรือ b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) 0.09"
+   },
+   "Clda": {
+    "v": {
+     "cruise": 0.1,
+     "approach": 0.1
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) 0.1"
+   },
+   "Cldr": {
+    "v": {
+     "cruise": 0.023,
+     "approach": 0.023
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) 0.01"
+   },
+   "Cmq": {
+    "v": {
+     "cruise": -37.4,
+     "approach": -37.4
+    },
+    "u": "1/rad (ไร้มิติด้วย c/2V หรือ b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) -27"
+   },
+   "Cmadot": {
+    "v": {
+     "cruise": -12,
+     "approach": -9.2
+    },
+    "u": "1/rad (ไร้มิติด้วย c/2V หรือ b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) -16"
+   },
+   "Cmde": {
+    "v": {
+     "cruise": -1.6,
+     "approach": -1.6
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) -1.2"
+   },
+   "Cnb": {
+    "v": {
+     "cruise": 0.167,
+     "approach": 0.167
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) 0.26"
+   },
+   "Cnp": {
+    "v": {
+     "cruise": -0.063,
+     "approach": -0.181
+    },
+    "u": "1/rad (ไร้มิติด้วย c/2V หรือ b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "B11"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45"
+   },
+   "Cnr": {
+    "v": {
+     "cruise": -0.242,
+     "approach": -0.272
+    },
+    "u": "1/rad (ไร้มิติด้วย c/2V หรือ b/2V)",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) -0.35"
+   },
+   "Cnda": {
+    "v": {
+     "cruise": -0.005,
+     "approach": -0.005
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "B11"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45"
+   },
+   "Cndr": {
+    "v": {
+     "cruise": -0.118,
+     "approach": -0.118
+    },
+    "u": "1/rad",
+    "scope": "aircraft",
+    "src": [
+     "B11",
+     "B13"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณจากเรขาคณิต (b_aero.mjs); cruise = M0.78 CL 0.5, approach = flaps 30 CL 1.45; JSBSim (Classic) -0.2"
+   }
+  },
+  "legacy": {
+   "v": {
+    "CL0": 0.2,
+    "CLa": 5.26,
+    "CLflap": 0.947,
+    "CDflap": 0.062,
+    "CDgear": 0.017,
+    "Cm0": 0.044,
+    "Cma": -1,
+    "Cmflap": 0.033,
+    "aStall": 14.6,
+    "aStallFlap": 3.4,
+    "flapMap": {
+     "0": 0,
+     "1": 0.1,
+     "2": 0.15,
+     "5": 0.27,
+     "10": 0.4,
+     "15": 0.52,
+     "25": 0.68,
+     "30": 0.79,
+     "40": 1
+    },
+    "CD0": 0.019,
+    "K": 0.042,
+    "K_CL_offset": 0,
+    "aWarn": 10.06,
+    "aWarnFlap": 0.63,
+    "aWarnHyst": 0.5,
+    "aWarnMinOn": 0.5
+   },
+   "u": "-, 1/rad, deg, deg/f, s",
+   "scope": "aircraft",
+   "src": [
+    "B13",
+    "B14",
+    "B17",
+    "B18",
+    "B30",
+    "AL:C4"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: AC.flaps 1 = flaps 40; flapMap = ΔCL0/ΔCL0(40); Cm0/Cmflap ให้ Cm = 0 ที่ δe = 0 ใน cruise (α 2.5°) และ approach flaps 40 (α 4.4°) นอก ground effect (เทอม −0.06(1 − phiGE) ของโค้ดเป็นศูนย์ที่นั่น และทำงานเฉพาะใกล้พื้น; ผู้ตรวจทานแก้ Cm0 จาก 0.104 เป็น 0.044); aStall = α* + 3°; ให้ตั้ง offset 0.15 ใน K(CL − 0.15)² เป็น 0 สำหรับแบบนี้. ค่าประมาณ (plan C4): K_CL_offset 0 ตามบัตรวิจัย; CLmax ของ blend บนเส้นของซิม (trim q̇ = 0) 1.173 ที่ α 12.03° (แฟลป 0) และ 2.360 ที่ α 14.68° (แฟลปลงจอด); สัญญาณเตือน stall aWarn 10.06° และ aWarn + aWarnFlap 10.69° ที่ความเร็ว 1 g สูงกว่า stall 7.00 kt ที่มวลตั้งต้น (มากกว่าเกณฑ์ 5 kt หรือ 5 % ของ CS-25.207); ตรวจเฉพาะแฟลป 0 และแฟลปลงจอด เพราะ CLmax ของแฟลปกลางในโหมด legacy ผิดตามที่งานวิจัยบอก (03-airliners.md งานข้อ 2) เลิกเตือนตามเครื่องฝึก 0.5° และ 0.5 s [AL:C4]"
+  }
+ },
+ "speeds": {
+  "icao_approach_category": {
+   "v": "D",
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "B4",
+    "B37"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "Boeing/FAA AAC D ที่ 142 kt; ถ้าใช้ Vref40 ที่ MLW (138.9 kt) ได้ C"
+  },
+  "VS0_kt": {
+   "v": {
+    "axes": {
+     "mass_kg": [
+      40000,
+      45000,
+      50000,
+      55000,
+      60000,
+      65000,
+      66361,
+      70000,
+      75000,
+      79015
+     ],
+     "flap": [
+      "40"
+     ]
+    },
+    "data": [
+     [
+      87.7
+     ],
+     [
+      93
+     ],
+     [
+      98
+     ],
+     [
+      102.8
+     ],
+     [
+      107.4
+     ],
+     [
+      111.8
+     ],
+     [
+      112.9
+     ],
+     [
+      116
+     ],
+     [
+      120.1
+     ],
+     [
+      123.2
+     ]
+    ]
+   },
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "B17",
+    "B18",
+    "B23",
+    "B28",
+    "B36",
+    "AL:C4"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: ความเร็ว stall 1 g ที่แฟลปลงจอด 40 = คอลัมน์ 40 ของ speeds.VSR ในบัตรวิจัย ตามมวล; ซิมอ่านที่มวลที่เลือกแบบเส้นตรงและไม่ต่อเกินปลายตาราง [AL:C4]"
+  },
+  "VREF_kt": {
+   "v": {
+    "axes": {
+     "mass_kg": [
+      40000,
+      45000,
+      50000,
+      55000,
+      60000,
+      65000,
+      66361,
+      70000,
+      75000,
+      79015
+     ],
+     "flap": [
+      "40"
+     ]
+    },
+    "data": [
+     [
+      107.8
+     ],
+     [
+      114.4
+     ],
+     [
+      120.6
+     ],
+     [
+      126.5
+     ],
+     [
+      132.1
+     ],
+     [
+      137.5
+     ],
+     [
+      138.9
+     ],
+     [
+      142.7
+     ],
+     [
+      147.7
+     ],
+     [
+      151.6
+     ]
+    ]
+   },
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "B17",
+    "B18",
+    "AL:C4"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "ค่าประมาณ: speeds.VREF_kt ของบัตรวิจัย คอลัมน์แฟลป 40 ตามมวล [AL:C4]"
+  },
+  "VAPP_kt": {
+   "v": {
+    "axes": {
+     "mass_kg": [
+      40000,
+      45000,
+      50000,
+      55000,
+      60000,
+      65000,
+      66361,
+      70000,
+      75000,
+      79015
+     ],
+     "flap": [
+      "40"
+     ]
+    },
+    "data": [
+     [
+      112.8
+     ],
+     [
+      119.4
+     ],
+     [
+      125.6
+     ],
+     [
+      131.5
+     ],
+     [
+      137.1
+     ],
+     [
+      142.5
+     ],
+     [
+      143.9
+     ],
+     [
+      147.7
+     ],
+     [
+      152.7
+     ],
+     [
+      156.6
+     ]
+    ]
+   },
+   "u": "kt CAS",
+   "scope": "aircraft",
+   "src": [
+    "B17",
+    "B18",
+    "K35",
+    "K60",
+    "K28",
+    "K15",
+    "K9",
+    "AL:C4"
+   ],
+   "conf": "กลาง",
+   "est": true,
+   "note": "ค่าประมาณ: Vapp ในลมสงบ = Vref + 5 kt ค่าต่ำสุดของ wind additive ใน ops.speed_additive (min 2.572 m/s) ตามมวล; ลมยังไม่เพิ่ม (plan C5) [AL:C4]"
+  }
+ },
+ "wind": {
+  "wake": {
+   "category": {
+    "v": {
+     "ICAO": "M",
+     "RECAT_EU": "CAT-D Upper Medium",
+     "FAA_RECAT": "D",
+     "FAA_weight_class": "Large",
+     "FAA_ARC": "D-III"
+    },
+    "u": "-",
+    "scope": "aircraft",
+    "src": [
+     "B24",
+     "B25",
+     "B4"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "FAA RECAT D และ weight class L ตามแถว B738 ของ FAA Aircraft Characteristics Database (ผู้ตรวจทานยืนยัน) และตรงกับนิยาม span > 90 ถึง 125 ft, MTOW < 300,000 lb"
+   }
+  }
+ },
+ "turbofan": {
+  "engine_default": {
+   "v": "CFM56_7B26_class",
+   "u": "-",
+   "scope": "aircraft",
+   "src": [
+    "J9",
+    "J37",
+    "J38"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "OpenAP default; TK1951 และ I-NEOT ใช้ 7B26; ฝูง Thai Lion/Nok ไม่พบ dash number"
+  },
+  "engines": {
+   "CFM56_7B26_class": {
+    "F00": {
+     "v": 116990,
+     "u": "N",
+     "scope": "engine",
+     "src": [
+      "J1",
+      "J9"
+     ],
+     "conf": "สูง",
+     "est": false,
+     "note": "take-off 11,699 daN (26,300 lbf) EASA E.004 III.6; EEDB 8CM065 = 117.0 kN"
+    },
+    "Tflat_C": {
+     "v": 30,
+     "u": "degC",
+     "scope": "engine",
+     "src": [
+      "J26"
+     ],
+     "conf": "กลาง",
+     "est": false,
+     "note": "flat rate 30 °C (ISA+15) ตาม Aircraft Commerce; TCDS เขียนเพียง \"Sea level corner point conditions\""
+    },
+    "bpr": {
+     "v": 5.1,
+     "u": "-",
+     "scope": "engine",
+     "src": [
+      "J9",
+      "J28"
+     ],
+     "conf": "กลาง",
+     "est": false,
+     "note": "EEDB 8CM065 (7B26/3) 5.1"
+    }
+   },
+   "CFM56_7B27_class": {
+    "F00": {
+     "v": 121430,
+     "u": "N",
+     "scope": "engine",
+     "src": [
+      "J1",
+      "J9"
+     ],
+     "conf": "สูง",
+     "est": false,
+     "note": "12,143 daN (27,300 lbf); EEDB 8CM066 121.4 kN"
+    },
+    "bpr": {
+     "v": 5.1,
+     "u": "-",
+     "scope": "engine",
+     "src": [
+      "J9"
+     ],
+     "conf": "กลาง",
+     "est": false,
+     "note": "EEDB 8CM066 (7B27 เดิม 3CM034 = 5.0)"
+    },
+    "Tflat_C": {
+     "v": 30,
+     "u": "degC",
+     "scope": "engine",
+     "src": [
+      "J26",
+      "AL:C4"
+     ],
+     "conf": "ต่ำ",
+     "est": true,
+     "note": "ค่าประมาณ: flat rating 30 °C ของ CFM56-7B ทุก rating ตามการตัดสินใจของเจ้าของ OD-RATINGS (ค่าของ CFM56_7B26_class ในบัตรวิจัย 30 degC); บัตรวิจัยไม่มีค่านี้ของ class นี้ [AL:C4]"
+    }
+   },
+   "CFM56_7B24_class": {
+    "F00": {
+     "v": 107650,
+     "u": "N",
+     "scope": "engine",
+     "src": [
+      "J1",
+      "J9"
+     ],
+     "conf": "สูง",
+     "est": false,
+     "note": "10,765 daN (24,200 lbf)"
+    },
+    "bpr": {
+     "v": 5.3,
+     "u": "-",
+     "scope": "engine",
+     "src": [
+      "J9",
+      "J28"
+     ],
+     "conf": "กลาง",
+     "est": false,
+     "note": "EEDB 8CM064"
+    },
+    "Tflat_C": {
+     "v": 30,
+     "u": "degC",
+     "scope": "engine",
+     "src": [
+      "J26",
+      "AL:C4"
+     ],
+     "conf": "ต่ำ",
+     "est": true,
+     "note": "ค่าประมาณ: flat rating 30 °C ของ CFM56-7B ทุก rating ตามการตัดสินใจของเจ้าของ OD-RATINGS (ค่าของ CFM56_7B26_class ในบัตรวิจัย 30 degC); บัตรวิจัยไม่มีค่านี้ของ class นี้ [AL:C4]"
+    }
+   }
+  },
+  "ratings_offered": {
+   "v": [
+    "CFM56_7B26_class",
+    "CFM56_7B27_class",
+    "CFM56_7B24_class"
+   ],
+   "u": "-",
+   "scope": "engine",
+   "src": [
+    "J9",
+    "J37",
+    "J38",
+    "AL:C4"
+   ],
+   "conf": "กลาง",
+   "est": false,
+   "note": "รุ่นเครื่องยนต์ที่หน้าตั้งค่าให้เลือก ค่าแรกคือ turbofan.engine_default ของบัตรวิจัย; ซิมคูณ T0 และ P ของ propulsion.legacy ด้วย F00 ของรุ่นที่เลือก/F00 ของรุ่นตั้งต้น (สายการบินไม่เผยแพร่ rating จริง, OD-RATINGS) [AL:C4]"
+  }
+ },
+ "propulsion": {
+  "layout": {
+   "v": [
+    {
+     "id": 1,
+     "pos": [
+      2.159,
+      -4.902,
+      1.11
+     ],
+     "posSTA": [
+      16.485,
+      -4.902
+     ],
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "type": "turbofan",
+     "model": "CFM56_7B26_class"
+    },
+    {
+     "id": 2,
+     "pos": [
+      2.159,
+      4.902,
+      1.11
+     ],
+     "posSTA": [
+      16.485,
+      4.902
+     ],
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "type": "turbofan",
+     "model": "CFM56_7B26_class"
+    }
+   ],
+   "u": "m FRD",
+   "scope": "aircraft",
+   "src": [
+    "J23",
+    "J48",
+    "J47"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: x,y จาก JSBSim 737 (engine 85 in หน้า AERORP, y 193 in; Jenkinson y = 0.282·b/2 = 4.84 m); z = ความสูง CG 2.7 m − ศูนย์ nacelle 1.59 m; STA จาก 25%MAC 18.644 (หัวข้อ 5)"
+  },
+  "legacy": {
+   "v": {
+    "P": 27873000,
+    "eta": 0.8,
+    "T0": 233980,
+    "idle": 0.05
+   },
+   "u": "W, -, N, -",
+   "scope": "sim",
+   "src": [
+    "J11",
+    "J10"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: Vc = 95.3 m/s ทำให้ thrustAvail(V) ตรง B&Y BPR 5.1 ที่ SL ภายใน 0.042 ช่วง 0–90 m/s (j_layout.mjs); T0 = 2 × 116,990 N"
+  }
+ },
+ "controls": {
+  "surfaces": {
+   "elevator": {
+    "v": {
+     "travel_deg": {
+      "up": 22.2,
+      "down": 19.3
+     },
+     "rate_dps": 50,
+     "actuator_tau_s": 0.05,
+     "hydraulic_systems": [
+      "A",
+      "B"
+     ]
+    },
+    "u": "deg, deg/s, s",
+    "scope": "aircraft",
+    "src": [
+     "Y14",
+     "Y15",
+     "Y6"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: อัตรา 50°/s จาก NSIA (สูง); มุมจากโมเดล FlightGear 737-800YV (−0.336/+0.3875 rad, ทิศ up/down ตีความเอง); tau เลือกเอง; ขับด้วย PCU สองตัว"
+   },
+   "aileron": {
+    "v": {
+     "travel_deg": {
+      "up": 20.5,
+      "down": 15.5
+     },
+     "rate_dps": 50,
+     "actuator_tau_s": 0.05,
+     "hydraulic_systems": [
+      "A",
+      "B"
+     ]
+    },
+    "u": "deg, deg/s, s",
+    "scope": "aircraft",
+    "src": [
+     "Y15",
+     "Y7"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณ: มุมจากตาราง aileron ของโมเดล 737-800YV (−0.358/+0.271 rad ที่ wheel เต็ม); อัตราและ tau เลือกเท่า elevator เพราะไม่พบ"
+   },
+   "rudder": {
+    "v": {
+     "travel_deg": {
+      "left": 26,
+      "right": 26
+     },
+     "pedal_stop_deg": 28,
+     "rate_dps": {
+      "dual_slide": 66,
+      "primary_only": 33
+     },
+     "actuator_tau_s": 0.05,
+     "pcu_force_N": 26245,
+     "hydraulic_systems": [
+      "A",
+      "B",
+      "standby"
+     ]
+    },
+    "u": "deg, deg/s, s, N",
+    "scope": "aircraft",
+    "src": [
+     "Y7",
+     "Y9",
+     "Y8"
+    ],
+    "conf": "กลาง",
+    "est": true,
+    "note": "737-300 (NTSB AAR-99/01 p.25; Boeing p.29) ใช้กับ -800 จึงกลางตามกฎใน 3.7.3; PCU 5,900 lbf; tau 0.05 s เลือกเอง (est) ส่วนค่าอื่นไม่ใช่ค่าประมาณ"
+   }
+  }
+ },
+ "ops": {
+  "flare_height_m": {
+   "v": 6.096,
+   "u": "m (main gear height)",
+   "scope": "aircraft",
+   "src": [
+    "K15",
+    "K16",
+    "K58"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "20 ft: \"Initiate the flare when the main gears are approximately 20 ft above the runway\" (FCTM ที่ยกใน JTSB, AAIB India, ATSB AO-2023-010); บางโรงเรียนสอน 30 ft"
+  },
+  "tailstrike_pitch_deg": {
+   "v": {
+    "gear_extended": 11,
+    "gear_compressed": 9,
+    "alt_extended_JTSB": 11.5,
+    "tail_skid": "takeoff only"
+   },
+   "u": "deg",
+   "scope": "aircraft",
+   "src": [
+    "K18",
+    "K15",
+    "K26",
+    "K67",
+    "K9"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "TSIB: \"Tail strike will occur when the lift-off pitch angle exceeded 11\"; JTSB: ยุบ \"approx. 9º\", ยืด \"approx. 11.5º\"; เลือก 11.0 ให้ตรงกับหัวข้อ 5; tail skid กันได้เฉพาะตอนวิ่งขึ้น ไม่รับประกันตอนลงจอด"
+  }
+ },
+ "gear": {
+  "layout": {
+   "v": "tricycle_retract",
+   "u": "-",
+   "scope": "gear",
+   "src": [
+    "B1",
+    "B3",
+    "B25",
+    "B33",
+    "B34",
+    "AL:C4"
+   ],
+   "conf": "สูง",
+   "est": false,
+   "note": "ล้อสามจุดแบบพับเก็บได้ (ล้อหน้าและล้อหลัก) ตามแบบของเครื่องบินโดยสาร [AL:C4]"
+  },
+  "legacy": {
+   "v": [
+    {
+     "b": [
+      14.554,
+      0,
+      2.815
+     ],
+     "k": 1313451,
+     "c": 58376,
+     "stroke": 0.35,
+     "steer": true
+    },
+    {
+     "b": [
+      -1.041,
+      -2.857,
+      2.895
+     ],
+     "k": 1751268,
+     "c": 145939,
+     "stroke": 0.373,
+     "brake": true
+    },
+    {
+     "b": [
+      -1.041,
+      2.857,
+      2.895
+     ],
+     "k": 1751268,
+     "c": 145939,
+     "stroke": 0.373,
+     "brake": true
+    }
+   ],
+   "u": "m FRD, N/m, N s/m, m",
+   "scope": "gear",
+   "src": [
+    "D28",
+    "B13",
+    "B47",
+    "B36",
+    "AL:C4"
+   ],
+   "conf": "ต่ำ",
+   "est": true,
+   "note": "ค่าประมาณ: ขาล้อสปริง-แดมเปอร์เชิงเส้น 3 ขาของซิม (ล้อหน้าเลี้ยวได้ ล้อหลักมีเบรก; ล้อคู่และ bogie เป็นจุดสัมผัสเดียวต่อขา) b คือจุดสัมผัสเมื่อขายืดสุด จาก gear.geometry.*_contact_body_extended ของบัตรวิจัย ที่มวลตั้งต้น 66360 kg: น้ำหนักล้อหน้า N = W·(−x_main)/(x_nose − x_main) = 43440 N; ล้อหน้า: k strut_nose.k_linear, c c_compression (ด้านยุบ), stroke strut_nose.stroke; ล้อหลัก: k strut_main.k_linear, c c_compression (ด้านยุบ), stroke strut_main.stroke; ซิมไม่ปรับขาล้อตามมวลที่เลือก [AL:C4]"
+  }
+ },
+ "_na": {
+  "v": [
+   "aero.spin_reference.*",
+   "controls.pitch.Ch0",
+   "controls.pitch.Ch_alpha",
+   "controls.pitch.Ch_delta",
+   "controls.pitch.Ch_tab",
+   "controls.pitch.tab_max",
+   "controls.reference_types.*",
+   "controls.roll.Ch_alpha",
+   "controls.roll.Ch_delta",
+   "controls.roll.tab_max",
+   "controls.yaw.Ch_beta",
+   "controls.yaw.Ch_delta",
+   "controls.yaw.slipstream_q_ratio",
+   "controls.yaw.tab_max",
+   "gear.certification.part23_limit_descent",
+   "gear.certification.part23_min_load_factors",
+   "gear.certification.part23_reserve_drop_factor",
+   "gear.certification.part23_wing_lift_ratio",
+   "interference.slipstream.*",
+   "otherSims.*",
+   "propeller.*",
+   "turboprop.*",
+   "validation.currentModel.*",
+   "validation.procedures.v50MinFactor_singleEngine",
+   "validation.typicalModes.*",
+   "wind.fFactor.trainerExcessTW",
+   "wind.wake.trainerRollControl"
+  ],
+  "u": "-",
+  "scope": "aircraft",
+  "src": [
+   "AL:C4"
+  ],
+  "conf": "กลาง",
+  "est": false,
+  "note": "path ของรอบที่ 1 ที่ใช้กับแบบนี้ไม่ได้: _na ของบัตรวิจัย (4 รายการ: เจ็ตสองเครื่องยนต์ไม่มีใบพัดและ slipstream ของใบพัด; spin ไม่อยู่ในขอบเขตการรับรองเครื่องบินขนส่ง) และที่ตัวอ่านเพิ่ม: hinge moment และ tab ของระบบบังคับแบบ reversible ใช้ไม่ได้กับระบบ irreversible (737) และ FBW (Airbus) (03-airliners.md งานข้อ 39); ATR เป็นระบบกลไกจึงไม่อยู่ในกลุ่มนี้ (controls.pitch.Ch0, controls.pitch.Ch_alpha, controls.pitch.Ch_delta, controls.pitch.Ch_tab, controls.pitch.tab_max, controls.roll.Ch_alpha, controls.roll.Ch_delta, controls.roll.tab_max, controls.yaw.Ch_beta, controls.yaw.Ch_delta, controls.yaw.tab_max); เจ็ตไม่มีใบพัดและ slipstream ของใบพัด (controls.yaw.slipstream_q_ratio); ตัวเลขอ้างอิงของแบบอื่นที่รอบที่ 1 เก็บไว้เทียบ (ค่าของแบบนี้อยู่ใน controls.surfaces) (controls.reference_types.*); เกณฑ์ล้อของ Part 23 ใช้ไม่ได้กับเครื่องบินที่รับรองตาม Part 25 / CS-25 (gear.certification.part23_limit_descent, gear.certification.part23_min_load_factors, gear.certification.part23_reserve_drop_factor, gear.certification.part23_wing_lift_ratio); ค่าเฉพาะของเครื่องฝึกในรอบที่ 1 (wind.fFactor.trainerExcessTW, wind.wake.trainerRollControl); ชุดตรวจของเครื่องฝึกและแบบอ้างอิงอื่นในรอบที่ 1 (บัตร Airbus ของงานวิจัยใส่ _na ไว้แล้ว; เครื่องบินโดยสารใช้ validation.reference_modes และ validation.trim_targets) (validation.currentModel.*, validation.procedures.v50MinFactor_singleEngine, validation.typicalModes.*); ค่าตั้งต้นและผลของซิมอื่นที่รอบที่ 1 ใช้เทียบกับเครื่องฝึก ไม่ใช่ข้อมูลของแบบนี้ (otherSims.*); ตัวอ่าน acFromCard ไม่อ่าน path ใน _na [AL:C4]"
+ },
+ "_deferred": {
+  "v": {
+   "aero.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 9 (ตารางอากาศพลศาสตร์ตาม detent) และข้อของรอบที่ 1 เรื่อง stall, buffet และ strip wing",
+    "paths": [
+     "aero.static_long.alpha_star",
+     "aero.static_long.alpha_star_neg",
+     "aero.static_long.a1",
+     "aero.static_long.CL_sep_at_alpha_star",
+     "aero.static_long.CDmax_90",
+     "aero.static_long.dCD_sep",
+     "aero.static_long.CmX",
+     "aero.static_long.Cm0",
+     "aero.static_long.table_clean",
+     "aero.elevator_fade.alpha_t_star",
+     "aero.elevator_fade.a_t",
+     "aero.elevator_fade.floor",
+     "aero.separation_dynamics.tau1",
+     "aero.separation_dynamics.tau2",
+     "aero.large_beta.CY_crossflow",
+     "aero.strip_wing.taper",
+     "aero.strip_wing.dihedral_eff",
+     "aero.strip_wing.washout",
+     "aero.strip_wing.kp_roll",
+     "aero.strip_wing.tau_aileron",
+     "aero.strip_wing.aileron_span_frac",
+     "aero.stall_warning.min_margin",
+     "aero.stall_warning.alpha_warn_5kt",
+     "aero.stall_warning.alpha_warn_design",
+     "aero.buffet.vertical_filter",
+     "aero.buffet.lateral_filter",
+     "aero.buffet.rms_full"
+    ]
+   },
+   "interference.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 9 (ground effect และ downwash) และข้อ 11 (slipstream ของ ATR)",
+    "paths": [
+     "interference.groundEffect.rEps"
+    ]
+   },
+   "turbofan.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 10 (ENGINE_DB และ TurbofanEngine) และข้อ 13 (reverser), ระยะ K ของแผน",
+    "paths": [
+     "turbofan.engines.CFM56_7B27_class.N1_100_rpm",
+     "turbofan.engines.CFM56_7B27_class.N2_100_rpm",
+     "turbofan.engines.CFM56_7B27_class.N1_GI_pct",
+     "turbofan.engines.CFM56_7B27_class.Tflat_C",
+     "turbofan.engines.CFM56_7B27_class.kT_perK",
+     "turbofan.engines.CFM56_7B27_class.N2_GI_pct",
+     "turbofan.engines.CFM56_7B27_class.N2_FI_pct",
+     "turbofan.engines.CFM56_7B27_class.N2_AI_pct",
+     "turbofan.engines.CFM56_7B27_class.idleFrac0",
+     "turbofan.engines.CFM56_7B27_class.idleMach0",
+     "turbofan.engines.CFM56_7B27_class.thrustExp_k",
+     "turbofan.engines.CFM56_7B27_class.tau2_s",
+     "turbofan.engines.CFM56_7B27_class.Racc_pctps",
+     "turbofan.engines.CFM56_7B27_class.accShape_a",
+     "turbofan.engines.CFM56_7B27_class.Rdec_pctps",
+     "turbofan.engines.CFM56_7B27_class.altExp",
+     "turbofan.engines.CFM56_7B27_class.tauFan_s",
+     "turbofan.engines.CFM56_7B27_class.revType",
+     "turbofan.engines.CFM56_7B27_class.rev_c0",
+     "turbofan.engines.CFM56_7B27_class.rev_c1",
+     "turbofan.engines.CFM56_7B27_class.rev_uMax",
+     "turbofan.engines.CFM56_7B27_class.rev_idleFrac",
+     "turbofan.engines.CFM56_7B27_class.rev_deploy_s",
+     "turbofan.engines.CFM56_7B27_class.rev_stow_s",
+     "turbofan.reverser.revSpool_target_s"
+    ]
+   },
+   "controls.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 17 ถึง 19, 24 และ 27 (architecture ต่อแกน, actuator, stabilizer, feel ของ 737, ระบบกลไกของ ATR)",
+    "paths": [
+     "controls.pitch.S_e",
+     "controls.pitch.c_e",
+     "controls.pitch.gearing",
+     "controls.pitch.eta_t",
+     "controls.pitch.a_t",
+     "controls.pitch.tau_e",
+     "controls.pitch.l_t",
+     "controls.pitch.deda",
+     "controls.pitch.friction",
+     "controls.pitch.centring_spring",
+     "controls.pitch.derived_check",
+     "controls.roll.S_a_each",
+     "controls.roll.c_a",
+     "controls.roll.gearing",
+     "controls.roll.trim_rate",
+     "controls.yaw.S_r",
+     "controls.yaw.c_r",
+     "controls.yaw.gearing"
+    ]
+   },
+   "gear.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 40 (ล้อของเครื่องบินโดยสาร)",
+    "paths": [
+     "gear.strut_main.p_static",
+     "gear.strut_main.piston_area",
+     "gear.strut_main.ratio_static_to_extended",
+     "gear.strut_main.ratio_compressed_to_extended",
+     "gear.strut_main.polytropic_n_dynamic",
+     "gear.strut_main.polytropic_n_static",
+     "gear.strut_main.Kh_compression",
+     "gear.strut_main.Kr_rebound",
+     "gear.strut_main.c_linear",
+     "gear.strut_main.seal_friction_ratio",
+     "gear.strut_nose.p_static",
+     "gear.strut_nose.piston_area",
+     "gear.strut_nose.ratio_static_to_extended",
+     "gear.strut_nose.ratio_compressed_to_extended",
+     "gear.strut_nose.Kh_compression",
+     "gear.strut_nose.Kr_rebound",
+     "gear.strut_nose.c_linear",
+     "gear.tyre_main.k_vertical",
+     "gear.tyre_main.c_vertical",
+     "gear.tyre_main.cornering_stiffness_coef",
+     "gear.tyre_main.relaxation_length",
+     "gear.tyre_main.k_longitudinal",
+     "gear.tyre_main.mu_peak_dry",
+     "gear.tyre_main.mu_skid_ratio_dry",
+     "gear.tyre_main.mu_skid_ratio_wet",
+     "gear.tyre_main.rolling_radius",
+     "gear.tyre_main.wheel_inertia",
+     "gear.tyre_nose.k_vertical",
+     "gear.tyre_nose.c_vertical",
+     "gear.tyre_nose.cornering_stiffness_coef",
+     "gear.tyre_nose.relaxation_length",
+     "gear.brakes.force_limit_ratio",
+     "gear.brakes.pressure_rise_rate",
+     "gear.brakes.antiskid_efficiency",
+     "gear.brakes.antiskid_efficiency_measured",
+     "gear.brakes.antiskid_slip_setpoint",
+     "gear.brakes.heat_sink_mass",
+     "gear.brakes.heat_sink_cool_tau",
+     "gear.brakes.fade_start_temp",
+     "gear.brakes.fade_full_temp",
+     "gear.steering.caster_max",
+     "gear.steering.steer_rate",
+     "gear.steering.shimmy_lag",
+     "gear.certification.part25_limit_descent",
+     "gear.certification.part25_friction_cap"
+    ]
+   },
+   "wind.*": {
+    "item": "งานลมของรอบที่ 1 (01-flight-physics/08-wind.md: discrete gust, wake)",
+    "paths": [
+     "wind.discreteGust.cfr25_341_Fg",
+     "wind.wake.rc_over_b"
+    ]
+   },
+   "numerics.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 40 (แบบจำลองแรงเสียดทานของล้อ)",
+    "paths": [
+     "numerics.contact.frictionModel",
+     "numerics.contact.bristleZ0",
+     "numerics.contact.bristleTau",
+     "numerics.contact.tanhV0Longitudinal",
+     "numerics.contact.tanhV0Lateral",
+     "numerics.contact.yasimStopSpeedReference",
+     "numerics.contact.currentFrictionTimeConstants",
+     "numerics.contact.currentGearModes"
+    ]
+   },
+   "input.*": {
+    "item": "งานวิจัยรอบที่ 3 ข้อ 26 และรอบที่ 1 ข้อ 1 (คีย์แฟลปและ trim)",
+    "paths": [
+     "input.keyboard.interim_trim_rate_elevator",
+     "input.keyboard.flap_notches"
+    ]
+   }
+  },
+  "u": "-",
+  "scope": "sim",
+  "src": [
+   "AL:C4"
+  ],
+  "conf": "กลาง",
+  "est": false,
+  "note": "path ของรอบที่ 1 ที่ใช้กับแบบนี้ได้แต่บัตรวิจัยยังไม่มีค่าและโหมด legacy ไม่อ่าน (128 path) จัดกลุ่มตามงานที่จะเติม; ช่องว่างทุกตัวที่ r3_merge.mjs --coverage แสดงอยู่ใน _na หรือ _deferred [AL:C4]"
+ },
+ "_meta": {
+  "id": "b737_800",
+  "source": "AirfieldLab plan C4: the round 3 research card b737_800 in docs/research/03-airliners/params-b737-800.json (topic file 02-b737-800.md, _inherits resolved by the research's r3_merge.mjs), with the engine classes of 06-jet-engines.md and the control travels of 07-flight-controls.md; only what the simulator's legacy mode reads and the type's identity, weights, CG reference and classification, generated by tools/aircraft/build_airliners.mjs; each leaf names its sources in src, listed in _meta.sources",
+  "license": "MIT (LICENSE): the repository's own compilation, fits and estimates; manufacturer, authority, investigation-board and airline figures used as cited numbers only (no text, table, figure or document copied; © their owners, see _meta.sources); a few numbers come from open simulator models (FlyByWire A32NX, FlightGear, JSBSim) and OpenAP, cited as numbers with their source, no code or file copied (research round 3 licence rule)",
+  "note": "บัตรพารามิเตอร์รุ่นทดลองของ 737-800 สำหรับซิม สร้างด้วย tools/aircraft/build_airliners.mjs จากบัตรวิจัยรอบที่ 3 ห้ามแก้ไฟล์นี้ด้วยมือ (แก้ไฟล์หัวข้อของงานวิจัยหรือสคริปต์แล้วสร้างใหม่) ตัวเลขการบินเกือบทั้งหมดเป็นค่าประมาณ (est true, ค่าประมาณ ใน note) จากเอกสารสาธารณะ ซิมบินด้วยโหมด legacy บนสมการของเครื่องฝึก (aero.legacy, propulsion.legacy) จนกว่าระยะ K ของแผนจะให้เครื่องยนต์และตาราง ใช้เพื่อการฝึกในเกมนี้เท่านั้น ไม่ใช้เพื่อการบินจริง; สายการบินไม่เผยแพร่มวลและ rating จริง จึงเป็นค่าตั้งต้นที่ผู้ใช้เปลี่ยนได้ (OD-RATINGS); รูปแบบ leaf {v, u, scope, src, conf, est, note} ตาม docs/research/01-flight-physics/schema.md และ docs/research/03-airliners/schema-ext.md; ความเร็วเป็น kt CAS ตามมวล (ซิมไม่มีตาราง IAS–CAS ของแบบนี้ HUD จึงแสดง KCAS); _na คือ path ของรอบที่ 1 ที่ใช้กับแบบนี้ไม่ได้ และ _deferred คือ path ที่ใช้ได้แต่โหมด legacy ยังไม่อ่าน พร้อมงานที่จะเติม; รหัส AL:C4 ไม่ใช่รหัสของงานวิจัย",
+  "sources": {
+   "AL:C4": {
+    "what": "AirfieldLab plan C4, this generator's own derivations and the owner's decisions OD-LEMAC, OD-SOURCES and OD-RATINGS: the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research's tables and rules, control travels the research card lacks, the gear struts, the glide-slope antenna at the eye, the stall-warning angles, the A330 derivatives in body axes, the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists",
+    "link": "tools/aircraft/build_airliners.mjs"
+   },
+   "B1": {
+    "what": "Boeing Commercial Airplanes, 737 Airplane Characteristics for Airport Planning (737NG) D6-58325-7 Rev C, ตุลาคม 2025 (reference [B1] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://www.boeing.com/content/dam/boeing/boeingdotcom/commercial/airports/acaps/737NG_REV_C.pdf"
+   },
+   "B10": {
+    "what": "Wolfram Research, Aircraft library: Aircraft.Physical.FixedWing.Boeing737800 (เอกสาร SystemModeler), ไม่ระบุฉบับ (reference [B10] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://reference.wolfram.com/system-modeler/libraries/Aircraft/Aircraft.Physical.FixedWing.Boeing737800.html"
+   },
+   "B11": {
+    "what": "L. R. Jenkinson, P. Simpkin, D. Rhodes, Civil Jet Aircraft Design, data file A table 2 (เว็บประกอบหนังสือ), Butterworth-Heinemann/Elsevier 1999 (reference [B11] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://booksite.elsevier.com/9780340741528/appendices/data%2Da/table-2/table.htm"
+   },
+   "B12": {
+    "what": "Wikipedia contributors, Boeing 737 Next Generation, ฉบับที่เข้าถึง พ.ย. 2026 (reference [B12] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://en.wikipedia.org/wiki/Boeing_737_Next_Generation"
+   },
+   "B13": {
+    "what": "JSBSim Team (ไฟล์สร้างด้วย Aeromatic โดย D. Culp, 2006), aircraft/737/737.xml, master branch (reference [B13] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://raw.githubusercontent.com/JSBSim-Team/jsbsim/master/aircraft/737/737.xml"
+   },
+   "B14": {
+    "what": "J. Sun และคณะ, TU Delft CNS/ATM, OpenAP: b738.yml, dragpolar/b738, drag.py, GitHub TUDelft-CNS-ATM/openap (ฉบับ master ที่ดาวน์โหลด พ.ย. 2026) (reference [B14] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://github.com/TUDelft-CNS-ATM/openap"
+   },
+   "B17": {
+    "what": "Australian Transport Safety Bureau, รายงานฉบับสุดท้าย AO-2014-162 (Boeing 737-838 VH-VZR, น้ำหนักวิ่งขึ้นที่ป้อนผิด), 2015 (reference [B17] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://www.atsb.gov.au/sites/default/files/media/5727742/ao-2014-162_final.pdf"
+   },
+   "B18": {
+    "what": "Jamaica Civil Aviation Authority, Final Report, American Airlines Flight 331, Boeing 737-823 N977AN, 22 ธันวาคม 2009 (เผยแพร่ทางเว็บ 2024) (reference [B18] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://jcaa.gov.jm/wp-content/uploads/2024/06/2009-Dec-22-AA331-FINAL-REPORT.pdf"
+   },
+   "B23": {
+    "what": "Federal Aviation Administration, 14 CFR Part 25 Amendment 25-108: 1-g Stall Speed as the Basis for Compliance, Federal Register 67 FR, 26 พฤศจิกายน 2002 (reference [B23] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://www.govinfo.gov/content/pkg/FR-2002-11-26/pdf/02-29667.pdf"
+   },
+   "B24": {
+    "what": "EUROCONTROL, RECAT-EU European Wake Turbulence Categorisation and Separation Minima, Edition 1.1, 15 กรกฎาคม 2015 (สำเนาที่ code7700) (reference [B24] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://code7700.com/pdfs/wake_turbulence_recat-eu-september-2015.pdf"
+   },
+   "B25": {
+    "what": "Federal Aviation Administration, Aircraft Characteristics Database (aircraft_characteristics.pdf), ไม่ระบุฉบับ (reference [B25] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://www.faa.gov/air_traffic/publications/media/aircraft_characteristics.pdf"
+   },
+   "B26": {
+    "what": "flaps2approach (บล็อกผู้สร้าง home cockpit), Speed Trend Vector และบันทึกที่เกี่ยวข้อง, ไม่ระบุวันที่ (reference [B26] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://www.flaps2approach.com/journal/tag/Speed+Trend+Vector"
+   },
+   "B28": {
+    "what": "PPRuNe Forums, กระทู้ t-484799 (Vref ของ 737), ไม่ระบุวันที่ (reference [B28] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://www.pprune.org/archive/index.php/t-484799.html"
+   },
+   "B3": {
+    "what": "European Union Aviation Safety Agency, Type-Certificate Data Sheet IM.A.120 Boeing 737, Issue 29, 16 ธันวาคม 2025 (reference [B3] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://www.easa.europa.eu/en/downloads/7297/en"
+   },
+   "B30": {
+    "what": "AVSIM Forums, กระทู้ 345789 หน้า 6 \"Pitch attitude on approach and touchdown\" (อ้าง FCTM), ไม่ระบุวันที่ (reference [B30] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://www.avsim.com/forums/topic/345789-pitch-attitude-on-approach-and-touchdown/page/6/"
+   },
+   "B33": {
+    "what": "Wikipedia contributors, Thai Lion Air (ฝูงบิน ณ ส.ค. 2025), ฉบับที่เข้าถึง พ.ย. 2026 (reference [B33] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://en.wikipedia.org/wiki/Thai_Lion_Air"
+   },
+   "B34": {
+    "what": "Wikipedia contributors, Nok Air (ฝูงบิน ณ ส.ค. 2025), ฉบับที่เข้าถึง พ.ย. 2026 (reference [B34] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://en.wikipedia.org/wiki/Nok_Air"
+   },
+   "B36": {
+    "what": "U.S. Government (eCFR), 14 CFR Part 25 §25.107, §25.125, §25.149, §25.473 และ 14 CFR §121.195, ฉบับปัจจุบัน (reference [B36] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://www.ecfr.gov/current/title-14/chapter-I/subchapter-C/part-25"
+   },
+   "B37": {
+    "what": "ICAO, Doc 8168 PANS-OPS นิยาม aircraft approach category (สรุปที่ Code7700 \"Approach Categories\") (reference [B37] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://code7700.com/approach_categories.htm"
+   },
+   "B4": {
+    "what": "Boeing Commercial Airplanes, FAA Airport Reference Code and Approach Speeds for Boeing Aircraft, 30 มีนาคม 2016 (reference [B4] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://www.boeing.com/content/dam/boeing/boeingdotcom/commercial/airports/faqs/arcandapproachspeeds.pdf"
+   },
+   "B47": {
+    "what": "ตำราวิธีการ: D. P. Raymer Aircraft Design: A Conceptual Approach (AIAA), USAF DATCOM และ J. Roskam Airplane Design / Airplane Flight Dynamics (DARcorporation), C. D. Perkins และ R. E. Hage Airplane Performance, Stability and Control (Wiley 1949), E. Torenbeek Synthesis of Subsonic Airplane Design, N. S. Currey Aircraft Landing Gear Design (AIAA). ทุติยภูมิ (วิธีการ). หนังสือมีลิขสิทธิ์ ยกเว้น DATCOM ซึ่งเป็นงานของรัฐบาลสหรัฐฯ. ใช้ได้เฉพาะสูตรและวิธี (สูตรทางวิทยาศาสตร์ไม่มีลิขสิทธิ์) ห้ามคัดลอกข้อความหรือตาราง (reference [B47] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "docs/research/03-airliners/02-b737-800.md"
+   },
+   "B9": {
+    "what": "Flyware, Substantiation Report B737-800SF (weight and balance, DEMO2), Issue 0, ตุลาคม 2024 (reference [B9] of docs/research/03-airliners/02-b737-800.md)",
+    "link": "https://flyware.net/wp-content/uploads/2024/10/Flyware-Substantiation-Report-B737-8F-DEMO2.pdf"
+   },
+   "D1": {
+    "what": "Boeing Commercial Airplanes, 737 Airplane Characteristics for Airport Planning (D6-58325-7), Rev C, ต.ค. 2025 (reference [D1] of docs/research/03-airliners/05-airport-geometry.md)",
+    "link": "https://www.boeing.com/content/dam/boeing/boeingdotcom/commercial/airports/acaps/737NG_REV_C.pdf"
+   },
+   "D28": {
+    "what": "YV3399, 737-800YV FlightGear JSBSim model (reference [D28] of docs/research/03-airliners/05-airport-geometry.md)",
+    "link": "https://raw.githubusercontent.com/YV3399/737-800YV/master/737-800YV.xml"
+   },
+   "D3": {
+    "what": "Boeing Airport Technology, Visual Landing Aids Data (ข้อมูลสำหรับ ICAO Aerodrome Design Manual Part 4), Rev A มิ.ย. 2026 (ฉบับแรก ส.ค. 2014) (reference [D3] of docs/research/03-airliners/05-airport-geometry.md)",
+    "link": "https://www.boeing.com/content/dam/boeing/v2/airports/faq/icaoadmpart4a.pdf"
+   },
+   "J1": {
+    "what": "EASA, TCDS E.004 CFM56-7B series, Issue 07, 9 ม.ค. 2023 (reference [J1] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://www.easa.europa.eu/en/downloads/7795/en"
+   },
+   "J10": {
+    "what": "J. Sun, OpenAP thrust.py และ fuel.py (reference [J10] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://raw.githubusercontent.com/TUDelft-CNS-ATM/openap/master/openap/thrust.py"
+   },
+   "J11": {
+    "what": "M. Bartel, T. M. Young, \"Simplified Thrust and Fuel Consumption Models for Modern Two-Shaft Turbofan Engines\", J. Aircraft 45(4), 2008, doi:10.2514/1.35589 (reference [J11] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://pure.ul.ie/en/publications/simplified-thrust-and-fuel-consumption-models-for-modern-two-shaf/"
+   },
+   "J23": {
+    "what": "JSBSim Team, aircraft/737/737.xml, aircraft/A320/A320.xml, engine/CFM56.xml (reference [J23] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://raw.githubusercontent.com/JSBSim-Team/jsbsim/master/aircraft/737/737.xml"
+   },
+   "J26": {
+    "what": "Aircraft Commerce, \"CFM56-7B specifications\", Issue 58 (reference [J26] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://aircraft-commerce.com/wp-content/uploads/aircraft-commerce-docs/Aircraft%20guides/CFM56-7B/ISSUE58_CFM56_7B_SPECS.pdf"
+   },
+   "J28": {
+    "what": "C. Brady, The Boeing 737 Technical Site, \"Powerplant\" (reference [J28] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "docs/research/03-airliners/06-jet-engines.md"
+   },
+   "J37": {
+    "what": "Dutch Safety Board, รายงานเบื้องต้น TK1951 (สำเนาที่ UKFSC), 2009 (reference [J37] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://www.ukfsc.co.uk/wp-content/uploads/public_pdfs/Flight-Ops-Prelimenary-Report-Turkish-Airlines-Accident-April-2009-1.pdf"
+   },
+   "J38": {
+    "what": "AAIB UK, Bulletin 05-20 Boeing 737-86N I-NEOT (reference [J38] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://assets.publishing.service.gov.uk/media/5f44da7f8fa8f55df18b8dae/Boeing_737-86N_I-NEOT_05-20.pdf"
+   },
+   "J47": {
+    "what": "รอบที่ 3 หัวข้อ 5 เรขาคณิตเครื่องบินกับสนามบิน, 05-airport-geometry.md (อ้าง Boeing ACAPS D6-58325-7 Rev C และเอกสาร Airbus AC) (reference [J47] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "docs/research/03-airliners/06-jet-engines.md"
+   },
+   "J48": {
+    "what": "L. R. Jenkinson และคณะ, Civil Jet Aircraft Design, Data A Table 2 (booksite) (reference [J48] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://booksite.elsevier.com/9780340741528/appendices/data%2Da/table-2/table.htm"
+   },
+   "J9": {
+    "what": "J. Sun (TU Delft), OpenAP openap/data/engine/engines.csv และ openap/data/aircraft/.yml, สาขา master ดึงเมื่อ 18 พ.ย. 2026 (reference [J9] of docs/research/03-airliners/06-jet-engines.md)",
+    "link": "https://raw.githubusercontent.com/TUDelft-CNS-ATM/openap/master/openap/data/engine/engines.csv"
+   },
+   "K15": {
+    "what": "Japan Transport Safety Board, Aircraft Serious Incident Investigation Report AA2011-4, Air Nippon Boeing 737-800 JA56AN (tail strike on landing, Tokyo, 10 ส.ค. 2009), 2011 (reference [K15] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://jtsb.mlit.go.jp/eng-air_report/JA56AN.pdf"
+   },
+   "K16": {
+    "what": "AAIB India, Serious incident report VT-JTD, Boeing 737-800 Jet Airways, tail strike on landing, Dhaka, 22 ม.ค. 2017 (reference [K16] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://aaib.gov.in/Reports/2017/Serious%20Incident/Accepted%20Report%20VT-JTD.pdf"
+   },
+   "K18": {
+    "what": "Transport Safety Investigation Bureau Singapore, Final report: tail strike 9V-MGL, Kathmandu, 6 พ.ค. 2022 (reference [K18] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://www.mot.gov.sg/docs/default-source/default-document-library/9v-mgl-tail-strike-ktm-6-may-22_final-report.pdf"
+   },
+   "K26": {
+    "what": "PPRuNe Tech Log, 737-800 landing pitch limit?? (reference [K26] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://www.pprune.org/tech-log/print-442213-737-800-landing-pitch-limit.html"
+   },
+   "K28": {
+    "what": "PPRuNe Tech Log, Wind additives and landing speed (reference [K28] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://www.pprune.org/tech-log/485837-wind-additives-landind-speed.html"
+   },
+   "K35": {
+    "what": "code7700 (E. Haskel), Approach speed additives (ยก 737NG FCTM Rev 12 30 มิ.ย. 2013 p.1.11 และ A330/340 FCTM §6.30.2) (reference [K35] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://code7700.com/approach_speed_additives.htm"
+   },
+   "K58": {
+    "what": "ATSB, AO-2023-010 Bounced landing and hard landing, Boeing 737-8FE VH-YQR, Sydney, 10 มี.ค. 2023 (reference [K58] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://www.atsb.gov.au/sites/default/files/2023-12/AO-2023-010%20Final.pdf"
+   },
+   "K60": {
+    "what": "flaps2approach, Crosswind Landing Techniques Part Two: Calculations (reference [K60] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://www.flaps2approach.com/journal/tag/X-Wind+Calculations"
+   },
+   "K67": {
+    "what": "D. Carbaugh (Boeing), Tail Strikes and Strong Gusty Winds: Preventive Measures (สไลด์), 2006 (reference [K67] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://www.leonardo-in-flight.nl/PDF/Boeing%20Tailstrike%20Avoidance.pdf"
+   },
+   "K9": {
+    "what": "D. Carbaugh (Boeing), Tail Strikes: Prevention, Boeing AERO Q1 2007, สำเนา (reference [K9] of docs/research/03-airliners/10-fctm-technique.md)",
+    "link": "https://www.leonardo-in-flight.nl/PDF/Boeing%20AERO%20Tailstrikes].pdf"
+   },
+   "Y14": {
+    "what": "Norwegian Safety Investigation Authority (NSIA), Report on the serious aircraft incident during approach to Kittilä airport, Finland, on 26 December 2012 with a Boeing 737-800, LN-DYM, Aviation report 2015/01 eng, หน้า (reference [Y14] of docs/research/03-airliners/07-flight-controls.md)",
+    "link": "https://nsia.no/Aviation/Published-reports/2015-01-eng"
+   },
+   "Y15": {
+    "what": "M. Soitanen (YV3399) และ Octal450, FlightGear 737-800YV JSBSim FDM 737-800YV.xml (fdm name \"738\", สร้าง 2014-09-30) (reference [Y15] of docs/research/03-airliners/07-flight-controls.md)",
+    "link": "https://raw.githubusercontent.com/YV3399/737-800YV/master/737-800YV.xml"
+   },
+   "Y6": {
+    "what": "P. Lemme, Satcom Guru, Trim Cutout with Severe Out-of-Trim Stabilizer can be difficult to recover, 2 เมษายน 2019 และคำตอบในช่องความเห็น 5 ถึง 6 เมษายน 2019 (reference [Y6] of docs/research/03-airliners/07-flight-controls.md)",
+    "link": "https://www.satcom.guru/2019/04/stabilizer-trim-loads-and-range.html"
+   },
+   "Y7": {
+    "what": "National Transportation Safety Board, Aircraft Accident Report NTSB/AAR-99/01: Uncontrolled Descent and Collision With Terrain, USAir Flight 427, Boeing 737-300, N513AU, near Aliquippa, Pennsylvania, September 8, 1994, รับรอง 24 มีนาคม 1999, PB99-910401, สำเนา DTIC (reference [Y7] of docs/research/03-airliners/07-flight-controls.md)",
+    "link": "https://apps.dtic.mil/sti/pdfs/ADA370058.pdf"
+   },
+   "Y8": {
+    "what": "NTSB, Safety Recommendation A-99-20 through -29 (J. Hall ถึง J. F. Garvey), 16 เมษายน 1999, สำเนา (reference [Y8] of docs/research/03-airliners/07-flight-controls.md)",
+    "link": "https://corpora.tika.apache.org/base/docs/govdocs1/418/418892.pdf"
+   },
+   "Y9": {
+    "what": "Boeing, เอกสารวิเคราะห์ระบบ rudder ของ 737 (ชื่อไฟล์ \"Boeing rudder system scenarios\"; อ้าง Boeing Contribution to the USAir Flight 427 Accident Investigation, ตุลาคม 1996) เผยแพร่โดย FAA Lessons Learned (reference [Y9] of docs/research/03-airliners/07-flight-controls.md)",
+    "link": "https://www.faa.gov/sites/faa.gov/files/2022-11/Boeing%20rudder%20system%20scenarios.pdf"
+   }
+  }
+ }
+}

@@ -2,7 +2,8 @@
 // Aircraft cards for the simulator, generated from the round 2 research cards (plan C1; research round 2 task item 10,
 // docs/research/02-light-aircraft.md). Node >= 22, no dependencies.
 //
-//   node tools/aircraft/build_cards.mjs                 writes data/aircraft/<id>.json for the six types
+//   node tools/aircraft/build_cards.mjs                 writes data/aircraft/<id>.json for the six types and the seven
+//                                                       experimental airliners of build_airliners.mjs (plan C4)
 //   node tools/aircraft/build_cards.mjs --only c172s    writes one card
 //   node tools/aircraft/build_cards.mjs --check         writes nothing; exit 1 when a file differs from what this
 //                                                       script would write (each differing id and its first 10
@@ -37,6 +38,7 @@ import { leaf, val, isObj, isLeaf, leafPaths, resolveType, loadBases, loadRefInd
 import { buildAC, detents, flapMap } from '../../docs/research/02-light-aircraft/scripts/lm_card.mjs';
 import { inertiaFromRadii, RADII } from '../../docs/research/02-light-aircraft/scripts/lm_inertia.mjs';
 import { M } from '../../test/harness.mjs';
+import { AIRLINER_IDS, airlinerText } from './build_airliners.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const R2 = path.join(ROOT, 'docs', 'research', '02-light-aircraft');
@@ -434,13 +436,17 @@ function diffPaths(a, b, p = '', out = []) {
 }
 
 if (isMainModule(import.meta.url)) {
+  // the six light cards of this script and the seven experimental airliner cards of build_airliners.mjs (plan C4; the
+  // two modules import each other, so neither reads the other's bindings at the top level)
+  const ALL_IDS = [...TYPE_IDS, ...AIRLINER_IDS];
+  const textOf = (id) => (AIRLINER_IDS.includes(id) ? airlinerText(id) : cardText(id));
   const args = process.argv.slice(2), at = args.indexOf('--only');
-  const ids = at >= 0 ? [args[at + 1]] : TYPE_IDS;
-  for (const id of ids) if (!TYPE_IDS.includes(id)) { console.error(`unknown type ${id} (known: ${TYPE_IDS.join(', ')})`); process.exit(2); }
+  const ids = at >= 0 ? [args[at + 1]] : ALL_IDS;
+  for (const id of ids) if (!ALL_IDS.includes(id)) { console.error(`unknown type ${id} (known: ${ALL_IDS.join(', ')})`); process.exit(2); }
   if (args.includes('--check')) {
     const bad = [];
     for (const id of ids) {
-      const want = cardText(id), f = fileOf(id), have = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : null;
+      const want = textOf(id), f = fileOf(id), have = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : null;
       if (have === want) continue;
       let paths;
       try { paths = have === null ? ['(file missing)'] : diffPaths(JSON.parse(have), JSON.parse(want)); } catch (e) { paths = [`(not JSON: ${e.message})`]; }
@@ -450,6 +456,6 @@ if (isMainModule(import.meta.url)) {
     console.log(`data/aircraft: ${ids.length} card(s) up to date`);
   } else {
     fs.mkdirSync(OUT, { recursive: true });
-    for (const id of ids) { const t = cardText(id); fs.writeFileSync(fileOf(id), t); console.log(`wrote data/aircraft/${id}.json (${t.length} bytes)`); }
+    for (const id of ids) { const t = textOf(id); fs.writeFileSync(fileOf(id), t); console.log(`wrote data/aircraft/${id}.json (${t.length} bytes)`); }
   }
 }

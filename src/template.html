@@ -275,7 +275,10 @@ canvas.chart { width: 100%; height: 230px; display: block; background: var(--ink
       <section class="pane" id="paneTrain" hidden>
         <div id="trSetup" class="pane" style="padding:0">
           <header class="ph"><p class="eyebrow" id="trEyebrow">ฝึกร่อนลงจอด · ดอนเมือง</p><h1>ตั้งค่าเที่ยวบิน</h1><p class="lede" id="trLede">เครื่องฝึกใบพัดเทอร์โบสองที่นั่ง (แบบสมมติ) เริ่มบนแนวร่อน 3° ใส่ล้อและแฟลปลงจอดแล้ว</p></header>
-          <div class="blk"><h2>แบบเครื่องบิน</h2><div class="cards" id="typeList"></div><p class="hint" id="typeNote"></p></div>
+          <div class="blk"><h2>แบบเครื่องบิน</h2><div class="cards" id="typeList"></div>
+            <label class="toggle"><input type="checkbox" id="chkExp">รุ่นทดลอง: แสดงเครื่องบินโดยสาร (ค่าประมาณทั้งหมด)</label>
+            <div id="expOpts" hidden><p class="hint">มวลขณะลงจอด (ค่าตั้งต้นของบัตร)</p><div class="seg" id="segMass"></div><div id="ratingRow"><p class="hint">rating เครื่องยนต์</p><div class="seg" id="segRating"></div></div></div>
+            <p class="hint" id="typeNote"></p></div>
           <div class="blk"><h2>ทางวิ่ง</h2><div class="cards" id="rwyList"></div></div>
           <div class="blk"><h2>ลม</h2><div class="cards" id="scnList"></div></div>
           <div class="blk"><h2>เริ่มห่างหัวทางวิ่ง</h2><div class="seg" id="segDist"><button type="button" data-d="3704">2 nm</button><button type="button" data-d="5556">3 nm</button><button type="button" data-d="7408">4 nm</button></div></div>

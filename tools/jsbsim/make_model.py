@@ -62,8 +62,9 @@ def build_xml(P, ic):
         _fn('aux/ca', '<cos>' + _p('aero/alpha-rad') + '</cos>'),
         _fn('aux/CL', _sum(_prod(one_minus(_p('aux/sig')), _p('aux/CLlin')),
                            _prod(_p('aux/sig'), _v(2.0), '<sign>' + _p('aero/alpha-rad') + '</sign>', _p('aux/sa'), _p('aux/sa'), _p('aux/ca')))),
+        # the polar's offset AC.K_CL_offset (plan C4; 0.15 in a fixture recorded before the field existed, as deriv had it)
         _fn('aux/CDlin', _sum(_v(P['CD0'] + P['CDflap'] * f ** 1.5 + P['CDgear'] * gear),
-                              _prod(_v(P['K']), _p('aux/phiGE'), f"<pow>{_sum(_p('aux/CLlin'), _v(-0.15))}{_v(2.0)}</pow>"),
+                              _prod(_v(P['K']), _p('aux/phiGE'), f"<pow>{_sum(_p('aux/CLlin'), _v(-P.get('K_CL_offset', 0.15)))}{_v(2.0)}</pow>"),
                               _prod(_v(0.25), _p('aero/beta-rad'), _p('aero/beta-rad')))),
         _fn('aux/CD', _sum(_prod(one_minus(_p('aux/sig')), _p('aux/CDlin')),
                            _prod(_p('aux/sig'), _sum(_v(P['CD0']), _prod(_v(1.6), _p('aux/sa'), _p('aux/sa')))))),

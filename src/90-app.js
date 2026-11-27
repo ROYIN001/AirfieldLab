@@ -102,7 +102,22 @@ async function main() {
   // every type's card and what acFromCard made of it ({ error } for a card that failed); the saved choice (per viewer)
   // comes back when its card is good, else the trainer
   const TYPES = { trainer: { card: data.aircraft, ac: acFromCard(data.aircraft) }, ...(await cardsP) };
-  const typeOk = (id) => Object.hasOwn(TYPES, id) && !!TYPES[id].card;
+  // The experimental airliners (plan C4, AIRLINER_TYPES of 22-types.js): their cards are fetched only while the Thai
+  // switch รุ่นทดลอง is on (remembered per viewer), and each flies at the mass and engine rating the viewer chose
+  // (owner decision OD-RATINGS: the card's default until changed; not remembered between visits)
+  app.train.exp = store.get('afl-exp', '0') === '1';
+  app.train.opts = {};
+  let linersP = null;
+  const loadLiners = () => (linersP ??= loadCards(AIRLINER_TYPES, acFromCard).then((r) => { Object.assign(TYPES, r); return r; }));
+  if (app.train.exp) await loadLiners();
+  const isLiner = (id) => AIRLINER_TYPES.includes(id);
+  const typeOk = (id) => Object.hasOwn(TYPES, id) && !!TYPES[id].card && (!isLiner(id) || app.train.exp);
+  // acFromCard's options for a type: {} for the trainer and the light aircraft (as before plan C4), the chosen mass and
+  // rating for an airliner
+  const typeOpts = (id) => {
+    const o = (isLiner(id) && app.train.opts[id]) || {};
+    return { ...(o.mass !== undefined ? { mass: o.mass } : {}), ...(o.rating !== undefined ? { rating: o.rating } : {}) };
+  };
   app.train.type = store.get('afl-type', 'trainer');
   if (!typeOk(app.train.type)) app.train.type = 'trainer';
   setMsg('กำลังสร้างสนามบินและเมืองรอบสนาม…');
@@ -114,7 +129,7 @@ async function main() {
   // The one place that switches the aircraft after start (one global AC, 20-flight.js): the card's numbers and the
   // generic model fitted to it (22-types.js modelSpec). A Flight advances only under the type it was built with:
   // setMode puts the trainer back for explore and the chosen type for training, and builds a new Flight for it.
-  function useType(id) { const T = TYPES[id]; setAircraft(T.card); ac3.fit(modelSpec(id, T.card, AC)); }
+  function useType(id) { const T = TYPES[id]; setAircraft(T.card, typeOpts(id)); ac3.fit(modelSpec(id, T.card, AC)); }
   // points of interest from the scene data
   {
     const hv = data.af.hall.flatMap((h) => h.o); PTS.term = [hv.reduce((s, p) => s + p[0], 0) / hv.length, hv.reduce((s, p) => s + p[1], 0) / hv.length];
@@ -256,15 +271,52 @@ async function main() {
   // Aircraft type (plan C1, research round 2 task item 10): the trainer and the six light aircraft of data/aircraft/ in
   // the order of AIRCRAFT_TYPES (22-types.js). typeInfo writes the Thai text; school names come from the card, so they
   // are set as text, never as HTML. A card that failed to load shows its Thai error and cannot be chosen.
-  const typeInfoOf = (id) => { const T = TYPES[id] || {}; return typeInfo(id, T.card, T.ac); };
-  for (const id of AIRCRAFT_TYPES) {
-    const T = TYPES[id] || { error: `โหลด aircraft/${id}.json ไม่ได้` }, info = typeInfoOf(id);
-    const b = document.createElement('button'); b.type = 'button'; b.dataset.type = id; b.setAttribute('aria-pressed', 'false');
+  // An airliner's text is that of the mass and rating chosen (acFromCard again with them).
+  const typeInfoOf = (id) => { const T = TYPES[id] || {}; return typeInfo(id, T.card, T.card && isLiner(id) ? acFromCard(T.card, typeOpts(id)) : T.ac); };
+  function fillTypeButton(b) {
+    const id = b.dataset.type, T = TYPES[id] || { error: isLiner(id) && !linersP ? 'ยังไม่ได้โหลด' : `โหลด aircraft/${id}.json ไม่ได้` }, info = typeInfoOf(id);
     const nm = document.createElement('b'), em = document.createElement('em'), sp = document.createElement('span');
     nm.textContent = info.name; em.textContent = info.em; sp.textContent = T.card ? info.span : T.error;
-    b.append(nm, em, sp); b.disabled = !T.card;
+    b.replaceChildren(nm, em, sp); b.disabled = !T.card;
+  }
+  for (const id of [...AIRCRAFT_TYPES, ...AIRLINER_TYPES]) {
+    const b = document.createElement('button'); b.type = 'button'; b.dataset.type = id; b.setAttribute('aria-pressed', 'false');
+    b.hidden = isLiner(id) && !app.train.exp;
+    fillTypeButton(b);
     b.onclick = () => selectType(id);
     $('#typeList').appendChild(b);
+  }
+  // the switch รุ่นทดลอง: shows the airliners (fetching their cards the first time); off puts the trainer back if an
+  // airliner was chosen
+  $('#chkExp').checked = app.train.exp;
+  $('#chkExp').onchange = async (e) => {
+    app.train.exp = e.target.checked; store.set('afl-exp', app.train.exp ? '1' : '0');
+    for (const b of $('#typeList').children) if (isLiner(b.dataset.type)) b.hidden = !app.train.exp;
+    if (app.train.exp) { await loadLiners(); for (const b of $('#typeList').children) if (isLiner(b.dataset.type)) fillTypeButton(b); }
+    else if (isLiner(app.train.type)) selectType('trainer');
+    refreshSetup();
+  };
+  // an airliner's mass and engine rating (OD-RATINGS), offered by its card; a new choice rebuilds the preview flight
+  function chooseOpt(key, v) {
+    const id = app.train.type;
+    if (!isLiner(id) || app.mode !== 'train' || app.train.state !== 'setup') return;
+    app.train.opts[id] = { ...app.train.opts[id], [key]: v };
+    useType(id); refreshSetup(); previewFlight();
+  }
+  function writeExpOpts() {
+    const id = app.train.type, card = isLiner(id) && TYPES[id] ? TYPES[id].card : null;
+    $('#expOpts').hidden = !card;
+    if (!card) return;
+    const seg = (el, list, cur, label, key) => {
+      el.replaceChildren(...list.map((v) => {
+        const b = document.createElement('button'); b.type = 'button'; b.textContent = label(v);
+        b.setAttribute('aria-pressed', String(v === cur)); b.onclick = () => chooseOpt(key, v); return b;
+      }));
+    };
+    const ms = massOptions(card), rs = ratingOptions(card);
+    seg($('#segMass'), ms, AC.m, (m) => `${m.toLocaleString('en-US')} kg`, 'mass');
+    seg($('#segRating'), rs, (app.train.opts[id] && app.train.opts[id].rating) || rs[0], ratingName, 'rating');
+    $('#ratingRow').hidden = !rs.length;
   }
   // A type is chosen only before a flight (the setup pane); in explore, which always flies the trainer, the choice is
   // only remembered for the next training flight (window.__app.setType of test/shots.mjs may call it there).
@@ -326,7 +378,8 @@ async function main() {
   function refreshSetup() {
     const info = typeInfoOf(app.train.type);
     for (const b of $('#typeList').children) b.setAttribute('aria-pressed', String(b.dataset.type === app.train.type));
-    $('#trLede').textContent = info.lede; writeTypeNote(info);
+    $('#trLede').textContent = info.lede; writeTypeNote(info); writeExpOpts();
+    for (const b of $('#typeList').children) if (isLiner(b.dataset.type) && b.dataset.type === app.train.type) fillTypeButton(b);   // its mass
     for (const b of $('#scnList').children) b.setAttribute('aria-pressed', String(b.dataset.k === app.train.scn));
     for (const b of $('#rwyList').children) b.setAttribute('aria-pressed', String(b.dataset.r === app.train.rwy));
     $('#trEyebrow').textContent = `ฝึกร่อนลงจอด · ${FIELD.appr} ทางวิ่ง ${FIELD.rwy} ดอนเมือง`;
@@ -342,7 +395,7 @@ async function main() {
     const da = densityAltitudeFt(airDensity(fieldPressure(qnh, FIELD.elev), wx.oatC, wx.dewC));
     // Vref and Vapp in KIAS as the HUD shows them (plan C3): the card's figures, or its kt CAS read back through its table; whole knots
     const V = speedsKias();
-    $('#brief').innerHTML = [['แบบ', info.name, 2], ['มวล (ค่าประมาณ)', `${fmt(AC.m)} kg`], ['Vref', `${fmt(V.Vref)} KIAS`], ['Vapp', `${fmt(V.Vapp)} KIAS`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${fmt(wx.oatC)}°C`], ['จุดน้ำค้าง', wx.dewC == null ? '—' : `${fmt(wx.dewC)}°C`], ['QNH', `${Math.floor(qnh)} hPa`], ['ความชื้นสัมพัทธ์', wx.dewC == null ? '—' : `${fmt(relHumidity(wx.oatC, wx.dewC))}%`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
+    $('#brief').innerHTML = [['แบบ', info.name, 2], ['มวล (ค่าประมาณ)', `${fmt(AC.m)} kg`], ['Vref', `${fmt(V.Vref)} ${info.exp ? 'KCAS' : 'KIAS'}`], ['Vapp', `${fmt(V.Vapp)} ${info.exp ? 'KCAS' : 'KIAS'}`], ['แนวร่อน', `${FIELD.gs.toFixed(1)}°`], ['ลมผิวพื้น', sc.kt ? `${String(windFrom(sc)).padStart(3, '0')}°/${sc.kt}` : 'สงบ'], ['อุณหภูมิ', `${fmt(wx.oatC)}°C`], ['จุดน้ำค้าง', wx.dewC == null ? '—' : `${fmt(wx.dewC)}°C`], ['QNH', `${Math.floor(qnh)} hPa`], ['ความชื้นสัมพัทธ์', wx.dewC == null ? '—' : `${fmt(relHumidity(wx.oatC, wx.dewC))}%`], ['ความสูงความหนาแน่น', `${fmt(Math.round(da / 100) * 100)} ft`]]
       .map(([k, v, span]) => `<div${span ? ` style="grid-column: span ${span}"` : ''}><small>${k}</small><b>${v}</b></div>`).join('') + '<div style="grid-column: 1 / -1"><small>ค่าประมาณของวันทั่วไป: QNH เฉลี่ยทั้งปีและจุดน้ำค้างเฉลี่ยเวลา 11:00 น. จากสถิติ METAR ดอนเมือง 2016–2025 (Iowa Environmental Mesonet) · อุณหภูมิเป็นค่าเริ่มต้นของโปรแกรม</small></div>';
   }
   function refreshLive() { for (const b of $('#segWarp').children) b.setAttribute('aria-pressed', String(+b.dataset.w === app.train.warp)); $('#btnTake').textContent = app.flight && app.flight.pilot === 'ap' ? 'รับช่วงบังคับเอง' : 'ให้ออโต้ไพลอตบิน'; }
@@ -366,7 +419,7 @@ async function main() {
     showTrainPane('fly'); refreshLive(); chase.init = false;
     // the type flown, and for a real type the T-LS-11 (ค) label: a light aircraft at Don Mueang is a made-up scene
     const info = typeInfoOf(app.train.type);
-    $('#liveEyebrow').textContent = (app.flight.pilot === 'ap' ? 'ออโต้ไพลอตกำลังบิน' : (app.flight.opts.assist ? 'บินเอง · มีระบบช่วย' : 'บินเอง · ควบคุมตรง')) + ` · ${info.name}${info.real ? ' · สถานการณ์สมมติ' : ''}`;
+    $('#liveEyebrow').textContent = (app.flight.pilot === 'ap' ? 'ออโต้ไพลอตกำลังบิน' : (app.flight.opts.assist ? 'บินเอง · มีระบบช่วย' : 'บินเอง · ควบคุมตรง')) + ` · ${info.name}${info.exp ? ' · รุ่นทดลอง' : info.real ? ' · สถานการณ์สมมติ' : ''}`;
     if (app.trainCam === 'free') setTrainCam('chase');
     updateCtlVisibility();
   }

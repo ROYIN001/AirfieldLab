@@ -34,6 +34,11 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   generator, or to physics that moves the CL/Cm lines (the stall-warning solve flies the sim) regenerates them in the
   same PR, also when the PR is research-only (see Research CI). It never writes `trainer.json` and the cards do not
   depend on it, but it reads it through `test/harness.mjs`, so a broken trainer card stops it too (`tools/README.md`).
+  Since plan C4 it also writes the seven airliner cards (`a320ceo`, `b737_800`, `a320neo`, `a330_300`, `a321neo`,
+  `atr72_600`, `a321ceo`) through `tools/aircraft/build_airliners.mjs` from round 3's
+  `docs/research/03-airliners/params-<type>.json` (read only, never edited; every fix is made in the generator);
+  `--check` and `--only` cover all thirteen. The same rule holds: never edit them by hand, and a change to a round 3
+  params file, a round 3 reference row or the generator regenerates them in the same PR.
 - Run: `python3 -m http.server 8080 -d dist`, open http://localhost:8080 (needs HTTP: the page fetches its data).
 - Tests (Node ≥ 22, no dependencies, `node:test` + `node:assert/strict`): `node --test "test/**/*.test.mjs"`
   (quote the glob: a bare `node --test` would also run `test/shots.mjs`, `test/harness.mjs`, `test/lib/*.mjs` and
@@ -95,7 +100,15 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   T-LS-11 (ก)(ข)(ค), T-LM-13; `typeInfo` and `modelSpec` of `src/22-types.js` (the Thai card, lede and notes of each
   type, the model fit); `loadCards` with a stub fetch (Thai errors, never rejects); the owner's rule that no military
   user is named, not even generically (cards, `22-types.js`, the selector lines of `90-app.js`); the page wiring by
-  regex), `types` (plan C1 and C2, the per-type regression lock; about 23 s: research round 2 tests flown through the cards at the
+  regex), `r3cards` (plan C4, research R3-1, R3-C5, R3-C6, R3-2, R3-39; under 1 s: the seven airliner cards in the
+  generator's order; T-B-25 (lb → kg), T-B-22 (%MAC of a balance arm, OD-LEMAC on the 737), OD-LEMAC on both A321s
+  (FAA TCDS A28NM, low confidence); T-B-14, T-L-24, T-H-17 (inertia at the research's masses); OD-RATINGS (default
+  mass and rating, the choices, Vref/Vapp/VS0 from the mass tables, T0 and P scaled by the F00 ratio, CFM56-7B flat
+  rating 30 °C); `AC.K_CL_offset` (0.15 by default, 0 on the ATR and the 737); T-R-23, T-L-26, T-H-08 (CLmax of the
+  legacy sets); T-R-24/25 (ATR trim); T-J-19 (thrust lapse); every airliner trims at Vapp and flies 20 s; the A330
+  lateral derivatives in body axes; T-H-21; T-K-27; `r3_merge.mjs --dry --coverage` gaps all in the card's `_na` or
+  `_deferred`; `_na` in `acFromCard`; the รุ่นทดลอง and ค่าประมาณ labels and that explore stays on the trainer),
+  `types` (plan C1 and C2, the per-type regression lock; about 23 s: research round 2 tests flown through the cards at the
   research's masses and tolerances (plan C3 adds the KIAS rows T-LC-03, T-LC-05, T-LE-04 and T-LF-07, which left
   `DEFERRED`). C1: C172S T-LC-04, 06–08, 12–14, 20–24, 31, C172R T-LE-05–07, 11–13, 19–23, DA40
   T-LD-27, 28, 31, with four known gaps held by regression bands and the research value in `t.diagnostic`: T-LE-09 Vx
@@ -194,7 +207,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `checkPr()` and `previewHtml()` for the page test. `M` from `test/harness.mjs` also includes `Evaluator`, `aWarnAt`,
   `Recorder`, `qNlerp`, `WX_DEFAULT`, `Wind`, `logLaw`, `WIND_PROFILE`, `W20_PER_KT_LEGACY`, `windW20`,
   `GUST_FACTOR_3S`, `newtonSolve`, `qMul`, `setAircraft`, `acFromCard`, `table1`, `table2`, `inertiaInverse`,
-  `engineLoads`, `iasToCas`, `casToIas`, `speedsKias` and the humid-air functions of `10-atmo.js`.
+  `engineLoads`, `iasToCas`, `casToIas`, `speedsKias`, `toSI`, `UNIT_SI`, `pctMAC`, `armAtPctMAC`, `thrustAvail`,
+  `stallBlend` and the humid-air functions of `10-atmo.js`.
   Since plan B3 `AC` is empty until `setAircraft` runs, so a script that evaluates `src/*.js` itself with
   `new Function` instead of importing `test/harness.mjs` (several in `docs/research/01-flight-physics/scripts/`, e.g.
   `e4_autoland.mjs`) stops in `Aircraft.deriv` on `AC.engines`: have it return `setAircraft` too and call
@@ -222,12 +236,12 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 | 15-geo.js | pure: ARP, local projection `llToNE`/`neToLL`, `RWY_DATA` from AIP, derived `RUNWAYS` and `RWY_END[id]` |
 | 17-siting.js | pure: where something tall may stand: obstacle limitation surfaces `olsHeight(e, n)`, approach light lanes `alsLaneOf`, `ALS` (length and spacing per system), `RWY_PAD`, `TWY_W`, `SiteIndex` (clearances from buildings, decks, aprons, taxiways, water; the land-use class under a point), `STATIONS` and `stationSites(af)`, `mappedSite`, `placeTrees`, `siteBuildings` (`buildingProblem`, `groundShare`); also `rwyST`, `rwyEN`, `onAnyRunway`, `pointInPoly`, `nearestOnLine`, `lineLength`, `pointAlong` |
 | 18-keys.js | pure: `DEFAULT_KEYMAP` (physical key codes), `TOGGLE_ACTIONS`, `resolveKey`, `keymapProblems`, `isToggleEdge`, `KeyState` (held keys + keydown/keyup decisions + `frame()` with sub-frame taps; `app.keys`) |
-| 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC` (empty until `setAircraft(card)` fills it from an aircraft card; `acFromCard`, `inertiaInverse`), `table1`/`table2` (clamped tables), `engineLoads`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
-| 22-types.js | pure: `AIRCRAFT_TYPES` (selector order), `typeInfo` (Thai card, lede, notes from the card's `thai_fleet`), `modelSpec` (generic model fit) |
+| 20-flight.js | pure: `FIELD` + active-runway frame (`setActiveRunway(id)`), `Wind` (shear + Dryden), `AC` (empty until `setAircraft(card, opts)` fills it from an aircraft card; `acFromCard`, `inertiaInverse`; `AC.K_CL_offset` of the drag polar), `table1`/`table2` (clamped tables), `toSI`/`UNIT_SI` (card units), `pctMAC`/`armAtPctMAC`, `engineLoads`, `Aircraft` (6-DOF), `Autopilot`, `PilotLaws`, `Evaluator`, `Recorder`, `SCENARIOS`, `Flight` |
+| 22-types.js | pure: `AIRCRAFT_TYPES` (selector order), `AIRLINER_TYPES` (plan C4, behind รุ่นทดลอง), `typeInfo` (Thai card, lede, notes from the card's `thai_fleet`; `airlinerInfo` for the airliners), `EXP_SWITCH`/`EXP_NOTES`, `massOptions`/`ratingOptions`/`ratingName`, `modelSpec` (generic model fit) |
 | 25-input.js | pure: `INPUT_CFG` (estimates from research §11), calibration and dead-zone helpers, `shapeAxis` / `shapeLever`, `keyRamp` + `KeyAxis`, `readPad` (W3C standard gamepad), `Arbiter` (last-moved source wins) + `InputAxis` (no jump on a switch), `TiltStick` (phone tilt), `PilotInput` (one frame from keys, pad, touch and tilt; `app.pin`) |
 | 30-render.js | render frame `RW` (follows the active runway through `globalThis.__onRwy`), `W3(e,n,y)`, shared uniforms `SU`, shader patching `enhance()` (fog = MOR haze, `HAZE_GLSL`), `Batch` |
 | 40-sky.js | sky dome, clouds, horizon fog palette, sun light and shadow box |
-| 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` and the aircraft card `aircraft/trainer.json` (90-app.js hands it to `setAircraft`); progress stops at the first failed file, whose Thai error names it; `loadCards` (the other types' cards, beside `loadData`; never rejects, a failed card disables its entry) |
+| 48-data.js | loads `vtbd_af.json`, `land_in.png`, `land_out.png`, `city.json` and the aircraft card `aircraft/trainer.json` (90-app.js hands it to `setAircraft`); progress stops at the first failed file, whose Thai error names it; `loadCards` (the other types' cards, beside `loadData`; never rejects, a failed card disables its entry; the airliner cards only once รุ่นทดลอง is on) |
 | 50-airfield.js | land-use bake on the GPU + ground shader, runway marking shader (per runway), taxiways, aprons, hold lines, terminal, towers, navaids, approach light stands, windsocks, masts |
 | 55-city.js | instanced city buildings (those that pass `siteBuildings`), OSM footprints, tollway / SRT viaduct / BTS (`VIADUCT` deck sizes) + stations from `stationSites`, trees from `placeTrees`, parked airliners |
 | 60-lights.js | point-sprite lights with directional colour (`LightSet`); `airfieldLights(field, data)` is the whole lighting layout as data, `alsStands(E)` the approach light stands, `taxiEdgeLights(af)` the places of the taxiway edge lights, `buildAirfieldLights` draws the lights |
@@ -263,9 +277,28 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   chosen type for training, and a type changes only in the setup pane, so a Flight only advances under its own type.
   The 3D model stays the trainer's, fitted (raised to the card's wheels, its landing flap angle, fixed gear, two
   nacelles on the DA42s) and hidden in the cockpit view of a real type; a Thai note says the picture is generic.
+- Experimental airliners (plan C4, research round 3 R3-1, R3-C5, R3-C6, R3-2, R3-39; owner decisions OD-LEMAC,
+  OD-SOURCES, OD-RATINGS): the training pane's Thai switch "รุ่นทดลอง" (`#chkExp`, saved per viewer as `afl-exp`, off
+  by default) adds the seven airliner cards to the selector, each labelled รุ่นทดลอง and ค่าประมาณ (OD-SOURCES); the
+  cards load lazily (`loadCards`) the first time it is on. Explore stays on the trainer. OD-RATINGS: a type starts at
+  its card's default mass (`training_mass`: the research's `default_sim` MLW, the ATR its maximum MLW 22,350 kg) and
+  default engine rating; the setup pane offers the card's `mass_options` and `turbofan.ratings_offered`
+  (`setAircraft(card, { mass, rating })`; a rating scales T0 and P by the ratio of its F00 to the default's), with a
+  Thai note that airlines do not publish the rating they fly; the CFM56-7B classes are flat rated to 30 °C. Reader
+  (legacy mode on today's equations): `aero.legacy` and `propulsion.legacy`, the round 3 units through `toSI`, Vref/Vapp/
+  VS0 from the mass tables (`{ axes: { mass_kg, flap? }, data }`, kt CAS, read with `table1` at the mass in the
+  landing detent's column), `_na` honoured (a needed path marked `_na` throws, an optional one is skipped). The drag
+  polar's offset is the card's `AC.K_CL_offset` (`K·φGE·(CL − K_CL_offset)²`; 0.15 when a card gives none, as before,
+  so the trainer and the six light cards are bit-identical; the ATR and 737 legacy sets give 0). OD-LEMAC: the A321
+  LEMAC is FAA TCDS A28NM's Sta 700.85 in (the research's value was the A320's), the 737-800's BA 627.1 in; both low
+  confidence. Each card carries the research's `_na` plus the generator's rules, and `_deferred` (paths waiting for a
+  later plan); every `r3_merge.mjs --coverage` gap is in one of them (`test/r3cards.test.mjs`). The HUD of an airliner
+  reads KCAS (no `speeds.ias_cas`). Known limits: the Autopilot and the flare are tuned for the trainer, so some
+  airliner autolands crash in wind and the A330 stalls on its own (a Thai note says to fly it by hand; plans C5/C6);
+  the 3D model is the trainer's; Airbus gear stroke is an estimate (static deflection / 0.3).
 - Aircraft data (plan B3, research round 1 task list item 8, `12-other-sims.md` §12.14 task 3, `05-turbofan.md`
-  task 1): the numbers live in seven cards in `data/aircraft/`, `trainer.json` and the six of plan C1 (generated by
-  `tools/aircraft/build_cards.mjs`, never edited by hand), one leaf `{v, u, scope, src, conf, est, note}` per value
+  task 1): the numbers live in fourteen cards in `data/aircraft/`, `trainer.json`, the six of plan C1 and the seven
+  airliners of plan C4 (generated by `tools/aircraft/build_cards.mjs`, never edited by hand), one leaf `{v, u, scope, src, conf, est, note}` per value
   (`schema.md`, round 2 `schema-ext.md` paths; `_meta.sources` lists every `src` code with its link). `const AC = {}`
   until `setAircraft(card, opts)` fills it (`acFromCard(card, opts)` reads the card's direct paths; on every card it
   gives the same numbers as round 2's `lm_card.mjs` `buildAC` on its 51 fields, but unlike `buildAC` it takes speeds
@@ -282,7 +315,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   load. `AC.engines` (`[{ pos, dir }]`, FRD, from `propulsion.layout`): `deriv` shares
   `thr·thrustAvail(V)` equally among them and adds each one's force and moment `pos × F` through `engineLoads`
   (sums start at −0, so the trainer's one engine along +x gives exactly T on x and no moment: bit for bit as before).
-  `table1`/`table2` (clamped, T-S-07): `table1` converts kt IAS (plan C1); `table2` waits for the tables of plan C4.
+  `table1`/`table2` (clamped, T-S-07): `table1` converts kt IAS (plan C1) and reads the airliners' mass tables (plan C4); `table2` is not yet used by a card.
 - KIAS (plan C3, research round 2 task item 12, R2-12): the sim flies CAS (`air.ias` is EAS, equal to CAS to 0.1 % below
   3,000 ft and 200 kt); the HUD, the instrument strip, the brief, the debrief, the Recorder and the Evaluator use the
   KIAS a real indicator reads. `AC.kias` (a property that is not enumerable, so `Object.keys(AC)`, JSON and `{...AC}` are
@@ -567,7 +600,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   The card owns `speeds.VREF_kt` / `VAPP_kt`; handling (08) and procedures (09) quote it. Task item 10 (the type
   selector, cards from `params-light.json`) is done by plan C1 and item 11 (the regression lock over all types, `test/types.test.mjs`)
   with item 23 (the stall-recovery robot) by plan C2; item 12 (KIAS on the HUD and in the Evaluator) by plan C3; C4
-  (airliner cards through the same reader) follows. After editing any JSON block,
+  (airliner cards through the same reader) is done. After editing any JSON block,
   `node docs/research/02-light-aircraft/scripts/lm_merge.mjs --coverage --dry --strict` must report 0 warnings
   (`--strict` exits 1 on any warning, and on a card with round-1 per-type paths neither filled nor in `_na`); then run
   it without `--dry` to rewrite `params-light.json` and commit it (CI checks that the file is up to date).
@@ -590,7 +623,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   propulsion, controls, afcs, ops; `_inherits` for neo and A321 variants) and the scripts in `scripts/`
   (`r3_merge.mjs` rebuilds the JSON from the topic files, `r3_schema.mjs` rebuilds `schema.md`).
   Round 3 keeps scope by meaning and gives airliner speeds as mass tables or rules, unlike round 2's card rules,
-  so do not run round 2's `lm_merge --strict` on round 3's `params-*.json`.
+  so do not run round 2's `lm_merge --strict` on round 3's `params-*.json`. Plan C4 turns them into the airliner
+  cards with `tools/aircraft/build_airliners.mjs` (through `build_cards.mjs`); `r3_merge.mjs --dry --coverage` may be
+  run read-only to compare its gaps with the cards' `_na` and `_deferred`.
 - Read the relevant report before changing physics, input or data. Physics code changes wait until the owner
   approves the development plan that follows all five rounds.
 
