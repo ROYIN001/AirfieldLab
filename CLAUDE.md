@@ -43,7 +43,9 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
 - Tests (Node ≥ 22, no dependencies, `node:test` + `node:assert/strict`): `node --test "test/**/*.test.mjs"`
   (quote the glob: a bare `node --test` would also run `test/shots.mjs`, `test/harness.mjs`, `test/lib/*.mjs` and
   the research scripts under `docs/research/` whose names match Node's default test patterns).
-  `geo` (AIP geometry), `flight` (start trim, parked, autoland per wind), `runways` (autoland on all four ends),
+  `geo` (AIP geometry), `flight` (start trim, parked, every card parked by `setParked` at
+  rest on its three wheels with no drift in 6 s and the airliners at the research's parked CG height ± 0.12 m (plan C7),
+  autoland per wind), `runways` (autoland on all four ends),
   `assist` (robot pilot in ASSIST and DIRECT), `stall` (CLmax and Vs, research T-A-01; stall-warning margin T-A-07:
   static trimmed margin 7 ± 1 kt at five flap settings from the Evaluator's `aWarnAt(flaps)`, 1 kt/s deceleration with
   the Evaluator flag ≥ 5 kt above the stall, both corrected to 1 g, and on through the stall; the flag by α at 70 and
@@ -52,7 +54,16 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   `src/90-app.js`), `modes` (trim, linearise and MIL-F-8785C Level 1 modes with regression bands, research
   T-V-01…T-V-06), `keys` (keyboard map and key handling,
   research T-I-07 and T-I-08, and that `src/90-app.js` applies its decisions), `papi` (PAPI distance from MEHT, colour
-  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5), `controls` (`air.nz`/`air.ny`,
+  bands at the eye, ILS at the antenna, LOC/GS dots, research round 3 topic 3.5; plan C7, research R3-6, about 8 s: each
+  airliner card's eye and antenna against H1 and H2 at its reference attitude (OD-A320-PITCH 2.5°, OD-A330-VISUAL 2023),
+  x and y as the research, T-D-23, the ATR's assumed antenna, the light cards' antenna at the eye; T-D-09 and T-D-10 (the
+  back-solve and the Airbus formula, worked by hand); T-D-18 and T-D-19 (the 737 contact points, the nose-wheel shares);
+  T-D-03 (each airliner flown with its antenna on the beam over all four thresholds: wheels at RDH − H to 0.01 m and the
+  research's table to 0.05 m); T-D-06 (the eye at RDH + H2, the ideal PAPI angles and whites of the research's table, the
+  sim's PAPI from that eye worked by hand); T-D-21 and T-D-27 (ideal PAPI; the sim's band from MEHT to its 3°10′ edge);
+  P-03, P-05 and P-06 on all fourteen types: `air.eye` and `air.antH` from the card's points, G/S and LOC at the antenna,
+  the 21R ILS flown with the antenna on the beam at the trimmed pitch (2 white at 2 NM, the drop point worked by hand
+  ± 2 m and pinned ± 10 m in `DROP`), the calm autolands of the six light types), `controls` (`air.nz`/`air.ny`,
   research T-C-01: trimmed 95 kt glide nz 1.00 ± 0.02, parked nz 1, level turn nz ≈ 1/cos φ at 30° and 45°,
   elevator pull-up Δnz 1.00 ± 0.15 as in T-C-06, a rudder step whose sideslip gives ny < 0, and nz/ny against finite
   differences of the velocity), `numerics` (fixed-step accumulator and render interpolation, research T-N-07…T-N-09:
@@ -107,7 +118,8 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   rating 30 °C); `AC.K_CL_offset` (0.15 by default, 0 on the ATR and the 737); T-R-23, T-L-26, T-H-08 (CLmax of the
   legacy sets); T-R-24/25 (ATR trim); T-J-19 (thrust lapse); every airliner trims at Vapp and flies 20 s; the A330
   lateral derivatives in body axes; the known gap `AIRLINER_AUTOLAND`: the trainer's Autopilot on every airliner, seed 5,
-  calm on all four ends and 03L `head`, 03L `xr`, 21R `xl`, crash flag and events exact, score ± 7, point ± 4 / 8 m, and
+  calm on all four ends and 03L `head`, 03L `xr`, 21R `xl`, crash flag and events exact, score ± 7, point ± 4 / 8 m, the
+  main wheels first where no near-stall event comes before the touchdown, the ATR's `xl` nose first (`NOSE_FIRST`; plan C7), and
   each type's Thai Autopilot note following that table; T-H-21; T-K-27; `r3_merge.mjs --dry --coverage` gaps all in the card's `_na` or
   `_deferred`; `_na` in `acFromCard`; the รุ่นทดลอง and ค่าประมาณ labels and that explore stays on the trainer),
   `types` (plan C1 and C2, the per-type regression lock; about 23 s: research round 2 tests flown through the cards at the
@@ -290,7 +302,28 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   per runway (0.75° on 21R/03L, 0.89° on 21L), G/S 1 dot 0.36°. On the ILS the trainer sees the PAPI read low in
   the last ~0.7 km because DMK's MEHT is 3.3–5.1 m above the beam over the threshold (real, AIP-derived). The trainer's
   eye is 1.3 m above its antenna; the plan C1 cards put the antenna at the eye (no source gives its place), so their
-  PAPI reads lower still.
+  PAPI reads lower still (from 1,128 m on the 21R ILS, the trainer from about 705 m).
+- Per type (plan C7, research round 3 task item 6, R3-6; `05-airport-geometry.md` §3.5.6–§3.5.9): the airliner cards'
+  eye and glide-slope antenna come from the manufacturers' approach distances (H1 eye to wheel path, H2 eye to antenna
+  path, H antenna to wheel path) at a reference attitude: the 737 at its FD pitch 3.2° [D3], the ATR at 0°, the A320
+  family at 2.5° (owner decision OD-A320-PITCH, a temporary estimate), the A330 at 3.0° (the research's estimate).
+  `tools/aircraft/build_airliners.mjs` `eyeAntenna`: the Airbus eye keeps the research's x and y and its z is refitted
+  so that H1 is Airbus's 2023 figure (OD-A330-VISUAL: the A330's 11.34 m, not the 2021 issue's 10.82 m). At 2.5° the
+  research's eye z (FBW's −2.098 on all four) gave H1 0.19 m (A320ceo) and 0.27 m (A320neo) low and 0.08 m (A321ceo)
+  and 0.25 m (A321neo) high; the FBW eye matched Airbus at 3.3° for the A320ceo only (T-D-10). The A330's estimated
+  B ≈ 8.0 m (z_eye = z_MG − B, §3.5.7) gave 0.30 m low. H4 then lands within 0.06 m of Airbus's; the 737 and ATR eyes are the research's. The antenna stands on the centre line, x = x_eye on an
+  Airbus (no station), 0.989 m ahead of the eye on the 737 (gsAntenna_pos_STA, from Boeing's H − H3), 2.1 m ahead on the ATR
+  (the research's assumption), and its z puts its path H2 under the eye's: z_ant = z_eye + (H2 + dx·(sin ρ + cos ρ·tan θ))
+  / (cos ρ − sin ρ·tan θ), the exact form of the research's z_ant = z_eye + H2. With the antenna on the beam the main
+  wheels cross each threshold at the research's RDH − H within 0.05 m (A320ceo 11.58, 737 12.21, A330 7.90 m on 21R), and
+  on the 21R ILS at the trimmed pitch the PAPI reads low from 490–507 m (A320 family), 632 m (737), 822 m (ATR) and 207 m
+  (A330) before the threshold. The research's T-D-07 (its ideal PAPI at 405 m, the 2°50′ edge, its tables' ρ) gives
+  591 m (A320ceo), 738 m (737) and 276 m (A330), so the sim's low reading starts 88, 106 and 69 m nearer the threshold:
+  the sim's PAPI stands at 384.8 m (P-01) and each type flies its own trimmed pitch (T-D-07 has no ATR or A321 row). The cockpit camera
+  (`AC.eye`), the PAPI colours (`air.eye`) and the gear (`AC.gear`, the research's contact points) were already per type.
+  `Aircraft.setParked` stands each type on its own gear (the static equilibrium of `AC.gear`, solved with `newtonSolve`
+  in `deriv()`; it used to start every type at d −1.30 m, θ 0.5°, which dropped the DA40s 0.45 m and threw the
+  airliners over): the airliners' parked CG height is within 0.12 m of the research's `cg_height_parked`.
 
 ## Flight model (current state)
 - Generic two-seat turboprop trainer (fictional): m 2250 kg, S 16.3 m², b 10.2 m, P 700 kW, static thrust 11.5 kN.
@@ -323,14 +356,20 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   reads KCAS (no `speeds.ias_cas`), and so do the brief, the live gate row and the debrief's touchdown speed
   (`spdUnit` in `90-app.js`). Approach speeds (plan C5, below): the HUD, the Autopilot and the Evaluator use `Flight.appr`, no longer
   the fixed `AC.Vref`. Known limits: the Autopilot and the flare are tuned for the trainer. Measured on
-  2026-11-27 and re-measured after plan C5 moved the wind rows of the ATR and the Airbus types, seed 5 (`AIRLINER_AUTOLAND` in `test/r3cards.test.mjs`; calm = 21R, 21L, 03L, 03R; winds = 03L `head`,
-  03L `xr`, 21R `xl`): the 737-800 and the A321ceo hit too hard (crash) in calm air on all four ends and in every wind
-  but the 737's `xl` (72); the A320neo crashes in `xl` (calm 35–56), the A321neo in all three winds (calm 35), the ATR
-  in `xl` (calm 86, `head` 88, `xr` 76); the A330 stalls about 29 s after the start, 3.3 km before the threshold, in
-  every run; only the A320ceo lands everywhere, at 135–165 m, short of the 300 m window (55–64). Plan C5 moved the 03L `head` rows
-  of the ATR (wind factor: its 03L `head` 69 → 88, 414 → 244 m) and of the Airbus types (ground speed mini), and the 21R `xl` rows by
-  at most about a point and a metre (a scenario's wind direction is a whole degree, which leaves ≈ 0.1 kt of headwind in a
-  "crosswind"); calm and `xr` are as before. Each type's Thai note
+  2026-11-27, re-measured after plan C5 moved the wind rows of the ATR and the Airbus types and again after plan C7 moved
+  every row (the Autopilot flies each type's own antenna, H2 under the eye, so at the trimmed pitch the aircraft rides
+  higher than with the old antenna at the eye: ATR 0.9 m, 737 1.5, A320 family 1.6–2.2, A330 2.5 m), seed 5
+  (`AIRLINER_AUTOLAND` in `test/r3cards.test.mjs`; calm = 21R, 21L, 03L, 03R; winds = 03L `head`, 03L `xr`, 21R `xl`):
+  the 737-800 hits too hard (crash) in calm air on all four ends and in every wind but `xl` (68), the A321ceo in calm air
+  and in `xr` and `xl` (`head` lands, 61); the A320neo crashes in `xl` (calm 56), the A321neo in `head` (calm 35), the ATR in
+  `xl` (calm 86, `head` 86, `xr` 77): since C7 it floats in the flare, touches nose first at 728 fpm at 463 m (35; before
+  C7 89 at 282 m, main wheels first, then a bounce and a crash), and logs a near-stall event in the bounce before the
+  crash; the A330 stalls in every run, about 2.7 km before the threshold in calm air (2.96, 3.18 and 3.30 km in `head`,
+  `xr` and `xl`; before C7 3.30 km in calm air and 3.11, 3.31 and 3.26 km in the winds); only the A320ceo lands everywhere, at 168–197 m, short of the 300 m window (55–60). Where
+  no near-stall event comes before the touchdown the main wheels touch first, except the ATR's `xl` (pinned in `NOSE_FIRST`). Plan C5 had moved the 03L `head` rows of the ATR (wind
+  factor: 69 → 88, 414 → 244 m) and of the Airbus types (ground speed mini), and the 21R `xl` rows by at most about a point
+  and a metre (a scenario's wind direction is a whole degree, which leaves ≈ 0.1 kt of headwind in a "crosswind").
+  Each type's Thai note
   says so (`AP_CALM`, `AP_WIND`, the A330's: fly it by hand); phase M of the plan (AFCS M1, flare law per type M2,
   A/THR M5) tunes the Autopilot and moves the table again (plan C6 is the trim lock, `test/airliner.test.mjs`). Gear:
   `gear.legacy` is built once at the card's default mass (the research's strut k and c, or where it gives none k from
@@ -410,7 +449,7 @@ runs **Orbitlab**, a space-physics site; this project reuses Orbitlab's physics 
   against 57 / 68 KIAS), diagnostic in `test/types.test.mjs` T-LC-03. Reader rules added: every row of the table is
   checked (positive, KIAS strictly ascending, KCAS not descending) and must name a detent.
   The trainer-era constants in the code still apply to every type (plan C1 R4; per-type values are later work):
-  `setParked` d −1.30 m, the wingtip strike at 15.5° bank, the flare at 4.5–9 m, the 300–600 m touchdown window, the
+  the wingtip strike at 15.5° bank, the flare at 4.5–9 m, the 300–600 m touchdown window, the
   debrief TDZ 350–600 m, the gates at 500/200 ft and the speed band Vref −5/+20 (in KIAS since plan C3).
 - Linear stability derivatives in `AC`, stall by Beard–McLain blending (M = 55, α_stall 17°, −2.5° with flaps),
   ground effect, spring-damper gear with tanh tyre friction, RK4 at 240 Hz.

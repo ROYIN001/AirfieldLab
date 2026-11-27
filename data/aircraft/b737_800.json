@@ -275,22 +275,41 @@
     "est": false,
     "note": "ระยะทางเดิน H2 = 4.7 ft (eye path ถึง ILS beam); จุดต่อจุด H4 − H3 = 4.9 ft (1.49 m)"
    },
+   "approach_visual": {
+    "v": {
+     "theta_deg": 3,
+     "pitch_deg": 3.2,
+     "H": 4.237,
+     "H1": 5.669,
+     "H2": 1.433,
+     "H3": 3.292,
+     "H4": 4.785
+    },
+    "u": "m (pitch deg)",
+    "scope": "aircraft",
+    "src": [
+     "D3"
+    ],
+    "conf": "กลาง",
+    "est": false,
+    "note": "VREF flaps 30 winglets: 13.9/18.6/4.7/10.8/15.7 ft; no-winglet 14.2/18.8/4.7/11.0/15.9 ft pitch 3.4°; flaps 40 VREF+5 winglets (m): H 3.5 H1 5.0 H2 1.5 H3 2.5 H4 4.1 pitch 0.9°; การตั้งชื่อ H2/H3 เป็นการตีความหัวคอลัมน์"
+   },
    "gsAntenna_pos_FRD": {
     "v": [
-     16.154,
-     -0.508,
-     -0.945
+     17.143,
+     0,
+     0.6019
     ],
     "u": "m FRD",
     "scope": "aircraft",
     "src": [
      "D28",
      "D3",
-     "AL:C4"
+     "AL:C7"
     ],
-    "conf": "ต่ำ",
+    "conf": "กลาง",
     "est": true,
-    "note": "ค่าประมาณ: ไว้ที่ตำแหน่งตา (airframe.geometry.eye_pos_FRD) ไฟ PAPI และ ILS จึงอ่านที่จุดเดียวกัน; plan C7 จะวางเสาอากาศตาม airframe.geometry.eye_to_gsAntenna_vertical [AL:C4]"
+    "note": "ค่าประมาณ: เสาอากาศรับ glide slope บนแนวกลางลำ อยู่หน้าตา 0.989 m ตาม airframe.geometry.gsAntenna_pos_STA (1.5 m) กับ eye_pos_STA (2.489 m); z ตั้งให้ทางเดินเสาอากาศต่ำกว่าทางเดินตา H2 1.433 m (airframe.geometry.eye_to_gsAntenna_vertical) ที่แนวร่อน 3° และ pitch อ้างอิง 3.2°: z_ant = z_eye + (H2 + dx·(sin ρ + cos ρ·tan θ))/(cos ρ − sin ρ·tan θ) = z_eye + 1.5469 m (รูปเต็มของ z_ant = z_eye + H2 ในหัวข้อ 3.5.9 ข้อ 1); ILS และออโต้ไพลอตอ่านที่จุดนี้ ไฟ PAPI อ่านที่ตา [AL:C7]"
    }
   }
  },
@@ -1750,11 +1769,15 @@
   "note": "บัตรพารามิเตอร์รุ่นทดลองของ 737-800 สำหรับซิม สร้างด้วย tools/aircraft/build_airliners.mjs จากบัตรวิจัยรอบที่ 3 ห้ามแก้ไฟล์นี้ด้วยมือ (แก้ไฟล์หัวข้อของงานวิจัยหรือสคริปต์แล้วสร้างใหม่) ตัวเลขการบินเกือบทั้งหมดเป็นค่าประมาณ (est true, ค่าประมาณ ใน note) จากเอกสารสาธารณะ ซิมบินด้วยโหมด legacy บนสมการของเครื่องฝึก (aero.legacy, propulsion.legacy) จนกว่าระยะ K ของแผนจะให้เครื่องยนต์และตาราง ใช้เพื่อการฝึกในเกมนี้เท่านั้น ไม่ใช้เพื่อการบินจริง; สายการบินไม่เผยแพร่มวลและ rating จริง จึงเป็นค่าตั้งต้นที่ผู้ใช้เปลี่ยนได้ (OD-RATINGS); รูปแบบ leaf {v, u, scope, src, conf, est, note} ตาม docs/research/01-flight-physics/schema.md และ docs/research/03-airliners/schema-ext.md; ความเร็วเป็น kt CAS ตามมวล (ซิมไม่มีตาราง IAS–CAS ของแบบนี้ HUD จึงแสดง KCAS); _na คือ path ของรอบที่ 1 ที่ใช้กับแบบนี้ไม่ได้ และ _deferred คือ path ที่ใช้ได้แต่โหมด legacy ยังไม่อ่าน พร้อมงานที่จะเติม; รหัส AL:C4 ไม่ใช่รหัสของงานวิจัย",
   "sources": {
    "AL:C4": {
-    "what": "AirfieldLab plan C4, this generator's own derivations and the owner's decisions OD-LEMAC, OD-SOURCES and OD-RATINGS: the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research's tables and rules, control travels the research card lacks, the gear struts, the glide-slope antenna at the eye, the stall-warning angles, the A330 derivatives in body axes, the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists",
+    "what": "AirfieldLab plan C4, this generator's own derivations and the owner's decisions OD-LEMAC, OD-SOURCES and OD-RATINGS: the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research's tables and rules, control travels the research card lacks, the gear struts, the stall-warning angles, the A330 derivatives in body axes, the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists",
     "link": "tools/aircraft/build_airliners.mjs"
    },
    "AL:C5": {
     "what": "AirfieldLab plan C5 (research round 3 task item 3, R3-3) and the owner decision OD-WIND-ADDITIVE: speeds.approach_rule, this generator's transcription, in knots, of the wind rules of research topic 3.10 (the 737 additive and its two caps, the Airbus APPR COR, the ATR wind factor)",
+    "link": "tools/aircraft/build_airliners.mjs"
+   },
+   "AL:C7": {
+    "what": "AirfieldLab plan C7 (research round 3 task item 6, R3-6) and the owner decisions OD-A320-PITCH and OD-A330-VISUAL: the pilot's eye and the glide-slope antenna placed from the manufacturers' approach distances H1 and H2 of research topic 3.5 at a reference approach attitude (this generator's eyeAntenna)",
     "link": "tools/aircraft/build_airliners.mjs"
    },
    "B1": {

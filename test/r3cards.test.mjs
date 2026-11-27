@@ -212,14 +212,33 @@ test('every airliner loads, trims on a 3° glide at its Vapp (flaps 1, gear down
 // direction leaves between `xl` and a pure crosswind, the `xl` rows by at most 1.2 m and 1 point. The calm rows and
 // `xr` did not move. Boeing's additive stays at Vref + 5 in these winds (no gust figure in the scenarios). The cause of
 // the crashes is still the trainer-tuned Autopilot, not the speeds.
+// Plan C7 (research round 3 task item 6, R3-6) moved every row on purpose: the Autopilot and the ILS deviations now read
+// each type's glide-slope antenna (tools/aircraft/build_airliners.mjs eyeAntenna), no longer one at the eye, so the
+// eye flies H2 above the beam and the aircraft (its CG, at the trimmed pitch, against the old antenna at the old eye)
+// rides higher: ATR 0.9 m, 737 1.5, A320ceo 1.7, A320neo 1.6, A321ceo 2.0, A321neo 2.2, A330 2.5 m (the Airbus eye
+// refit of OD-A320-PITCH and OD-A330-VISUAL included). The main wheels cross the threshold at the research's RDH − H
+// (test/papi.test.mjs T-D-03). The A320ceo lands at 168–197 m (was 135–165), score 55–60; the 737-800 about 28 m longer,
+// still crashing in calm air and landing in `xl` (68); the A320neo as before (crash in `xl` only); the A321neo now lands in
+// `xr` and `xl` (it crashed) and still crashes in `head`; the A321ceo now lands in `head` (61; it crashed) and still
+// crashes in calm air. The ATR's `xl` fell from 89 at 281.7 m (it touched down main wheels first at 223 fpm, then
+// bounced in ROLLOUT and crashed) to 35 at 462.9 m: it enters the flare 0.9 m higher, floats, balloons to about 4 m,
+// and the Autopilot pitches it down to −5.9°, so it touches nose first at 728 fpm (sink 0 of 40), 181 m further on;
+// the near-stall event comes in the bounce after that touchdown (α 12.3° at 103 s), then the crash. So the main-wheels-
+// first check below asks only for a near-stall event before the touchdown, and pins this one row in NOSE_FIRST. The A330
+// still stalls, now about 2.7 km before the threshold in calm air (2.96, 3.18 and 3.30 km in `head`, `xr` and `xl`;
+// before C7 3.30 km in calm air, 3.11, 3.31 and 3.26 km in the winds): the trainer's Autopilot pitches up harder to
+// hold the antenna, 2.8 m below the eye, on the beam. Measured 2026-11-27 on the C7 tree. The Thai notes did not change
+// (AP_CALM on the 737 and the A321ceo, AP_WIND on the A320neo, the A321neo and the ATR, the stall note on the A330).
+// Where no near-stall event comes before the touchdown, the main wheels touch first, except in NOSE_FIRST.
+const NOSE_FIRST = new Set(['atr72_600 21R xl']);
 const AIRLINER_AUTOLAND = {
-  a320ceo: [[0, 57, 158.8, ''], [0, 57, 153.1, ''], [0, 55, 164.5, ''], [0, 55, 135.4, ''], [0, 60, 147.2, ''], [0, 58, 162.0, ''], [0, 64, 152.5, '']],
-  b737_800: [[1, 63, 195.6, 'crash'], [1, 63, 189.8, 'crash'], [1, 64, 201.4, 'crash'], [1, 63, 172.3, 'crash'], [1, 71, 201.5, 'crash'], [1, 66, 200.1, 'crash'], [0, 72, 187.8, '']],
-  a320neo: [[0, 56, 159.6, ''], [0, 56, 153.8, ''], [0, 56, 165.4, ''], [0, 35, 136.3, ''], [0, 64, 163.2, ''], [0, 35, 158.6, ''], [1, 35, 145.2, 'crash']],
-  a330_300: [[1, 20, -3300.2, 'stall,crash'], [1, 20, -3300.8, 'stall,crash'], [1, 20, -3299.5, 'stall,crash'], [1, 20, -3302.5, 'stall,crash'], [1, 20, -3110.8, 'stall,crash'], [1, 20, -3308.7, 'stall,crash'], [1, 2, -3264.1, 'stall,crash']],
-  a321neo: [[0, 35, 162.4, ''], [0, 35, 157.8, ''], [0, 35, 167.4, ''], [0, 35, 143.4, ''], [1, 35, 79.8, 'crash'], [1, 35, 161.0, 'crash'], [1, 35, 150.2, 'crash']],
-  atr72_600: [[0, 86, 266.3, ''], [0, 86, 260.5, ''], [0, 86, 272.1, ''], [0, 86, 243.1, ''], [0, 88, 243.8, ''], [0, 76, 271.5, ''], [1, 89, 281.7, 'crash']],
-  a321ceo: [[1, 35, 146.3, 'crash'], [1, 35, 140.7, 'crash'], [1, 35, 151.6, 'crash'], [1, 35, 124.9, 'crash'], [1, 84, 132.0, 'crash'], [1, 35, 141.8, 'crash'], [1, 35, 117.1, 'crash']],
+  a320ceo: [[0, 55, 190.7, ''], [0, 57, 185.0, ''], [0, 57, 196.7, ''], [0, 57, 167.6, ''], [0, 59, 180.6, ''], [0, 58, 194.7, ''], [0, 60, 185.4, '']],
+  b737_800: [[1, 72, 223.5, 'crash'], [1, 64, 217.7, 'crash'], [1, 72, 229.3, 'crash'], [1, 64, 200.2, 'crash'], [1, 79, 230.0, 'crash'], [1, 73, 228.1, 'crash'], [0, 68, 214.3, '']],
+  a320neo: [[0, 56, 189.7, ''], [0, 56, 183.9, ''], [0, 56, 195.5, ''], [0, 56, 166.4, ''], [0, 60, 195.0, ''], [0, 56, 189.9, ''], [1, 35, 173.2, 'crash']],
+  a330_300: [[1, 20, -2700.5, 'stall,crash'], [1, 20, -2701.1, 'stall,crash'], [1, 20, -2699.9, 'stall,crash'], [1, 20, -2702.4, 'stall,crash'], [1, 20, -2956.1, 'stall,crash'], [1, 20, -3176.6, 'stall,crash'], [1, 8, -3299.8, 'stall,crash']],
+  a321neo: [[0, 35, 192.7, ''], [0, 35, 187.1, ''], [0, 35, 197.9, ''], [0, 35, 171.1, ''], [1, 35, 125.9, 'crash'], [0, 35, 192.2, ''], [0, 35, 182.4, '']],
+  atr72_600: [[0, 86, 283.4, ''], [0, 86, 277.7, ''], [0, 86, 289.2, ''], [0, 86, 260.3, ''], [0, 86, 259.8, ''], [0, 77, 287.4, ''], [1, 35, 462.9, 'stall,crash']],
+  a321ceo: [[1, 35, 186.5, 'crash'], [1, 35, 181.0, 'crash'], [1, 35, 192.4, 'crash'], [1, 35, 163.9, 'crash'], [0, 61, 177.7, ''], [1, 55, 185.6, 'crash'], [1, 35, 159.3, 'crash']],
 };
 const AL_RUNS = [['21R', 'calm'], ['21L', 'calm'], ['03L', 'calm'], ['03R', 'calm'], ['03L', 'head'], ['03L', 'xr'], ['21R', 'xl']];
 test('known gap: the trainer\'s Autopilot on each airliner, seed 5, calm on all four ends and three winds (regression table for phase M; the Thai note follows it)', (t) => {
@@ -239,6 +258,8 @@ test('known gap: the trainer\'s Autopilot on each airliner, seed 5, calm on all 
         printed.push(`[${f.crashed ? 1 : 0}, ${s.total}, ${f.ev.td ? f.ev.td.s.toFixed(1) : null}, '${ev}']`);
         assert.equal(f.crashed ? 1 : 0, c, info); assert.equal(ev, pinEv, info);
         near(s.total, score, 7, `${info}: score`); near(f.ev.td.s, td, key === 'calm' ? 4 : 8, `${info}: point`);
+        const stallBefore = f.ev.events.some((e) => e.k === 'stall' && e.t <= f.ev.td.t);
+        if (!stallBefore) assert.equal(f.ev.td.noseFirst, NOSE_FIRST.has(`${id} ${rw} ${key}`), `${info}: the main wheels touch first unless pinned in NOSE_FIRST (plan C7)`);
       });
       // the Thai note of the type says what the table says: crashes in calm, crashes only in some winds, the A330's stall
       const rows = AIRLINER_AUTOLAND[id], calmCrash = rows.slice(0, 4).some((r) => r[0]), windCrash = rows.slice(4).some((r) => r[0]);

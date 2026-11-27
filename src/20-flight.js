@@ -1015,11 +1015,33 @@ class Aircraft {
       gammaA: thrFix.v == null ? gammaA : x[2], limited, residual: Math.max(...r.map(Math.abs)), it, ok: why.length === 0, why };
   }
 
-  // Parked on the ground (used for apron aircraft and resets)
+  // Parked on the ground (resets and tests; the page's apron aircraft are drawn, not flown), gear down, idle, brakes on.
+  // Plan C7 (research round 3 task item 6, R3-6: each type stands on its own wheel contact points): the CG height and
+  // the pitch are the static equilibrium of the card's gear (AC.gear), solved with newtonSolve for zero vertical and
+  // pitch acceleration in deriv() at rest, wings level (the throttle then spools to idle against the brakes, as before).
+  // Before, every type started at d −1.30 m and θ 0.5° (the trainer's numbers): the trainer 3 mm above and 0.49° nose up
+  // of its rest (d −1.303 m, θ 0.01°), the DA40s 0.45 m above theirs, and the airliners' struts up to 2.8 m into the
+  // ground, which threw them over (test/flight.test.mjs). Start of the solve: the main wheels deflected by the weight over
+  // the sum of the spring rates, θ 0. If the solve fails (no contact, a stroke run out) that start is kept.
   setParked(n, e, psi) {
-    const x = this.x; const q = eulerToQ(0, 0.5 * DEG, psi);
-    x.set([n, e, -1.30, 0, 0, 0, q[0], q[1], q[2], q[3], 0, 0, 0]);
-    this.thr = this.cmd.thr = 0; this.brake = this.cmd.brake = 1; this.updateAir(0); this.gen = (this.gen || 0) + 1;
+    const x = this.x, g = AC.gear;
+    this.thr = this.cmd.thr = 0; this.brake = this.cmd.brake = 1; this.gearPos = 1; this.cmd.gear = 1;
+    const put = (d, th) => { const q = eulerToQ(0, th, psi); x.set([n, e, d, 0, 0, 0, q[0], q[1], q[2], q[3], 0, 0, 0]); };
+    // |q| made 1 to the last bit, so renderPose's normalising nlerp draws this state exactly (§9.7): divide by |q|, and
+    // where that cycles about 1 by a rounding, step the largest component one unit in the last place toward |q| = 1
+    const unit = () => {
+      for (let k = 0; k < 12; k++) {
+        const l = Math.hypot(x[6], x[7], x[8], x[9]); if (l === 1) return;
+        if (k < 2) { for (let i = 6; i < 10; i++) x[i] /= l; continue; }
+        let j = 6; for (let i = 7; i < 10; i++) if (Math.abs(x[i]) > Math.abs(x[j])) j = i;
+        x[j] -= Math.sign(x[j]) * Math.sign(l - 1) * Number.EPSILON * 2 ** Math.floor(Math.log2(Math.abs(x[j])));
+      }
+    };
+    const res = (v) => { put(v[0], v[1]); this.deriv(x, this.tmp); return [this.tmp[5], this.tmp[11]]; };
+    const zMain = Math.max(g[1].b[2], g[2].b[2]), defl = AC.m * G0 / (g[0].k + g[1].k + g[2].k);
+    const sol = newtonSolve(res, [-(zMain - defl), 0], { tol: 1e-9 });
+    put(...(sol.ok ? sol.x : [-(zMain - defl), 0])); unit();
+    this.updateAir(0); this.gen = (this.gen || 0) + 1;
   }
 }
 

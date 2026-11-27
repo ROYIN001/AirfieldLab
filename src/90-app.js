@@ -931,8 +931,9 @@ async function main() {
         const e = a.eye, pw = papiSeen(e[0], e[1], e[2]);
         const nW = pw.filter((v) => v > 0.5).length;
         // On the ILS the PAPI of Don Mueang reads low near the threshold: its MEHT (AIP AD 2.14) is 3.3 to 5.1 m above the ILS beam over the threshold, while
-        // the trainer's eye is 1.3 m above its glide-slope antenna (research round 3, topic 3.5) and the light aircraft of
-        // plan C1 have the antenna at the eye (no source gives its place), so they read lower still.
+        // the trainer's eye is 1.3 m above its glide-slope antenna (research round 3, topic 3.5), each airliner's by its
+        // manufacturer's H2 (0.9–2.8 m on the path, plan C7: tools/aircraft/build_airliners.mjs eyeAntenna), and the light
+        // aircraft of plan C1 have the antenna at the eye (no source gives its place), so they read lower still.
         const onIls = FIELD.appr === 'ILS' && Math.abs(a.gsDots) < 0.5 && Math.abs(a.locDots) < 1 && nW < 2 && a.s > -1500;
         $('#papiTxt').textContent = pw[0] < 0 ? 'ผ่านตำแหน่ง PAPI แล้ว' : `ขาว ${nW} แดง ${4 - nW} · ${['ต่ำมาก', 'ต่ำเล็กน้อย', 'อยู่บนแนวร่อน', 'สูงเล็กน้อย', 'สูงมาก'][nW]}` + (onIls ? ' · บน ILS ช่วงท้าย PAPI แสดงต่ำได้ ให้ยึด ILS' : '');
         $('#liveTitle').textContent = { APP: `ร่อนเข้าหาทางวิ่ง ${FIELD.rwy}`, FLARE: 'ถอนคันบังคับก่อนแตะพื้น', ROLLOUT: 'วิ่งบนทางวิ่งและเบรก', DONE: 'หยุดเรียบร้อย', STOP: 'หยุดเรียบร้อย', CRASH: 'เครื่องบินกระแทกพื้น' }[ph] || 'กำลังบิน';

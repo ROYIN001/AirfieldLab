@@ -268,16 +268,19 @@
     "v": [
      27.37,
      -0.8,
-     -3.9
+     -4.1966
     ],
     "u": "m FRD",
     "scope": "aircraft",
     "src": [
-     "D4"
+     "D4",
+     "D5",
+     "D32",
+     "AL:C7"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: CG อ้างอิงสมมติให้ล้อหน้ารับ 8 % (x_MG = −0.08·WB); z_MG 4.1 m และ B 8.0 m (ประมาณ)"
+    "note": "ค่าประมาณ: x, y ตามบัตรวิจัย (27.37, -0.8, -3.9); z ตั้งใหม่ให้ทางเดินตาสูงกว่าทางเดินล้อหลัก (gear.geometry.main_contact_body_extended, โช้คยืด) H1 11.34 m ตามข้อมูล Airbus ฉบับ 2023 [D4] ที่แนวร่อน 3° และ pitch อ้างอิง 3°; OD-A330-VISUAL เลือกฉบับ 2023 (H1 11.34 m) ไม่ใช่ฉบับ 2021 (10.82 m) [D5]; จุดสัมผัสล้อหลักเป็นศูนย์ bogie: z ของบัตรวิจัย -3.9 ให้ H1 11.04 m ที่ pitch นี้; ตาเหนือล้อจุดต่อจุดได้ H4 9.82 m (Airbus 9.77 m) [AL:C7]"
    },
    "eye_to_gsAntenna_vertical": {
     "v": 2.78,
@@ -290,21 +293,41 @@
     "est": true,
     "note": "ค่าประมาณ: H1 − H"
    },
+   "approach_visual": {
+    "v": {
+     "theta_deg": 3,
+     "H": 8.56,
+     "H1": 11.34,
+     "H2": 2.78,
+     "H4": 9.77
+    },
+    "u": "m",
+    "scope": "aircraft",
+    "src": [
+     "D4",
+     "D5"
+    ],
+    "conf": "สูง",
+    "est": false,
+    "note": "ft 28.1/37.2/–/32.0; ฉบับ 2021: H 8.05 H1 10.82 H4 9.24"
+   },
    "gsAntenna_pos_FRD": {
     "v": [
      27.37,
-     -0.8,
-     -3.9
+     0,
+     -1.4051
     ],
     "u": "m FRD",
     "scope": "aircraft",
     "src": [
      "D4",
-     "AL:C4"
+     "D5",
+     "D32",
+     "AL:C7"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ไว้ที่ตำแหน่งตา (airframe.geometry.eye_pos_FRD) ไฟ PAPI และ ILS จึงอ่านที่จุดเดียวกัน; plan C7 จะวางเสาอากาศตาม airframe.geometry.eye_to_gsAntenna_vertical [AL:C4]"
+    "note": "ค่าประมาณ: เสาอากาศรับ glide slope บนแนวกลางลำ x เท่าตา (ไม่มีตำแหน่งสายอากาศของ Airbus หัวข้อ 3.5.9 ข้อ 1); z ตั้งให้ทางเดินเสาอากาศต่ำกว่าทางเดินตา H2 2.78 m (airframe.geometry.eye_to_gsAntenna_vertical) ที่แนวร่อน 3° และ pitch อ้างอิง 3°: z_ant = z_eye + (H2 + dx·(sin ρ + cos ρ·tan θ))/(cos ρ − sin ρ·tan θ) = z_eye + 2.7915 m (รูปเต็มของ z_ant = z_eye + H2 ในหัวข้อ 3.5.9 ข้อ 1); ILS และออโต้ไพลอตอ่านที่จุดนี้ ไฟ PAPI อ่านที่ตา [AL:C7]"
    }
   }
  },
@@ -1517,11 +1540,15 @@
   "note": "บัตรพารามิเตอร์รุ่นทดลองของ A330-300 สำหรับซิม สร้างด้วย tools/aircraft/build_airliners.mjs จากบัตรวิจัยรอบที่ 3 ห้ามแก้ไฟล์นี้ด้วยมือ (แก้ไฟล์หัวข้อของงานวิจัยหรือสคริปต์แล้วสร้างใหม่) ตัวเลขการบินเกือบทั้งหมดเป็นค่าประมาณ (est true, ค่าประมาณ ใน note) จากเอกสารสาธารณะ ซิมบินด้วยโหมด legacy บนสมการของเครื่องฝึก (aero.legacy, propulsion.legacy) จนกว่าระยะ K ของแผนจะให้เครื่องยนต์และตาราง ใช้เพื่อการฝึกในเกมนี้เท่านั้น ไม่ใช้เพื่อการบินจริง; สายการบินไม่เผยแพร่มวลและ rating จริง จึงเป็นค่าตั้งต้นที่ผู้ใช้เปลี่ยนได้ (OD-RATINGS); รูปแบบ leaf {v, u, scope, src, conf, est, note} ตาม docs/research/01-flight-physics/schema.md และ docs/research/03-airliners/schema-ext.md; ความเร็วเป็น kt CAS ตามมวล (ซิมไม่มีตาราง IAS–CAS ของแบบนี้ HUD จึงแสดง KCAS); _na คือ path ของรอบที่ 1 ที่ใช้กับแบบนี้ไม่ได้ และ _deferred คือ path ที่ใช้ได้แต่โหมด legacy ยังไม่อ่าน พร้อมงานที่จะเติม; รหัส AL:C4 ไม่ใช่รหัสของงานวิจัย",
   "sources": {
    "AL:C4": {
-    "what": "AirfieldLab plan C4, this generator's own derivations and the owner's decisions OD-LEMAC, OD-SOURCES and OD-RATINGS: the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research's tables and rules, control travels the research card lacks, the gear struts, the glide-slope antenna at the eye, the stall-warning angles, the A330 derivatives in body axes, the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists",
+    "what": "AirfieldLab plan C4, this generator's own derivations and the owner's decisions OD-LEMAC, OD-SOURCES and OD-RATINGS: the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research's tables and rules, control travels the research card lacks, the gear struts, the stall-warning angles, the A330 derivatives in body axes, the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists",
     "link": "tools/aircraft/build_airliners.mjs"
    },
    "AL:C5": {
     "what": "AirfieldLab plan C5 (research round 3 task item 3, R3-3) and the owner decision OD-WIND-ADDITIVE: speeds.approach_rule, this generator's transcription, in knots, of the wind rules of research topic 3.10 (the 737 additive and its two caps, the Airbus APPR COR, the ATR wind factor)",
+    "link": "tools/aircraft/build_airliners.mjs"
+   },
+   "AL:C7": {
+    "what": "AirfieldLab plan C7 (research round 3 task item 6, R3-6) and the owner decisions OD-A320-PITCH and OD-A330-VISUAL: the pilot's eye and the glide-slope antenna placed from the manufacturers' approach distances H1 and H2 of research topic 3.5 at a reference approach attitude (this generator's eyeAntenna)",
     "link": "tools/aircraft/build_airliners.mjs"
    },
    "D10": {
@@ -1535,6 +1562,10 @@
    "D4": {
     "what": "Airbus Airport Operations, Airbus Aircraft Data for Visual Aids Calibration, ref X06ME2319992, 1 ก.ย. 2023 (reference [D4] of docs/research/03-airliners/05-airport-geometry.md)",
     "link": "https://aircraft.airbus.com/sites/g/files/jlcbta126/files/2023-10/Airbus%20Aircraft%20Data%20for%20Visual%20Aids%20Calibration%20-%20ref%20ADNS%20X06ME2319992.pdf"
+   },
+   "D5": {
+    "what": "Airbus, Airbus Aircraft Data for Visual Aids Calibration, ref XME2126619, 15 ธ.ค. 2021 (reference [D5] of docs/research/03-airliners/05-airport-geometry.md)",
+    "link": "https://www.airbus.com/sites/g/files/jlcbta136/files/2021-12/Airbus-Aircraft-Data-for-Visual-Aids-Calibration.pdf"
    },
    "H1": {
     "what": "Airbus, A330 Aircraft Characteristics: Airport and Maintenance Planning, rev. Jul 01/23 (ส่วน 2-1-1 น้ำหนักทุก WV, เชื้อเพลิง) (reference [H1] of docs/research/03-airliners/04-a330-300.md)",

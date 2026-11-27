@@ -21,8 +21,10 @@
 //    from ops.speed_additive, speeds.VAPP_rule and speeds.VMCL_kt of the research card;
 //  - controls.surfaces where the research card has none: the ATR's travels from topic 07's text, the A330 aileron
 //    (the A320 figure) and rudder (the 30° of the research's VMCA build-up);
-//  - gear.legacy (three linear struts at the default mass), gear.layout and airframe.geometry.gsAntenna_pos_FRD (at
-//    the eye until plan C7 applies z_ant = z_eye + H2);
+//  - gear.legacy (three linear struts at the default mass) and gear.layout;
+//  - plan C7 (research round 3 task item 6, R3-6; 05-airport-geometry.md §3.5.6, §3.5.9 item 1): the eye and the
+//    glide-slope antenna in the reference approach attitude (eyeAntenna below): the Airbus eye height refitted to the
+//    manufacturer's H1 (owner decisions OD-A320-PITCH and OD-A330-VISUAL), the antenna H2 below the eye's path;
 //  - aero.legacy's stall-warning angles, solved on the simulator's lift curve for 7 kt above the 1-g stall at flaps 0
 //    and at the landing detent (the intermediate detents of the legacy model are known to be off: 03-airliners.md task 2);
 //  - the A330's lateral derivatives turned from stability to body axes (04-a330-300.md §3.4.7.5);
@@ -73,7 +75,7 @@ export const COPIED3 = [
   'airframe.identity', 'airframe.weights.MTOW', 'airframe.weights.MLW', 'airframe.weights.default_sim',
   ...['Ixx', 'Iyy', 'Izz', 'Ixz', 'ref_mass', 'radii'].map((k) => 'airframe.inertia.' + k),
   'airframe.cg.LEMAC_x', 'airframe.cg.MAC', 'airframe.cg.ref_pctMAC',
-  'airframe.geometry.eye_pos_FRD', 'airframe.geometry.length', 'airframe.geometry.eye_to_gsAntenna_vertical',
+  'airframe.geometry.eye_pos_FRD', 'airframe.geometry.length', 'airframe.geometry.eye_to_gsAntenna_vertical', 'airframe.geometry.approach_visual',
   'aero.ref.S', 'aero.ref.b', 'aero.ref.c', 'aero.legacy', 'aero.flaps.detents', ...DER.map((k) => 'aero.derivatives.' + k),
   'propulsion.legacy', 'propulsion.layout', 'controls.surfaces.elevator', 'controls.surfaces.aileron', 'controls.surfaces.rudder',
   'speeds.icao_approach_category', 'turbofan.engine_default', 'wind.wake.category',
@@ -87,12 +89,12 @@ const LEGACY_U = { 'aero.legacy': '-, 1/rad, deg, deg/f, s', 'propulsion.legacy'
 
 // The note rules of build_cards (an empty note names its source, an estimate says ค่าประมาณ, every code a note cites
 // is in src), with round 3's code forms
-const CODE_RE = /\[(R1:[A-Z]\d+|[RBLHDJYZOK]\d+|AL:C[45])\]/g;   // a code the note cites in brackets
+const CODE_RE = /\[(R1:[A-Z]\d+|[RBLHDJYZOK]\d+|AL:C[457])\]/g;   // a code the note cites in brackets
 const codesIn = (s) => uniq([...String(s || '').matchAll(CODE_RE)].map((m) => m[1]));
 function noteRules(l) {
   if (!String(l.note || '').trim()) l.note = `${l.est ? EST + ': ' : ''}ค่าตามแหล่ง ${l.src.map((s) => `[${s}]`).join('')}`;
   if (l.est && !l.note.includes(EST)) l.note = `${EST}: ${l.note}`;
-  l.src = uniq([...l.src, ...codesIn(l.note).filter((c) => /^AL:C[45]$/.test(c) || /^R1:/.test(c) || hasRef(c))]);
+  l.src = uniq([...l.src, ...codesIn(l.note).filter((c) => /^AL:C[457]$/.test(c) || /^R1:/.test(c) || hasRef(c))]);
   return l;
 }
 const mk = (v, u, scope, src, note, { conf = 'ต่ำ', est = true } = {}) => noteRules({ v, u, scope, src: uniq(src), conf, est, note: est && !note.includes(EST) ? `${EST}: ${note}` : note });
@@ -247,6 +249,77 @@ function gearLeaf(card, m) {
     `ขาล้อสปริง-แดมเปอร์เชิงเส้น 3 ขาของซิม (ล้อหน้าเลี้ยวได้ ล้อหลักมีเบรก; ล้อคู่และ bogie เป็นจุดสัมผัสเดียวต่อขา) b คือจุดสัมผัสเมื่อขายืดสุด`
     + ` จาก gear.geometry.*_contact_body_extended ของบัตรวิจัย ที่มวลตั้งต้น ${m} kg: น้ำหนักล้อหน้า N = W·(−x_main)/(x_nose − x_main) = ${Math.round(Nn)} N; ${how.join('; ')};`
     + ` ซิมไม่ปรับขาล้อตามมวลที่เลือก [AL:C4]`);
+}
+
+// ── Plan C7 (research round 3 task item 6, R3-6): the eye and the glide-slope antenna of each type ──
+// 05-airport-geometry.md §3.5.6–§3.5.9 [D3][D4]: the manufacturers give the vertical distances between the paths of the
+// pilot's eye, the glide-slope antenna and the lowest wheel on a 3° approach in a reference attitude (H1 eye to wheel,
+// H2 = H1 − H eye to antenna, H antenna to wheel; H4 eye above wheel point to point). On a path descending at θ a body
+// point p (FRD from the CG) at pitch ρ, wings level, has its path height above the CG's path
+//   pathUp(p) = x·(sin ρ + cos ρ·tan θ) − z·(cos ρ − sin ρ·tan θ),
+// its height above the CG plus the rise of the path over its distance ahead (§3.5.8 equation 1).
+// The reference attitude ρ of each type (REF_PITCH): the research's approach_visual.pitch_deg where it gives one (737
+// FD pitch 3.2° at Vref flaps 30 [D3], ATR ≈ 0° [D19]); the A320 family 2.5° (owner decision OD-A320-PITCH, a temporary
+// estimate: topic 3.5 used 3.3°, topic 3.10 2.5°, topic 3.3 1.5°, 03-airliners.md conflict "pitch ขณะ approach ของ
+// A320"); the A330 3.0°, the research's own estimate (§3.5.6, the ρ of its back-solve).
+export const GS_DEG = 3;
+export const REF_PITCH = { a320ceo: 2.5, a320neo: 2.5, a321ceo: 2.5, a321neo: 2.5, a330_300: 3.0 };
+export function pathUp(p, rhoDeg, thDeg = GS_DEG) {
+  const r = rhoDeg * Math.PI / 180, t = Math.tan(thDeg * Math.PI / 180);
+  return p[0] * (Math.sin(r) + Math.cos(r) * t) - p[2] * (Math.cos(r) - Math.sin(r) * t);
+}
+export const refPitch = (id, card) => { const pv = val(card, 'airframe.geometry.approach_visual').pitch_deg; return typeof pv === 'number' ? pv : REF_PITCH[id]; };
+// The glide-slope antenna ahead of the eye (m, along the body x): the 737's from its station (eye_pos_STA −
+// gsAntenna_pos_STA, from (H − H3)/tan 3° [D3], T-D-23); the ATR's the research's assumption (§3.5.6: in the nose, 1.0 m
+// below and 2.1 m ahead of the eye, "ค่าทั้งหมดนี้ต้องแทนด้วยค่าจากผู้ผลิตเมื่อหาได้"); the Airbus types have no antenna
+// station, so x_ant = x_eye (§3.5.9 item 1).
+const ATR_ANT_AHEAD = 2.1;
+function antAhead(id, card) {
+  if (id === 'b737_800') return r4(val(card, 'airframe.geometry.eye_pos_STA') - val(card, 'airframe.geometry.gsAntenna_pos_STA'));
+  if (id === 'atr72_600') return ATR_ANT_AHEAD;
+  return 0;
+}
+// eyeAntenna(id, card): { eye, ant } leaves (FRD from the CG reference). The eye keeps the research's x and y; on an
+// Airbus type its z is set so that the eye's path runs H1 (Airbus 2023 issue [D4]; OD-A330-VISUAL picks the 2023 A330
+// figure 11.34 m over the 2021 10.82 m [D5]) above the path of the main wheels (gear.geometry.main_contact_body_extended)
+// at REF_PITCH. The research's eye z sat 0.08–0.30 m off it at that attitude: the FBW eye of the A320 family [D27] (z
+// −2.098 on all four; it matches Airbus at 3.3° for the A320ceo only, T-D-10) gives H1 0.19 m (A320ceo) and 0.27 m
+// (A320neo) low and 0.08 m (A321ceo) and 0.25 m (A321neo) high at 2.5°; the A330's z_eye = z_MG − B with its estimated
+// B ≈ 8.0 m and A = 29.4 m (§3.5.7; the 8 % rule places the eye and the main wheels together, so it does not set H1)
+// gives 0.30 m low. The 737 and the ATR keep the research's eye (Boeing's own B 3.84 m [D3]; the ATR's estimate). The
+// antenna stands on the centre line (in the nose radome; ค่าประมาณ for every type but the 737), antAhead ahead of the
+// eye, its z solved so that its path runs H2 (airframe.geometry.eye_to_gsAntenna_vertical) below the eye's at REF_PITCH:
+//   z_ant = z_eye + (H2 + dx·(sin ρ + cos ρ·tan θ)) / (cos ρ − sin ρ·tan θ),
+// the exact form of the research's z_ant = z_eye + H2 (§3.5.9 item 1, "vertical in the reference approach attitude"; with
+// dx = 0 and ρ 2.5° the divisor adds 6 mm).
+// eyeL: the eye leaf as copied into the simulator card (the research's, through noteRules).
+export function eyeAntenna(id, card, eyeL = noteRules(structuredClone(leaf(card, 'airframe.geometry.eye_pos_FRD')))) {
+  const av = leaf(card, 'airframe.geometry.approach_visual'), h2 = leaf(card, 'airframe.geometry.eye_to_gsAntenna_vertical');
+  const mg = leaf(card, 'gear.geometry.main_contact_body_extended'), rho = refPitch(id, card), r = rho * Math.PI / 180, t = Math.tan(GS_DEG * Math.PI / 180);
+  if (typeof rho !== 'number') throw new Error(`${id}: no reference approach pitch`);
+  const w = mg.v[0], a = Math.sin(r) + Math.cos(r) * t, b = Math.cos(r) - Math.sin(r) * t;
+  const odPitch = REF_PITCH[id] === 2.5 ? ' (OD-A320-PITCH: ค่าประมาณชั่วคราว ปรับใหม่เมื่อพบแหล่ง)' : '';
+  let eye = eyeL;
+  if (AIRBUS.has(id)) {
+    const H1 = av.v.H1, z = r4(w[2] - (H1 - (eyeL.v[0] - w[0]) * a) / b);
+    eye = mk([eyeL.v[0], eyeL.v[1], z], eyeL.u, eyeL.scope, [...eyeL.src, ...av.src, ...mg.src, 'AL:C7'],
+      `x, y ตามบัตรวิจัย (${eyeL.v.join(', ')}); z ตั้งใหม่ให้ทางเดินตาสูงกว่าทางเดินล้อหลัก (gear.geometry.main_contact_body_extended, โช้คยืด) H1 ${H1} m`
+      + ` ตามข้อมูล Airbus ฉบับ 2023 [D4] ที่แนวร่อน ${GS_DEG}° และ pitch อ้างอิง ${rho}°${odPitch}`
+      + (id === 'a330_300' ? '; OD-A330-VISUAL เลือกฉบับ 2023 (H1 11.34 m) ไม่ใช่ฉบับ 2021 (10.82 m) [D5]; จุดสัมผัสล้อหลักเป็นศูนย์ bogie' : '')
+      + `: z ของบัตรวิจัย ${eyeL.v[2]} ให้ H1 ${r2(pathUp(eyeL.v, rho) - pathUp(w, rho))} m ที่ pitch นี้; ตาเหนือล้อจุดต่อจุดได้ H4 ${r2((eyeL.v[0] - w[0]) * Math.sin(r) + (w[2] - z) * Math.cos(r))} m`
+      + ` (Airbus ${av.v.H4} m) [AL:C7]`, { conf: 'ต่ำ' });
+  }
+  const dx = antAhead(id, card), dz = (h2.v + dx * a) / b;
+  const v = [r4(eye.v[0] + dx), 0, r4(eye.v[2] + dz)];
+  const ahead = id === 'b737_800' ? `อยู่หน้าตา ${dx} m ตาม airframe.geometry.gsAntenna_pos_STA (${val(card, 'airframe.geometry.gsAntenna_pos_STA')} m) กับ eye_pos_STA (${val(card, 'airframe.geometry.eye_pos_STA')} m)`
+    : id === 'atr72_600' ? `อยู่หน้าตา ${dx} m ตามสมมติฐานของงานวิจัย (หัวข้อ 3.5.6: ในจมูก ต่ำกว่าตา 1.0 m หน้าตา 2.1 m)`
+      : 'x เท่าตา (ไม่มีตำแหน่งสายอากาศของ Airbus หัวข้อ 3.5.9 ข้อ 1)';
+  const src = [...eye.src, ...h2.src, ...(id === 'b737_800' ? leaf(card, 'airframe.geometry.gsAntenna_pos_STA').src : []), 'AL:C7'];
+  const ant = mk(v, eye.u, eye.scope, src,
+    `เสาอากาศรับ glide slope บนแนวกลางลำ ${ahead}; z ตั้งให้ทางเดินเสาอากาศต่ำกว่าทางเดินตา H2 ${h2.v} m (airframe.geometry.eye_to_gsAntenna_vertical)`
+    + ` ที่แนวร่อน ${GS_DEG}° และ pitch อ้างอิง ${rho}°${odPitch}: z_ant = z_eye + (H2 + dx·(sin ρ + cos ρ·tan θ))/(cos ρ − sin ρ·tan θ) = z_eye + ${r4(dz)} m`
+    + ` (รูปเต็มของ z_ant = z_eye + H2 ในหัวข้อ 3.5.9 ข้อ 1); ILS และออโต้ไพลอตอ่านที่จุดนี้ ไฟ PAPI อ่านที่ตา [AL:C7]`, { conf: id === 'b737_800' ? 'กลาง' : 'ต่ำ' });
+  return { eye, ant, rho };
 }
 
 // The A330's lateral derivatives are in stability axes at α 5.74° (approach) and 2.5° (cruise); the sim uses body axes
@@ -411,10 +484,13 @@ export function naAndDeferred(id) {
 const FIXED3 = {
   'AL:C4': { what: 'AirfieldLab plan C4, this generator\'s own derivations and the owner\'s decisions OD-LEMAC, OD-SOURCES and OD-RATINGS:'
     + ' the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research\'s tables and rules, control travels the'
-    + ' research card lacks, the gear struts, the glide-slope antenna at the eye, the stall-warning angles, the A330 derivatives in body axes,'
+    + ' research card lacks, the gear struts, the stall-warning angles, the A330 derivatives in body axes,'
     + ' the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists', link: SELF },
   'AL:C5': { what: 'AirfieldLab plan C5 (research round 3 task item 3, R3-3) and the owner decision OD-WIND-ADDITIVE: speeds.approach_rule, this generator\'s'
     + ' transcription, in knots, of the wind rules of research topic 3.10 (the 737 additive and its two caps, the Airbus APPR COR, the ATR wind factor)', link: SELF },
+  'AL:C7': { what: 'AirfieldLab plan C7 (research round 3 task item 6, R3-6) and the owner decisions OD-A320-PITCH and OD-A330-VISUAL: the pilot\'s eye'
+    + ' and the glide-slope antenna placed from the manufacturers\' approach distances H1 and H2 of research topic 3.5 at a reference approach'
+    + ' attitude (this generator\'s eyeAntenna)', link: SELF },
 };
 const PREFIX_FILE = { R: '01-atr72-600.md', B: '02-b737-800.md', L: '03-a320-a321.md', H: '04-a330-300.md', D: '05-airport-geometry.md',
   J: '06-jet-engines.md', Y: '07-flight-controls.md', Z: '08-fbw-laws.md', O: '09-afcs-autoland.md', K: '10-fctm-technique.md' };
@@ -515,9 +591,9 @@ export function buildAirliner(id) {
   put(doc, 'gear.layout', mk('tricycle_retract', '-', 'gear', [...leaf(card, 'airframe.identity').src, 'AL:C4'],
     'ล้อสามจุดแบบพับเก็บได้ (ล้อหน้าและล้อหลัก) ตามแบบของเครื่องบินโดยสาร [AL:C4]', { est: false, conf: 'สูง' }));
   put(doc, 'gear.legacy', gearLeaf(card, tm.v));
-  const eye = leaf(doc, 'airframe.geometry.eye_pos_FRD');
-  put(doc, 'airframe.geometry.gsAntenna_pos_FRD', mk(eye.v.slice(), eye.u, eye.scope, [...eye.src, 'AL:C4'],
-    'ไว้ที่ตำแหน่งตา (airframe.geometry.eye_pos_FRD) ไฟ PAPI และ ILS จึงอ่านที่จุดเดียวกัน; plan C7 จะวางเสาอากาศตาม airframe.geometry.eye_to_gsAntenna_vertical [AL:C4]'));
+  const ea = eyeAntenna(id, card, leaf(doc, 'airframe.geometry.eye_pos_FRD'));   // plan C7
+  put(doc, 'airframe.geometry.eye_pos_FRD', ea.eye);
+  put(doc, 'airframe.geometry.gsAntenna_pos_FRD', ea.ant);
   // the legacy aero leaf: K_CL_offset and the warning angles
   const legacy = leaf(doc, 'aero.legacy'), off = legacy.v.K_CL_offset;
   Object.assign(legacy.v, { aWarn: 0, aWarnFlap: 0, aWarnHyst: 0.5, aWarnMinOn: 0.5 });

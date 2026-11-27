@@ -252,21 +252,40 @@
     "est": true,
     "note": "ค่าประมาณ: สมมติสายอากาศในจมูก ต่ำกว่าตา 1.0 m หน้าตา 2.1 m"
    },
+   "approach_visual": {
+    "v": {
+     "theta_deg": 3,
+     "pitch_deg": 0,
+     "H": 2.3,
+     "H1": 3.2,
+     "H2": 0.9,
+     "H4": 2.65
+    },
+    "u": "m (pitch deg)",
+    "scope": "aircraft",
+    "src": [
+     "D19",
+     "D12"
+    ],
+    "conf": "ต่ำ",
+    "est": true,
+    "note": "ค่าประมาณทั้งหมด H1 ช่วง 2.7 ถึง 3.7 m"
+   },
    "gsAntenna_pos_FRD": {
     "v": [
-     10.24,
-     -0.45,
-     -0.85
+     12.34,
+     0,
+     0.1501
     ],
     "u": "m FRD",
     "scope": "aircraft",
     "src": [
      "D12",
-     "AL:C4"
+     "AL:C7"
     ],
     "conf": "ต่ำ",
     "est": true,
-    "note": "ค่าประมาณ: ไว้ที่ตำแหน่งตา (airframe.geometry.eye_pos_FRD) ไฟ PAPI และ ILS จึงอ่านที่จุดเดียวกัน; plan C7 จะวางเสาอากาศตาม airframe.geometry.eye_to_gsAntenna_vertical [AL:C4]"
+    "note": "ค่าประมาณ: เสาอากาศรับ glide slope บนแนวกลางลำ อยู่หน้าตา 2.1 m ตามสมมติฐานของงานวิจัย (หัวข้อ 3.5.6: ในจมูก ต่ำกว่าตา 1.0 m หน้าตา 2.1 m); z ตั้งให้ทางเดินเสาอากาศต่ำกว่าทางเดินตา H2 0.89 m (airframe.geometry.eye_to_gsAntenna_vertical) ที่แนวร่อน 3° และ pitch อ้างอิง 0°: z_ant = z_eye + (H2 + dx·(sin ρ + cos ρ·tan θ))/(cos ρ − sin ρ·tan θ) = z_eye + 1.0001 m (รูปเต็มของ z_ant = z_eye + H2 ในหัวข้อ 3.5.9 ข้อ 1); ILS และออโต้ไพลอตอ่านที่จุดนี้ ไฟ PAPI อ่านที่ตา [AL:C7]"
    }
   }
  },
@@ -1346,16 +1365,24 @@
   "note": "บัตรพารามิเตอร์รุ่นทดลองของ ATR 72-212A สำหรับซิม สร้างด้วย tools/aircraft/build_airliners.mjs จากบัตรวิจัยรอบที่ 3 ห้ามแก้ไฟล์นี้ด้วยมือ (แก้ไฟล์หัวข้อของงานวิจัยหรือสคริปต์แล้วสร้างใหม่) ตัวเลขการบินเกือบทั้งหมดเป็นค่าประมาณ (est true, ค่าประมาณ ใน note) จากเอกสารสาธารณะ ซิมบินด้วยโหมด legacy บนสมการของเครื่องฝึก (aero.legacy, propulsion.legacy) จนกว่าระยะ K ของแผนจะให้เครื่องยนต์และตาราง ใช้เพื่อการฝึกในเกมนี้เท่านั้น ไม่ใช้เพื่อการบินจริง; สายการบินไม่เผยแพร่มวลและ rating จริง จึงเป็นค่าตั้งต้นที่ผู้ใช้เปลี่ยนได้ (OD-RATINGS); รูปแบบ leaf {v, u, scope, src, conf, est, note} ตาม docs/research/01-flight-physics/schema.md และ docs/research/03-airliners/schema-ext.md; ความเร็วเป็น kt CAS ตามมวล (ซิมไม่มีตาราง IAS–CAS ของแบบนี้ HUD จึงแสดง KCAS); _na คือ path ของรอบที่ 1 ที่ใช้กับแบบนี้ไม่ได้ และ _deferred คือ path ที่ใช้ได้แต่โหมด legacy ยังไม่อ่าน พร้อมงานที่จะเติม; รหัส AL:C4 ไม่ใช่รหัสของงานวิจัย",
   "sources": {
    "AL:C4": {
-    "what": "AirfieldLab plan C4, this generator's own derivations and the owner's decisions OD-LEMAC, OD-SOURCES and OD-RATINGS: the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research's tables and rules, control travels the research card lacks, the gear struts, the glide-slope antenna at the eye, the stall-warning angles, the A330 derivatives in body axes, the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists",
+    "what": "AirfieldLab plan C4, this generator's own derivations and the owner's decisions OD-LEMAC, OD-SOURCES and OD-RATINGS: the default mass and the masses offered, Vref, Vapp and VS0 as mass tables from the research's tables and rules, control travels the research card lacks, the gear struts, the stall-warning angles, the A330 derivatives in body axes, the A321 and 737-800 LEMAC, the engine ratings offered and the _na and _deferred lists",
     "link": "tools/aircraft/build_airliners.mjs"
    },
    "AL:C5": {
     "what": "AirfieldLab plan C5 (research round 3 task item 3, R3-3) and the owner decision OD-WIND-ADDITIVE: speeds.approach_rule, this generator's transcription, in knots, of the wind rules of research topic 3.10 (the 737 additive and its two caps, the Airbus APPR COR, the ATR wind factor)",
     "link": "tools/aircraft/build_airliners.mjs"
    },
+   "AL:C7": {
+    "what": "AirfieldLab plan C7 (research round 3 task item 6, R3-6) and the owner decisions OD-A320-PITCH and OD-A330-VISUAL: the pilot's eye and the glide-slope antenna placed from the manufacturers' approach distances H1 and H2 of research topic 3.5 at a reference approach attitude (this generator's eyeAntenna)",
+    "link": "tools/aircraft/build_airliners.mjs"
+   },
    "D12": {
     "what": "ATR, ATR 72-600 factsheet (ไม่ระบุวันที่ อัปโหลด ก.ค. 2020) (reference [D12] of docs/research/03-airliners/05-airport-geometry.md)",
     "link": "https://www.atr-aircraft.com/wp-content/uploads/2020/07/Factsheets_-_ATR_72-600.pdf"
+   },
+   "D19": {
+    "what": "BEA, BEA2024-0498 Final report, ATR 72-212A F-OZKN, 20 Dec 2024, มี.ค. 2026 (reference [D19] of docs/research/03-airliners/05-airport-geometry.md)",
+    "link": "https://bea.aero/fileadmin/user_upload/F-OZKN_EN.pdf"
    },
    "K22": {
     "what": "BEA, Serious incident to the ATR 72-212A F-OZKN, 20 ธ.ค. 2024, BEA2024-0498, มี.ค. 2026 (reference [K22] of docs/research/03-airliners/10-fctm-technique.md)",

@@ -3,8 +3,9 @@
 // docs/research/01-flight-physics/10-validation.md §10.7: acceptance limits plus a narrow regression band).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { M } from './harness.mjs';
-const { Flight, SCENARIOS, KT, DEG, AC, G0, FIELD } = M;
+import fs from 'node:fs';
+import { M, AIRCRAFT_CARD } from './harness.mjs';
+const { Flight, SCENARIOS, KT, DEG, AC, G0, FIELD, setAircraft } = M;
 
 test('setApproach starts in trim (T-V-01): |a_NED| < 0.05 m/s², |ω̇| < 1e-6 rad/s², at Vapp', () => {
   const f = new Flight({ wind: SCENARIOS.calm });
@@ -22,6 +23,37 @@ test('parked: the gear carries the weight, no drift in 6 s', () => {
   const a = f.ac.air, sum = a.load.reduce((s, v) => s + v, 0) / (AC.m * G0);
   assert.ok(Math.abs(sum - 1) < 0.01, `gear load ${sum.toFixed(3)} × weight`);
   assert.ok(a.gs < 0.05, `ground speed ${a.gs.toFixed(4)} m/s`);
+});
+
+// Plan C7 (research round 3 task item 6, R3-6): setParked stands every type on its own wheels, the static equilibrium of
+// its card's gear (src/20-flight.js). The old fixed start (d −1.30 m, θ 0.5°, the trainer's) dropped the DA40s 0.45 m
+// and threw the airliners over (their struts started up to 2.8 m into the ground). The airliners' CG height against the
+// research's gear.geometry.cg_height_parked (05-airport-geometry.md §3.5.7: A320 2.71 m from FlyByWire's static CG
+// height, the others estimates) within 0.12 m (the A321s, which the research gives the A320's height, sit 0.09–0.11 m
+// lower on their struts); the parked pitch is the gear's (research: FBW −0.2°, 737 model ≈ +0.3°,
+// both low confidence), printed only.
+test('parked on every type (plan C7): at rest in equilibrium on all three wheels, no drift in 6 s; the airliners at the research\'s parked CG height', (t) => {
+  const dir = new URL('../data/aircraft/', import.meta.url), cards = fs.readdirSync(dir).filter((f) => f.endsWith('.json')).sort();
+  try {
+    for (const c of cards) {
+      const card = JSON.parse(fs.readFileSync(new URL(c, dir), 'utf8')); setAircraft(card);
+      const f = new Flight({ wind: SCENARIOS.calm }); f.ac.setParked(0, 0, 30 * DEG);
+      const d = new Float64Array(13); f.ac.deriv(f.ac.x, d);
+      assert.ok(Math.abs(d[5]) < 1e-6 && Math.abs(d[11]) < 1e-6, `${c}: at rest ẇ ${d[5].toExponential(2)} m/s², q̇ ${d[11].toExponential(2)} rad/s²`);
+      const h0 = -f.ac.x[2], th0 = f.ac.air.theta / DEG;
+      for (let i = 0; i < 240 * 6; i++) f.ac.step(1 / 240);
+      const a = f.ac.air, sum = a.load.reduce((s, v) => s + v, 0) / (AC.m * G0);
+      assert.ok(a.wow.every(Boolean) && Math.abs(sum - 1) < 0.01, `${c}: on ${a.wow.filter(Boolean).length} wheels, gear load ${sum.toFixed(3)} × weight`);
+      // the throttle spools from 0 to idle in about 1 s (Aircraft.step) and the brakes' tanh friction holds no static
+      // load, so every type creeps forward a little, as the trainer did before (≤ 0.012 m/s), and the brake force at the
+      // wheels, below the CG, leans it nose down (the trainer 0.14°, the others under 0.02°)
+      assert.ok(Math.abs(-f.ac.x[2] - h0) < 0.002 && Math.abs(a.theta / DEG - th0) < 0.2 && a.gs < 0.05, `${c}: moved ${(-f.ac.x[2] - h0).toFixed(4)} m, ${(a.theta / DEG - th0).toFixed(4)}°, ${a.gs.toFixed(4)} m/s`);
+      const hp = card.gear.geometry?.cg_height_parked?.v;
+      const rp = c.startsWith('a3') || c.startsWith('b7') || c.startsWith('atr') ? JSON.parse(fs.readFileSync(new URL(`../docs/research/03-airliners/params-${c.replace('.json', '').replace(/_/g, '-')}.json`, import.meta.url), 'utf8')).gear.geometry.cg_height_parked.v : hp;
+      if (rp !== undefined) assert.ok(Math.abs(h0 - rp) <= 0.12, `${c}: CG ${h0.toFixed(3)} m above the ground parked (research ${rp})`);
+      t.diagnostic(`${c}: CG ${h0.toFixed(3)} m, θ ${th0.toFixed(2)}°${rp !== undefined ? ` (research CG ${rp} m)` : ''}`);
+    }
+  } finally { setAircraft(JSON.parse(fs.readFileSync(AIRCRAFT_CARD, 'utf8'))); }
 });
 
 // acceptance: score floors at or just under the measured scores (A9 log-law wind: calm 100, head 100, xr 97, xl 85;
